@@ -1,19 +1,26 @@
 package com.richashworth.planningpoker.model;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by rich on 09/04/2016.
  */
 @Component
 public class SessionManager {
-
-    ListMultiMap<String,>
+    Multimap<Integer, Estimate> sessionsMap = ArrayListMultimap.create();
+    AtomicInteger sessionSequence = new AtomicInteger(1);
 
     public boolean isSessionLive(String id) {
-        if ("2".equals(id)) {
-            return true;
-        }
-        return false;
+        return sessionsMap.containsKey(id);
+    }
+
+    public int createSession() {
+        Integer i = sessionSequence.getAndIncrement();
+        sessionsMap.put(i, null);
+        return i;
     }
 }

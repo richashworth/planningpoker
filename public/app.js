@@ -5,7 +5,7 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', function ($scope, $http
     $scope.sessionId = '';
     $scope.inSession = false;
     $scope.voted = false;
-    $scope.legalEstimates = [2, 3, 5, 8, 13, 20, 100];
+    $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
 
     $scope.joinSession = function () {
         $http({
@@ -20,19 +20,19 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', function ($scope, $http
                 "Try again in a few seconds, or create a new session.");
         });
     };
-    
+
     $scope.vote = function (estimateSize) {
         $http({
             method: 'POST',
             url: '/vote',
             params: {value: estimateSize}
         }).then(function successCallback(response) {
-            $scope.voted= true;
+            $scope.voted = true;
         }, function errorCallback(response) {
             console.log("vote not registered")
         });
     }
-    
+
 }]);
 
 
