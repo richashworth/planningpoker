@@ -20,14 +20,17 @@ public class GameController {
     }
 
     @RequestMapping("validateSession")
-    public void validateSessionId(
+    public void validateSession(
             @RequestParam(name = "sessionId") String sessionId) {
-        System.out.println("called with id "+sessionId);
 
         if (!sessionManager.isSessionLive(sessionId)) {
-            System.out.println("returning 404...");
             throw new IllegalArgumentException("session not found");
         }
+    }
+
+    @RequestMapping("createSession")
+    public int createSession() {
+        return sessionManager.createSession();
     }
 
 }

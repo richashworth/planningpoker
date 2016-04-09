@@ -20,16 +20,33 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', function ($scope, $http
                 "Try again in a few seconds, or create a new session.");
         });
     };
+    
+    $scope.createSession = function () {
+        $http({
+            method: 'GET',
+            url: '/createSession',
+        }).success(function(response) {
+            console.log("response: "+response);
+            $scope.sessionId=response;
+        });
+    };
+
+    $scope.joinSession = function () {
+        $http({
+            method: 'GET',
+            url: '/validateSession',
+        }).success(function(response) {
+            $scope.inSession = true;
+        });
+    };
 
     $scope.vote = function (estimateSize) {
         $http({
             method: 'POST',
             url: '/vote',
             params: {value: estimateSize}
-        }).then(function successCallback(response) {
+        }).success(function(response) {
             $scope.voted = true;
-        }, function errorCallback(response) {
-            console.log("vote not registered")
         });
     }
 
