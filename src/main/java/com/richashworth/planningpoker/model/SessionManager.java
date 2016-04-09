@@ -4,7 +4,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -12,10 +14,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Component
 public class SessionManager {
+
     Multimap<Integer, Estimate> sessionsMap = ArrayListMultimap.create();
     AtomicInteger sessionSequence = new AtomicInteger(1);
 
-    public boolean isSessionLive(String id) {
+    public boolean isSessionLive(Integer id) {
+        System.out.println("checking for a session named "+id+ " in "+sessionsMap.keySet());
         return sessionsMap.containsKey(id);
     }
 
@@ -29,11 +33,26 @@ public class SessionManager {
         sessionsMap.put(sessionID, estimate);
     }
 
-    public Collection<Estimate> getResults(int sessionId) {
-        return sessionsMap.get(sessionId);
+    public List<Estimate> getResults(int sessionId) {
+        List<Estimate> results = new ArrayList<>();
+        for (Estimate estimate: sessionsMap.get(sessionId)){
+            if(null!=estimate){
+                results.add(estimate);
+            }
+        }
+        return results;
     }
 
     public void clearSessions() {
         sessionsMap.clear();
     }
+
+    public List<String> getUsers(int sessionId) {
+        List<String> users = new ArrayList<>();
+        for (Estimate e : sessionsMap.get(sessionId)) {
+            users.add(e.getUserId());
+        }
+        return users;
+    }
+
 }

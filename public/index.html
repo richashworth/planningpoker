@@ -6,6 +6,11 @@
     <title>Planning Poker</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="app.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-poller/0.4.2/angular-poller.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/angular.chartjs/0.8.8/angular-chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/angular.chartjs/0.8.8/angular-chart.css">
+
 </head>
 
 <body ng-controller="UserCtrl as user">
@@ -26,9 +31,9 @@
             <button ng-click="joinSession()" ng-disabled="sessionId < 1">
                 Join Session
             </button>
-        <button ng-click="createSession()">
-            Create Session
-        </button>
+            <button ng-click="createSession()">
+                Create Session
+            </button>
         </form>
     </div>
 </div>
@@ -39,6 +44,11 @@
         Welcome to session {{sessionId}}, {{userName}}!
     </h3>
     <button data-ng-repeat="i in legalEstimates" ng-click="vote(i)">{{i}}</button>
+</div>
+
+<!--Results Screen-->
+<div>
+    {{votingResults}}
 </div>
 
 </body>

@@ -1,10 +1,14 @@
 package com.richashworth.planningpoker.controller;
 
+import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.model.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by rich on 09/04/2016.
@@ -21,8 +25,7 @@ public class GameController {
 
     @RequestMapping("validateSession")
     public void validateSession(
-            @RequestParam(name = "sessionId") String sessionId) {
-
+            @RequestParam(name = "sessionId") Integer sessionId) {
         if (!sessionManager.isSessionLive(sessionId)) {
             throw new IllegalArgumentException("session not found");
         }
@@ -33,4 +36,12 @@ public class GameController {
         return sessionManager.createSession();
     }
 
+    @RequestMapping("results")
+    public List<Estimate> results(
+            @RequestParam(name = "sessionId") int sessionId) {
+        System.out.println("request for session: " + sessionId);
+        ArrayList<Estimate> results = new ArrayList(sessionManager.getResults(sessionId));
+        System.out.println("returning results for session: "+ sessionId+ "  |  " + results);
+        return results;
+    }
 }
