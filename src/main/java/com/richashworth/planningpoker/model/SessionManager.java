@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SessionManager {
+
+    ListMultiMap<String,>
+
     public boolean isSessionLive(String id) {
         if ("2".equals(id)) {
             return true;

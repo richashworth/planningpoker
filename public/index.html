@@ -34,28 +34,11 @@
 </div>
 
 <!--Voting Screen-->
-<div ng-show="inSession">
+<div ng-show="inSession && !voted">
     <h3>
         Welcome to session {{sessionId}}, {{userName}}!
     </h3>
-    <button ng-click="vote(2)">
-       2
-    </button>
-    <button ng-click="vote(3)">
-        3
-    </button>
-    <button ng-click="vote(5)">
-        5
-    </button>
-    <button ng-click="vote(8)">
-        8
-    </button>
-    <button ng-click="vote(13)">
-        13
-    </button>
-    <button ng-click="vote(20)">
-        20
-    </button>
+    <button data-ng-repeat="i in legalEstimates" ng-click="vote(i)">{{i}}</button>
 </div>
 
 </body>

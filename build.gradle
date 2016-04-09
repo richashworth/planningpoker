@@ -31,8 +31,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-devtools')
 	compile('org.projectlombok:lombok:1.16.6')
 	compile('org.springframework.boot:spring-boot-starter-websocket')
-//    compile('org.webjars:angularjs:1.5.3')
-	testCompile('org.springframework.boot:spring-boot-starter-test') 
+	compile('com.google.guava:guava:19.0')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 
