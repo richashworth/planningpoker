@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html ng-app="PlanningPoker">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Planning Poker</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="app.js"></script>
+</head>
+
+<body ng-controller="UserCtrl as user">
+
+<!--Registration Screen-->
+<div ng-show="!inSession">
+    <div>
+        <form name="nameEntry">
+
+            Please enter your name:
+            <input type="text" ng-model="userName" required="true" ng-minlength="2" ng-maxlength="50">
+        </form>
+    </div>
+    <div ng-show="nameEntry.$valid">
+        <form name="sessionEntry">
+            Join Session:
+            <input type="number" placeholder="session ID" ng-model="sessionId">
+            <button ng-click="joinSession()" ng-disabled="sessionId < 1">
+                Join Session
+            </button>
+        <button ng-click="createSession()">
+            Create Session
+        </button>
+        </form>
+    </div>
+</div>
+
+<!--Voting Screen-->
+<div ng-show="inSession">
+    <h3>
+        Welcome to session {{sessionId}}, {{userName}}!
+    </h3>
+    <button ng-click="vote(2)">
+       2
+    </button>
+    <button ng-click="vote(3)">
+        3
+    </button>
+    <button ng-click="vote(5)">
+        5
+    </button>
+    <button ng-click="vote(8)">
+        8
+    </button>
+    <button ng-click="vote(13)">
+        13
+    </button>
+    <button ng-click="vote(20)">
+        20
+    </button>
+</div>
+
+</body>
+</html>
