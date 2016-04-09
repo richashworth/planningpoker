@@ -4,6 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -22,5 +24,17 @@ public class SessionManager {
         Integer i = sessionSequence.getAndIncrement();
         sessionsMap.put(i, null);
         return i;
+    }
+
+    public void registerEstimate(int sessionID, Estimate estimate) {
+        sessionsMap.put(sessionID, estimate);
+    }
+
+    public Collection<Estimate> getResults(int sessionId) {
+        return sessionsMap.get(sessionId);
+    }
+
+    public void clearSessions() {
+        sessionsMap.clear();
     }
 }
