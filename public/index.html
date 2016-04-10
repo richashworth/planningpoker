@@ -95,7 +95,7 @@
         <div ng-show="isAdmin">
             <button ng-click="reset()">Next Estimate</button>
         </div>
-        <div ng-show="!isAdmin">
+        <div ng-show="!isAdmin && resultsdata.length<1">
             <button ng-click="next()">Next Estimate</button>
         </div>
     </div>
