@@ -1,6 +1,7 @@
 package com.richashworth.plannningpoler.tasks;
 
 import com.richashworth.planningpoker.model.SessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class MaintenanceTask {
     private SessionManager sessionManager;
 
+    @Autowired
     public MaintenanceTask(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
