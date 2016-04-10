@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
  * Created by rich on 10/04/2016.
  */
 @Component
-public class Maintenance {
+public class MaintenanceTask {
     private SessionManager sessionManager;
 
-    public Maintenance(SessionManager sessionManager) {
+    public MaintenanceTask(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
 
