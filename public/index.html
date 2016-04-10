@@ -16,6 +16,7 @@
 
 <!--Registration Screen-->
 <div ng-show="!inSession">
+    <br>
     <div>
         <form name="nameEntry">
 
@@ -48,7 +49,11 @@
 <!--Results Screen-->
 <div ng-show="voted">
     {{votingResults}}
-    <canvas id="bar" class="chart chart-bar" chart-data="data" chart-labels="labels">
+    <br>
+    {{transformed}}
+    <br>
+    {{resultsdata}}
+    <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]" chart-labels="labels">
     </canvas>
 </div>
 

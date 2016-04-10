@@ -1,17 +1,14 @@
 var PlanningPoker = angular.module('PlanningPoker', ['chart.js', 'emguo.poller']);
-// var PlanningPoker = angular.module('PlanningPoker', ['emguo.poller']);
 
 PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($scope, $http, poller) {
     $scope.userName = '';
     $scope.inSession = false;
     $scope.voted = false;
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
+    $scope.votingResults= [];
+    $scope.resultsdata= [];
 
-    $scope.labels = ['1', '2', '3', '5', '8', '13', '20'];
-
-    $scope.data = [
-        [28, 48, 40, 19, 86, 27, 90]
-    ];
+    $scope.labels = $scope.legalEstimates.map(String);
 
     $scope.joinSession = function () {
         $http({
@@ -64,8 +61,20 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
         myPoller.promise.then(
             null, null,
             function (result) {
-                console.log("hi");
-                $scope.votingResults = JSON.stringify(result.data);
+                console.log(result.data);
+                console.log(JSON.stringify(result.data));
+                $scope.votingResults = result.data;
+
+                $scope.transformed = $scope.votingResults.map(function (val) {
+                    return val.estimateValue;
+                });
+
+                $scope.resultsdata = $scope.legalEstimates.map(function (x) {
+                    return $scope.transformed.filter(function (y) {
+                        return x == y;
+                    }).length;
+                });
+
             }
         );
     }
