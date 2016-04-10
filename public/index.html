@@ -5,12 +5,11 @@
     <meta charset="UTF-8">
     <title>Planning Poker</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="https://rawgit.com/nnnick/Chart.js/master/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/angular.chartjs/0.8.8/angular-chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/angular.chartjs/0.8.8/angular-chart.css"/>
     <script src="app.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-poller/0.4.2/angular-poller.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/angular.chartjs/0.8.8/angular-chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/angular.chartjs/0.8.8/angular-chart.css">
-
 </head>
 
 <body ng-controller="UserCtrl as user">
@@ -47,8 +46,10 @@
 </div>
 
 <!--Results Screen-->
-<div>
+<div ng-show="voted">
     {{votingResults}}
+    <canvas id="bar" class="chart chart-bar" chart-data="data" chart-labels="labels">
+    </canvas>
 </div>
 
 </body>
