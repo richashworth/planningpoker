@@ -36,6 +36,13 @@ public class GameController {
         return sessionManager.createSession();
     }
 
+    @RequestMapping("reset")
+    public void reset(
+            @RequestParam(name="sessionId") Integer sessionId
+    ) {
+        sessionManager.clearSession(sessionId);
+    }
+
     @RequestMapping("results")
     public List<Estimate> results(
             @RequestParam(name = "sessionId") int sessionId) {

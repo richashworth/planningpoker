@@ -53,8 +53,8 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
             argumentsArray: [
                 {
                     params: {
-                        sessionId: $scope.sessionId,
-                    },
+                        sessionId: $scope.sessionId
+                    }
                 }
             ]
         });
@@ -78,6 +78,18 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
             }
         );
     }
+
+    $scope.reset = function(){
+        $http({
+            method: 'DELETE',
+            url: '/reset',
+            params: {
+                sessionId: $scope.sessionId
+            }
+        }).success(function (response) {
+            $scope.voted = false;
+        });
+    };
 
 }]);
 
