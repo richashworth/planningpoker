@@ -49,7 +49,7 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
         });
         // Get poller.
         var myPoller = poller.get('results', {
-            delay: 500,
+            delay: 300,
             argumentsArray: [
                 {
                     params: {
