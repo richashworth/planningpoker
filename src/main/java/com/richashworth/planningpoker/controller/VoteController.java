@@ -28,7 +28,6 @@ public class VoteController {
     ) {
         Estimate estimate = new Estimate(userName, estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
-
     }
 }
 

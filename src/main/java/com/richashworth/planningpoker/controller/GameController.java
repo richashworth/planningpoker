@@ -24,8 +24,7 @@ public class GameController {
     }
 
     @RequestMapping("validateSession")
-    public void validateSession(
-            @RequestParam(name = "sessionId") Integer sessionId) {
+    public void validateSession(@RequestParam(name = "sessionId") Integer sessionId) {
         if (!sessionManager.isSessionLive(sessionId)) {
             throw new IllegalArgumentException("session not found");
         }
@@ -37,18 +36,13 @@ public class GameController {
     }
 
     @RequestMapping("reset")
-    public void reset(
-            @RequestParam(name="sessionId") Integer sessionId
-    ) {
+    public void reset(@RequestParam(name = "sessionId") Integer sessionId) {
         sessionManager.clearSession(sessionId);
     }
 
     @RequestMapping("results")
-    public List<Estimate> results(
-            @RequestParam(name = "sessionId") int sessionId) {
-        System.out.println("request for session: " + sessionId);
+    public List<Estimate> results(@RequestParam(name = "sessionId") int sessionId) {
         List<Estimate> results = new ArrayList<>(sessionManager.getResults(sessionId));
-        System.out.println("returning results for session: "+ sessionId+ "  |  " + results);
         return results;
     }
 }

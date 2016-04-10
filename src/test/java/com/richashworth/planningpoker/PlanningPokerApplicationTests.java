@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PlanningPokerApplication.class)
-public class DemoApplicationTests {
+public class PlanningPokerApplicationTests {
 
 	@Test
 	public void contextLoads() {
