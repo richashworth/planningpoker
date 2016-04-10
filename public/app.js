@@ -77,6 +77,10 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
         );
     };
 
+    $scope.next = function () {
+        $scope.voted = false;
+    };
+    
     $scope.reset = function () {
         $http({
             method: 'DELETE',

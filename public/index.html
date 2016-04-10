@@ -95,6 +95,9 @@
         <div ng-show="isAdmin">
             <button ng-click="reset()">Next Estimate</button>
         </div>
+        <div ng-show="!isAdmin">
+            <button ng-click="next()">Next Estimate</button>
+        </div>
     </div>
 </div><!-- /.container -->
 
