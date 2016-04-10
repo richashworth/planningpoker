@@ -24,7 +24,7 @@ public class VoteController {
     public void vote(
             @RequestParam(name = "sessionId") int sessionId,
             @RequestParam(name = "userName") String userName,
-            @RequestParam(name = "estimateValue") int estimateValue
+            @RequestParam(name = "estimateValue") double estimateValue
     ) {
         Estimate estimate = new Estimate(userName, estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
