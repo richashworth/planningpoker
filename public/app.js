@@ -73,14 +73,14 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
                     }).length;
                 });
 
+                if (result.data.length == 0) {
+                    $scope.voted = false;
+                }
+
             }
         );
     };
 
-    $scope.next = function () {
-        $scope.voted = false;
-    };
-    
     $scope.reset = function () {
         $http({
             method: 'DELETE',
