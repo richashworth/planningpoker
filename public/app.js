@@ -18,7 +18,6 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
         }).then(function successCallback(response) {
             $scope.inSession = true;
         }, function errorCallback(response) {
-            console.log("error!!!");
             alert("Session " + $scope.sessionId + " has not yet been started!\n" +
                 "Please try again in a few seconds, or create a new session.");
         });
@@ -61,8 +60,6 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
         myPoller.promise.then(
             null, null,
             function (result) {
-                console.log(result.data);
-                console.log(JSON.stringify(result.data));
                 $scope.votingResults = result.data;
 
                 $scope.transformed = $scope.votingResults.map(function (val) {
