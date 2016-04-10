@@ -44,7 +44,7 @@
 
 <div class="container">
     <!--Registration Screen-->
-    <div ng-show="!inSession">
+    <div ng-hide="inSession">
         <br>
         <div>
             <form name="nameEntry">
@@ -72,7 +72,9 @@
         <h5>
             Session: {{sessionId}}
         </h5>
-        Please vote on the current item:
+        <p ng-hide="voted">
+            Please vote on the current item:
+        </p>
     </div>
 
     <div ng-show="inSession && !voted">
