@@ -47,7 +47,7 @@ public class GameController {
     public List<Estimate> results(
             @RequestParam(name = "sessionId") int sessionId) {
         System.out.println("request for session: " + sessionId);
-        ArrayList<Estimate> results = new ArrayList(sessionManager.getResults(sessionId));
+        List<Estimate> results = new ArrayList<>(sessionManager.getResults(sessionId));
         System.out.println("returning results for session: "+ sessionId+ "  |  " + results);
         return results;
     }

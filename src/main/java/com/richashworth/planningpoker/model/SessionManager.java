@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class SessionManager {
 
-    Multimap<Integer, Estimate> sessionsMap = ArrayListMultimap.create();
-    AtomicInteger sessionSequence = new AtomicInteger(1);
+    private final Multimap<Integer, Estimate> sessionsMap = ArrayListMultimap.create();
+    private final AtomicInteger sessionSequence = new AtomicInteger(1);
 
     public boolean isSessionLive(Integer id) {
         return sessionsMap.containsKey(id);
