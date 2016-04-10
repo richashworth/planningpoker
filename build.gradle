@@ -1,52 +1,54 @@
 buildscript {
-	ext {
-		springBootVersion = '1.3.3.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
-	}
+    ext {
+        springBootVersion = '1.3.3.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-apply plugin: 'spring-boot' 
+apply plugin: 'spring-boot'
 
 jar {
-	baseName = 'planningpoker'
-	version = '0.0.1-SNAPSHOT'
+    baseName = 'planningpoker'
+    version = '0.0.1-SNAPSHOT'
 }
+
+mainClassName = "com.richashworth.planningpoker.PlanningPokerApplication"
+
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-devtools')
-	compile('org.projectlombok:lombok:1.16.6')
-	compile('org.springframework.boot:spring-boot-starter-websocket')
-	compile('com.google.guava:guava:19.0')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.boot:spring-boot-devtools')
+    compile('org.projectlombok:lombok:1.16.6')
+    compile('org.springframework.boot:spring-boot-starter-websocket')
+    compile('com.google.guava:guava:19.0')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 
 eclipse {
-	classpath {
-		 containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-		 containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7'
-	}
-}
-
-task stage {
-	dependsOn build
+    classpath {
+        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7'
+    }
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.12'
+    gradleVersion = '2.12'
 }
+
+task stage(dependsOn: ["build"]) {}
+
