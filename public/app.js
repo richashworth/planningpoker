@@ -5,8 +5,9 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
     $scope.inSession = false;
     $scope.voted = false;
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
-    $scope.votingResults= [];
-    $scope.resultsdata= [];
+    $scope.votingResults = [];
+    $scope.resultsdata = [];
+    $scope.isAdmin = false;
 
     $scope.labels = $scope.legalEstimates.map(String);
 
@@ -30,6 +31,7 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
         }).success(function (response) {
             $scope.inSession = true;
             $scope.sessionId = response;
+            $scope.isAdmin = true;
         });
     };
 
@@ -75,7 +77,7 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
         );
     };
 
-    $scope.reset = function(){
+    $scope.reset = function () {
         $http({
             method: 'DELETE',
             url: '/reset',
