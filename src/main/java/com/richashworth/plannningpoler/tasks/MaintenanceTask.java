@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MaintenanceTask {
+
     private SessionManager sessionManager;
 
     @Autowired
