@@ -48,13 +48,13 @@
 
 <!--Results Screen-->
 <div ng-show="voted">
-    {{votingResults}}
-    <br>
-    {{transformed}}
-    <br>
-    {{resultsdata}}
-    <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]" chart-labels="labels">
-    </canvas>
+    <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]" chart-labels="labels"></canvas>
+    <table>
+        <tr ng-repeat="result in votingResults">
+            <td>{{result.userId}}</td>
+            <td>{{result.estimateValue}}</td>
+        </tr>
+    </table>
 </div>
 
 </body>
