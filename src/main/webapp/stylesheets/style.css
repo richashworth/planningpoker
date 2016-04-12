@@ -1,0 +1,74 @@
+*{
+    font-family: sans-serif;
+}
+
+label.field{
+    text-align: right;
+    width:200px;
+    float: left;
+    font-weight: bold;
+}
+
+input{
+    width:200px;
+    float: left;
+}
+
+p {
+    position:absolute;
+    left:20px;
+}
+
+.votebutton{
+    width: 50px;
+    height: 50px;
+    font-size: large;
+}
+
+#top {
+    background-color: #00004d
+;
+    box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+    width: 100%;
+    height: 70px;
+    z-index: 9999;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+header {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    margin: 0 auto;
+}
+header hgroup {
+    position: absolute;
+    display: block;
+    top: -25px;
+    left: 20px;
+    color: #fff;
+}
+header hgroup h1 {
+    font-size: 50px;
+    font-family: "Papyrus";
+    color: #fff;
+    display: block;
+    height: 100px;
+    width: 610px;
+}
+
+nav {
+    float: right;
+}
+nav ul {
+    margin-top: 10px;
+    padding: 0 20px;
+    list-style: none;
+    position: relative;
+    display: inline-table;
+
+}
+nav ul li {
+    float: left;
+}

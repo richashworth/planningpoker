@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html ng-app="PlanningPoker">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Planning Poker</title>
+
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="/javascript/app.js"></script>
+
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/stylesheets/style.css"/>
+
+    <meta charset="utf-8">
+    <meta name="description" content="Agile Estimation for Distributed Teams">
+    <meta name="author" content="Rich Ashworth">
+    <!--<link rel="icon" href="../../favicon.ico">-->
+
+    <title>Planning Poker</title>
+
+</head>
+
+<body ng-controller="UserCtrl as user">
+
+<div id="top">
+
+    <header>
+        <hgroup>
+            <h1>Planning Poker</h1>
+        </hgroup>
+        <!--<nav>-->
+        <!--<ul>-->
+        <!--<li class="tabs" ng-show="inSession" align="right">Session: {{sessionId}}</li>-->
+        <!--</ul>-->
+        <!--</nav>-->
+    </header>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+    <div>
+        <!--Registration Screen-->
+        <div ng-hide="inSession">
+            <br>
+            <div>
+                <form name="nameEntry">
+                    <label class="field"> Please enter your name:</label>
+                    <input type="text" ng-model="userName" required="true" ng-minlength="2" ng-maxlength="50">
+                </form>
+                <br>
+                <br>
+            </div>
+            <div ng-show="nameEntry.$valid">
+                <form name="sessionEntry">
+                    <label class="field"> Join Session:</label>
+                    <input type="number" placeholder="session ID" ng-model="sessionId">
+                    <button ng-click="joinSession()" ng-disabled="sessionId < 1">Join Session</button>
+                    <button ng-click="createSession()">Create Session</button>
+                </form>
+            </div>
+        </div>
+
+        <!--Voting Screen-->
+        <div ng-show="inSession">
+            <p ng-hide="voted">
+                Please vote on the current item using the buttons below:
+            </p>
+            <br>
+            <br>
+        </div>
+
+        <div ng-show="inSession && !voted">
+            <p>
+            <table cellspacing="20">
+                <tr>
+
+                    <td data-ng-repeat="i in legalEstimates">
+                        <button class="votebutton" ng-click="vote(i)">{{i}}</button>
+                    </td>
+                </tr>
+            </table>
+            </p>
+        </div>
+
+        <!--Results Screen-->
+        <div ng-show="voted">
+            <table cellpadding="20">
+                <tr>
+                    <td height="300">
+                        <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]"
+                                chart-labels="labels" height="300" width="600"></canvas>
+                    </td>
+                    <td/>
+                    <td/>
+                    <td>
+                        <table>
+                            <tr ng-repeat="result in votingResults">
+                                <td>{{result.userId}}</td>
+                                <td>{{result.estimateValue}}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr ng-show="isAdmin">
+                    <td>
+                        <button ng-click="reset()">Next Estimate</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="bower_components/Chart.js/Chart.min.js"></script>
+<script src="bower_components/angular-chart.js/dist/angular-chart.min.js"></script>
+<script src="/bower_components/angular-poller/angular-poller.js"></script>
+</body>
+</html>

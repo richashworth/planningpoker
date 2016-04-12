@@ -36,6 +36,7 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
     };
 
     $scope.vote = function (estimateValue) {
+        $scope.voted = false;
         $http({
             method: 'POST',
             url: '/vote',
@@ -72,11 +73,6 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
                         return x == y;
                     }).length;
                 });
-
-                if (result.data.length == 0) {
-                    $scope.voted = false;
-                }
-
             }
         );
     };
@@ -94,5 +90,3 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
     };
 
 }]);
-
-
