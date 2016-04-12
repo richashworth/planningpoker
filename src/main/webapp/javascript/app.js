@@ -64,6 +64,11 @@ PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($sc
             function (result) {
                 $scope.votingResults = result.data;
 
+                if (result.data.length == 0) {
+                    $scope.voted = false;
+                }
+                ;
+
                 $scope.transformed = $scope.votingResults.map(function (val) {
                     return val.estimateValue;
                 });
