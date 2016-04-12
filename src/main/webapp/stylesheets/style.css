@@ -59,7 +59,11 @@ header hgroup h1 {
 }
 
 nav {
+    margin-top: 34px;
     float: right;
+    padding: 0 20px;
+    font-size: 20px;
+    color:#fff;
 }
 nav ul {
     margin-top: 10px;
