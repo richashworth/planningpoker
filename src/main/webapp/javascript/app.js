@@ -1,6 +1,6 @@
 var PlanningPoker = angular.module('PlanningPoker', ['chart.js', 'emguo.poller']);
 
-PlanningPoker.controller('UserCtrl', ['$scope', '$http', 'poller', function ($scope, $http, poller) {
+PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($scope, $http, poller) {
     $scope.userName = '';
     $scope.inSession = false;
     $scope.voted = false;
