@@ -30,10 +30,16 @@
 <div id="top">
 
     <header>
-            <h1>Planning Poker</h1>
+        <h1>Planning Poker</h1>
         <nav ng-show="inSession">
-            <strong>User: </strong>{{userName}}<br/>
-            <strong>Session: </strong>{{sessionId}}
+            <table>
+                <tr>
+                    <td> {{userName}}</td>
+                </tr>
+                <tr>
+                    <td><i> Session {{sessionId}} </i></td>
+                </tr>
+            </table>
         </nav>
     </header>
     <br/>
@@ -63,7 +69,7 @@
                         <button ng-click="joinSession()" ng-disabled="sessionId < 1">Join Session</button>
                     </td>
                     <td>
-                        <button ng-click="createSession()">Create Session</button>
+                        <button ng-click="createSession()">Start Session</button>
                     </td>
                 </tr>
             </table>
