@@ -9,10 +9,6 @@ label.field {
     font-weight: bold;
 }
 
-table {
-
-}
-
 .usertbl tr:nth-child(odd) {
     background-color: #EAF1F5;
 }
