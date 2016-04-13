@@ -102,12 +102,12 @@
                             chart-labels="labels" height="350" width="750"></canvas>
                 <td width="100%"/>
                 <td style="vertical-align: top">
-                    <table cellpadding="10" class="usertbl">
+                    <table cellpadding="8" class="usertbl">
                         <th>User</th>
                         <th>Estimate</th>
                         <tr ng-repeat="result in votingResults">
-                            <td>{{result.userId}}</td>
-                            <td>{{result.estimateValue}}</td>
+                            <td style="min-width:75px">{{result.userId}}</td>
+                            <td style="min-width: 75px">{{result.estimateValue}}</td>
                         </tr>
                     </table>
                 </td>
