@@ -61,13 +61,16 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
             myPoller.promise.then(
                 null, null,
                 function (result) {
-                    $scope.votingResults = result.data;
 
                     if (result.data.length == 0) {
                         $scope.voted = false;
                     }
                     ;
 
+                    $scope.votingResults = result.data.sort(function(a,b){
+                       return a.estimateValue < b.estimateValue; 
+                    });
+                    
                     $scope.transformed = $scope.votingResults.map(function (val) {
                         return val.estimateValue;
                     });

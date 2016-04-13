@@ -47,22 +47,33 @@
         <!--Registration Screen-->
         <div ng-hide="inSession">
             <br>
-            <div>
-                <form name="nameEntry">
-                    <label class="field"> Please enter your name:</label>
-                    <input autofocus type="text" ng-model="userName" required="true" ng-minlength="2" ng-maxlength="50">
-                </form>
-                <br>
-                <br>
-            </div>
-            <div ng-show="nameEntry.$valid">
-                <form name="sessionEntry">
-                    <label class="field"> Join Session:</label>
-                    <input type="number" placeholder="session ID" ng-model="sessionId">
-                    <button ng-click="joinSession()" ng-disabled="sessionId < 1">Join Session</button>
-                    <button ng-click="createSession()">Create Session</button>
-                </form>
-            </div>
+            <table>
+                <tr>
+                    <td>
+                        <label class="field"> Please enter your name:</label>
+                    </td>
+                    <td>
+                        <form name="nameEntry">
+                            <input autofocus type="text" ng-model="userName" required="true" ng-minlength="2"
+                                   ng-maxlength="50">
+                        </form>
+                    </td>
+                </tr>
+
+                <tr ng-show="nameEntry.$valid">
+                    <td>
+                        <label class="field"> Join Session:</label>
+                    </td>
+                    <td>
+                        <input type="number" placeholder="session ID" ng-model="sessionId">
+                    <td>
+                        <button ng-click="joinSession()" ng-disabled="sessionId < 1">Join Session</button>
+                    </td>
+                    <td>
+                        <button ng-click="createSession()">Create Session</button>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <!--Voting Screen-->
