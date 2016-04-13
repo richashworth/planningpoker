@@ -38,6 +38,14 @@ p {
     font-size: large;
 }
 
+.nextbutton {
+    width: 150px;
+    /*background: #00004d;*/
+    /*color:honeydew;*/
+    height: 50px;
+    font-size: large;
+}
+
 #top {
     background-color: #00004d;
     box-shadow: 0px 0px 9px rgba(0, 0, 0, 0.15);
