@@ -64,11 +64,14 @@ header hgroup {
     color: #fff;
 }
 
-header hgroup h1 {
+header h1 {
+    position: absolute;
+    display: block;
+    left: 20px;
+    color: #fff;
+    top: -25px;
     font-size: 50px;
     font-family: "Lobster", cursive;
-    color: #fff;
-    display: block;
     height: 100px;
     width: 610px;
 }

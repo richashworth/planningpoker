@@ -30,24 +30,19 @@
 <div id="top">
 
     <header>
-        <hgroup>
             <h1>Planning Poker</h1>
-        </hgroup>
         <nav ng-show="inSession">
             <strong>User: </strong>{{userName}}<br/>
             <strong>Session: </strong>{{sessionId}}
         </nav>
     </header>
     <br/>
-    <br/>
-    <br/>
-    <br/>
 
     <div>
         <!--Registration Screen-->
         <div ng-hide="inSession">
             <br>
-            <table>
+            <table cellspacing="10">
                 <tr>
                     <td>
                         <label class="field"> Please enter your name:</label>
@@ -59,10 +54,8 @@
                         </form>
                     </td>
                 </tr>
-
                 <tr ng-show="nameEntry.$valid">
                     <td>
-                        <label class="field"> Join Session:</label>
                     </td>
                     <td>
                         <input type="number" placeholder="session ID" ng-model="sessionId">
