@@ -47,38 +47,39 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
             }
         }).success(function (response) {
             $scope.voted = true;
-        });
-        // Get poller.
-        var myPoller = poller.get('results', {
-            delay: 500,
-            argumentsArray: [
-                {
-                    params: {
-                        sessionId: $scope.sessionId
+            // Get poller.
+            var myPoller = poller.get('results', {
+                delay: 500,
+                argumentsArray: [
+                    {
+                        params: {
+                            sessionId: $scope.sessionId
+                        }
                     }
+                ]
+            });
+            myPoller.promise.then(
+                null, null,
+                function (result) {
+                    $scope.votingResults = result.data;
+
+                    if (result.data.length == 0) {
+                        $scope.voted = false;
+                    }
+                    ;
+
+                    $scope.transformed = $scope.votingResults.map(function (val) {
+                        return val.estimateValue;
+                    });
+
+                    $scope.resultsdata = $scope.legalEstimates.map(function (x) {
+                        return $scope.transformed.filter(function (y) {
+                            return x == y;
+                        }).length;
+                    });
                 }
-            ]
+            );
         });
-        myPoller.promise.then(
-            null, null,
-            function (result) {
-                $scope.votingResults = result.data;
-
-                if (result.data.length == 0) {
-                    $scope.voted = false;
-                };
-
-                $scope.transformed = $scope.votingResults.map(function (val) {
-                    return val.estimateValue;
-                });
-
-                $scope.resultsdata = $scope.legalEstimates.map(function (x) {
-                    return $scope.transformed.filter(function (y) {
-                        return x == y;
-                    }).length;
-                });
-            }
-        );
     };
 
     $scope.reset = function () {
