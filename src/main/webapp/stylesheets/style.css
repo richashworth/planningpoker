@@ -62,14 +62,6 @@ header {
     margin: 0 auto;
 }
 
-header hgroup {
-    position: absolute;
-    display: block;
-    top: -25px;
-    left: 20px;
-    color: #fff;
-}
-
 header h1 {
     position: absolute;
     display: block;
