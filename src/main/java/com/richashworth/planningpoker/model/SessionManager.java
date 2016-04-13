@@ -14,24 +14,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class SessionManager {
 
-    private final Multimap<Integer, Estimate> sessionsMap = ArrayListMultimap.create();
+    private final Multimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
     private final AtomicInteger sessionSequence = new AtomicInteger(1);
 
-    public boolean isSessionLive(Integer id) {
+    public boolean isSessionLive(long id) {
         return sessionsMap.containsKey(id);
     }
 
-    public int createSession() {
-        Integer i = sessionSequence.getAndIncrement();
+    public long createSession() {
+        long i = sessionSequence.getAndIncrement();
         sessionsMap.put(i, null);
         return i;
     }
 
-    public void registerEstimate(int sessionID, Estimate estimate) {
+    public void registerEstimate(long sessionID, Estimate estimate) {
         sessionsMap.put(sessionID, estimate);
     }
 
-    public List<Estimate> getResults(int sessionId) {
+    public List<Estimate> getResults(long sessionId) {
         List<Estimate> results = new ArrayList<>();
         for (Estimate estimate : sessionsMap.get(sessionId)) {
             if (null != estimate) {
@@ -45,11 +45,11 @@ public class SessionManager {
         sessionsMap.clear();
     }
 
-    public void clearSession(Integer sessionId) {
+    public void clearSession(long sessionId) {
         sessionsMap.removeAll(sessionId);
     }
 
-    public List<String> getUsers(int sessionId) {
+    public List<String> getUsers(long sessionId) {
         List<String> users = new ArrayList<>();
         for (Estimate e : sessionsMap.get(sessionId)) {
             users.add(e.getUserId());

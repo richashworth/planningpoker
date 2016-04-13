@@ -22,7 +22,7 @@ public class VoteController {
 
     @RequestMapping("vote")
     public void vote(
-            @RequestParam(name = "sessionId") int sessionId,
+            @RequestParam(name = "sessionId") long sessionId,
             @RequestParam(name = "userName") String userName,
             @RequestParam(name = "estimateValue") double estimateValue
     ) {

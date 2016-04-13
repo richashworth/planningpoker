@@ -31,7 +31,7 @@ public class GameController {
     }
 
     @RequestMapping("createSession")
-    public int createSession() {
+    public long createSession() {
         return sessionManager.createSession();
     }
 
