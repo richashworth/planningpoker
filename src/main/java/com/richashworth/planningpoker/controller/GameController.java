@@ -31,7 +31,7 @@ public class GameController {
             @RequestParam(name = "sessionId") Integer sessionId,
             @RequestParam(name = "userName") String userName
     ) {
-        if (!sessionManager.isSessionLive(sessionId)) {
+        if (!sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("session not found");
         } else {
             logger.info(userName + " has joined session " + sessionId);

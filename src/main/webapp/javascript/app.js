@@ -62,44 +62,47 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                 userName: $scope.userName,
                 estimateValue: estimateValue
             }
-        }).success(function (response) {
-            $scope.voted = true;
-            // Get poller.
-            var myPoller = poller.get('results', {
-                delay: 500,
-                argumentsArray: [
-                    {
-                        params: {
-                            sessionId: $scope.sessionId
+        }).then(function successCallback(response) {
+                $scope.voted = true;
+                // Get poller.
+                var myPoller = poller.get('results', {
+                    delay: 500,
+                    argumentsArray: [
+                        {
+                            params: {
+                                sessionId: $scope.sessionId
+                            }
                         }
+                    ]
+                });
+                myPoller.promise.then(
+                    null, null,
+                    function (result) {
+
+                        if (result.data.length == 0) {
+                            $scope.voted = false;
+                        }
+                        ;
+
+                        $scope.votingResults = result.data.sort(function (a, b) {
+                            return a.estimateValue > b.estimateValue;
+                        });
+
+                        $scope.transformed = $scope.votingResults.map(function (val) {
+                            return val.estimateValue;
+                        });
+
+                        $scope.resultsdata = $scope.legalEstimates.map(function (x) {
+                            return $scope.transformed.filter(function (y) {
+                                return x == y;
+                            }).length;
+                        });
                     }
-                ]
+                );
+            },
+            function errorCallback(response) {
+                alert("Session " + $scope.sessionId + " is not currently active. Please refresh the page.")
             });
-            myPoller.promise.then(
-                null, null,
-                function (result) {
-
-                    if (result.data.length == 0) {
-                        $scope.voted = false;
-                    }
-                    ;
-
-                    $scope.votingResults = result.data.sort(function (a, b) {
-                        return a.estimateValue > b.estimateValue;
-                    });
-
-                    $scope.transformed = $scope.votingResults.map(function (val) {
-                        return val.estimateValue;
-                    });
-
-                    $scope.resultsdata = $scope.legalEstimates.map(function (x) {
-                        return $scope.transformed.filter(function (y) {
-                            return x == y;
-                        }).length;
-                    });
-                }
-            );
-        });
     };
 
     $scope.reset = function () {

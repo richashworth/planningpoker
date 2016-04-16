@@ -22,7 +22,7 @@ public class SessionManager {
     private final Multimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
     private final AtomicLong sessionSequence = new AtomicLong(1L);
 
-    public boolean isSessionLive(long id) {
+    public boolean isSessionActive(long id) {
         return sessionsMap.containsKey(id);
     }
 

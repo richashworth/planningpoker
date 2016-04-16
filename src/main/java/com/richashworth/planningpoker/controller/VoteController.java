@@ -30,6 +30,9 @@ public class VoteController {
             @RequestParam(name = "userName") String userName,
             @RequestParam(name = "estimateValue") double estimateValue
     ) {
+        if (!sessionManager.isSessionActive(sessionId)) {
+            throw new IllegalArgumentException("Session " + sessionId + " is not active");
+        }
         String estimateStr = String.valueOf(estimateValue).replaceAll(".0", "");
         logger.info(userName + " has voted " + estimateStr + " in session " + sessionId);
         Estimate estimate = new Estimate(StringUtils.formatUserName(userName), estimateValue);

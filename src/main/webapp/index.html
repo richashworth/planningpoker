@@ -95,14 +95,14 @@
         </div>
 
         <!--Results Screen-->
-        <div ng-show="voted">
+        <div ng-show="voted" style="margin-right: 40px">
             <table width="100%" cellpadding="20">
                 <tr>
-                    <td width="100%" align="top">
-                        <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]"
-                                chart-labels="labels" height="350" width="750"></canvas>
-                    </td>
                     <td align="top">
+                        <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]"
+                                chart-labels="labels"></canvas>
+                    </td>
+                    <td align="right" valign="top">
                         <table cellpadding="8" class="usertbl">
                             <th>User</th>
                             <th>Estimate</th>
