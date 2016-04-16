@@ -15,6 +15,7 @@ label.field {
 
 table th {
     background: #00004d;
+    color: white;
 }
 
 input {
@@ -61,7 +62,8 @@ header h1 {
     position: absolute;
     display: block;
     left: 20px;
-    color: #fff;
+    /*color: #fff;*/
+    color: white;
     top: -25px;
     font-size: 50px;
     font-family: "Lobster", cursive;
@@ -76,6 +78,6 @@ nav {
     padding: 0 20px;
     font-size: 16px;
     text-align: right;
-    color: #fff;
+    color: white;
 }
 
