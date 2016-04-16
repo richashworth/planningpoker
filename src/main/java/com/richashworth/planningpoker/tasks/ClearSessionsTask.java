@@ -1,6 +1,6 @@
-package com.richashworth.plannningpoler.tasks;
+package com.richashworth.planningpoker.tasks;
 
-import com.richashworth.planningpoker.model.SessionManager;
+import com.richashworth.planningpoker.service.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
  * Created by rich on 10/04/2016.
  */
 @Component
-public class MaintenanceTask {
+public class ClearSessionsTask {
 
     private SessionManager sessionManager;
 
     @Autowired
-    public MaintenanceTask(SessionManager sessionManager) {
+    public ClearSessionsTask(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
 
-    @Scheduled(cron = "0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void resetSessions() {
         sessionManager.clearSessions();
     }

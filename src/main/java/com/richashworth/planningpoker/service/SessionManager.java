@@ -1,7 +1,8 @@
-package com.richashworth.planningpoker.model;
+package com.richashworth.planningpoker.service;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.richashworth.planningpoker.model.Estimate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
