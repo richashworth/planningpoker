@@ -52,7 +52,7 @@ public class GameController {
             @RequestParam(name = "sessionId") Integer sessionId,
             @RequestParam(name = "userName") String userName
     ) {
-        logger.info(userName + "has reset session " + sessionId);
+        logger.info(userName + " has reset session " + sessionId);
         sessionManager.clearSession(sessionId);
     }
 
