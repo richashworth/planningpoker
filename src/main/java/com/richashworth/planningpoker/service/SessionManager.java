@@ -22,8 +22,8 @@ public class SessionManager {
     private final Multimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
     private final AtomicLong sessionSequence = new AtomicLong(1L);
 
-    public boolean isSessionActive(Long id) {
-        return sessionsMap.containsKey(id);
+    public boolean isSessionActive(Long sessionId) {
+        return sessionId < sessionSequence.get();
     }
 
     public Long createSession() {
