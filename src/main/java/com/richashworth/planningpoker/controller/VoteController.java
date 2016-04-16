@@ -29,7 +29,7 @@ public class VoteController {
     public void vote(
             @RequestParam(name = "sessionId") Long sessionId,
             @RequestParam(name = "userName") String userName,
-            @RequestParam(name = "estimateValue") Long estimateValue
+            @RequestParam(name = "estimateValue") Double estimateValue
     ) {
         String estimateStr = String.valueOf(estimateValue).replaceAll(".0", "");
         logger.info(userName + " has voted " + estimateStr + " in session " + sessionId);

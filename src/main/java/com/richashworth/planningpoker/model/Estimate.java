@@ -10,5 +10,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class Estimate {
     private String userName;
-    private double estimateValue;
+    private Double estimateValue;
 }
