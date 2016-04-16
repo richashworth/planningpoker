@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by rich on 09/04/2016.
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SessionManager {
 
     private final Multimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
-    private final AtomicInteger sessionSequence = new AtomicInteger(1);
+    private final AtomicLong sessionSequence = new AtomicLong(1L);
 
     public boolean isSessionLive(long id) {
         return sessionsMap.containsKey(id);
@@ -44,6 +45,7 @@ public class SessionManager {
 
     public void clearSessions() {
         sessionsMap.clear();
+        sessionSequence.set(1L);
     }
 
     public void clearSession(long sessionId) {
