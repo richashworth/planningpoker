@@ -1,6 +1,6 @@
 var PlanningPoker = angular.module('PlanningPoker', ['chart.js', 'emguo.poller']);
 
-PlanningPoker.config(['$httpProvider', function($httpProvider) {
+PlanningPoker.config(['$httpProvider', function ($httpProvider) {
     if (!$httpProvider.defaults.headers.get) {
         $httpProvider.defaults.headers.get = {};
     }
@@ -26,7 +26,10 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
         $http({
             method: 'GET',
             url: '/validateSession',
-            params: {sessionId: $scope.sessionId}
+            params: {
+                sessionId: $scope.sessionId,
+                userName: $scope.userName
+            }
         }).then(function successCallback(response) {
             $scope.inSession = true;
         }, function errorCallback(response) {
@@ -39,6 +42,9 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
         $http({
             method: 'GET',
             url: '/createSession',
+            params: {
+                userName: $scope.userName
+            }
         }).success(function (response) {
             $scope.inSession = true;
             $scope.sessionId = response;
@@ -78,10 +84,10 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                     }
                     ;
 
-                    $scope.votingResults = result.data.sort(function(a,b){
-                       return a.estimateValue > b.estimateValue; 
+                    $scope.votingResults = result.data.sort(function (a, b) {
+                        return a.estimateValue > b.estimateValue;
                     });
-                    
+
                     $scope.transformed = $scope.votingResults.map(function (val) {
                         return val.estimateValue;
                     });
@@ -101,7 +107,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
             method: 'DELETE',
             url: '/reset',
             params: {
-                sessionId: $scope.sessionId
+                sessionId: $scope.sessionId,
+                userName: $scope.userName
             }
         }).success(function (response) {
             $scope.voted = false;

@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Estimate {
-    private String userId;
+    private String userName;
     private double estimateValue;
 }

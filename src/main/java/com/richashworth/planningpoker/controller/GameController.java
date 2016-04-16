@@ -2,6 +2,8 @@ package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.service.SessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 public class GameController {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
 
     @Autowired
@@ -24,19 +27,32 @@ public class GameController {
     }
 
     @RequestMapping("validateSession")
-    public void validateSession(@RequestParam(name = "sessionId") Integer sessionId) {
+    public void validateSession(
+            @RequestParam(name = "sessionId") Integer sessionId,
+            @RequestParam(name = "userName") String userName
+    ) {
         if (!sessionManager.isSessionLive(sessionId)) {
             throw new IllegalArgumentException("session not found");
+        } else {
+            logger.info(userName + " has joined session " + sessionId);
         }
     }
 
     @RequestMapping("createSession")
-    public long createSession() {
-        return sessionManager.createSession();
+    public long createSession(
+            @RequestParam(name = "userName") String userName
+    ) {
+        final long sessionId = sessionManager.createSession();
+        logger.info(userName + " has created session " + sessionId);
+        return sessionId;
     }
 
     @RequestMapping("reset")
-    public void reset(@RequestParam(name = "sessionId") Integer sessionId) {
+    public void reset(
+            @RequestParam(name = "sessionId") Integer sessionId,
+            @RequestParam(name = "userName") String userName
+    ) {
+        logger.info(userName + "has reset session " + sessionId);
         sessionManager.clearSession(sessionId);
     }
 
