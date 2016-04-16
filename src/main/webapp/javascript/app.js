@@ -40,7 +40,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
 
     $scope.createSession = function () {
         $http({
-            method: 'GET',
+            method: 'POST',
             url: '/createSession',
             params: {
                 userName: $scope.userName
@@ -62,7 +62,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                 userName: $scope.userName,
                 estimateValue: estimateValue
             }
-        }).then(function successCallback(response) {
+        }).success(function (response) {
                 $scope.voted = true;
                 // Get poller.
                 var myPoller = poller.get('results', {
@@ -99,9 +99,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                         });
                     }
                 );
-            },
-            function errorCallback(response) {
-                alert("Session " + $scope.sessionId + " is not currently active. Please refresh the page.")
             });
     };
 

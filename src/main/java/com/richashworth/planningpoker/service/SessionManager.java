@@ -22,21 +22,21 @@ public class SessionManager {
     private final Multimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
     private final AtomicLong sessionSequence = new AtomicLong(1L);
 
-    public boolean isSessionActive(long id) {
+    public boolean isSessionActive(Long id) {
         return sessionsMap.containsKey(id);
     }
 
-    public long createSession() {
-        long i = sessionSequence.getAndIncrement();
+    public Long createSession() {
+        Long i = sessionSequence.getAndIncrement();
         sessionsMap.put(i, null);
         return i;
     }
 
-    public void registerEstimate(long sessionID, Estimate estimate) {
+    public void registerEstimate(Long sessionID, Estimate estimate) {
         sessionsMap.put(sessionID, estimate);
     }
 
-    public List<Estimate> getResults(long sessionId) {
+    public List<Estimate> getResults(Long sessionId) {
         List<Estimate> results = new ArrayList<>();
         for (Estimate estimate : sessionsMap.get(sessionId)) {
             if (null != estimate) {
@@ -52,11 +52,11 @@ public class SessionManager {
         sessionSequence.set(1L);
     }
 
-    public void clearSession(long sessionId) {
+    public void resetSession(Long sessionId) {
         sessionsMap.removeAll(sessionId);
     }
 
-    public List<String> getUsers(long sessionId) {
+    public List<String> getUsers(Long sessionId) {
         List<String> users = new ArrayList<>();
         for (Estimate e : sessionsMap.get(sessionId)) {
             users.add(e.getUserName());

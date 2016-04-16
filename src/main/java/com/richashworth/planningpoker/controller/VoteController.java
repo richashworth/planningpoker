@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,15 +25,12 @@ public class VoteController {
         this.sessionManager = sessionManager;
     }
 
-    @RequestMapping("vote")
+    @RequestMapping(value = "vote", method = RequestMethod.POST)
     public void vote(
-            @RequestParam(name = "sessionId") long sessionId,
+            @RequestParam(name = "sessionId") Long sessionId,
             @RequestParam(name = "userName") String userName,
-            @RequestParam(name = "estimateValue") double estimateValue
+            @RequestParam(name = "estimateValue") Long estimateValue
     ) {
-        if (!sessionManager.isSessionActive(sessionId)) {
-            throw new IllegalArgumentException("Session " + sessionId + " is not active");
-        }
         String estimateStr = String.valueOf(estimateValue).replaceAll(".0", "");
         logger.info(userName + " has voted " + estimateStr + " in session " + sessionId);
         Estimate estimate = new Estimate(StringUtils.formatUserName(userName), estimateValue);
