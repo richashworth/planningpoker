@@ -23,7 +23,7 @@ public class SessionManager {
     private final AtomicLong sessionSequence = new AtomicLong(0L);
 
     public boolean isSessionActive(Long sessionId) {
-        return sessionId < sessionSequence.get();
+        return sessionId <= sessionSequence.get();
     }
 
     public Long createSession() {
