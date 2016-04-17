@@ -20,14 +20,14 @@ public class SessionManager {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Multimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
-    private final AtomicLong sessionSequence = new AtomicLong(1L);
+    private final AtomicLong sessionSequence = new AtomicLong(0L);
 
     public boolean isSessionActive(Long sessionId) {
         return sessionId < sessionSequence.get();
     }
 
     public Long createSession() {
-        Long i = sessionSequence.getAndIncrement();
+        Long i = sessionSequence.incrementAndGet();
         sessionsMap.put(i, null);
         return i;
     }
@@ -49,7 +49,7 @@ public class SessionManager {
     public void clearSessions() {
         logger.info("Clearing all sessions");
         sessionsMap.clear();
-        sessionSequence.set(1L);
+        sessionSequence.set(0L);
     }
 
     public void resetSession(Long sessionId) {
