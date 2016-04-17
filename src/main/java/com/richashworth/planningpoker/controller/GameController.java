@@ -59,7 +59,7 @@ public class GameController {
 
     @RequestMapping("results")
     public List<Estimate> results(@RequestParam(name = "sessionId") Long sessionId) {
-        List<Estimate> results = new ArrayList<>(sessionManager.getResults(sessionId));
+        List<Estimate> results = new ArrayList<Estimate>(sessionManager.getResults(sessionId));
         return results;
     }
 }
