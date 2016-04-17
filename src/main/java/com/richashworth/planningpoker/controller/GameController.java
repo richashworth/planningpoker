@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by rich on 09/04/2016.
+ * Created by Rich Ashworth on 09/04/2016.
  */
 @RestController
 public class GameController {

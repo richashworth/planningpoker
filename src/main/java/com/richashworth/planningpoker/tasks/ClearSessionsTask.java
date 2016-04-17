@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by rich on 10/04/2016.
+ * Created by Rich Ashworth on 10/04/2016.
  */
 @Component
 public class ClearSessionsTask {

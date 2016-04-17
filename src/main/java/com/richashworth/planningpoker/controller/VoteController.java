@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Created by rich on 09/04/2016.
+ * Created by Rich Ashworth on 09/04/2016.
  */
 @RestController
 public class VoteController {
