@@ -102,7 +102,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                 );
             },
             function errorCallback(response) {
-                alert("Session " + sessionId + " is not currently active. Please refresh your page.")
+                alert("Session is not currently active. Please refresh your page.")
             }
         );
     };
