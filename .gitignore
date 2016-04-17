@@ -3,6 +3,11 @@
 .gradle
 build/
 
+### Bower:
+node_modules/
+bower.json
+src/main/webapp/bower*
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
@@ -108,4 +113,3 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
-

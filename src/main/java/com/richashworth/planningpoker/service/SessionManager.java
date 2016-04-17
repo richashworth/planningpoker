@@ -37,7 +37,7 @@ public class SessionManager {
     }
 
     public List<Estimate> getResults(Long sessionId) {
-        List<Estimate> results = new ArrayList<>();
+        List<Estimate> results = new ArrayList<Estimate>();
         for (Estimate estimate : sessionsMap.get(sessionId)) {
             if (null != estimate) {
                 results.add(estimate);
@@ -57,7 +57,7 @@ public class SessionManager {
     }
 
     public List<String> getUsers(Long sessionId) {
-        List<String> users = new ArrayList<>();
+        List<String> users = new ArrayList<String>();
         for (Estimate e : sessionsMap.get(sessionId)) {
             users.add(e.getUserName());
         }

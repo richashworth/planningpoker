@@ -12,6 +12,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.4'
+    id 'com.craigburke.bower-installer' version '2.5.1'
 }
 
 apply plugin: 'java'
@@ -23,12 +24,14 @@ jar {
     baseName = 'planningpoker'
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 repositories {
     mavenCentral()
 }
+
+ext['tomcat.version'] = '7.0.59' // needed for Java 6 compatibility
 
 dependencies {
     compile('com.google.guava:guava:19.0')
@@ -38,6 +41,14 @@ dependencies {
     compile('org.springframework.boot:spring-boot-actuator')
     compile('org.springframework.boot:spring-boot-devtools')
     testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+bower {
+    installBase = 'src/main/webapp/bower'
+    'angular'('1.4.x')
+    'Chart.js'('1.1.1')
+    'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
+    'angular-poller'('0.4.2')
 }
 
 
@@ -52,5 +63,5 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
 }
 
-task stage(dependsOn: ["build"]) {}
+task stage(dependsOn: ["bowerInstall", "build"]) {}
 
