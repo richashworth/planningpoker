@@ -31,11 +31,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                 userName: $scope.userName
             }
         }).then(function successCallback(response) {
-            $scope.inSession = true;
-        }, function errorCallback(response) {
-            alert("Session " + $scope.sessionId + " has not yet been started!\n" +
-                "Please try again in a few seconds, or create a new session.");
-        });
+                $scope.inSession = true;
+            }, function errorCallback(response) {
+                alert("Session " + $scope.sessionId + " has not yet been started!\n" +
+                    "Please try again in a few seconds, or create a new session.");
+            }
+        );
     };
 
     $scope.createSession = function () {
@@ -62,7 +63,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                 userName: $scope.userName,
                 estimateValue: estimateValue
             }
-        }).success(function (response) {
+        }).then(function successCallback(response) {
                 $scope.voted = true;
                 // Get poller.
                 var myPoller = poller.get('results', {
@@ -99,7 +100,11 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                         });
                     }
                 );
-            });
+            },
+            function errorCallback(response) {
+                alert("Session " + sessionId + " is not currently active. Please refresh your page.")
+            }
+        );
     };
 
     $scope.reset = function () {
