@@ -27,9 +27,7 @@ public class SessionManager {
     }
 
     public Long createSession() {
-        Long i = sessionSequence.incrementAndGet();
-        sessionsMap.put(i, null);
-        return i;
+        return sessionSequence.incrementAndGet();
     }
 
     public void registerEstimate(Long sessionID, Estimate estimate) {
@@ -39,9 +37,7 @@ public class SessionManager {
     public List<Estimate> getResults(Long sessionId) {
         List<Estimate> results = new ArrayList<Estimate>();
         for (Estimate estimate : sessionsMap.get(sessionId)) {
-            if (null != estimate) {
-                results.add(estimate);
-            }
+            results.add(estimate);
         }
         return results;
     }
