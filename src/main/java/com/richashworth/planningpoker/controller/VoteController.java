@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by Rich Ashworth on 09/04/2016.
  */
 @RestController
 public class VoteController {
+
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
@@ -31,8 +35,7 @@ public class VoteController {
             @RequestParam(name = "userName") String userName,
             @RequestParam(name = "estimateValue") Double estimateValue
     ) {
-        String estimateStr = String.valueOf(estimateValue).replaceAll(".0", "");
-        logger.info(userName + " has voted " + estimateStr + " in session " + sessionId);
+        logger.info(userName + " has voted " + DECIMAL_FORMAT.format(estimateValue) + " in session " + sessionId);
         if (!sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("Session not active");
         }
