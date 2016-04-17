@@ -44,7 +44,7 @@ dependencies {
 }
 
 bower {
-    installBase = 'src/main/webapp/bower'
+    installBase = 'src/main/resources/static/bower'
     'angular'('1.4.x')
     'Chart.js'('1.1.1')
     'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
