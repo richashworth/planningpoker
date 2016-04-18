@@ -52,12 +52,4 @@ public class SessionManager {
         sessionsMap.removeAll(sessionId);
     }
 
-    public List<String> getUsers(Long sessionId) {
-        List<String> users = new ArrayList<String>();
-        for (Estimate e : sessionsMap.get(sessionId)) {
-            users.add(e.getUserName());
-        }
-        return users;
-    }
-
 }
