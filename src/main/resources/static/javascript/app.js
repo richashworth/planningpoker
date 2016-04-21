@@ -18,6 +18,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.votingResults = [];
     $scope.resultsdata = [];
+    $scope.socketMsgs= [];
     $scope.isAdmin = false;
 
     $scope.labels = $scope.legalEstimates.map(String);
@@ -93,7 +94,20 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
                             }).length
                         })
                     }
-                )
+                );
+                // defined a connection to a new socket endpoint
+                var socket = new SockJS('/stomp');
+
+                var stompClient = Stomp.over(socket);
+
+                stompClient.connect({ }, function(frame) {
+                    // subscribe to the /topic/message endpoint
+                    stompClient.subscribe("/topic/message", function(data) {
+                        var message = data.body;
+                        $scope.socketMsgs.push("<li>" + message + "</li>");
+                    });
+                });
+
             },
             function errorCallback(response) {
                 alert("Session " + sessionId + " is not currently active. Please refresh your page.")
