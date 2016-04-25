@@ -66,7 +66,8 @@
                         <button ng-click="joinSession()" ng-disabled="!sessionId || sessionId < 1">Join Session</button>
                     </td>
                     <td>
-                        <button ng-click="createSession()" ng-disabled="sessionId || sessionId > 0">Start Session</button>
+                        <button ng-click="createSession()" ng-disabled="sessionId || sessionId > 0">Start Session
+                        </button>
                     </td>
                 </tr>
             </table>
@@ -119,7 +120,9 @@
                     </td>
                 </tr>
             </table>
-            {{resultsdata}}
+            <div>
+                resultsdata = {{resultsdata}}
+            </div>
         </div>
     </div>
 </div>
