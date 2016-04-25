@@ -22,6 +22,22 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
 
     $scope.labels = $scope.legalEstimates.map(String);
 
+    // defined a connection to a new socket endpoint
+    $scope.socket = new SockJS('/stomp');
+    $scope.stompClient = Stomp.over($scope.socket);
+
+    $scope.stompClient.connect({}, function (frame) {
+        // subscribe to the /topic/message endpoint
+        $scope.stompClient.subscribe("/topic/message", function (data) {
+            $scope.$apply(function () {
+                var message = JSON.parse(data.body);
+                console.log('received message ' + message);
+                $scope.resultsdata = $scope.aggregateResults(message);
+                console.log('processed message ' + $scope.resultsdata);
+            });
+        });
+    });
+
     $scope.joinSession = function () {
         $http({
             method: 'GET',
@@ -53,7 +69,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     };
 
     $scope.vote = function (estimateValue) {
-        $scope.voted = false;
         $http({
             method: 'POST',
             url: '/vote',
@@ -63,31 +78,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 estimateValue: estimateValue
             }
         }).then(function successCallback(response) {
-
+                $scope.voted = true;
             },
             function errorCallback(response) {
                 alert("Session " + sessionId + " is not currently active. Please refresh your page.")
             }
         );
-        $scope.voted = true;
-        // defined a connection to a new socket endpoint
-        var socket = new SockJS('/stomp');
-
-        var stompClient = Stomp.over(socket);
-
-        console.log('before connect');
-        stompClient.connect({}, function (frame) {
-            // subscribe to the /topic/message endpoint
-            stompClient.subscribe("/topic/message", function (data) {
-                console.log('received message ' + data);
-                var message = JSON.parse(data.body);
-                $scope.resultsdata = $scope.aggregateResults(message);
-                console.log('resultsdata1 ' + $scope.resultsdata);
-            });
-        });
-
-        console.log('hello');
-        console.log('resultsdata2 ' + $scope.resultsdata);
     };
 
     $scope.reset = function () {
@@ -99,7 +95,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 userName: $scope.userName
             }
         }).success(function (response) {
-            $scope.voted = false
+            $scope.voted = false;
         })
     };
 

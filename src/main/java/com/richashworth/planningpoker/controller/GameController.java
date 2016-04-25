@@ -5,6 +5,7 @@ import com.richashworth.planningpoker.service.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,9 @@ public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @Autowired
     public GameController(SessionManager sessionManager) {
@@ -55,6 +59,7 @@ public class GameController {
     ) {
         logger.info(userName + " has reset session " + sessionId);
         sessionManager.resetSession(sessionId);
+        template.convertAndSend("/topic/message", sessionManager.getResults(sessionId));
     }
 
     @RequestMapping("results")
