@@ -1,4 +1,4 @@
-var PlanningPoker = angular.module('PlanningPoker', ['chart.js', 'emguo.poller']);
+var PlanningPoker = angular.module('PlanningPoker', ['chart.js']);
 
 PlanningPoker.config(['$httpProvider', function ($httpProvider) {
     if (!$httpProvider.defaults.headers.get) {
@@ -11,14 +11,13 @@ PlanningPoker.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
 }]);
 
-PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($scope, $http, poller) {
+PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $http) {
     $scope.userName = '';
     $scope.inSession = false;
     $scope.voted = false;
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.votingResults = [];
     $scope.resultsdata = [];
-    $scope.socketMsgs= [];
     $scope.isAdmin = false;
 
     $scope.labels = $scope.legalEstimates.map(String);
@@ -65,46 +64,16 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
             }
         }).then(function successCallback(response) {
                 $scope.voted = true;
-                // Get poller.
-                var myPoller = poller.get('results', {
-                    delay: 500,
-                    argumentsArray: [
-                        {
-                            params: {
-                                sessionId: $scope.sessionId
-                            }
-                        }
-                    ]
-                });
-                myPoller.promise.then(
-                    null, null,
-                    function (result) {
-                        if (result.data.length == 0) {
-                            $scope.voted = false
-                        }
-                        $scope.votingResults = result.data.sort(function (a, b) {
-                            return a.estimateValue > b.estimateValue
-                        });
-                        $scope.transformed = $scope.votingResults.map(function (val) {
-                            return val.estimateValue
-                        });
-                        $scope.resultsdata = $scope.legalEstimates.map(function (x) {
-                            return $scope.transformed.filter(function (y) {
-                                return x == y
-                            }).length
-                        })
-                    }
-                );
                 // defined a connection to a new socket endpoint
                 var socket = new SockJS('/stomp');
 
                 var stompClient = Stomp.over(socket);
 
-                stompClient.connect({ }, function(frame) {
+                stompClient.connect({}, function (frame) {
                     // subscribe to the /topic/message endpoint
-                    stompClient.subscribe("/topic/message", function(data) {
+                    stompClient.subscribe("/topic/message", function (data) {
                         var message = data.body;
-                        $scope.socketMsgs.push("<li>" + message + "</li>");
+                        $scope.resultsdata = aggregateResults(message)
                     });
                 });
 
@@ -128,4 +97,19 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', 'poller', function ($s
         })
     }
 
+    function aggregateResults(result) {
+        var votingResults = result.data.sort(function (a, b) {
+            return a.estimateValue > b.estimateValue
+        });
+        var estimates = votingResults.map(function (val) {
+            return val.estimateValue
+        });
+        return $scope.legalEstimates.map(function (x) {
+            return estimates.filter(function (y) {
+                return x == y
+            }).length
+        })
+    };
+
 }]);
+

@@ -18,7 +18,7 @@ public class ClearSessionsTask {
         this.sessionManager = sessionManager;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * Sun")
     public void resetSessions() {
         sessionManager.clearSessions();
     }
