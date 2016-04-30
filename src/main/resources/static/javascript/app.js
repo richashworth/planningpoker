@@ -4,7 +4,6 @@ PlanningPoker.config(['$httpProvider', function ($httpProvider) {
     if (!$httpProvider.defaults.headers.get) {
         $httpProvider.defaults.headers.get = {}
     }
-
     //prevent IE caching AJAX requests
     $httpProvider.defaults.headers.get['If-Modified-Since'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
     $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
@@ -15,15 +14,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.userName = '';
     $scope.inSession = false;
     $scope.voted = false;
-    $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.votingResults = [];
     $scope.resultsdata = [];
     $scope.isAdmin = false;
 
-
+    $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.labels = $scope.legalEstimates.map(String);
-
-    // $scope.stompClient.debug = null;
 
     $scope.joinSession = function () {
         $http({
@@ -34,11 +30,11 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 userName: $scope.userName
             }
         }).then(function successCallback(response) {
-            $scope.socket = new SockJS('/stomp');
-            $scope.stompClient = Stomp.over($scope.socket);
-            $scope.stompClient.connect({}, function (frame) {
-                $scope.destination = "/topic/message/" + $scope.sessionId;
-                $scope.stompClient.subscribe($scope.destination, function (data) {
+            var socket = new SockJS('/stomp');
+            var stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe("/topic/message/" + $scope.sessionId, function (data) {
                     $scope.$apply(function () {
                         var message = JSON.parse(data.body);
                         if (message.length == 0) {
@@ -67,14 +63,13 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             $scope.inSession = true;
             $scope.sessionId = response;
             $scope.isAdmin = true;
-            $scope.socket = new SockJS('/stomp');
-            $scope.stompClient = Stomp.over($scope.socket);
-            $scope.stompClient.connect({}, function (frame) {
-                $scope.destination = "/topic/message/" + response;
-                $scope.stompClient.subscribe($scope.destination, function (data) {
+            var socket = new SockJS('/stomp');
+            var stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe("/topic/message/" + response, function (data) {
                     $scope.$apply(function () {
-                        var message = JSON.parse(data.body);
-                        $scope.resultsdata = $scope.aggregateResults(message);
+                        $scope.resultsdata = $scope.aggregateResults(JSON.parse(data.body));
                     });
                 });
             });
