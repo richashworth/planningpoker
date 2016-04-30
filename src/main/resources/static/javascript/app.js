@@ -20,23 +20,10 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.resultsdata = [];
     $scope.isAdmin = false;
 
+
     $scope.labels = $scope.legalEstimates.map(String);
 
-    // defined a connection to a new socket endpoint
-    $scope.socket = new SockJS('/stomp');
-    $scope.stompClient = Stomp.over($scope.socket);
-
-    $scope.stompClient.connect({}, function (frame) {
-        // subscribe to the /topic/message endpoint
-        $scope.stompClient.subscribe("/topic/message", function (data) {
-            $scope.$apply(function () {
-                var message = JSON.parse(data.body);
-                console.log('received message ' + message);
-                $scope.resultsdata = $scope.aggregateResults(message);
-                console.log('processed message ' + $scope.resultsdata);
-            });
-        });
-    });
+    // $scope.stompClient.debug = null;
 
     $scope.joinSession = function () {
         $http({
@@ -47,11 +34,22 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 userName: $scope.userName
             }
         }).then(function successCallback(response) {
-            $scope.inSession = true
+            $scope.socket = new SockJS('/stomp');
+            $scope.stompClient = Stomp.over($scope.socket);
+            $scope.stompClient.connect({}, function (frame) {
+                $scope.destination = "/topic/message/" + $scope.sessionId;
+                $scope.stompClient.subscribe($scope.destination, function (data) {
+                    $scope.$apply(function () {
+                        var message = JSON.parse(data.body);
+                        $scope.resultsdata = $scope.aggregateResults(message);
+                    });
+                });
+            });
+            $scope.inSession = true;
         }, function errorCallback(response) {
             alert("Session " + $scope.sessionId + " has not yet been started!\n" +
                 "Please try again in a few seconds, or create a new session.")
-        })
+        });
     };
 
     $scope.createSession = function () {
@@ -65,7 +63,18 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             $scope.inSession = true;
             $scope.sessionId = response;
             $scope.isAdmin = true;
-        })
+            $scope.socket = new SockJS('/stomp');
+            $scope.stompClient = Stomp.over($scope.socket);
+            $scope.stompClient.connect({}, function (frame) {
+                $scope.destination = "/topic/message/" + response;
+                $scope.stompClient.subscribe($scope.destination, function (data) {
+                    $scope.$apply(function () {
+                        var message = JSON.parse(data.body);
+                        $scope.resultsdata = $scope.aggregateResults(message);
+                    });
+                });
+            });
+        });
     };
 
     $scope.vote = function (estimateValue) {

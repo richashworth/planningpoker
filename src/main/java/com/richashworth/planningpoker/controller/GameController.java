@@ -37,7 +37,7 @@ public class GameController {
             @RequestParam(name = "userName") String userName
     ) {
         if (!sessionManager.isSessionActive(sessionId)) {
-           throw new IllegalArgumentException("session not found");
+            throw new IllegalArgumentException("session not found");
         } else {
             logger.info(userName + " has joined session " + sessionId);
         }
@@ -59,7 +59,7 @@ public class GameController {
     ) {
         logger.info(userName + " has reset session " + sessionId);
         sessionManager.resetSession(sessionId);
-        template.convertAndSend("/topic/message", sessionManager.getResults(sessionId));
+        template.convertAndSend("/topic/message/" + sessionId, sessionManager.getResults(sessionId));
     }
 
     @RequestMapping("results")
