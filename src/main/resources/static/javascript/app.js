@@ -77,6 +77,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     };
 
     $scope.vote = function (estimateValue) {
+        $scope.voted = true;
         $http({
             method: 'POST',
             url: '/vote',
@@ -86,7 +87,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 estimateValue: estimateValue
             }
         }).then(function successCallback(response) {
-                $scope.voted = true;
             },
             function errorCallback(response) {
                 alert("Session " + sessionId + " is not currently active. Please refresh your page.")
