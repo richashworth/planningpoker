@@ -56,20 +56,22 @@
                                    ng-maxlength="50" maxlength="50">
                         </form>
                     </td>
-                </tr>
-                <tr ng-show="nameEntry.$valid">
                     <td>
-                    </td>
-                    <td>
-                        <input type="number" placeholder="session ID" ng-model="sessionId">
-                    <td>
-                        <button ng-click="joinSession()" ng-disabled="!sessionId || sessionId < 1">Join Session</button>
-                    </td>
-                    <td>
-                        <button ng-click="createSession()" ng-disabled="sessionId || sessionId > 0">Start Session
+                        <button ng-show="nameEntry.$valid" ng-click="createSession()" ng-disabled="sessionId || sessionId > 0">
+                            Start session as moderator
                         </button>
                     </td>
                 </tr>
+                <tr ng-show="nameEntry.$valid">
+                    <td></td>
+                    <td>
+                        <input type="number" placeholder="session ID" ng-model="sessionId">
+                    <td>
+                        <button ng-click="joinSession()" ng-disabled="!sessionId || sessionId < 1">
+                            Join session as participant
+                        </button>
+                    </td>
+                <tr/>
             </table>
         </div>
 
