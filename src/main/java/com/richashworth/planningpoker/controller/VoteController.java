@@ -43,10 +43,9 @@ public class VoteController {
         if (!sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("Session not active");
         }
-        Estimate estimate = new Estimate(StringUtils.formatUserName(userName), estimateValue);
+        final Estimate estimate = new Estimate(StringUtils.formatUserName(userName), estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
-        String destination = "/topic/message/" + sessionId;
-        template.convertAndSend(destination, sessionManager.getResults(sessionId));
+        template.convertAndSend("/topic/message/" + sessionId, sessionManager.getResults(sessionId));
     }
 }
 
