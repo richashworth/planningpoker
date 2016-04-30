@@ -86,10 +86,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 userName: $scope.userName,
                 estimateValue: estimateValue
             }
-        }).then(function successCallback(response) {
+        }).then(
+            function successCallback(response) {
             },
             function errorCallback(response) {
-                alert("Session " + sessionId + " is not currently active. Please refresh your page.")
+                $scope.voted = false;
+                alert("Session " + sessionId + " is not currently active. Please refresh your page.");
             }
         );
     };
