@@ -5,6 +5,7 @@ import com.richashworth.planningpoker.service.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,9 @@ public class GameController {
     private final SessionManager sessionManager;
 
     @Autowired
+    private SimpMessagingTemplate template;
+
+    @Autowired
     public GameController(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
@@ -33,7 +37,7 @@ public class GameController {
             @RequestParam(name = "userName") String userName
     ) {
         if (!sessionManager.isSessionActive(sessionId)) {
-           throw new IllegalArgumentException("session not found");
+            throw new IllegalArgumentException("session not found");
         } else {
             logger.info(userName + " has joined session " + sessionId);
         }
@@ -55,6 +59,7 @@ public class GameController {
     ) {
         logger.info(userName + " has reset session " + sessionId);
         sessionManager.resetSession(sessionId);
+        template.convertAndSend("/topic/message/" + sessionId, sessionManager.getResults(sessionId));
     }
 
     @RequestMapping("results")

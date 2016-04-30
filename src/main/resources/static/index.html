@@ -4,22 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <script src="bower/Chart.js/Chart.js"></script>
-    <script src="bower/angular/angular.js"></script>
-    <script src="bower/angular-chart/angular-chart.js"></script>
-    <script src="bower/angular-poller/angular-poller.min.js"></script>
-    <script src="javascript/app.js"></script>
-
-    <title>Planning Poker</title>
 
     <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="stylesheets/style.css"/>
-    <link rel="stylesheet" href="../bower/angular-chart/angular-chart.css"/>
+
+    <title>Planning Poker</title>
+
+    <script src="bower/angular/angular.js"></script>
+    <script src="bower/Chart.js/Chart.js"></script>
+    <script src="bower/angular-chart/angular-chart.js"></script>
+    <script src="bower/sockjs/sockjs.js"></script>
+    <script src="bower/stomp-websocket/stomp.min.js"></script>
+    <script src="javascript/app.js"></script>
 
     <meta name="description" content="Agile Estimation for Distributed Teams">
     <meta name="author" content="Rich Ashworth">
 
-    <!--<link rel="icon" href="../../favicon.ico">-->
 </head>
 
 <body ng-controller="PokerCtrl as poker">
@@ -66,7 +66,8 @@
                         <button ng-click="joinSession()" ng-disabled="!sessionId || sessionId < 1">Join Session</button>
                     </td>
                     <td>
-                        <button ng-click="createSession()" ng-disabled="sessionId || sessionId > 0">Start Session</button>
+                        <button ng-click="createSession()" ng-disabled="sessionId || sessionId > 0">Start Session
+                        </button>
                     </td>
                 </tr>
             </table>
@@ -96,13 +97,13 @@
 
         <!--Results Screen-->
         <div ng-show="voted" style="margin-right: 0px">
-            <table width="100%" cellpadding="20">
+            <table cellpadding="20">
                 <tr>
                     <td align="top">
                         <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]"
-                                chart-labels="labels"></canvas>
+                                chart-labels="labels" width="550" height="350"></canvas>
                     </td>
-                    <td align="right" valign="top">
+                    <td width="100%" align="right" valign="top">
                         <table cellpadding="8" class="usertbl">
                             <th>User</th>
                             <th>Estimate</th>

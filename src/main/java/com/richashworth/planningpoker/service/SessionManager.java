@@ -1,6 +1,7 @@
 package com.richashworth.planningpoker.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.richashworth.planningpoker.model.Estimate;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class SessionManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Multimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
+    private final ListMultimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
     private final AtomicLong sessionSequence = new AtomicLong(0L);
 
     public boolean isSessionActive(Long sessionId) {
@@ -35,11 +36,7 @@ public class SessionManager {
     }
 
     public List<Estimate> getResults(Long sessionId) {
-        List<Estimate> results = new ArrayList<Estimate>();
-        for (Estimate estimate : sessionsMap.get(sessionId)) {
-            results.add(estimate);
-        }
-        return results;
+        return sessionsMap.get(sessionId);
     }
 
     public void clearSessions() {

@@ -16,9 +16,9 @@ plugins {
 }
 
 apply plugin: 'java'
+apply plugin: 'spring-boot'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-apply plugin: 'spring-boot'
 
 jar {
     baseName = 'planningpoker'
@@ -38,6 +38,8 @@ dependencies {
     compile('org.apache.commons:commons-lang3:3.4')
     compile('org.projectlombok:lombok:1.16.6')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-starter-websocket")
+    compile("org.springframework:spring-messaging")
     compile('org.springframework.boot:spring-boot-actuator')
     compile('org.springframework.boot:spring-boot-devtools')
     testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -48,7 +50,8 @@ bower {
     'angular'('1.4.x')
     'Chart.js'('1.1.1')
     'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
-    'angular-poller'('0.4.2')
+    'sockjs'('0.3.4')
+    'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
 }
 
 
@@ -64,4 +67,3 @@ task wrapper(type: Wrapper) {
 }
 
 task stage(dependsOn: ["bowerInstall", "build"]) {}
-
