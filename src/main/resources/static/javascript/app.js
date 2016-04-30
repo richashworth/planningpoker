@@ -91,10 +91,10 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             },
             function errorCallback(response) {
                 alert("Session " + $scope.sessionId + " is not currently active.");
+                $scope.sessionId = undefined;
                 $scope.voted = false;
                 $scope.inSession = false;
                 $scope.isAdmin = false;
-                $scope.sessionId = undefined;
             }
         );
     };
