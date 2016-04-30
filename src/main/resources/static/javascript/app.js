@@ -41,7 +41,11 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 $scope.stompClient.subscribe($scope.destination, function (data) {
                     $scope.$apply(function () {
                         var message = JSON.parse(data.body);
-                        $scope.resultsdata = $scope.aggregateResults(message);
+                        if (message.length == 0) {
+                            $scope.voted = false;
+                        } else {
+                            $scope.resultsdata = $scope.aggregateResults(message);
+                        }
                     });
                 });
             });
