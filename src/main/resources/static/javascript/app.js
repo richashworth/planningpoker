@@ -109,7 +109,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
 
     $scope.aggregateResults = function (result) {
         $scope.votingResults = result.sort(function (a, b) {
-            return a.estimateValue > b.estimateValue
+            return a.estimateValue - b.estimateValue
         });
         var estimates = $scope.votingResults.map(function (val) {
             return val.estimateValue
