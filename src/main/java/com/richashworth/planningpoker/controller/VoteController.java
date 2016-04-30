@@ -45,7 +45,7 @@ public class VoteController {
         }
         Estimate estimate = new Estimate(StringUtils.formatUserName(userName), estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
-        String destination = "/topic/message/"+sessionId;
+        String destination = "/topic/message/" + sessionId;
         template.convertAndSend(destination, sessionManager.getResults(sessionId));
     }
 }
