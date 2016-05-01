@@ -20,7 +20,8 @@ public class SessionManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ListMultimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
+    private final ListMultimap<Long, Estimate> sessionEstimates = ArrayListMultimap.create();
+    private final ListMultimap<Long, String> sessionUsers = ArrayListMultimap.create();
     private final AtomicLong sessionSequence = new AtomicLong(SESSION_SEQ_START_VALUE);
 
     public boolean isSessionActive(Long sessionId) {
@@ -32,21 +33,29 @@ public class SessionManager {
     }
 
     public void registerEstimate(Long sessionID, Estimate estimate) {
-        sessionsMap.put(sessionID, estimate);
+        sessionEstimates.put(sessionID, estimate);
     }
 
     public List<Estimate> getResults(Long sessionId) {
-        return sessionsMap.get(sessionId);
+        return sessionEstimates.get(sessionId);
+    }
+
+    public List<String> getUsers(Long sessionId) {
+        return sessionUsers.get(sessionId);
     }
 
     public void clearSessions() {
         logger.info("Clearing all sessions");
-        sessionsMap.clear();
+        sessionEstimates.clear();
+        sessionUsers.clear();
         sessionSequence.set(0L);
     }
 
     public void resetSession(Long sessionId) {
-        sessionsMap.removeAll(sessionId);
+        sessionEstimates.removeAll(sessionId);
     }
 
+    public void registerUser(String userName, Long sessionId) {
+        sessionUsers.put(sessionId, userName);
+    }
 }

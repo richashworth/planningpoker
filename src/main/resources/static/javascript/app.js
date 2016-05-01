@@ -14,47 +14,13 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.userName = '';
     $scope.inSession = false;
     $scope.voted = false;
+    $scope.sessionUsers = [];
     $scope.votingResults = [];
     $scope.resultsdata = [];
     $scope.isAdmin = false;
 
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.labels = $scope.legalEstimates.map(String);
-
-    $scope.joinSession = function () {
-        if (!$scope.sessionId) {
-            alert("Please enter a valid session ID.")
-        } else {
-            $http({
-                method: 'GET',
-                url: '/validateSession',
-                params: {
-                    sessionId: $scope.sessionId,
-                    userName: $scope.userName
-                }
-            }).then(function successCallback(response) {
-                var socket = new SockJS('/stomp');
-                var stompClient = Stomp.over(socket);
-                stompClient.debug = null;
-                stompClient.connect({}, function (frame) {
-                    stompClient.subscribe("/topic/message/" + $scope.sessionId, function (data) {
-                        $scope.$apply(function () {
-                            var message = JSON.parse(data.body);
-                            if (message.length == 0) {
-                                $scope.voted = false;
-                            } else {
-                                $scope.resultsdata = $scope.aggregateResults(message);
-                            }
-                        });
-                    });
-                });
-                $scope.inSession = true;
-            }, function errorCallback(response) {
-                alert("Session " + $scope.sessionId + " has not yet been started. " +
-                    "Please try again in a few seconds, or start a new session as moderator.")
-            });
-        }
-    };
 
     $scope.createSession = function () {
         $http({
@@ -67,17 +33,64 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             $scope.inSession = true;
             $scope.sessionId = response;
             $scope.isAdmin = true;
+            $scope.sessionUsers = [$scope.userName];
             var socket = new SockJS('/stomp');
             var stompClient = Stomp.over(socket);
             stompClient.debug = null;
             stompClient.connect({}, function (frame) {
-                stompClient.subscribe("/topic/message/" + response, function (data) {
+                stompClient.subscribe("/topic/results/" + response, function (data) {
                     $scope.$apply(function () {
                         $scope.resultsdata = $scope.aggregateResults(JSON.parse(data.body));
                     });
                 });
+                stompClient.subscribe("/topic/users/" + response, function (data) {
+                    $scope.$apply(function () {
+                        $scope.sessionUsers = JSON.parse(data.body);
+                    });
+                });
             });
         });
+    };
+
+    $scope.joinSession = function () {
+        if (!$scope.sessionId) {
+            alert("Please enter a valid session ID.")
+        } else {
+            $scope.sessionUsers = [];
+            var socket = new SockJS('/stomp');
+            var stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe("/topic/users/" + $scope.sessionId, function (data) {
+                    $scope.$apply(function () {
+                        $scope.sessionUsers = JSON.parse(data.body);
+                    });
+                });
+                stompClient.subscribe("/topic/results/" + $scope.sessionId, function (data) {
+                    $scope.$apply(function () {
+                        var message = JSON.parse(data.body);
+                        if (message.length == 0) {
+                            $scope.voted = false;
+                        } else {
+                            $scope.resultsdata = $scope.aggregateResults(message);
+                        }
+                    });
+                });
+                $http({
+                    method: 'GET',
+                    url: '/joinSession',
+                    params: {
+                        sessionId: $scope.sessionId,
+                        userName: $scope.userName
+                    }
+                }).then(function successCallback(response) {
+                    $scope.inSession = true;
+                }, function errorCallback(response) {
+                    alert("Session " + $scope.sessionId + " has not yet been started. " +
+                        "Please try again in a few seconds, or start a new session as moderator.")
+                });
+            });
+        }
     };
 
     $scope.vote = function (estimateValue) {
