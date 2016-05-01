@@ -63,13 +63,13 @@
                 <tr ng-show="nameEntry.$valid">
                     <td></td>
                     <td>
-                        <input type="number" placeholder="session ID" ng-model="sessionId">
+                        <input type="number" ng-min="1" placeholder="session ID" ng-model="sessionId">
                     <td>
                         <button ng-click="joinSession()" style="width:160px">
                             Join session as participant
                         </button>
                     </td>
-                <tr/>
+                </tr>
             </table>
         </div>
 
@@ -79,11 +79,8 @@
                 Please vote on the current item using the buttons below:
             </p>
         </div>
-
         <br> <br>
-
         <div ng-show="inSession && !voted">
-            <p>
             <table cellspacing="20">
                 <tr>
                     <td data-ng-repeat="i in legalEstimates">
@@ -91,11 +88,10 @@
                     </td>
                 </tr>
             </table>
-            </p>
         </div>
 
         <!--Results Screen-->
-        <div ng-show="voted" style="margin-right: 0px">
+        <div ng-show="voted" style="margin-right: 0">
             <table cellpadding="20">
                 <tr>
                     <td align="top">

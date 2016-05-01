@@ -22,34 +22,38 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.labels = $scope.legalEstimates.map(String);
 
     $scope.joinSession = function () {
-        $http({
-            method: 'GET',
-            url: '/validateSession',
-            params: {
-                sessionId: $scope.sessionId,
-                userName: $scope.userName
-            }
-        }).then(function successCallback(response) {
-            var socket = new SockJS('/stomp');
-            var stompClient = Stomp.over(socket);
-            stompClient.debug = null;
-            stompClient.connect({}, function (frame) {
-                stompClient.subscribe("/topic/message/" + $scope.sessionId, function (data) {
-                    $scope.$apply(function () {
-                        var message = JSON.parse(data.body);
-                        if (message.length == 0) {
-                            $scope.voted = false;
-                        } else {
-                            $scope.resultsdata = $scope.aggregateResults(message);
-                        }
+        if (!$scope.sessionId) {
+            alert("Please enter a valid session ID.")
+        } else {
+            $http({
+                method: 'GET',
+                url: '/validateSession',
+                params: {
+                    sessionId: $scope.sessionId,
+                    userName: $scope.userName
+                }
+            }).then(function successCallback(response) {
+                var socket = new SockJS('/stomp');
+                var stompClient = Stomp.over(socket);
+                stompClient.debug = null;
+                stompClient.connect({}, function (frame) {
+                    stompClient.subscribe("/topic/message/" + $scope.sessionId, function (data) {
+                        $scope.$apply(function () {
+                            var message = JSON.parse(data.body);
+                            if (message.length == 0) {
+                                $scope.voted = false;
+                            } else {
+                                $scope.resultsdata = $scope.aggregateResults(message);
+                            }
+                        });
                     });
                 });
+                $scope.inSession = true;
+            }, function errorCallback(response) {
+                alert("Session " + $scope.sessionId + " has not yet been started. " +
+                    "Please try again in a few seconds, or start a new session as moderator.")
             });
-            $scope.inSession = true;
-        }, function errorCallback(response) {
-            alert("Session " + $scope.sessionId + " has not yet been started!\n" +
-                "Please try again in a few seconds, or create a new session.")
-        });
+        }
     };
 
     $scope.createSession = function () {

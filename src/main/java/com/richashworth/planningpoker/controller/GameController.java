@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.richashworth.planningpoker.service.SessionManager.SESSION_SEQ_START_VALUE;
+
 /**
  * Created by Rich Ashworth on 09/04/2016.
  */
@@ -35,7 +37,7 @@ public class GameController {
             @RequestParam(name = "sessionId") Long sessionId,
             @RequestParam(name = "userName") String userName
     ) {
-        if (!sessionManager.isSessionActive(sessionId)) {
+        if (sessionId < SESSION_SEQ_START_VALUE || !sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("session not found");
         } else {
             logger.info(userName + " has joined session " + sessionId);

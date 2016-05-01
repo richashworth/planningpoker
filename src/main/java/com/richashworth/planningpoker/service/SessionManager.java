@@ -16,17 +16,19 @@ import java.util.concurrent.atomic.AtomicLong;
 @Component
 public class SessionManager {
 
+    public static final Long SESSION_SEQ_START_VALUE = 1L;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ListMultimap<Long, Estimate> sessionsMap = ArrayListMultimap.create();
-    private final AtomicLong sessionSequence = new AtomicLong(0L);
+    private final AtomicLong sessionSequence = new AtomicLong(SESSION_SEQ_START_VALUE);
 
     public boolean isSessionActive(Long sessionId) {
         return sessionId <= sessionSequence.get();
     }
 
     public Long createSession() {
-        return sessionSequence.incrementAndGet();
+        return sessionSequence.getAndIncrement();
     }
 
     public void registerEstimate(Long sessionID, Estimate estimate) {
