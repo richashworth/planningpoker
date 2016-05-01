@@ -1,4 +1,8 @@
 # Planning Poker
+
+## About 
+TODO
+
 ## Usage Instructions
 TODO
 
