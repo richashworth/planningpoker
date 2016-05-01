@@ -1,19 +1,12 @@
-```
-       .__                       .__                                __
-______ |  | _____    ____   ____ |__| ____    ____   ______   ____ |  | __ ___________
-\____ \|  | \__  \  /    \ /    \|  |/    \  / ___\  \____ \ /  _ \|  |/ // __ \_  __ \
-|  |_> >  |__/ __ \|   |  \   |  \  |   |  \/ /_/  > |  |_> >  <_> )    <\  ___/|  | \/
-|   __/|____(____  /___|  /___|  /__|___|  /\___  /  |   __/ \____/|__|_ \\___  >__|
-|__|             \/     \/     \/        \//_____/   |__|               \/    \/
-```
-# Usage Instructions
+# Planning Poker
+## Usage Instructions
 TODO
 
-# Building the app
+## Building the app
 TODO
 
-# Running the app
+## Running the app
 TODO
 
-# Notes
+## Notes
 TODO
