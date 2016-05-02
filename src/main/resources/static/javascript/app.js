@@ -15,6 +15,9 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.inSession = false;
     $scope.voted = false;
     $scope.sessionUsers = [];
+    $scope.notVoted = [];
+    $scope.votedUsers = [];
+    $scope.waitingFor = [];
     $scope.votingResults = [];
     $scope.resultsdata = [];
     $scope.isAdmin = false;
@@ -40,12 +43,24 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             stompClient.connect({}, function (frame) {
                 stompClient.subscribe("/topic/results/" + response, function (data) {
                     $scope.$apply(function () {
-                        $scope.resultsdata = $scope.aggregateResults(JSON.parse(data.body));
+                        var message = JSON.parse(data.body);
+                        $scope.resultsdata = $scope.aggregateResults(message);
+                        $scope.votedUsers = message.map(function (estimate) {
+                            return estimate.userName.toUpperCase();
+                        });
+                        $scope.waitingFor = $scope.notVoted.filter(function (user) {
+                            return $scope.votedUsers.indexOf(user.toUpperCase()) < 0;
+                        });
                     });
                 });
                 stompClient.subscribe("/topic/users/" + response, function (data) {
                     $scope.$apply(function () {
-                        $scope.sessionUsers = JSON.parse(data.body);
+                        var users = JSON.parse(data.body);
+                        $scope.sessionUsers = users;
+                        $scope.notVoted = users;
+                        $scope.waitingFor = $scope.notVoted.filter(function (user) {
+                            return $scope.votedUsers.indexOf(user.toUpperCase()) < 0;
+                        });
                     });
                 });
             });
@@ -63,7 +78,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             stompClient.connect({}, function (frame) {
                 stompClient.subscribe("/topic/users/" + $scope.sessionId, function (data) {
                     $scope.$apply(function () {
-                        $scope.sessionUsers = JSON.parse(data.body);
+                        var users = JSON.parse(data.body);
+                        $scope.sessionUsers = users;
+                        $scope.notVoted = users;
+                        $scope.waitingFor = $scope.notVoted.filter(function (user) {
+                            return $scope.votedUsers.indexOf(user.toUpperCase()) < 0;
+                        });
                     });
                 });
                 stompClient.subscribe("/topic/results/" + $scope.sessionId, function (data) {
@@ -73,6 +93,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                             $scope.voted = false;
                         } else {
                             $scope.resultsdata = $scope.aggregateResults(message);
+                            $scope.votedUsers = message.map(function (estimate) {
+                                return estimate.userName.toUpperCase();
+                            });
+                            $scope.waitingFor = $scope.notVoted.filter(function (user) {
+                                return $scope.votedUsers.indexOf(user.toUpperCase()) < 0;
+                            });
                         }
                     });
                 });
@@ -130,9 +156,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     };
 
     $scope.aggregateResults = function (result) {
-        $scope.votingResults = result.sort(function (a, b) {
-            return a.estimateValue - b.estimateValue
-        });
+        $scope.votingResults = result;
         var estimates = $scope.votingResults.map(function (val) {
             return val.estimateValue
         });

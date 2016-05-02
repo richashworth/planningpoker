@@ -3,6 +3,7 @@ package com.richashworth.planningpoker.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,12 +21,12 @@ public class SessionManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final AtomicLong sessionSequence = new AtomicLong(SESSION_SEQ_START_VALUE);
     private final ListMultimap<Long, Estimate> sessionEstimates = ArrayListMultimap.create();
     private final ListMultimap<Long, String> sessionUsers = ArrayListMultimap.create();
-    private final AtomicLong sessionSequence = new AtomicLong(SESSION_SEQ_START_VALUE);
 
     public boolean isSessionActive(Long sessionId) {
-        return sessionId <= sessionSequence.get();
+        return sessionId < sessionSequence.get();
     }
 
     public Long createSession() {
@@ -56,6 +57,6 @@ public class SessionManager {
     }
 
     public void registerUser(String userName, Long sessionId) {
-        sessionUsers.put(sessionId, userName);
+        sessionUsers.put(sessionId, StringUtils.formatUserName(userName));
     }
 }
