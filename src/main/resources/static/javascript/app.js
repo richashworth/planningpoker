@@ -103,7 +103,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                     });
                 });
                 $http({
-                    method: 'GET',
+                    method: 'POST',
                     url: '/joinSession',
                     params: {
                         sessionId: $scope.sessionId,
@@ -112,8 +112,13 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 }).then(function successCallback(response) {
                     $scope.inSession = true;
                 }, function errorCallback(response) {
-                    alert("Session " + $scope.sessionId + " has not yet been started. " +
-                        "Please try again in a few seconds, or start a new session as moderator.")
+                    console.log(response);
+                    if (response.data.message == 'user exists') {
+                        alert("A user with that name has already registered for this session.")
+                    } else {
+                        alert("Session " + $scope.sessionId + " has not yet been started. " +
+                            "Please try again in a few seconds, or start a new session as moderator.")
+                    }
                 });
             });
         }

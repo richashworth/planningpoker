@@ -30,15 +30,18 @@ public class GameController {
         this.sessionManager = sessionManager;
     }
 
-    @RequestMapping("joinSession")
+    @RequestMapping(value = "joinSession", method = RequestMethod.POST)
     public void joinSession(
             @RequestParam(name = "sessionId") Long sessionId,
             @RequestParam(name = "userName") String userName
     ) {
+        final String formattedUserName = StringUtils.formatUserName(userName);
         if (sessionId < SESSION_SEQ_START_VALUE || !sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("session not found");
+        } else if (sessionManager.getUsers(sessionId).contains(formattedUserName)) {
+            throw new IllegalArgumentException("user exists");
         } else {
-            sessionManager.registerUser(userName, sessionId);
+            sessionManager.registerUser(formattedUserName, sessionId);
             logger.info(userName + " has joined session " + sessionId);
             template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
         }
