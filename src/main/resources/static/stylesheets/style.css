@@ -9,6 +9,18 @@ label.field {
     font-weight: bold;
 }
 
+.regusertbl th {
+    min-width: 180px;
+}
+
+.regusertbl tr:nth-child(odd) {
+    background-color: #EAF1F5;
+}
+
+.regusertbl td {
+    /*text-align: center;*/
+}
+
 .usertbl th {
     min-width: 100px;
 }
