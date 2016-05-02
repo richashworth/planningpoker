@@ -128,7 +128,7 @@
                             </tr>
                         </table>
                     </td>
-                    <td width="100%" align="right" valign="top">
+                    <td width="100%" align="right" valign="top" ng-show="waitingFor.length > 0">
                         <table cellpadding="8" class="usertbl">
                             <th>Not Voted</th>
                             <tr ng-repeat="user in waitingFor | orderBy">
