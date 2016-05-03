@@ -21,11 +21,14 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.votingResults = [];
     $scope.resultsdata = [];
     $scope.isAdmin = false;
+    $scope.inSession = false;
+    $scope.loading = false;
 
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.labels = $scope.legalEstimates.map(String);
 
     $scope.createSession = function () {
+        $scope.loading = true;
         $http({
             method: 'POST',
             url: '/createSession',
@@ -33,6 +36,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 userName: $scope.userName
             }
         }).success(function (response) {
+            $scope.loading = false;
             $scope.inSession = true;
             $scope.sessionId = response;
             $scope.isAdmin = true;
@@ -71,7 +75,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
         if (!$scope.sessionId) {
             alert("Please enter a valid session ID.")
         } else {
-            $scope.sessionUsers = [];
+            $scope.loading = true;
+            $scope.inSession = true;
             var socket = new SockJS('/stomp');
             var stompClient = Stomp.over(socket);
             stompClient.debug = null;
@@ -110,8 +115,9 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                         userName: $scope.userName
                     }
                 }).then(function successCallback(response) {
-                    $scope.inSession = true;
+                    $scope.loading = false;
                 }, function errorCallback(response) {
+                    $scope.loading = false;
                     console.log(response);
                     if (response.data.message == 'user exists') {
                         alert("A user with that name has already registered for this session.")
@@ -126,6 +132,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
 
     $scope.vote = function (estimateValue) {
         $scope.voted = true;
+        $scope.loading = true;
         $http({
             method: 'POST',
             url: '/vote',
@@ -136,18 +143,21 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             }
         }).then(
             function successCallback(response) {
+                $scope.loading = false;
             },
             function errorCallback(response) {
                 alert("Session " + $scope.sessionId + " is not currently active.");
                 $scope.sessionId = undefined;
                 $scope.voted = false;
                 $scope.inSession = false;
+                $scope.loading = false;
                 $scope.isAdmin = false;
             }
         );
     };
 
     $scope.reset = function () {
+        $scope.loading = true;
         $http({
             method: 'DELETE',
             url: '/reset',
@@ -156,6 +166,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 userName: $scope.userName
             }
         }).success(function (response) {
+            $scope.loading = false;
             $scope.voted = false;
         })
     };

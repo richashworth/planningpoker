@@ -39,7 +39,13 @@
     </header>
     <br/>
 
-    <div>
+    <div ng-show="loading">
+        <p>
+            Loading...
+        </p>
+    </div>
+
+    <div ng-hide="loading">
         <!--Registration Screen-->
         <div ng-hide="inSession">
             <br>
