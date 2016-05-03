@@ -45,7 +45,7 @@ public class GameController {
             sessionManager.registerUser(userName, sessionId);
             logger.info(userName + " has joined session " + sessionId);
             template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
-            networkUtils.echoUsersMessage(sessionId);
+            networkUtils.burstUsersMessage(sessionId);
         }
     }
 
@@ -58,7 +58,7 @@ public class GameController {
         sessionManager.registerUser(userName, sessionId);
         logger.info(userName + " has created session " + sessionId);
         template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
-        networkUtils.echoUsersMessage(sessionId);
+        networkUtils.burstUsersMessage(sessionId);
         return sessionId;
     }
 

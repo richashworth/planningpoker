@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NetworkUtils {
 
-    public static final long EXPECTED_NETWORK_LATENCY = 500L;
+    public static final long LOW_NETWORK_LATENCY = 500L;
     public static final long HIGH_NETWORK_LATENCY = 1000L;
     public static final long MAX_NETWORK_LATENCY = 5000L;
 
@@ -27,8 +27,8 @@ public class NetworkUtils {
     private SimpMessagingTemplate template;
 
     @Async
-    public void echoUsersMessage(long sessionId) {
-        for (final long latency : new long[]{EXPECTED_NETWORK_LATENCY, HIGH_NETWORK_LATENCY, MAX_NETWORK_LATENCY}) {
+    public void burstUsersMessage(long sessionId) {
+        for (final long latency : new long[]{LOW_NETWORK_LATENCY, HIGH_NETWORK_LATENCY, MAX_NETWORK_LATENCY}) {
             try {
                 Thread.sleep(latency);
             } catch (InterruptedException e) {
