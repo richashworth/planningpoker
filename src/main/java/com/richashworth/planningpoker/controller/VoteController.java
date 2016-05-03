@@ -2,7 +2,6 @@ package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.service.SessionManager;
-import com.richashworth.planningpoker.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +34,15 @@ public class VoteController {
 
     @RequestMapping(value = "vote", method = RequestMethod.POST)
     public void vote(
-            @RequestParam(name = "sessionId") Long sessionId,
-            @RequestParam(name = "userName") String userName,
-            @RequestParam(name = "estimateValue") Double estimateValue
+            @RequestParam(name = "sessionId") final Long sessionId,
+            @RequestParam(name = "userName") final String userName,
+            @RequestParam(name = "estimateValue") final Double estimateValue
     ) {
         logger.info(userName + " has voted " + DECIMAL_FORMAT.format(estimateValue) + " in session " + sessionId);
         if (!sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("Session not active");
         }
-        final Estimate estimate = new Estimate(StringUtils.formatUserName(userName), estimateValue);
+        final Estimate estimate = new Estimate(userName, estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
         template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
     }

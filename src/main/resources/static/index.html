@@ -29,7 +29,7 @@
         <nav ng-show="inSession">
             <table>
                 <tr>
-                    <td style="text-transform: capitalize">{{userName}}</td>
+                    <td> {{userName|titlecase}}</td>
                 </tr>
                 <tr>
                     <td><i> Session {{sessionId}} </i></td>
@@ -57,7 +57,7 @@
                     <td>
                         <form name="nameEntry">
                             <input autofocus type="text" ng-model="userName" required="true" ng-minlength="2"
-                                   ng-maxlength="40" maxlength="50">
+                                   ng-maxlength="40" maxlength="40">
                         </form>
                     </td>
                     <td>
@@ -110,7 +110,7 @@
                                 <th>Registered Users</th>
                             </tr>
                             <tr ng-repeat="user in sessionUsers | orderBy">
-                                <td>{{user}}</td>
+                                <td>{{user|titlecase}}</td>
                             </tr>
                         </table>
                     </td>
@@ -133,7 +133,7 @@
                                 <th>Estimate</th>
                             </tr>
                             <tr ng-repeat="result in votingResults | orderBy: 'estimateValue'">
-                                <td>{{result.userName}}</td>
+                                <td>{{result.userName|titlecase}}</td>
                                 <td>{{result.estimateValue}}</td>
                             </tr>
                         </table>
@@ -144,7 +144,7 @@
                                 <th>Not Voted</th>
                             </tr>
                             <tr ng-repeat="user in waitingFor | orderBy">
-                                <td>{{user}}</td>
+                                <td>{{user|titlecase}}</td>
                             </tr>
                         </table>
                     </td>

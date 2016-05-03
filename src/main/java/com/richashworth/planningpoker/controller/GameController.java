@@ -2,7 +2,6 @@ package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.NetworkUtils;
-import com.richashworth.planningpoker.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +37,12 @@ public class GameController {
             @RequestParam(name = "sessionId") final Long sessionId,
             @RequestParam(name = "userName") final String userName
     ) {
-        final String formattedUserName = StringUtils.formatUserName(userName);
         if (sessionId < SESSION_SEQ_START_VALUE || !sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("session not found");
-        } else if (sessionManager.getUsers(sessionId).contains(formattedUserName)) {
+        } else if (sessionManager.getUsers(sessionId).contains(userName)) {
             throw new IllegalArgumentException("user exists");
         } else {
-            sessionManager.registerUser(formattedUserName, sessionId);
+            sessionManager.registerUser(userName, sessionId);
             logger.info(userName + " has joined session " + sessionId);
             template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
             networkUtils.echoUsersMessage(sessionId);
@@ -54,7 +52,7 @@ public class GameController {
 
     @RequestMapping(value = "createSession", method = RequestMethod.POST)
     public long createSession(
-            @RequestParam(name = "userName") String userName
+            @RequestParam(name = "userName") final String userName
     ) {
         final long sessionId = sessionManager.createSession();
         sessionManager.registerUser(userName, sessionId);
@@ -66,8 +64,8 @@ public class GameController {
 
     @RequestMapping(value = "reset", method = RequestMethod.DELETE)
     public void reset(
-            @RequestParam(name = "sessionId") Long sessionId,
-            @RequestParam(name = "userName") String userName
+            @RequestParam(name = "sessionId") final Long sessionId,
+            @RequestParam(name = "userName") final String userName
     ) {
         logger.info(userName + " has reset session " + sessionId);
         synchronized (sessionManager) {

@@ -10,6 +10,18 @@ PlanningPoker.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
 }]);
 
+PlanningPoker.filter('titlecase', function () {
+    return function (input) {
+        if (input.length > 2) {
+            return input.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        } else {
+            return input;
+        }
+    }
+});
+
 PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $http) {
     $scope.userName = '';
     $scope.inSession = false;

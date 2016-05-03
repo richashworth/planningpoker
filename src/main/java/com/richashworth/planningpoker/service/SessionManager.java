@@ -3,7 +3,6 @@ package com.richashworth.planningpoker.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.richashworth.planningpoker.model.Estimate;
-import com.richashworth.planningpoker.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -57,6 +56,6 @@ public class SessionManager {
     }
 
     public void registerUser(String userName, Long sessionId) {
-        sessionUsers.put(sessionId, StringUtils.formatUserName(userName));
+        sessionUsers.put(sessionId, userName);
     }
 }
