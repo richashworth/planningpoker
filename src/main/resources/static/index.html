@@ -56,7 +56,7 @@
                     </td>
                     <td>
                         <button ng-show="nameEntry.$valid" ng-click="createSession()"
-                                ng-disabled="sessionId || sessionId > 0" style="width:160px">
+                                ng-disabled="sessionId || sessionId > 0" style="width:170px">
                             Start session as moderator
                         </button>
                     </td>
@@ -66,7 +66,7 @@
                     <td>
                         <input type="number" ng-min="1" placeholder="session ID" ng-model="sessionId">
                     <td>
-                        <button ng-click="joinSession()" style="width:160px">
+                        <button ng-click="joinSession()" style="width:170px">
                             Join session as participant
                         </button>
                     </td>
@@ -100,7 +100,9 @@
                     </td>
                     <td width="100%" align="right" valign="top">
                         <table cellpadding="8" class="regusertbl">
-                            <th>Registered Users</th>
+                            <tr>
+                                <th>Registered Users</th>
+                            </tr>
                             <tr ng-repeat="user in sessionUsers | orderBy">
                                 <td>{{user}}</td>
                             </tr>
@@ -120,8 +122,10 @@
                     </td>
                     <td width="100%" align="right" valign="top">
                         <table cellpadding="8" class="usertbl">
-                            <th>User</th>
-                            <th>Estimate</th>
+                            <tr>
+                                <th>User</th>
+                                <th>Estimate</th>
+                            </tr>
                             <tr ng-repeat="result in votingResults | orderBy: 'estimateValue'">
                                 <td>{{result.userName}}</td>
                                 <td>{{result.estimateValue}}</td>
@@ -130,7 +134,9 @@
                     </td>
                     <td width="100%" align="right" valign="top" ng-show="waitingFor.length > 0">
                         <table cellpadding="8" class="usertbl">
-                            <th>Not Voted</th>
+                            <tr>
+                                <th>Not Voted</th>
+                            </tr>
                             <tr ng-repeat="user in waitingFor | orderBy">
                                 <td>{{user}}</td>
                             </tr>

@@ -24,14 +24,11 @@ jar {
     baseName = 'planningpoker'
 }
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
 repositories {
     mavenCentral()
 }
 
-ext['tomcat.version'] = '7.0.59' // needed for Java 6 compatibility
+//ext['tomcat.version'] = '7.0.59' // needed for Java 6 compatibility
 
 dependencies {
     compile('com.google.guava:guava:19.0')
