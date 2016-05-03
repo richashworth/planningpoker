@@ -40,7 +40,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             $scope.inSession = true;
             $scope.sessionId = response;
             $scope.isAdmin = true;
-            $scope.sessionUsers = [$scope.userName];
             var socket = new SockJS('/stomp');
             var stompClient = Stomp.over(socket);
             stompClient.debug = null;
@@ -125,6 +124,10 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                         alert("Session " + $scope.sessionId + " has not yet been started. " +
                             "Please try again in a few seconds, or start a new session as moderator.")
                     }
+                    $scope.voted = false;
+                    $scope.inSession = false;
+                    $scope.loading = false;
+                    $scope.isAdmin = false;
                 });
             });
         }
@@ -147,7 +150,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
             },
             function errorCallback(response) {
                 alert("Session " + $scope.sessionId + " is not currently active.");
-                $scope.sessionId = undefined;
                 $scope.voted = false;
                 $scope.inSession = false;
                 $scope.loading = false;

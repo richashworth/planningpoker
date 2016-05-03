@@ -1,6 +1,7 @@
 package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.service.SessionManager;
+import com.richashworth.planningpoker.util.NetworkUtils;
 import com.richashworth.planningpoker.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,19 +22,21 @@ public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
+    private final NetworkUtils networkUtils;
 
     @Autowired
     private SimpMessagingTemplate template;
 
     @Autowired
-    public GameController(SessionManager sessionManager) {
+    public GameController(SessionManager sessionManager, NetworkUtils networkUtils) {
         this.sessionManager = sessionManager;
+        this.networkUtils = networkUtils;
     }
 
     @RequestMapping(value = "joinSession", method = RequestMethod.POST)
     public void joinSession(
-            @RequestParam(name = "sessionId") Long sessionId,
-            @RequestParam(name = "userName") String userName
+            @RequestParam(name = "sessionId") final Long sessionId,
+            @RequestParam(name = "userName") final String userName
     ) {
         final String formattedUserName = StringUtils.formatUserName(userName);
         if (sessionId < SESSION_SEQ_START_VALUE || !sessionManager.isSessionActive(sessionId)) {
@@ -44,8 +47,10 @@ public class GameController {
             sessionManager.registerUser(formattedUserName, sessionId);
             logger.info(userName + " has joined session " + sessionId);
             template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
+            networkUtils.echoUsersMessage(sessionId);
         }
     }
+
 
     @RequestMapping(value = "createSession", method = RequestMethod.POST)
     public long createSession(
@@ -54,6 +59,8 @@ public class GameController {
         final long sessionId = sessionManager.createSession();
         sessionManager.registerUser(userName, sessionId);
         logger.info(userName + " has created session " + sessionId);
+        template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
+        networkUtils.echoUsersMessage(sessionId);
         return sessionId;
     }
 
@@ -63,8 +70,10 @@ public class GameController {
             @RequestParam(name = "userName") String userName
     ) {
         logger.info(userName + " has reset session " + sessionId);
-        sessionManager.resetSession(sessionId);
-        template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
+        synchronized (sessionManager) {
+            sessionManager.resetSession(sessionId);
+            template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
+        }
     }
 
 }
