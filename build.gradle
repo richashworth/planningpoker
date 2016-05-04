@@ -28,8 +28,6 @@ repositories {
     mavenCentral()
 }
 
-//ext['tomcat.version'] = '7.0.59' // needed for Java 6 compatibility
-
 dependencies {
     compile('com.google.guava:guava:19.0')
     compile('org.apache.commons:commons-lang3:3.4')
@@ -58,7 +56,7 @@ eclipse {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.12'
+    gradleVersion = '2.13'
 }
 
 task stage(dependsOn: ["bowerInstall", "build"]) {}
