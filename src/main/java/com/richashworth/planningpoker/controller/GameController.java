@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.richashworth.planningpoker.service.SessionManager.SESSION_SEQ_START_VALUE;
+import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase;
 
 /**
  * Created by Rich Ashworth on 09/04/2016.
@@ -35,7 +36,7 @@ public class GameController {
     ) {
         if (sessionId < SESSION_SEQ_START_VALUE || !sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("session not found");
-        } else if (sessionManager.getUsers(sessionId).contains(userName)) {
+        } else if (containsIgnoreCase(sessionManager.getUsers(sessionId), userName)) {
             throw new IllegalArgumentException("user exists");
         } else {
             sessionManager.registerUser(userName, sessionId);
@@ -43,7 +44,6 @@ public class GameController {
             messagingUtils.burstUsersMessages(sessionId);
         }
     }
-
 
     @RequestMapping(value = "createSession", method = RequestMethod.POST)
     public long createSession(
