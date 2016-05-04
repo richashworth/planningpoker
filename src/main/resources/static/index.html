@@ -29,7 +29,7 @@
         <nav ng-show="inSession">
             <table>
                 <tr>
-                    <td> {{userName|titlecase}}</td>
+                    <td> {{userName | userNameCaseFilter}}</td>
                 </tr>
                 <tr>
                     <td><i> Session {{sessionId}} </i></td>
@@ -110,7 +110,7 @@
                                 <th>Registered Users</th>
                             </tr>
                             <tr ng-repeat="user in sessionUsers | orderBy">
-                                <td>{{user|titlecase}}</td>
+                                <td>{{user | userNameCaseFilter}}</td>
                             </tr>
                         </table>
                     </td>
@@ -133,7 +133,7 @@
                                 <th>Estimate</th>
                             </tr>
                             <tr ng-repeat="result in votingResults | orderBy: 'estimateValue'">
-                                <td>{{result.userName|titlecase}}</td>
+                                <td>{{result.userName | userNameCaseFilter}}</td>
                                 <td>{{result.estimateValue}}</td>
                             </tr>
                         </table>
@@ -144,7 +144,7 @@
                                 <th>Not Voted</th>
                             </tr>
                             <tr ng-repeat="user in waitingFor | orderBy">
-                                <td>{{user|titlecase}}</td>
+                                <td>{{user | userNameCaseFilter}}</td>
                             </tr>
                         </table>
                     </td>

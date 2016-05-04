@@ -10,7 +10,7 @@ PlanningPoker.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
 }]);
 
-PlanningPoker.filter('titlecase', function () {
+PlanningPoker.filter('userNameCaseFilter', function () {
     return function (input) {
         if (!input) {
             return ''
