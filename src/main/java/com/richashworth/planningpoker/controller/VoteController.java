@@ -2,6 +2,7 @@ package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.service.SessionManager;
+import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +23,16 @@ public class VoteController {
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final SessionManager sessionManager;
+    private SessionManager sessionManager;
+    private MessagingUtils messagingUtils;
 
     @Autowired
     private SimpMessagingTemplate template;
 
     @Autowired
-    public VoteController(SessionManager sessionManager) {
+    public VoteController(SessionManager sessionManager, MessagingUtils messagingUtils) {
         this.sessionManager = sessionManager;
+        this.messagingUtils = messagingUtils;
     }
 
     @RequestMapping(value = "vote", method = RequestMethod.POST)
@@ -44,7 +47,7 @@ public class VoteController {
         }
         final Estimate estimate = new Estimate(userName, estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
-        template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
+        messagingUtils.burstResultsMessages(sessionId);
     }
 }
 

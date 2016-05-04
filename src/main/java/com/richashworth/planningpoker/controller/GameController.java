@@ -1,11 +1,10 @@
 package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.service.SessionManager;
-import com.richashworth.planningpoker.util.NetworkUtils;
+import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,16 +19,13 @@ import static com.richashworth.planningpoker.service.SessionManager.SESSION_SEQ_
 public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final SessionManager sessionManager;
-    private final NetworkUtils networkUtils;
+    private SessionManager sessionManager;
+    private MessagingUtils messagingUtils;
 
     @Autowired
-    private SimpMessagingTemplate template;
-
-    @Autowired
-    public GameController(SessionManager sessionManager, NetworkUtils networkUtils) {
+    public GameController(SessionManager sessionManager, MessagingUtils messagingUtils) {
         this.sessionManager = sessionManager;
-        this.networkUtils = networkUtils;
+        this.messagingUtils = messagingUtils;
     }
 
     @RequestMapping(value = "joinSession", method = RequestMethod.POST)
@@ -44,8 +40,7 @@ public class GameController {
         } else {
             sessionManager.registerUser(userName, sessionId);
             logger.info(userName + " has joined session " + sessionId);
-            template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
-            networkUtils.burstUsersMessage(sessionId);
+            messagingUtils.burstUsersMessages(sessionId);
         }
     }
 
@@ -57,8 +52,7 @@ public class GameController {
         final long sessionId = sessionManager.createSession();
         sessionManager.registerUser(userName, sessionId);
         logger.info(userName + " has created session " + sessionId);
-        template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
-        networkUtils.burstUsersMessage(sessionId);
+        messagingUtils.burstUsersMessages(sessionId);
         return sessionId;
     }
 
@@ -70,7 +64,7 @@ public class GameController {
         logger.info(userName + " has reset session " + sessionId);
         synchronized (sessionManager) {
             sessionManager.resetSession(sessionId);
-            template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
+            messagingUtils.burstResultsMessages(sessionId);
         }
     }
 
