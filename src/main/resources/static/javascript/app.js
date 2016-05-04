@@ -12,7 +12,10 @@ PlanningPoker.config(['$httpProvider', function ($httpProvider) {
 
 PlanningPoker.filter('titlecase', function () {
     return function (input) {
-        if (input.length > 2) {
+        if (!input) {
+            return ''
+        }
+        else if (input.length > 2) {
             return input.replace(/\w\S*/g, function (txt) {
                 return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
             });
