@@ -60,8 +60,8 @@ public class GameController {
     public void refresh(
             @RequestParam(name = "sessionId") final Long sessionId
     ) {
-        messagingUtils.burstResultsMessages(sessionId);
-        messagingUtils.burstUsersMessages(sessionId);
+        messagingUtils.sendResultsMessage(sessionId);
+        messagingUtils.sendUsersMessage(sessionId);
     }
 
     @RequestMapping(value = "reset", method = RequestMethod.DELETE)
