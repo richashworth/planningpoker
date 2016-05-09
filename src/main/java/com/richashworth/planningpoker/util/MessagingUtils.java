@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessagingUtils {
 
-    public static final long[] LATENCIES = new long[]{0L, 50L, 100L, 500L, 1000L, 5000L, 10000L};
+    public static final long[] LATENCIES = new long[]{0L, 50L, 100L, 500L, 1000L, 2000L, 5000L, 10000L};
 
     private final SessionManager sessionManager;
 

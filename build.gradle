@@ -28,6 +28,10 @@ repositories {
     mavenCentral()
 }
 
+sourceCompatibility = 1.6
+
+ext['tomcat.version'] = '7.0.59' // needed for Java 6 compatibility
+
 dependencies {
     compile('com.google.guava:guava:19.0')
     compile('org.apache.commons:commons-lang3:3.4')

@@ -170,11 +170,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 $scope.inSession = false;
                 $scope.loading = false;
                 $scope.isAdmin = false;
+                $scope.sessionId = undefined;
             }
         );
     };
 
-    $scope.refresh= function () {
+    $scope.refresh = function () {
         $http({
             method: 'GET',
             url: '/refresh',
