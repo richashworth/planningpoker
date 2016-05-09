@@ -24,11 +24,19 @@ public class MessagingUtils {
     @Autowired
     private SimpMessagingTemplate template;
 
+    public void sendResultsMessage(long sessionId) {
+        template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
+    }
+
+    public void sendUsersMessage(long sessionId) {
+        template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
+    }
+
     @Async
     public void burstResultsMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
             pause(LATENCY_DURATION);
-            template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
+            sendResultsMessage(sessionId);
         }
     }
 
@@ -36,7 +44,7 @@ public class MessagingUtils {
     public void burstUsersMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
             pause(LATENCY_DURATION);
-            template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
+            sendUsersMessage(sessionId);
         }
     }
 
