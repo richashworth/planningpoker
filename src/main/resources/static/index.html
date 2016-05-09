@@ -29,7 +29,7 @@
         <nav ng-show="inSession">
             <table>
                 <tr>
-                    <td> {{userName | userNameCaseFilter}}</td>
+                    <td>{{userName | userNameCaseFilter}}</td>
                 </tr>
                 <tr>
                     <td><i> Session {{sessionId}} </i></td>
@@ -149,10 +149,17 @@
                         </table>
                     </td>
                 </tr>
-                <tr ng-show="isAdmin">
-                    <td>
-                        <button class="nextbutton" ng-click="reset()" type="button">Next Estimate</button>
-                    </td>
+                <tr>
+                    <table cellspacing="20">
+                        <tr>
+                            <td>
+                                <button class="nextbutton" ng-click="refresh()" type="button">Refresh Results</button>
+                            </td>
+                            <td ng-show="isAdmin">
+                                <button class="nextbutton" ng-click="reset()" type="button">Next Estimate</button>
+                            </td>
+                        </tr>
+                    </table>
                 </tr>
             </table>
         </div>

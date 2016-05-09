@@ -56,6 +56,14 @@ public class GameController {
         return sessionId;
     }
 
+    @RequestMapping(value = "refresh", method = RequestMethod.GET)
+    public void refresh(
+            @RequestParam(name = "sessionId") final Long sessionId
+    ) {
+        messagingUtils.burstResultsMessages(sessionId);
+        messagingUtils.burstUsersMessages(sessionId);
+    }
+
     @RequestMapping(value = "reset", method = RequestMethod.DELETE)
     public void reset(
             @RequestParam(name = "sessionId") final Long sessionId,

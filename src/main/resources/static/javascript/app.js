@@ -174,6 +174,16 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
         );
     };
 
+    $scope.refresh= function () {
+        $http({
+            method: 'GET',
+            url: '/refresh',
+            params: {
+                sessionId: $scope.sessionId
+            }
+        })
+    };
+
     $scope.reset = function () {
         $scope.loading = true;
         $http({
