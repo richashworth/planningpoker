@@ -48,7 +48,7 @@ public class SessionManager {
         logger.info("Clearing all sessions");
         sessionEstimates.clear();
         sessionUsers.clear();
-        sessionSequence.set(0L);
+        sessionSequence.set(SESSION_SEQ_START_VALUE);
     }
 
     public void resetSession(Long sessionId) {
