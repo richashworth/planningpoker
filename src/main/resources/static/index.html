@@ -150,22 +150,15 @@
                     </td>
                 </tr>
                 <tr>
-                    <table cellspacing="20">
-                        <tr>
-                            <td>
-                                <button class="nextbutton" ng-click="refresh()" type="button">Refresh Results</button>
-                            </td>
-                            <td ng-show="isAdmin">
-                                <button class="nextbutton" ng-click="reset()" type="button">Next Estimate</button>
-                            </td>
-                        </tr>
-                    </table>
+                    <td ng-show="isAdmin">
+                        <button class="nextbutton" ng-click="reset()" type="button">Next Estimate</button>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="3">
                         <p style="color: dimgray">
-                            Data on this page should update automatically. In case of network issues, use the refresh
-                            button above.
+                            Data on this page should update automatically. In case of network issues, click
+                            <a id="refresh-link" href ng-click="refresh()">here</a> to refresh manually.
                         </p>
                     </td>
                 </tr>
