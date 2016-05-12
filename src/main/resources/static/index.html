@@ -57,11 +57,11 @@
                     <td>
                         <form name="nameEntry">
                             <input autofocus type="text" ng-model="userName" required="true" ng-minlength="2"
-                                   ng-maxlength="40" maxlength="40">
+                                   ng-maxlength="40" maxlength="40" tabindex="1">
                         </form>
                     </td>
                     <td>
-                        <button ng-show="nameEntry.$valid" ng-click="createSession()"
+                        <button ng-show="nameEntry.$valid" ng-click="createSession()" tabindex="3"
                                 ng-disabled="sessionId || sessionId > 0" style="width:190px">
                             Start session as moderator
                         </button>
@@ -70,9 +70,9 @@
                 <tr ng-show="nameEntry.$valid">
                     <td></td>
                     <td>
-                        <input type="number" ng-min="1" placeholder="session ID" ng-model="sessionId">
+                        <input type="number" ng-min="1" placeholder="session ID" ng-model="sessionId" tabindex="1">
                     <td>
-                        <button ng-click="joinSession()" style="width:190px">
+                        <button ng-click="joinSession()" style="width:190px" tabindex="2">
                             Join session as participant
                         </button>
                     </td>
