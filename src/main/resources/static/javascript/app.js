@@ -198,6 +198,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 $scope.loading = false;
                 $scope.isAdmin = false;
                 $scope.sessionId = undefined;
+                $scope.itemInput = undefined;
             }
         );
     };
