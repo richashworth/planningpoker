@@ -56,8 +56,8 @@
                     </td>
                     <td>
                         <form name="nameEntry">
-                            <input autofocus type="text" ng-model="userName" required="true" ng-minlength="2"
-                                   ng-maxlength="40" maxlength="40" tabindex="1">
+                            <input type="text" ng-model="userName" required="true" ng-minlength="2"
+                                   ng-maxlength="40" maxlength="40" tabindex="1" show-focus="!voted">
                         </form>
                     </td>
                     <td>
@@ -89,13 +89,13 @@
                             <tr ng-show="isAdmin">
                                 <td>
                                     <input type="text" placeholder="Item to be estimated (e.g. Jira ID)"
-                                           ng-model="itemInput" autofocus>
+                                           ng-model="itemInput" show-focus="inSession">
                                     <button ng-click="setCurrentItem()" type="button" style="margin-left: 10pt">
                                         Update
                                     </button>
                                 </td>
                             </tr>
-                            <tr style="height: 15pt">
+                            <tr ng-show="isAdmin" style="height: 15pt">
                             </tr>
                             <tr>
                                 <td>
