@@ -128,6 +128,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                         var message = JSON.parse(data.body);
                         if (message.length == 0) {
                             $scope.voted = false;
+                            $scope.currentItem = 'the current item'
                         } else {
                             $scope.resultsdata = $scope.aggregateResults(message);
                             $scope.votedUsers = message.map(function (estimate) {
@@ -230,6 +231,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
         }).success(function (response) {
             $scope.loading = false;
             $scope.voted = false;
+            $scope.itemInput = undefined;
+            $scope.currentItem = 'the current item';
         })
     };
 

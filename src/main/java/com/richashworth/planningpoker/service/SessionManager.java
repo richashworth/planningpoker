@@ -1,14 +1,16 @@
 package com.richashworth.planningpoker.service;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.richashworth.planningpoker.model.Estimate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -25,7 +27,7 @@ public class SessionManager {
     private final AtomicLong sessionSequence = new AtomicLong(SESSION_SEQ_START_VALUE);
     private final ListMultimap<Long, Estimate> sessionEstimates = ArrayListMultimap.create();
     private final ListMultimap<Long, String> sessionUsers = ArrayListMultimap.create();
-    private final ListMultimap<Long, String> sessionItems = ArrayListMultimap.create();
+    private final Map<Long, String> sessionItems = new HashMap<Long, String>();
 
     public boolean isSessionActive(Long sessionId) {
         return sessionId < sessionSequence.get();
@@ -57,6 +59,7 @@ public class SessionManager {
 
     public void resetSession(Long sessionId) {
         sessionEstimates.removeAll(sessionId);
+        sessionItems.remove(sessionId);
     }
 
     public void registerUser(String userName, Long sessionId) {
@@ -64,7 +67,7 @@ public class SessionManager {
     }
 
     public String getCurrentItem(Long sessionId) {
-        return Iterables.getLast(sessionItems.get(sessionId), DEFAULT_ITEM_NAME);
+        return Optional.fromNullable(sessionItems.get(sessionId)).or(DEFAULT_ITEM_NAME);
     }
 
     public void setCurrentItem(Long sessionId, String pItem) {
