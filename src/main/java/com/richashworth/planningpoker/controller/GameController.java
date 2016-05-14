@@ -42,6 +42,7 @@ public class GameController {
             sessionManager.registerUser(userName, sessionId);
             logger.info(userName + " has joined session " + sessionId);
             messagingUtils.burstUsersMessages(sessionId);
+            messagingUtils.burstItemMessages(sessionId);
         }
     }
 
@@ -62,6 +63,15 @@ public class GameController {
     ) {
         messagingUtils.sendResultsMessage(sessionId);
         messagingUtils.sendUsersMessage(sessionId);
+    }
+
+    @RequestMapping(value = "setCurrentItem", method = RequestMethod.POST)
+    public void setCurrentItem(
+            @RequestParam(name = "sessionId") final Long sessionId,
+            @RequestParam(name = "item") final String item
+    ) {
+        sessionManager.setCurrentItem(sessionId, item);
+        messagingUtils.burstItemMessages(sessionId);
     }
 
     @RequestMapping(value = "reset", method = RequestMethod.DELETE)

@@ -38,6 +38,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.isAdmin = false;
     $scope.inSession = false;
     $scope.loading = false;
+    $scope.currentItem = 'the current item';
+    $scope.itemInput = undefined;
 
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.labels = $scope.legalEstimates.map(String);
@@ -81,6 +83,11 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                         });
                     });
                 });
+                stompClient.subscribe("/topic/item/" + $scope.sessionId, function (data) {
+                    $scope.$apply(function () {
+                        $scope.currentItem = data.body
+                    });
+                });
             });
         });
     };
@@ -119,6 +126,12 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                                 return $scope.votedUsers.indexOf(user.toUpperCase()) < 0;
                             });
                         }
+                    });
+                });
+                stompClient.subscribe("/topic/item/" + $scope.sessionId, function (data) {
+                    $scope.$apply(function () {
+                        console.log('received: ' + data.body);
+                        $scope.currentItem = data.body
                     });
                 });
                 $http({
@@ -173,6 +186,17 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 $scope.sessionId = undefined;
             }
         );
+    };
+
+    $scope.setCurrentItem = function () {
+        $http({
+            method: 'POST',
+            url: '/setCurrentItem',
+            params: {
+                sessionId: $scope.sessionId,
+                item: $scope.itemInput
+            }
+        })
     };
 
     $scope.refresh = function () {

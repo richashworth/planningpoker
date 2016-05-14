@@ -32,6 +32,10 @@ public class MessagingUtils {
         template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
     }
 
+    public void sendItemMessage(long sessionId) {
+        template.convertAndSend("/topic/item/" + sessionId, sessionManager.getCurrentItem(sessionId));
+    }
+
     @Async
     public void burstResultsMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
@@ -48,6 +52,14 @@ public class MessagingUtils {
         }
     }
 
+    @Async
+    public void burstItemMessages(Long sessionId) {
+        for (final long LATENCY_DURATION : LATENCIES) {
+            pause(LATENCY_DURATION);
+            sendItemMessage(sessionId);
+        }
+    }
+
     private void pause(long latency) {
         try {
             Thread.sleep(latency);
@@ -55,4 +67,5 @@ public class MessagingUtils {
             e.printStackTrace();
         }
     }
+
 }

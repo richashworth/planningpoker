@@ -1,6 +1,7 @@
 package com.richashworth.planningpoker.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.richashworth.planningpoker.model.Estimate;
 import org.slf4j.Logger;
@@ -17,12 +18,14 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SessionManager {
 
     public static final Long SESSION_SEQ_START_VALUE = 1L;
+    public static final String DEFAULT_ITEM_NAME = "the current item";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final AtomicLong sessionSequence = new AtomicLong(SESSION_SEQ_START_VALUE);
     private final ListMultimap<Long, Estimate> sessionEstimates = ArrayListMultimap.create();
     private final ListMultimap<Long, String> sessionUsers = ArrayListMultimap.create();
+    private final ListMultimap<Long, String> sessionItems = ArrayListMultimap.create();
 
     public boolean isSessionActive(Long sessionId) {
         return sessionId < sessionSequence.get();
@@ -44,10 +47,11 @@ public class SessionManager {
         return sessionUsers.get(sessionId);
     }
 
-    public void clearSessions() {
+    public synchronized void clearSessions() {
         logger.info("Clearing all sessions");
         sessionEstimates.clear();
         sessionUsers.clear();
+        sessionItems.clear();
         sessionSequence.set(SESSION_SEQ_START_VALUE);
     }
 
@@ -57,5 +61,20 @@ public class SessionManager {
 
     public void registerUser(String userName, Long sessionId) {
         sessionUsers.put(sessionId, userName);
+    }
+
+    public String getCurrentItem(Long sessionId) {
+        logger.info("items = " + sessionItems.get(sessionId));
+        String last = Iterables.getLast(sessionItems.get(sessionId), DEFAULT_ITEM_NAME);
+        logger.info("item = " + last);
+        return last;
+    }
+
+    public void setCurrentItem(Long sessionId, String pItem) {
+        if (pItem.length() < 1) {
+            sessionItems.put(sessionId, DEFAULT_ITEM_NAME);
+        } else {
+            sessionItems.put(sessionId, pItem);
+        }
     }
 }
