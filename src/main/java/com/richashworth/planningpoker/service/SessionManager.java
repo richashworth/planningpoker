@@ -64,10 +64,7 @@ public class SessionManager {
     }
 
     public String getCurrentItem(Long sessionId) {
-        logger.info("items = " + sessionItems.get(sessionId));
-        String last = Iterables.getLast(sessionItems.get(sessionId), DEFAULT_ITEM_NAME);
-        logger.info("item = " + last);
-        return last;
+        return Iterables.getLast(sessionItems.get(sessionId), DEFAULT_ITEM_NAME);
     }
 
     public void setCurrentItem(Long sessionId, String pItem) {
