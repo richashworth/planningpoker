@@ -18,7 +18,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void getCurrentItem() throws Exception {
+    public void testGetCurrentItem() throws Exception {
         final Long sessionId = sessionManager.createSession();
         sessionManager.setCurrentItem(sessionId, "first");
         sessionManager.setCurrentItem(sessionId, "second");
@@ -26,4 +26,8 @@ public class SessionManagerTest {
         assertEquals("last", sessionManager.getCurrentItem(sessionId));
     }
 
+    @Test
+    public void testGetDefaultItem() throws Exception {
+        assertEquals(sessionManager.DEFAULT_ITEM_NAME, sessionManager.getCurrentItem(1L));
+    }
 }
