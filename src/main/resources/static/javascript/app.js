@@ -175,6 +175,10 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.vote = function (estimateValue) {
         $scope.voted = true;
         $scope.loading = true;
+        if (!$scope.itemInput) {
+            $scope.itemInput = 'Results';
+            $scope.setCurrentItem();
+        }
         $http({
             method: 'POST',
             url: '/vote',
