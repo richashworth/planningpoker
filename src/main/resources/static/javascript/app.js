@@ -130,7 +130,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 });
                 stompClient.subscribe("/topic/item/" + $scope.sessionId, function (data) {
                     $scope.$apply(function () {
-                        console.log('received: ' + data.body);
                         $scope.currentItem = data.body
                     });
                 });
@@ -145,7 +144,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                     $scope.loading = false;
                 }, function errorCallback(response) {
                     $scope.loading = false;
-                    console.log(response);
                     if (response.data.message == 'user exists') {
                         alert("A user with that name has already registered for this session.");
                         $scope.userName = ''
