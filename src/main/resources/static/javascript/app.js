@@ -122,7 +122,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 stompClient.subscribe("/topic/results/" + $scope.sessionId, function (data) {
                     $scope.$apply(function () {
                         var message = JSON.parse(data.body);
-                        if (message.length == 0) {
+                        if ($scope.voted && message.length == 0) {
                             $scope.voted = false;
                         } else {
                             $scope.resultsdata = $scope.aggregateResults(message);
@@ -170,7 +170,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     };
 
     $scope.vote = function (estimateValue) {
-        $scope.voted = true;
         $scope.loading = true;
         if ($scope.currentItem == $scope.defaultItemText) {
             $scope.currentItem = 'Results';
@@ -186,6 +185,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
         }).then(
             function successCallback(response) {
                 $scope.loading = false;
+                $scope.voted = true;
             },
             function errorCallback(response) {
                 alert("Session " + $scope.sessionId + " is not currently active.");
