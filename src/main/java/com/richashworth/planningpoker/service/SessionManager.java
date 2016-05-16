@@ -1,6 +1,5 @@
 package com.richashworth.planningpoker.service;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.richashworth.planningpoker.model.Estimate;

@@ -3,7 +3,7 @@ package com.richashworth.planningpoker.service;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Rich Ashworth on 14/05/2016.

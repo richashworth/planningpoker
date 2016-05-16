@@ -7,7 +7,6 @@ import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,9 +25,6 @@ public class VoteController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private SessionManager sessionManager;
     private MessagingUtils messagingUtils;
-
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @Autowired
     public VoteController(SessionManager sessionManager, MessagingUtils messagingUtils) {
@@ -52,4 +48,3 @@ public class VoteController {
         messagingUtils.burstResultsMessages(sessionId);
     }
 }
-
