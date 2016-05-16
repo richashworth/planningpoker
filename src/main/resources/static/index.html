@@ -88,9 +88,13 @@
                         <table>
                             <tr ng-show="isAdmin">
                                 <td>
-                                    <input type="text" placeholder="Item to be estimated (e.g. Jira ID)"
-                                           ng-model="itemInput" show-focus="inSession">
-                                    <button ng-click="setCurrentItem()" type="button" style="margin-left: 10pt">
+                                    <form name="itemEntry">
+                                        <input type="text" ng-minlength="1" show-focus="inSession"
+                                               placeholder="Item to be estimated (e.g. Jira ID)" ng-model="itemInput">
+                                    </form>
+
+                                    <button ng-click="setCurrentItem()" type="button" ng-enabled="itemEntry.$valid"
+                                            style="margin-left: 10pt">
                                         Update
                                     </button>
                                 </td>

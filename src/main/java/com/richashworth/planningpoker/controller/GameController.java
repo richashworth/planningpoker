@@ -83,6 +83,7 @@ public class GameController {
         synchronized (sessionManager) {
             sessionManager.resetSession(sessionId);
             messagingUtils.burstResultsMessages(sessionId);
+            messagingUtils.burstItemMessages(sessionId);
         }
     }
 

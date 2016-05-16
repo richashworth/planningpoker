@@ -49,7 +49,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.isAdmin = false;
     $scope.inSession = false;
     $scope.loading = false;
-    $scope.currentItem = 'the current item';
+    $scope.defaultItemText = 'the current item';
+    $scope.currentItem = $scope.defaultItemText;
     $scope.itemInput = undefined;
 
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
@@ -94,11 +95,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                         });
                     });
                 });
-                stompClient.subscribe("/topic/item/" + $scope.sessionId, function (data) {
-                    $scope.$apply(function () {
-                        $scope.currentItem = data.body
-                    });
-                });
             });
         });
     };
@@ -128,7 +124,6 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                         var message = JSON.parse(data.body);
                         if (message.length == 0) {
                             $scope.voted = false;
-                            $scope.currentItem = 'the current item'
                         } else {
                             $scope.resultsdata = $scope.aggregateResults(message);
                             $scope.votedUsers = message.map(function (estimate) {
@@ -142,7 +137,9 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 });
                 stompClient.subscribe("/topic/item/" + $scope.sessionId, function (data) {
                     $scope.$apply(function () {
-                        $scope.currentItem = data.body
+                        if (!$scope.voted || !data.body == $scope.defaultItemText) {
+                            $scope.currentItem = data.body
+                        }
                     });
                 });
                 $http({
@@ -175,9 +172,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.vote = function (estimateValue) {
         $scope.voted = true;
         $scope.loading = true;
-        if (!$scope.itemInput) {
-            $scope.itemInput = 'Results';
-            $scope.setCurrentItem();
+        if ($scope.currentItem == $scope.defaultItemText) {
+            $scope.currentItem = 'Results';
         }
         $http({
             method: 'POST',
@@ -204,14 +200,16 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     };
 
     $scope.setCurrentItem = function () {
+        const item = ($scope.itemInput && $scope.itemInput.length > 0) ? $scope.itemInput : $scope.defaultItemText;
         $http({
             method: 'POST',
             url: '/setCurrentItem',
             params: {
                 sessionId: $scope.sessionId,
-                item: $scope.itemInput
+                item: item
             }
-        })
+        });
+        $scope.currentItem = item;
     };
 
     $scope.refresh = function () {
@@ -226,6 +224,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
 
     $scope.reset = function () {
         $scope.loading = true;
+        $scope.itemInput = undefined;
+        $scope.currentItem = $scope.defaultItemText;
         $http({
             method: 'DELETE',
             url: '/reset',
@@ -236,9 +236,8 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
         }).success(function (response) {
             $scope.loading = false;
             $scope.voted = false;
-            $scope.itemInput = undefined;
-            $scope.currentItem = 'the current item';
-        })
+        });
+        $scope.setCurrentItem();
     };
 
     $scope.aggregateResults = function (result) {

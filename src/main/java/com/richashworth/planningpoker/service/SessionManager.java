@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SessionManager {
 
     public static final Long SESSION_SEQ_START_VALUE = 1L;
-    public static final String DEFAULT_ITEM_NAME = "the current item";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -59,7 +58,6 @@ public class SessionManager {
 
     public void resetSession(Long sessionId) {
         sessionEstimates.removeAll(sessionId);
-        sessionItems.remove(sessionId);
     }
 
     public void registerUser(String userName, Long sessionId) {
@@ -67,14 +65,10 @@ public class SessionManager {
     }
 
     public String getCurrentItem(Long sessionId) {
-        return Optional.fromNullable(sessionItems.get(sessionId)).or(DEFAULT_ITEM_NAME);
+        return sessionItems.get(sessionId);
     }
 
     public void setCurrentItem(Long sessionId, String pItem) {
-        if (pItem.length() < 1) {
-            sessionItems.put(sessionId, DEFAULT_ITEM_NAME);
-        } else {
-            sessionItems.put(sessionId, pItem);
-        }
+        sessionItems.put(sessionId, pItem);
     }
 }

@@ -2,6 +2,7 @@ package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.service.SessionManager;
+import com.richashworth.planningpoker.util.CollectionUtils;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +45,10 @@ public class VoteController {
         logger.info(userName + " has voted " + DECIMAL_FORMAT.format(estimateValue) + " in session " + sessionId);
         if (!sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("Session not active");
+        } else if (!CollectionUtils.containsUserEstimate(sessionManager.getResults(sessionId), userName)) {
+            final Estimate estimate = new Estimate(userName, estimateValue);
+            sessionManager.registerEstimate(sessionId, estimate);
         }
-        final Estimate estimate = new Estimate(userName, estimateValue);
-        sessionManager.registerEstimate(sessionId, estimate);
         messagingUtils.burstResultsMessages(sessionId);
     }
 }
