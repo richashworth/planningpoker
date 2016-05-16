@@ -26,8 +26,4 @@ public class SessionManagerTest {
         assertEquals("last", sessionManager.getCurrentItem(sessionId));
     }
 
-    @Test
-    public void testGetDefaultItem() throws Exception {
-        assertEquals(sessionManager.DEFAULT_ITEM_NAME, sessionManager.getCurrentItem(1L));
-    }
 }
