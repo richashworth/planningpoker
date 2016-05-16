@@ -122,7 +122,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 stompClient.subscribe("/topic/results/" + $scope.sessionId, function (data) {
                     $scope.$apply(function () {
                         var message = JSON.parse(data.body);
-                        if (message.length == 0 && $scope.votedUsers.contains($scope.userName.toUpperCase())) {
+                        if (message.length == 0 && $scope.votedUsers.indexOf($scope.userName.toUpperCase()) > -1) {
                             $scope.voted = false;
                         } else {
                             $scope.resultsdata = $scope.aggregateResults(message);
