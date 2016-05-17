@@ -141,7 +141,7 @@
                     <td>
                         <strong>{{currentItem}}</strong>
                     </td>
-                    <td width="100%" align="right" valign="top">
+                    <td rowspan="2" width="100%" align="right" valign="top">
                         <table cellpadding="8" class="usertbl">
                             <tr>
                                 <th>User</th>
@@ -153,7 +153,7 @@
                             </tr>
                         </table>
                     </td>
-                    <td width="100%" align="right" valign="top" ng-show="waitingFor.length > 0">
+                    <td rowspan="2" width="100%" align="right" valign="top" ng-show="waitingFor.length > 0">
                         <table cellpadding="8" class="usertbl">
                             <tr>
                                 <th>Not Voted</th>
@@ -167,7 +167,7 @@
                 <tr>
                     <td align="top">
                         <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]"
-                                chart-labels="labels" width="575" height="330" style="margin-top: -40pt"></canvas>
+                                chart-labels="labels" width="575" height="330"></canvas>
                     </td>
                 </tr>
                 <tr ng-show="isAdmin">
