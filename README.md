@@ -8,10 +8,10 @@ TODO
 TODO
 
 ## Building the app
-TODO
+```./gradlew build```
 
 ## Running the app
-TODO
+```./gradlew bootRun```
 
 ## Notes
 TODO
