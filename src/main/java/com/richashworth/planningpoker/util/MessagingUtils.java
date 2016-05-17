@@ -34,7 +34,6 @@ public class MessagingUtils {
 
     public void sendItemMessage(long sessionId) {
         final String currentItem = sessionManager.getCurrentItem(sessionId);
-        System.out.println("sending item: " + currentItem);
         if (null != currentItem) {
             template.convertAndSend("/topic/item/" + sessionId, currentItem);
         }
