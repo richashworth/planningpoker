@@ -121,14 +121,16 @@
                         </table>
                     </td>
                     <td width="100%" align="right" valign="top">
-                        <table cellpadding="8" class="regusertbl">
-                            <tr>
-                                <th>Registered Users</th>
-                            </tr>
-                            <tr ng-repeat="user in sessionUsers | orderBy">
-                                <td>{{user | userNameCaseFilter}}</td>
-                            </tr>
-                        </table>
+                        <div style="overflow-y: auto; max-height: 35em">
+                            <table cellpadding="8" class="regusertbl">
+                                <tr>
+                                    <th>Registered Users</th>
+                                </tr>
+                                <tr ng-repeat="user in sessionUsers | orderBy">
+                                    <td>{{user | userNameCaseFilter}}</td>
+                                </tr>
+                            </table>
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -142,26 +144,30 @@
                         <strong>{{currentItem}}</strong>
                     </td>
                     <td rowspan="4" width="100%" align="right" valign="top">
-                        <table cellpadding="8" class="usertbl">
-                            <tr>
-                                <th>User</th>
-                                <th>Estimate</th>
-                            </tr>
-                            <tr ng-repeat="result in votingResults | orderBy: 'estimateValue'">
-                                <td>{{result.userName | userNameCaseFilter}}</td>
-                                <td>{{result.estimateValue}}</td>
-                            </tr>
-                        </table>
+                        <div style="overflow-y: auto; max-height: 35em">
+                            <table cellpadding="8" class="usertbl">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Estimate</th>
+                                </tr>
+                                <tr ng-repeat="result in votingResults | orderBy: 'estimateValue'">
+                                    <td>{{result.userName | userNameCaseFilter}}</td>
+                                    <td>{{result.estimateValue}}</td>
+                                </tr>
+                            </table>
+                        </div>
                     </td>
                     <td rowspan="4" width="100%" align="right" valign="top" ng-show="waitingFor.length > 0">
-                        <table cellpadding="8" class="usertbl">
-                            <tr>
-                                <th>Not Voted</th>
-                            </tr>
-                            <tr ng-repeat="user in waitingFor | orderBy">
-                                <td>{{user | userNameCaseFilter}}</td>
-                            </tr>
-                        </table>
+                        <div style="overflow-y: auto; max-height: 35em">
+                            <table cellpadding="8" class="usertbl">
+                                <tr>
+                                    <th>Not Voted</th>
+                                </tr>
+                                <tr ng-repeat="user in waitingFor | orderBy">
+                                    <td>{{user | userNameCaseFilter}}</td>
+                                </tr>
+                            </table>
+                        </div>
                     </td>
                 </tr>
                 <tr valign="top">
