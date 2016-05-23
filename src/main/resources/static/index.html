@@ -29,10 +29,20 @@
         <nav ng-show="inSession">
             <table>
                 <tr>
-                    <td>{{userName | userNameCaseFilter}}</td>
-                </tr>
-                <tr>
-                    <td><i> Session {{sessionId}} </i></td>
+                    <td valign="center">
+                        <a class="refreshbutton" id="refresh-link" href ng-click="refresh()">↻</a>
+                    </td>
+                    <td></td>
+                    <td>
+                        <table style="margin-top: 10pt">
+                            <tr>
+                                <td>{{userName | userNameCaseFilter}}</td>
+                            </tr>
+                            <tr>
+                                <td><i> Session {{sessionId}} </i></td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
             </table>
         </nav>
@@ -181,17 +191,12 @@
                         <button class="nextbutton" ng-click="reset()" type="button">Next Estimate</button>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="3">
-                        <p style="color: dimgray">
-                            Data on this page should update automatically. In case of network issues, click
-                            <a id="refresh-link" href ng-click="refresh()">here</a> to refresh manually.
-                        </p>
-                    </td>
-                </tr>
             </table>
         </div>
     </div>
+</div>
+<div id="footer">
+    version 1.2.4
 </div>
 
 </body>
