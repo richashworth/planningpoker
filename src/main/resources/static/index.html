@@ -184,8 +184,14 @@
                 </tr>
                 <tr valign="top">
                     <td>
-                        <canvas id="bar" class="chart chart-bar" chart-data="[resultsdata]"
-                                chart-labels="labels" width="575" height="330"></canvas>
+                        <canvas chart-options="{
+                                       tooltipTemplate: '<%= value %> $',
+                                       responsive: true,
+                                       maintainAspectRatio: true
+                                    }"
+                                chart-labels="labels" width="575" height="330"
+                                id="bar" class="chart chart-bar" chart-data="[resultsdata]"
+                        ></canvas>
                     </td>
                 </tr>
                 <tr ng-show="isAdmin">
