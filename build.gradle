@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.4'
-    id 'com.craigburke.bower-installer' version '2.5.1'
+    id 'com.craigburke.client-dependencies' version '1.1.4'
 }
 
 apply plugin: 'java'
@@ -42,13 +42,18 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
-bower {
-    installBase = 'src/main/resources/static/bower'
-    'angular'('1.4.x')
-    'Chart.js'('https://github.com/chartjs/chart.js.git')
-    'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
-    'sockjs'('0.3.4')
-    'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
+clientDependencies {
+    bower {
+        installBase = 'src/main/resources/static/bower'
+        'angular'('1.4.x')
+        'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
+        'sockjs'('0.3.4')
+        'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
+    }
+    npm {
+        'Chart.js'('1.1.1')
+        }
+    }
 }
 
 
