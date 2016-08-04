@@ -56,7 +56,7 @@ public class MessagingUtils {
     }
 
     @Async
-    public void burstItemMessages(Long sessionId) {
+    public void burstItemMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
             pause(LATENCY_DURATION);
             sendItemMessage(sessionId);

@@ -65,14 +65,6 @@ p {
     font-size: large;
 }
 
-.refreshbutton {
-    font-size: 40pt;
-    font-weight: bolder;
-    color: white;
-    vertical-align: middle;
-    text-decoration: none;
-}
-
 #top {
     background-color: #00004d;
     width: 100%;
