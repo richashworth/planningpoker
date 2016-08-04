@@ -1,4 +1,4 @@
-ehDOCTYPE html>
+<!DOCTYPE html>
 <html ng-app="PlanningPoker">
 
 <head>
@@ -30,6 +30,11 @@ ehDOCTYPE html>
         <nav ng-show="inSession">
             <table>
                 <tr>
+                    <td valign="center">
+                        <a class="refreshbutton" id="refresh-link" href ng-click="refresh()"
+                           title="Manually refresh data on this page">↻</a>
+                    </td>
+                    <td></td>
                     <td>
                         <table style="margin-top: 10pt">
                             <tr>
