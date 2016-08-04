@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import static com.richashworth.planningpoker.service.SessionManager.SESSION_SEQ_START_VALUE;
 import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase;
 
@@ -63,6 +65,13 @@ public class GameController {
     ) {
         messagingUtils.sendResultsMessage(sessionId);
         messagingUtils.sendUsersMessage(sessionId);
+    }
+
+    @RequestMapping(value = "sessionUsers", method = RequestMethod.GET)
+    public List<String> getSessionUsers(
+            @RequestParam(name = "sessionId") final Long sessionId
+    ) {
+        return sessionManager.getUsers(sessionId);
     }
 
     @RequestMapping(value = "setCurrentItem", method = RequestMethod.POST)
