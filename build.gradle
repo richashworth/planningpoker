@@ -45,7 +45,7 @@ dependencies {
 bower {
     installBase = 'src/main/resources/static/bower'
     'angular'('1.4.x')
-    'Chart.js'('1.1.1')
+    'Chart.js'('https://github.com/chartjs.git')
     'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
     'sockjs'('0.3.4')
     'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
