@@ -43,8 +43,8 @@ dependencies {
 }
 
 clientDependencies {
-    installDir = 'src/main/resources/static/bower'
     npm {
+        installDir = 'src/main/resources/static/npm'
         'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
         'sockjs'('https://github.com/sockjs/sockjs-client.git')
         'angular'('1.4.x')
