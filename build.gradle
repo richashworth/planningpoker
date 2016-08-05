@@ -64,4 +64,4 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 }
 
-task stage(dependsOn: ["clientClean clientInstall", "build"]) {}
+task stage(dependsOn: ["clientClean", "clientInstall", "build"]) {}
