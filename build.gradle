@@ -44,7 +44,7 @@ dependencies {
 
 clientDependencies {
     npm {
-        installDir = 'src/main/resources/static/npm'
+        installDir = 'src/main/resources/npm'
         'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
         'sockjs'('https://github.com/sockjs/sockjs-client.git')
         'angular'('1.4.x')
@@ -64,4 +64,4 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 }
 
-task stage(dependsOn: ["clientClean", "clientInstall", "build"]) {}
+task stage(dependsOn: ["clientInstall", "build"]) {}
