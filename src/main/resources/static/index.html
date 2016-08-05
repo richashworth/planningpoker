@@ -179,7 +179,19 @@
                 </tr>
                 <tr valign="top">
                     <td>
-                        <canvas chart-options="{responsive: false, maintainAspectRatio: true, scaleShowVerticalLines: false}"
+                        <canvas chart-options="{responsive: false, maintainAspectRatio: true,
+                                  scales: {
+                                    scaleOverride: true,
+                                    scaleSteps: step,
+                                    scaleStepWidth: Math.ceil(max / step),
+                                    scaleStartValue: 0,
+                                    xAxes: [{
+                                        gridLines: {
+                                        drawOnChartArea: false
+                                      }
+                                    }]
+                                  }
+                                }"
                                 chart-labels="labels" width="575" height="330"
                                 id="bar" class="chart chart-bar" chart-data="[resultsdata]"
                         ></canvas>
