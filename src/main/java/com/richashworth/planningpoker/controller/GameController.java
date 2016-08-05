@@ -1,6 +1,6 @@
 package com.richashworth.planningpoker.controller;
 
-import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static com.richashworth.planningpoker.service.SessionManager.SESSION_SEQ_START_VALUE;
 import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase;
@@ -74,8 +76,8 @@ public class GameController {
 
     @RequestMapping(value = "allUsers", method = RequestMethod.GET)
     @ResponseBody
-    public ListMultimap<Long, String> getAllUsers() {
-        return sessionManager.getUsers();
+    public Map<Long, List<String>> getAllUsers() {
+        return Multimaps.asMap(sessionManager.getUsers());
     }
 
     @RequestMapping(value = "setCurrentItem", method = RequestMethod.POST)
