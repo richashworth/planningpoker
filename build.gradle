@@ -4,6 +4,7 @@ buildscript {
     }
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -43,8 +44,8 @@ dependencies {
 }
 
 clientDependencies {
+    installDir = 'src/main/resources/static/bower'
     bower {
-        installBase = 'src/main/resources/static/bower'
         'angular'('1.4.x')
         'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
         'sockjs'('0.3.4')
@@ -54,7 +55,6 @@ clientDependencies {
         'Chart.js'('1.1.1')
     }
 }
-
 
 eclipse {
     classpath {
