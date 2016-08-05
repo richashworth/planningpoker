@@ -48,7 +48,7 @@ public class SessionManager {
     }
 
     public ListMultimap<Long, String> getUsers() {
-        return sessionUsers
+        return sessionUsers;
     }
 
     public synchronized void clearSessions() {
