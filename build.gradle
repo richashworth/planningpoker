@@ -64,4 +64,6 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 }
 
-task stage(dependsOn: ["clientInstall", "build"]) {}
+tasks.processResources.doFirst { clientInstall.execute() }
+
+task stage(dependsOn: ["build"]) {}
