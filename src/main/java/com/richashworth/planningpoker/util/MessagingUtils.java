@@ -29,7 +29,7 @@ public class MessagingUtils {
     }
 
     public void sendUsersMessage(long sessionId) {
-        template.convertAndSend("/topic/users/" + sessionId, sessionManager.getUsers(sessionId));
+        template.convertAndSend("/topic/users/" + sessionId, sessionManager.getSessionUsers(sessionId));
     }
 
     public void sendItemMessage(long sessionId) {

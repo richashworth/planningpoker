@@ -43,8 +43,12 @@ public class SessionManager {
         return sessionEstimates.get(sessionId);
     }
 
-    public List<String> getUsers(Long sessionId) {
+    public List<String> getSessionUsers(Long sessionId) {
         return sessionUsers.get(sessionId);
+    }
+
+    public ListMultimap<Long, String> getUsers() {
+        return sessionUsers
     }
 
     public synchronized void clearSessions() {

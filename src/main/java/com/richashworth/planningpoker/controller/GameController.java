@@ -1,5 +1,6 @@
 package com.richashworth.planningpoker.controller;
 
+import com.google.common.collect.ListMultimap;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class GameController {
     ) {
         if (sessionId < SESSION_SEQ_START_VALUE || !sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("session not found");
-        } else if (containsIgnoreCase(sessionManager.getUsers(sessionId), userName)) {
+        } else if (containsIgnoreCase(sessionManager.getSessionUsers(sessionId), userName)) {
             throw new IllegalArgumentException("user exists");
         } else {
             sessionManager.registerUser(userName, sessionId);
@@ -71,7 +72,12 @@ public class GameController {
     public List<String> getSessionUsers(
             @RequestParam(name = "sessionId") final Long sessionId
     ) {
-        return sessionManager.getUsers(sessionId);
+        return sessionManager.getSessionUsers(sessionId);
+    }
+
+    @RequestMapping(value = "allUsers", method = RequestMethod.GET)
+    public ListMultimap<Long, String> getAllUsers() {
+        return sessionManager.getUsers();
     }
 
     @RequestMapping(value = "setCurrentItem", method = RequestMethod.POST)
