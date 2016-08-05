@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.4'
-    id 'com.craigburke.client-dependencies' version '1.1.3'
+    id 'com.craigburke.client-dependencies' version '1.1.4'
 }
 
 apply plugin: 'java'
@@ -44,14 +44,12 @@ dependencies {
 
 clientDependencies {
     installDir = 'src/main/resources/static/bower'
-    bower {
-    }
     npm {
         'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
         'sockjs'('https://github.com/sockjs/sockjs-client.git')
         'angular'('1.4.x')
         'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
-//        'Chart.js'('1.1.1')
+        'Chart.js'('https://github.com/chartjs/Chart.js.git')
     }
 }
 
