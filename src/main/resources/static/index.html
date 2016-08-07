@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" co
-          ntent="IE=edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
     <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="stylesheets/style.css"/>
@@ -179,21 +178,25 @@
                 </tr>
                 <tr valign="top">
                     <td>
-                        <canvas chart-options="{responsive: false, maintainAspectRatio: true,
-                                scales: {
-                                    scaleOverride: true,
-                                    scaleSteps: 1,
-                                    scaleStartValue: 0,
-                                    xAxes: [{
+                        <canvas id="bar" chart-labels="labels" class="chart chart-bar"
+                                chart-data="[resultsdata]" width="625" height="350"
+                                chart-options="
+                                  {responsive: false,
+                                    scales: {
+                                      scaleOverride: true,
+                                      yAxes: [{
+                                        ticks: {
+                                          stepSize: 1
+                                        }
+                                      }],
+                                      xAxes: [{
                                         gridLines: {
-                                        drawOnChartArea: false
-                                      }
-                                    }]
-                                  }
-                                }"
-                                chart-labels="labels" width="575" height="330"
-                                id="bar" class="chart chart-bar" chart-data="[resultsdata]"
-                        ></canvas>
+                                          drawOnChartArea: false
+                                        }
+                                      }]
+                                    }
+                                  }">
+                        </canvas>
                     </td>
                 </tr>
                 <tr ng-show="isAdmin">
