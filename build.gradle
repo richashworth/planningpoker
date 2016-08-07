@@ -19,13 +19,14 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'jacoco'
 
 jar {
     baseName = 'planningpoker'
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 sourceCompatibility = 1.6
@@ -50,6 +51,12 @@ clientDependencies {
         'angular'('1.5.x')
         'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
         'Chart.js'('https://github.com/chartjs/Chart.js.git')
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
     }
 }
 
