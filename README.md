@@ -2,4 +2,4 @@
 # Planning Poker
 
 ## About 
-A simple web-based [planning poker]() game.`
+A simple web-based [planning poker](https://en.wikipedia.org/wiki/Planning_poker) game.
