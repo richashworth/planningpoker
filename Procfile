@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/planningpoker-1.2.11-SNAPSHOT.jar
+web: java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/planningpoker-1.2.12-SNAPSHOT.jar
