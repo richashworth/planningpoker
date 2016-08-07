@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -74,10 +73,10 @@ public class GameController {
         return sessionManager.getSessionUsers(sessionId);
     }
 
-    @RequestMapping(value = "allUsers", method = RequestMethod.GET)
+    @RequestMapping(value = "games", method = RequestMethod.GET)
     @ResponseBody
-    public Map<Long, List<String>> getAllUsers() {
-        return Multimaps.asMap(sessionManager.getUsers());
+    public Map<Long, List<String>> getGames() {
+        return Multimaps.asMap(sessionManager.getGames());
     }
 
     @RequestMapping(value = "setCurrentItem", method = RequestMethod.POST)
