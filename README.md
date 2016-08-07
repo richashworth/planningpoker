@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/richashworth/planningpoker.svg?branch=master)](https://travis-ci.org/richashworth/planningpoker)
+[![codecov](https://codecov.io/gh/richashworth/planningpoker/branch/master/graph/badge.svg)](https://codecov.io/gh/richashworth/planningpoker)
 # Planning Poker
 
 ## About 
