@@ -2,16 +2,4 @@
 # Planning Poker
 
 ## About 
-TODO
-
-## Usage Instructions
-TODO
-
-## Building the app
-```./gradlew build```
-
-## Running the app
-```./gradlew bootRun```
-
-## Notes
-TODO
+A simple web-based [planning poker]() game.`
