@@ -53,6 +53,9 @@ clientDependencies {
         'Chart.js'('https://github.com/chartjs/Chart.js.git')
     }
 }
+
+tasks.processResources.dependsOn(["clientRefresh"])
+
 jacocoTestReport {
     reports {
         xml.enabled = true
@@ -72,7 +75,5 @@ eclipse {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 }
-
-tasks.processResources.dependsOn(["clientRefresh"])
 
 task stage(dependsOn: ["build"]) {}
