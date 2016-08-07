@@ -64,6 +64,6 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 }
 
-tasks.processResources(dependsOn: ["clientRefresh"])
+tasks.processResources.dependsOn(["clientRefresh"])
 
 task stage(dependsOn: ["build"]) {}
