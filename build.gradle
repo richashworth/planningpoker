@@ -53,12 +53,14 @@ clientDependencies {
         'Chart.js'('https://github.com/chartjs/Chart.js.git')
     }
 }
-
 jacocoTestReport {
     reports {
-        xml.enabled true
+        xml.enabled = true
+        html.enabled = true
     }
 }
+
+check.dependsOn jacocoTestReport
 
 eclipse {
     classpath {
