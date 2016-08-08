@@ -28,7 +28,7 @@ public class SessionManager {
     private final Map<Long, String> sessionItems = new HashMap<Long, String>();
 
     public boolean isSessionActive(Long sessionId) {
-        return sessionId < sessionSequence.get();
+        return SESSION_SEQ_START_VALUE <= sessionId && sessionId < sessionSequence.get();
     }
 
     public Long createSession() {
