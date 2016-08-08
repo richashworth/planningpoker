@@ -1,9 +1,12 @@
 package com.richashworth.planningpoker.util;
 
+import com.google.common.collect.Sets;
+import com.richashworth.planningpoker.model.Estimate;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,4 +29,18 @@ public class CollectionUtilsTest {
         Assert.assertFalse(CollectionUtils.containsIgnoreCase(inputList, "Richard"));
     }
 
+    @Test
+    public void testContainsUserEstimate() throws Exception {
+        final String userName = "Rich A";
+        final Estimate estimate = new Estimate(userName, 5D);
+        final Collection<Estimate> estimates = Sets.newHashSet(estimate);
+        Assert.assertTrue(CollectionUtils.containsUserEstimate(estimates, userName));
+    }
+
+    @Test
+    public void testNotContainsUserEstimate() throws Exception {
+        final Estimate estimate = new Estimate("Rich A", 5D);
+        final Collection<Estimate> estimates = Sets.newHashSet(estimate);
+        Assert.assertFalse(CollectionUtils.containsUserEstimate(estimates, "Jimmy Page"));
+    }
 }
