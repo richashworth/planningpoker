@@ -73,10 +73,10 @@ public class GameController {
         return sessionManager.getSessionUsers(sessionId);
     }
 
-    @RequestMapping(value = "games", method = RequestMethod.GET)
+    @RequestMapping(value = "sessions", method = RequestMethod.GET)
     @ResponseBody
-    public Map<Long, List<String>> getGames() {
-        return Multimaps.asMap(sessionManager.getGames());
+    public Map<Long, List<String>> getSessions() {
+        return Multimaps.asMap(sessionManager.getSessions());
     }
 
     @RequestMapping(value = "setCurrentItem", method = RequestMethod.POST)

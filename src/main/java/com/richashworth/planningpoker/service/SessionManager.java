@@ -47,7 +47,7 @@ public class SessionManager {
         return sessionUsers.get(sessionId);
     }
 
-    public ListMultimap<Long, String> getGames() {
+    public ListMultimap<Long, String> getSessions() {
         return sessionUsers;
     }
 

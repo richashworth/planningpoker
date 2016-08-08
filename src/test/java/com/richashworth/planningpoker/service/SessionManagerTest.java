@@ -63,24 +63,24 @@ public class SessionManagerTest {
 
 
     @Test
-    public void testGetGames() throws Exception {
+    public void testGetSessions() throws Exception {
         final Long sessionOne = sessionManager.createSession();
         final Long sessionTwo = sessionManager.createSession();
         final ArrayList<String> sessionOneUsers = Lists.newArrayList("Rich", "Helen", "Tim");
         final ArrayList<String> sessionTwoUsers = Lists.newArrayList("Jan", "Toby", "Dani");
-        final ListMultimap<Long, String> expectedGames = ArrayListMultimap.create();
+        final ListMultimap<Long, String> expected = ArrayListMultimap.create();
 
         for (String user : sessionOneUsers) {
-            expectedGames.put(sessionOne, user);
+            expected.put(sessionOne, user);
         }
         for (String user : sessionTwoUsers) {
-            expectedGames.put(sessionTwo, user);
+            expected.put(sessionTwo, user);
         }
-        final ListMultimap<Long, String> games = sessionManager.getGames();
+        final ListMultimap<Long, String> sessions = sessionManager.getSessions();
 
         registerUsers(sessionOne, sessionOneUsers);
         registerUsers(sessionTwo, sessionTwoUsers);
-        assertEquals(expectedGames, games);
+        assertEquals(expected, sessions);
     }
 
     @Test
