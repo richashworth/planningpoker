@@ -53,8 +53,8 @@ public class SessionManager {
 
     public synchronized void clearSessions() {
         logger.info("Clearing all sessions");
-        sessionEstimates.clear();
         sessionUsers.clear();
+        sessionEstimates.clear();
         sessionItems.clear();
         sessionSequence.set(SESSION_SEQ_START_VALUE);
     }
