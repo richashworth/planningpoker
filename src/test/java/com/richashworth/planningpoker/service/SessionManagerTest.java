@@ -1,10 +1,13 @@
 package com.richashworth.planningpoker.service;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.model.Estimate;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -47,6 +50,43 @@ public class SessionManagerTest {
         sessionManager.registerEstimate(sessionId, estimate);
         final List<Estimate> results = sessionManager.getResults(sessionId);
         assertEquals(Lists.newArrayList(estimate), results);
+    }
+
+    @Test
+    public void testGetSessionUsers() throws Exception {
+        final Long sessionId = sessionManager.createSession();
+        final ArrayList<String> users = Lists.newArrayList("Alice", "Bob", "Marvin");
+        registerUsers(sessionId, users);
+        sessionManager.registerUser("Frank Z", sessionManager.createSession());
+        assertEquals(users, sessionManager.getSessionUsers(sessionId));
+    }
+
+
+    @Test
+    public void testGetGames() throws Exception {
+        final Long sessionOne = sessionManager.createSession();
+        final Long sessionTwo = sessionManager.createSession();
+        final ArrayList<String> sessionOneUsers = Lists.newArrayList("Rich", "Helen", "Tim");
+        final ArrayList<String> sessionTwoUsers = Lists.newArrayList("Jan", "Toby", "Dani");
+        final ListMultimap<Long, String> expectedGames = ArrayListMultimap.create();
+
+        for (String user : sessionOneUsers) {
+            expectedGames.put(sessionOne, user);
+        }
+        for (String user : sessionTwoUsers) {
+            expectedGames.put(sessionTwo, user);
+        }
+        final ListMultimap<Long, String> games = sessionManager.getGames();
+
+        registerUsers(sessionOne, sessionOneUsers);
+        registerUsers(sessionTwo, sessionTwoUsers);
+        assertEquals(expectedGames, games);
+    }
+
+    private void registerUsers(Long sessionId, ArrayList<String> users) {
+        for (String user : users) {
+            sessionManager.registerUser(user, sessionId);
+        }
     }
 
 }
