@@ -27,7 +27,7 @@ public class SessionManager {
     private final ListMultimap<Long, String> sessionUsers = ArrayListMultimap.create();
     private final Map<Long, String> sessionItems = new HashMap<Long, String>();
 
-    public boolean isSessionActive(Long sessionId) {
+    public boolean isSessionActive(final Long sessionId) {
         return SESSION_SEQ_START_VALUE <= sessionId && sessionId < sessionSequence.get();
     }
 
@@ -35,15 +35,15 @@ public class SessionManager {
         return sessionSequence.getAndIncrement();
     }
 
-    public void registerEstimate(Long sessionID, Estimate estimate) {
+    public void registerEstimate(final Long sessionID, final Estimate estimate) {
         sessionEstimates.put(sessionID, estimate);
     }
 
-    public List<Estimate> getResults(Long sessionId) {
+    public List<Estimate> getResults(final Long sessionId) {
         return sessionEstimates.get(sessionId);
     }
 
-    public List<String> getSessionUsers(Long sessionId) {
+    public List<String> getSessionUsers(final Long sessionId) {
         return sessionUsers.get(sessionId);
     }
 
@@ -59,19 +59,19 @@ public class SessionManager {
         sessionSequence.set(SESSION_SEQ_START_VALUE);
     }
 
-    public void resetSession(Long sessionId) {
+    public void resetSession(final Long sessionId) {
         sessionEstimates.removeAll(sessionId);
     }
 
-    public void registerUser(String userName, Long sessionId) {
+    public void registerUser(final String userName, final Long sessionId) {
         sessionUsers.put(sessionId, userName);
     }
 
-    public String getCurrentItem(Long sessionId) {
+    public String getCurrentItem(final Long sessionId) {
         return sessionItems.get(sessionId);
     }
 
-    public void setCurrentItem(Long sessionId, String pItem) {
+    public void setCurrentItem(final Long sessionId, final String pItem) {
         sessionItems.put(sessionId, pItem);
     }
 }
