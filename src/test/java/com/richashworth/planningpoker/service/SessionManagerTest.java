@@ -83,6 +83,21 @@ public class SessionManagerTest {
         assertEquals(expectedGames, games);
     }
 
+    @Test
+    public void testClearSessions() {
+        final Long sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Rich", sessionId);
+        sessionManager.registerEstimate(sessionId, new Estimate("Rich", 8D));
+        sessionManager.setCurrentItem(sessionId, "my user story");
+        sessionManager.clearSessions();
+
+        assertTrue(sessionManager.getResults(sessionId).isEmpty());
+        assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
+        assertNull(sessionManager.getCurrentItem(sessionId));
+
+        assertEquals(sessionId, sessionManager.createSession());
+    }
+
     private void registerUsers(Long sessionId, ArrayList<String> users) {
         for (String user : users) {
             sessionManager.registerUser(user, sessionId);
