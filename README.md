@@ -8,3 +8,12 @@ A simple web-based [planning poker](https://en.wikipedia.org/wiki/Planning_poker
 
 ## Demo
 https://rocky-hollows-17288.herokuapp.com/ 
+
+## Running the application
+Planning Poker is built with [Spring Boot](http://projects.spring.io/spring-boot). 
+To build and run from the source code:
+
+`./gradlew clientInstall bootRun`
+
+Alternatively, binaries for the latest released version can be found 
+[here](https://github.com/richashworth/planningpoker/releases/latest).
