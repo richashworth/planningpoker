@@ -22,7 +22,7 @@ public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
-    private MessagingUtils messagingUtils;
+    private final MessagingUtils messagingUtils;
 
     @Autowired
     public GameController(SessionManager sessionManager, MessagingUtils messagingUtils) {

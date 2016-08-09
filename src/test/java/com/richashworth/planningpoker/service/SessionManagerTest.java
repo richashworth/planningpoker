@@ -20,7 +20,7 @@ public class SessionManagerTest {
     private SessionManager sessionManager;
 
     @Before
-    public void setup() {
+    public void setUp() {
         sessionManager = new SessionManager();
     }
 

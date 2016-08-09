@@ -2,7 +2,9 @@ package com.richashworth.planningpoker.controller;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -10,6 +12,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Rich Ashworth on 09/08/2016.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class VoteControllerTest extends AbstractControllerTest {
 
     @InjectMocks

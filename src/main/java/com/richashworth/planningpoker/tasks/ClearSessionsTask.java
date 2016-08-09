@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClearSessionsTask {
 
-    private SessionManager sessionManager;
+    private final SessionManager sessionManager;
 
     @Autowired
     public ClearSessionsTask(SessionManager sessionManager) {

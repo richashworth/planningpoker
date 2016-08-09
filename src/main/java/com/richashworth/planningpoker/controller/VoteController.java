@@ -20,11 +20,11 @@ import java.text.DecimalFormat;
 @RestController
 public class VoteController {
 
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private SessionManager sessionManager;
-    private MessagingUtils messagingUtils;
+    private final SessionManager sessionManager;
+    private final MessagingUtils messagingUtils;
 
     @Autowired
     public VoteController(SessionManager sessionManager, MessagingUtils messagingUtils) {

@@ -5,7 +5,9 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.service.SessionManager;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by Rich Ashworth on 09/08/2016.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class GameControllerTest extends AbstractControllerTest {
 
     @InjectMocks

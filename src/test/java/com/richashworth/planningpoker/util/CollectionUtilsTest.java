@@ -2,14 +2,14 @@ package com.richashworth.planningpoker.util;
 
 import com.google.common.collect.Sets;
 import com.richashworth.planningpoker.model.Estimate;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Rich Ashworth on 04/05/2016.
