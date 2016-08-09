@@ -54,7 +54,7 @@ clientDependencies {
     }
 }
 
-tasks.processResources.dependsOn(["clientRefresh"])
+tasks.processResources.dependsOn(["clientInstall"])
 
 jacocoTestReport {
     reports {
