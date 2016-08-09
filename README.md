@@ -15,5 +15,5 @@ To build and run from the source code:
 
 `./gradlew clientInstall bootRun`
 
-Alternatively, binaries for the latest released version can be found 
+Alternatively, binaries for the latest release can be found 
 [here](https://github.com/richashworth/planningpoker/releases/latest).
