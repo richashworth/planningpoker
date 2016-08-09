@@ -21,7 +21,7 @@ import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnore
 public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private SessionManager sessionManager;
+    private final SessionManager sessionManager;
     private MessagingUtils messagingUtils;
 
     @Autowired
@@ -64,6 +64,7 @@ public class GameController {
     ) {
         messagingUtils.sendResultsMessage(sessionId);
         messagingUtils.sendUsersMessage(sessionId);
+        messagingUtils.sendItemMessage(sessionId);
     }
 
     @RequestMapping(value = "sessionUsers", method = RequestMethod.GET)
