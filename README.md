@@ -7,7 +7,7 @@ A simple web-based [planning poker](https://en.wikipedia.org/wiki/Planning_poker
 
 
 ## Demo
-https://rocky-hollows-17288.herokuapp.com/ 
+https://rocky-hollows-17288.herokuapp.com
 
 ## Running the application
 Planning Poker is built with [Spring Boot](http://projects.spring.io/spring-boot). 
