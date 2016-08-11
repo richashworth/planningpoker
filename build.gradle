@@ -40,6 +40,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework:spring-messaging")
     compile('org.springframework.boot:spring-boot-devtools')
+    compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.32.1'
+    
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
