@@ -9,6 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Created by Rich Ashworth on 14/08/2016.
@@ -26,6 +27,7 @@ public class ClearSessionsTaskTest {
     public void testClearSessions() throws Exception {
         clearSessionsTask.clearSessions();
         verify(sessionManager, times(1)).clearSessions();
+        verifyNoMoreInteractions(sessionManager);
     }
 
 }
