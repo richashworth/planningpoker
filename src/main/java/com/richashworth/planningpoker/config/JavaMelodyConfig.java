@@ -1,9 +1,11 @@
 package com.richashworth.planningpoker.config;
 
+//import net.bull.javamelody.*;
+
 import net.bull.javamelody.*;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
@@ -82,4 +84,3 @@ public class JavaMelodyConfig implements ServletContextInitializer {
         return interceptor;
     }
 }
-
