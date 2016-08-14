@@ -55,19 +55,4 @@ public class MessagingUtilsTest {
         verify(template).convertAndSend("/topic/item/" + SESSION_ID, ITEM);
     }
 
-    @Test
-    public void burstResultsMessages() throws Exception {
-
-    }
-
-    @Test
-    public void burstUsersMessages() throws Exception {
-
-    }
-
-    @Test
-    public void burstItemMessages() throws Exception {
-
-    }
-
 }
