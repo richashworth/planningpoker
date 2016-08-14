@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
+import static com.richashworth.planningpoker.util.Clock.LATENCIES;
 import static org.mockito.Mockito.*;
 
 /**
@@ -23,6 +24,9 @@ public class MessagingUtilsTest {
     private MessagingUtils messagingUtils;
 
     @Mock
+    private Clock clock;
+
+    @Mock
     private SessionManager sessionManager;
 
     @Mock
@@ -30,6 +34,7 @@ public class MessagingUtilsTest {
 
     @Before
     public void setUp() {
+        ReflectionTestUtils.setField(messagingUtils, "clock", clock);
         ReflectionTestUtils.setField(messagingUtils, "template", template);
     }
 
@@ -37,27 +42,61 @@ public class MessagingUtilsTest {
     public void testSendResultsMessage() throws Exception {
         when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
         messagingUtils.sendResultsMessage(SESSION_ID);
-        verify(template).convertAndSend("/topic/results/" + SESSION_ID, RESULTS);
+        verifyMessageSent(1, "/topic/results/" + SESSION_ID, RESULTS);
     }
 
     @Test
     public void testSendUsersMessage() throws Exception {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
         messagingUtils.sendUsersMessage(SESSION_ID);
-        verify(template).convertAndSend("/topic/users/" + SESSION_ID, USERS);
+        verifyMessageSent(1, "/topic/users/" + SESSION_ID, USERS);
     }
 
     @Test
     public void testSendItemMessage() throws Exception {
         when(sessionManager.getCurrentItem(SESSION_ID)).thenReturn(ITEM);
         messagingUtils.sendItemMessage(SESSION_ID);
-        verify(template).convertAndSend("/topic/item/" + SESSION_ID, ITEM);
+        verifyMessageSent(1, "/topic/item/" + SESSION_ID, ITEM);
     }
 
     @Test
     public void testDoNotSendNullItemMessage() throws Exception {
         messagingUtils.sendItemMessage(SESSION_ID);
         verifyZeroInteractions(template);
+    }
+
+    @Test
+    public void testBurstResultsMessages() throws Exception {
+        when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
+        messagingUtils.burstResultsMessages(SESSION_ID);
+        for (long latency : LATENCIES) {
+            verify(clock, times(1)).pause(latency);
+        }
+        verifyMessageSent(LATENCIES.length, "/topic/results/" + SESSION_ID, RESULTS);
+    }
+
+    @Test
+    public void testBurstUsersMessages() throws Exception {
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
+        messagingUtils.burstUsersMessages(SESSION_ID);
+        for (long latency : LATENCIES) {
+            verify(clock, times(1)).pause(latency);
+        }
+        verifyMessageSent(LATENCIES.length, "/topic/users/" + SESSION_ID, USERS);
+    }
+
+    @Test
+    public void testBurstItemMessages() throws Exception {
+        when(sessionManager.getCurrentItem(SESSION_ID)).thenReturn(ITEM);
+        messagingUtils.burstItemMessages(SESSION_ID);
+        for (long latency : LATENCIES) {
+            verify(clock, times(1)).pause(latency);
+        }
+        verifyMessageSent(LATENCIES.length, "/topic/item/" + SESSION_ID, ITEM);
+    }
+
+    private void verifyMessageSent(int numberInvocations, String destination, Object payload) {
+        verify(template, times(numberInvocations)).convertAndSend(destination, payload);
     }
 
 }

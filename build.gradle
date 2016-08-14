@@ -38,15 +38,17 @@ sourceCompatibility = 1.6
 ext['tomcat.version'] = '7.0.59' // needed for Java 6 compatibility
 
 dependencies {
-    compile('com.google.guava:guava:19.0')
-    compile('org.apache.commons:commons-lang3:3.4')
-    compile('org.projectlombok:lombok:1.16.6')
-    compile('org.springframework:spring-messaging')
-    compile('org.springframework.boot:spring-boot-starter-websocket')
-    compile('org.springframework.boot:spring-boot-devtools')
-    compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.32.1'
+    compile 'com.google.guava:guava:19.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.projectlombok:lombok:1.16.6'
+    compile 'org.springframework:spring-messaging'
+    compile 'org.springframework.boot:spring-boot-starter-websocket'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'net.bull.javamelody:javamelody-core:1.32.1'
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile 'org.powermock:powermock-api-mockito:1.6.5'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.5'
 }
 
 clientDependencies {

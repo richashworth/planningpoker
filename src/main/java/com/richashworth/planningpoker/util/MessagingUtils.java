@@ -6,13 +6,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import static com.richashworth.planningpoker.util.Clock.LATENCIES;
+
 /**
  * Created by Rich Ashworth on 03/05/2016.
  */
 @Component
 public class MessagingUtils {
-
-    private static final long[] LATENCIES = new long[]{0L, 50L, 100L, 500L, 1000L, 2000L, 5000L, 10000L};
 
     private final SessionManager sessionManager;
 
@@ -20,6 +20,9 @@ public class MessagingUtils {
     public MessagingUtils(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
+
+    @Autowired
+    private Clock clock;
 
     @Autowired
     private SimpMessagingTemplate template;
@@ -42,7 +45,7 @@ public class MessagingUtils {
     @Async
     public void burstResultsMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
-            pause(LATENCY_DURATION);
+            clock.pause(LATENCY_DURATION);
             sendResultsMessage(sessionId);
         }
     }
@@ -50,7 +53,7 @@ public class MessagingUtils {
     @Async
     public void burstUsersMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
-            pause(LATENCY_DURATION);
+            clock.pause(LATENCY_DURATION);
             sendUsersMessage(sessionId);
         }
     }
@@ -58,16 +61,8 @@ public class MessagingUtils {
     @Async
     public void burstItemMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
-            pause(LATENCY_DURATION);
+            clock.pause(LATENCY_DURATION);
             sendItemMessage(sessionId);
-        }
-    }
-
-    private void pause(long latency) {
-        try {
-            Thread.sleep(latency);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
