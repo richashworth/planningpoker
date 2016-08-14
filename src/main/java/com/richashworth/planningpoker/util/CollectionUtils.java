@@ -11,8 +11,7 @@ import java.util.Collection;
  */
 public class CollectionUtils {
 
-    private CollectionUtils(){
-
+    private CollectionUtils() {
     }
 
     public static boolean containsIgnoreCase(final Collection<String> collection, final String matching) {
