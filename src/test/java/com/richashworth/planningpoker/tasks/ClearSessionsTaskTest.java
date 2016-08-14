@@ -23,8 +23,8 @@ public class ClearSessionsTaskTest {
     private SessionManager sessionManager;
 
     @Test
-    public void testResetSessions() throws Exception {
-        clearSessionsTask.resetSessions();
+    public void testClearSessions() throws Exception {
+        clearSessionsTask.clearSessions();
         verify(sessionManager, times(1)).clearSessions();
     }
 
