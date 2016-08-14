@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 
+import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 

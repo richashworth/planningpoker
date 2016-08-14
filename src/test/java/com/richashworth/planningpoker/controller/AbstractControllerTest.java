@@ -17,11 +17,6 @@ import static org.mockito.Mockito.inOrder;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractControllerTest {
 
-    static final Long SESSION_ID = 1L;
-    static final String USER_NAME = "Rich";
-    static final Double ESTIMATE_VALUE = 2D;
-    static final Estimate ESTIMATE = new Estimate(USER_NAME, ESTIMATE_VALUE);
-
     InOrder inOrder;
 
     @Mock

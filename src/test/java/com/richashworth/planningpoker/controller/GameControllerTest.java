@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.SESSION_ID;
+import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.USER_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
