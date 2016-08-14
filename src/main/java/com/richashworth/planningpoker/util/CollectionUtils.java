@@ -11,6 +11,10 @@ import java.util.Collection;
  */
 public class CollectionUtils {
 
+    private CollectionUtils(){
+
+    }
+
     public static boolean containsIgnoreCase(final Collection<String> collection, final String matching) {
         return FluentIterable.from(collection).anyMatch(new Predicate<String>() {
             @Override
