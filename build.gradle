@@ -25,6 +25,10 @@ jar {
     baseName = 'planningpoker'
 }
 
+springBoot {
+    executable = true
+}
+
 repositories {
     jcenter()
 }
