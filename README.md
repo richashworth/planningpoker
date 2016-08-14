@@ -5,7 +5,6 @@
 ## About 
 A simple web-based [planning poker](https://en.wikipedia.org/wiki/Planning_poker) game.
 
-
 ## Demo
 https://rocky-hollows-17288.herokuapp.com
 
