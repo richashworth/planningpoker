@@ -1,6 +1,5 @@
 package com.richashworth.planningpoker.controller;
 
-import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.junit.Before;
