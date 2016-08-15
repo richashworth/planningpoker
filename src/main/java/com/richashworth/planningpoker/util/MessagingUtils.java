@@ -14,6 +14,10 @@ import static com.richashworth.planningpoker.util.Clock.LATENCIES;
 @Component
 public class MessagingUtils {
 
+    public static final String TOPIC_RESULTS = "/topic/results/";
+    public static final String TOPIC_USERS = "/topic/users/";
+    public static final String TOPIC_ITEM = "/topic/item/";
+
     private final SessionManager sessionManager;
 
     @Autowired
@@ -28,17 +32,17 @@ public class MessagingUtils {
     private SimpMessagingTemplate template;
 
     public void sendResultsMessage(long sessionId) {
-        template.convertAndSend("/topic/results/" + sessionId, sessionManager.getResults(sessionId));
+        template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), sessionManager.getResults(sessionId));
     }
 
     public void sendUsersMessage(long sessionId) {
-        template.convertAndSend("/topic/users/" + sessionId, sessionManager.getSessionUsers(sessionId));
+        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), sessionManager.getSessionUsers(sessionId));
     }
 
     public void sendItemMessage(long sessionId) {
         final String currentItem = sessionManager.getCurrentItem(sessionId);
         if (null != currentItem) {
-            template.convertAndSend("/topic/item/" + sessionId, currentItem);
+            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), currentItem);
         }
     }
 
@@ -64,6 +68,10 @@ public class MessagingUtils {
             sendItemMessage(sessionId);
             clock.pause(LATENCY_DURATION);
         }
+    }
+
+    public static String getTopic(String topicRoot, long sessionId) {
+        return topicRoot + sessionId;
     }
 
 }

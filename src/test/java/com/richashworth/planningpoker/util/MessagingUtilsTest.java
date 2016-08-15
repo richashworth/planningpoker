@@ -12,6 +12,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
+import static com.richashworth.planningpoker.util.MessagingUtils.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -39,24 +41,30 @@ public class MessagingUtilsTest {
     }
 
     @Test
+    public void testGetTopic() throws Exception {
+        final String result = MessagingUtils.getTopic("/topic/root/", 1L);
+        assertEquals("/topic/root/1", result);
+    }
+
+    @Test
     public void testSendResultsMessage() throws Exception {
         when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
         messagingUtils.sendResultsMessage(SESSION_ID);
-        verifyMessageSent(1, "/topic/results/" + SESSION_ID, RESULTS);
+        verifyMessageSent(1, getTopic(TOPIC_RESULTS, SESSION_ID), RESULTS);
     }
 
     @Test
     public void testSendUsersMessage() throws Exception {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
         messagingUtils.sendUsersMessage(SESSION_ID);
-        verifyMessageSent(1, "/topic/users/" + SESSION_ID, USERS);
+        verifyMessageSent(1, getTopic(TOPIC_USERS, SESSION_ID), USERS);
     }
 
     @Test
     public void testSendItemMessage() throws Exception {
         when(sessionManager.getCurrentItem(SESSION_ID)).thenReturn(ITEM);
         messagingUtils.sendItemMessage(SESSION_ID);
-        verifyMessageSent(1, "/topic/item/" + SESSION_ID, ITEM);
+        verifyMessageSent(1, getTopic(TOPIC_ITEM, SESSION_ID), ITEM);
     }
 
     @Test
@@ -72,7 +80,7 @@ public class MessagingUtilsTest {
         for (long latency : LATENCIES) {
             verify(clock, times(1)).pause(latency);
         }
-        verifyMessageSent(LATENCIES.length, "/topic/results/" + SESSION_ID, RESULTS);
+        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_RESULTS, SESSION_ID), RESULTS);
     }
 
     @Test
@@ -82,7 +90,7 @@ public class MessagingUtilsTest {
         for (long latency : LATENCIES) {
             verify(clock, times(1)).pause(latency);
         }
-        verifyMessageSent(LATENCIES.length, "/topic/users/" + SESSION_ID, USERS);
+        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_USERS, SESSION_ID), USERS);
     }
 
     @Test
@@ -92,7 +100,7 @@ public class MessagingUtilsTest {
         for (long latency : LATENCIES) {
             verify(clock, times(1)).pause(latency);
         }
-        verifyMessageSent(LATENCIES.length, "/topic/item/" + SESSION_ID, ITEM);
+        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_ITEM, SESSION_ID), ITEM);
     }
 
     private void verifyMessageSent(int numberInvocations, String destination, Object payload) {
