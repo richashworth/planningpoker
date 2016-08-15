@@ -1,6 +1,7 @@
 package com.richashworth.planningpoker.util;
 
 import com.richashworth.planningpoker.service.SessionManager;
+import org.jetbrains.annotations.Contract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -21,15 +22,15 @@ public class MessagingUtils {
     private final SessionManager sessionManager;
 
     @Autowired
-    public MessagingUtils(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
-    }
-
-    @Autowired
     private Clock clock;
 
     @Autowired
     private SimpMessagingTemplate template;
+
+    @Autowired
+    public MessagingUtils(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
 
     public void sendResultsMessage(long sessionId) {
         template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), sessionManager.getResults(sessionId));
@@ -70,6 +71,7 @@ public class MessagingUtils {
         }
     }
 
+    @Contract(pure = true)
     public static String getTopic(String topicRoot, long sessionId) {
         return topicRoot + sessionId;
     }
