@@ -32,7 +32,7 @@ public class JavaMelodyConfig implements ServletContextInitializer {
 
         // see the list of parameters:
         // https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
-        javaMelody.addInitParameter(Parameter.LOG.getCode(), Boolean.toString(true));
+        javaMelody.addInitParameter(Parameter.LOG.getCode(), Boolean.toString(false));
         // to exclude images, css, fonts and js urls from the monitoring:
         javaMelody.addInitParameter(Parameter.URL_EXCLUDE_PATTERN.getCode(), "(/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)");
         // to add basic auth:
