@@ -45,24 +45,24 @@ public class MessagingUtils {
     @Async
     public void burstResultsMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
-            clock.pause(LATENCY_DURATION);
             sendResultsMessage(sessionId);
+            clock.pause(LATENCY_DURATION);
         }
     }
 
     @Async
     public void burstUsersMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
-            clock.pause(LATENCY_DURATION);
             sendUsersMessage(sessionId);
+            clock.pause(LATENCY_DURATION);
         }
     }
 
     @Async
     public void burstItemMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
-            clock.pause(LATENCY_DURATION);
             sendItemMessage(sessionId);
+            clock.pause(LATENCY_DURATION);
         }
     }
 
