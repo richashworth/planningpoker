@@ -2,12 +2,12 @@ package com.richashworth.planningpoker.service;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 import com.richashworth.planningpoker.model.Estimate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,7 +25,7 @@ public class SessionManager {
     private final AtomicLong sessionSequence = new AtomicLong(SESSION_SEQ_START_VALUE);
     private final ListMultimap<Long, Estimate> sessionEstimates = ArrayListMultimap.create();
     private final ListMultimap<Long, String> sessionUsers = ArrayListMultimap.create();
-    private final Map<Long, String> sessionItems = new HashMap<Long, String>();
+    private final Map<Long, String> sessionItems = Maps.newHashMap();
 
     public boolean isSessionActive(final Long sessionId) {
         return SESSION_SEQ_START_VALUE <= sessionId && sessionId < sessionSequence.get();
