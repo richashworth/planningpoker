@@ -154,7 +154,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 }, function errorCallback(response) {
                     $scope.loading = false;
                     if (response.data.message == 'user exists') {
-                        alert("A user with that name has already registered for this session. " +
+                        alert("A user with that name has already joined this session. " +
                             "Please try again with a different username.");
                         $scope.userName = ''
                     } else {
