@@ -3,7 +3,7 @@
 # Planning Poker
 
 ## About 
-A simple web-based [planning poker](https://en.wikipedia.org/wiki/Planning_poker) game. See [this blog post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
+A simple web-based planning poker game. See [this blog post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
 
 ## Demo
 https://rocky-hollows-17288.herokuapp.com
