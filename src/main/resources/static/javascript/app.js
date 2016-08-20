@@ -37,7 +37,6 @@ PlanningPoker.filter('userNameCaseFilter', function () {
 });
 
 PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $http) {
-
     $scope.userName = '';
     $scope.inSession = false;
     $scope.voted = false;
