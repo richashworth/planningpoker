@@ -23,6 +23,9 @@ apply plugin: 'jacoco'
 
 jar {
     baseName = 'planningpoker'
+    manifest {
+        attributes 'Implementation-Version': version
+    }
 }
 
 springBoot {

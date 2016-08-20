@@ -37,6 +37,7 @@ PlanningPoker.filter('userNameCaseFilter', function () {
 });
 
 PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $http) {
+
     $scope.userName = '';
     $scope.inSession = false;
     $scope.voted = false;
@@ -45,16 +46,22 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.votedUsers = [];
     $scope.waitingFor = [];
     $scope.votingResults = [];
-    $scope.resultsdata = [];
+    $scope.resultsData = [];
     $scope.isAdmin = false;
     $scope.inSession = false;
     $scope.loading = false;
     $scope.defaultItemText = 'the current item';
     $scope.currentItem = $scope.defaultItemText;
     $scope.itemInput = undefined;
-
     $scope.legalEstimates = [0.5, 1, 2, 3, 5, 8, 13, 20, 100];
     $scope.labels = $scope.legalEstimates.map(String);
+
+    $http({
+        method: 'GET',
+        url: '/version'
+    }).success(function (response) {
+        $scope.appVersion = response
+    });
 
     $scope.createSession = function () {
         $scope.loading = true;
@@ -76,7 +83,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                 stompClient.subscribe("/topic/results/" + response, function (data) {
                     $scope.$apply(function () {
                         var message = JSON.parse(data.body);
-                        $scope.resultsdata = $scope.aggregateResults(message);
+                        $scope.resultsData = $scope.aggregateResults(message);
                         $scope.votedUsers = message.map(function (estimate) {
                             return estimate.userName.toUpperCase();
                         });
@@ -125,7 +132,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                         if (message.length == 0 && $scope.votedUsers.indexOf($scope.userName.toUpperCase()) > -1) {
                             $scope.voted = false;
                         } else {
-                            $scope.resultsdata = $scope.aggregateResults(message);
+                            $scope.resultsData = $scope.aggregateResults(message);
                             $scope.votedUsers = message.map(function (estimate) {
                                 return estimate.userName.toUpperCase();
                             });
@@ -244,4 +251,3 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     };
 
 }]);
-
