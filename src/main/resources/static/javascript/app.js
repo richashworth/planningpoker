@@ -59,7 +59,14 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
         method: 'GET',
         url: '/version'
     }).success(function (response) {
-        $scope.appVersion = response
+        $scope.appVersion = response;
+        $http({
+            method: 'GET',
+            url: '/feedbackRecipient'
+        }).success(function (response) {
+            $scope.feedbackMailLink = 'mailto:' + response + '?subject=' +
+                'Planning Poker | Feedback for version ' + $scope.appVersion;
+        });
     });
 
     $scope.createSession = function () {

@@ -213,8 +213,23 @@
 </div>
 
 <div id="footer">
-    <a style="color: slategray; text-decoration: none"
-       target="_blank" href="http://richashworth.github.io/planningpoker"> version {{appVersion}} </a>
+    <table cellspacing="10">
+        <tr>
+            <td>
+                <!--<a style="color: slategray; text-decoration: none" target="_blank"-->
+                   <!--href="https://richashworth.github.io/planningpoker"> About </a>-->
+            </td>
+            <td>
+                <a style="color: slategray; text-decoration: none" target="_blank"
+                   href="https://github.com/richashworth/planningpoker/releases/{{appVersion}}">
+                    version {{appVersion}} </a>
+            </td>
+            <td>
+                <a style="color: slategray; text-decoration: none" target="_blank"
+                   href={{feedbackMailLink}}> Send Feedback </a>
+            </td>
+        </tr>
+    </table>
 </div>
 
 </body>
