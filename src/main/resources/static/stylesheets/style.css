@@ -9,6 +9,12 @@ label.field {
     font-weight: bold;
 }
 
+.datatbl {
+    overflow: auto;
+    max-height: 72vh;
+    z-index: -999;
+}
+
 .regusertbl th {
     min-width: 180px;
 }

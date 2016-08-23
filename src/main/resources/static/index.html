@@ -177,34 +177,21 @@
                     </td>
                 </tr>
                 <tr valign="top">
-                    <td>
-                        <canvas id="bar" chart-labels="labels" class="chart chart-bar"
-                                chart-data="[resultsData]" width="575" height="350"
-                                chart-options="{
-                                  responsive: false,
-                                  tooltips: {
-                                    enabled: false
-                                  },
-                                  scales: {
-                                    scaleOverride: true,
-                                    yAxes: [{
-                                      ticks: {
-                                        stepSize: 1
-                                      }
-                                    }],
-                                    xAxes: [{
-                                      gridLines: {
-                                        drawOnChartArea: false
-                                      }
-                                    }]
-                                  }
-                                }">
-                        </canvas>
-                    </td>
-                </tr>
-                <tr ng-show="isAdmin">
-                    <td>
-                        <button class="nextbutton" ng-click="reset()" type="button">Next Estimate</button>
+                    <td style="max-height: 400px;">
+                        <div>
+                            <canvas id="bar" chart-labels="labels" class="chart chart-bar"
+                                    chart-data="[resultsData]" width="575" height="350"
+                                    chart-options="{
+                                                     responsive: false,
+                                                     tooltips: {
+                                                       enabled: false
+                                                     }
+                                                   }">
+                            </canvas>
+                        </div>
+                        <div style="margin-top: 5%" ng-show="isAdmin">
+                            <button class="nextbutton" ng-click="reset()" type="button">Next Estimate</button>
+                        </div>
                     </td>
                 </tr>
             </table>
