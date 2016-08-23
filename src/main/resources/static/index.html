@@ -178,13 +178,45 @@
                 </tr>
                 <tr valign="top">
                     <td style="max-height: 400px;">
-                        <div>
-                            <canvas id="bar" chart-labels="labels" class="chart chart-bar"
+                        <div ng-show="votingResults.length <= 7">
+                            <canvas id="bar1" chart-labels="labels" class="chart chart-bar"
                                     chart-data="[resultsData]" width="575" height="350"
                                     chart-options="{
                                                      responsive: false,
                                                      tooltips: {
                                                        enabled: false
+                                                     },
+                                                     scales: {
+                                                       scaleOverride: true,
+                                                       yAxes: [{
+                                                         ticks: {
+                                                           stepSize: 1
+                                                         }
+                                                       }],
+                                                       xAxes: [{
+                                                         gridLines: {
+                                                           drawOnChartArea: false
+                                                         }
+                                                       }]
+                                                     }
+                                                   }">
+                            </canvas>
+                        </div>
+                        <div ng-show="votingResults.length > 7">
+                            <canvas id="bar2" chart-labels="labels" class="chart chart-bar"
+                                    chart-data="[resultsData]" width="575" height="350"
+                                    chart-options="{
+                                                     responsive: false,
+                                                     tooltips: {
+                                                       enabled: false
+                                                     },
+                                                     scales: {
+                                                       scaleOverride: true,
+                                                       xAxes: [{
+                                                         gridLines: {
+                                                           drawOnChartArea: false
+                                                         }
+                                                       }]
                                                      }
                                                    }">
                             </canvas>
