@@ -38,6 +38,9 @@ PlanningPoker.filter('userNameCaseFilter', function () {
 
 PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $http) {
     $scope.userName = '';
+    $scope.isAdmin = false;
+    $scope.inSession = false;
+    $scope.loading = false;
     $scope.inSession = false;
     $scope.voted = false;
     $scope.sessionUsers = [];
@@ -46,9 +49,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     $scope.waitingFor = [];
     $scope.votingResults = [];
     $scope.resultsData = [];
-    $scope.isAdmin = false;
-    $scope.inSession = false;
-    $scope.loading = false;
+    $scope.integerScale = true;
     $scope.defaultItemText = 'the current item';
     $scope.currentItem = $scope.defaultItemText;
     $scope.itemInput = undefined;
@@ -90,6 +91,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                     $scope.$apply(function () {
                         var message = JSON.parse(data.body);
                         $scope.resultsData = $scope.aggregateResults(message);
+                        $scope.integerScale = Math.max.apply($scope.resultsData) <= 7;
                         $scope.votedUsers = message.map(function (estimate) {
                             return estimate.userName.toUpperCase();
                         });
@@ -139,6 +141,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
                             $scope.voted = false;
                         } else {
                             $scope.resultsData = $scope.aggregateResults(message);
+                            $scope.integerScale = Math.max.apply($scope.resultsData) <= 7;
                             $scope.votedUsers = message.map(function (estimate) {
                                 return estimate.userName.toUpperCase();
                             });
@@ -227,6 +230,7 @@ PlanningPoker.controller('PokerCtrl', ['$scope', '$http', function ($scope, $htt
     };
 
     $scope.reset = function () {
+        $scope.integerScale = true;
         $scope.loading = true;
         $scope.itemInput = undefined;
         $scope.currentItem = $scope.defaultItemText;

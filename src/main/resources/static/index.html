@@ -178,7 +178,7 @@
                 </tr>
                 <tr valign="top">
                     <td style="max-height: 400px;">
-                        <div ng-show="votingResults.length <= 7">
+                        <div ng-show="integerScale">
                             <canvas id="bar1" chart-labels="labels" class="chart chart-bar"
                                     chart-data="[resultsData]" width="575" height="350"
                                     chart-options="{
@@ -202,7 +202,7 @@
                                                    }">
                             </canvas>
                         </div>
-                        <div ng-show="votingResults.length > 7">
+                        <div ng-hide="integerScale">
                             <canvas id="bar2" chart-labels="labels" class="chart chart-bar"
                                     chart-data="[resultsData]" width="575" height="350"
                                     chart-options="{
