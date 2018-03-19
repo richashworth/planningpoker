@@ -6,7 +6,7 @@
 A simple web-based planning poker game. See [this blog post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
 
 ## Demo
-https://rocky-hollows-17288.herokuapp.com
+https://planningpoker-tool.herokuapp.com
 
 ## Running the application
 Planning Poker is built with [Spring Boot](http://projects.spring.io/spring-boot). 
