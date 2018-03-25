@@ -3,12 +3,12 @@
 # Planning Poker
 
 ## About 
-A simple web-based planning poker game. See [this blog post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
+A simple web-based planning poker game. See [this blog post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/ | width=100) for more information.
 
 
-![Start Screen](https://i0.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.29.46.png?w=1228&ssl=1)
+![Start Screen](https://i0.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.29.46.png?w=1228&ssl=1 | width=100)
 
-![Vote Screen](https://i2.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.55.49.png?w=1228&ssl=1)
+![Vote Screen](https://i2.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.55.49.png?w=1228&ssl=1 | width=100)
 
 ![Results Screen](https://i2.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.55.49.png?w=1228&ssl=1)
 
