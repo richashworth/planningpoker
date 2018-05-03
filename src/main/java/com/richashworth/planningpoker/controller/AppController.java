@@ -19,7 +19,7 @@ public class AppController {
     @RequestMapping(value = "version", method = RequestMethod.GET, produces = "text/plain")
     @ResponseBody
     public String getAppVersion() {
-        return PlanningPokerApplication.class.getPackage().getImplementationVersion();
+      return "2.0.0-SNAPSHOT";
     }
 
     @RequestMapping(value = "feedbackRecipient", method = RequestMethod.GET, produces = "text/plain")
