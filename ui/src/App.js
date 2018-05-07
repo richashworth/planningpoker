@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {BrowserRouter, Switch, Route} from 'react-router-dom';
+
+import Welcome from './pages/Welcome';
+import Header from './containers/Header';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div>
+        <Header />
+        <BrowserRouter>
+          <div>
+            <Switch>
+              {/* put most specific routes at top (Switch tag facilitates this) */}
+              <Route path="/" component={Welcome} />
+            </Switch>
+          </div>
+        </BrowserRouter>
       </div>
     );
   }
