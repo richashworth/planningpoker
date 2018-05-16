@@ -6,17 +6,17 @@ import '../styles/Welcome.css';
 class Welcome extends Component {
   render() {
     return (
-      <div class="container align-self-center">
-        <div class="row btn-row justify-content-center">
+      <div className="container align-self-center">
+        <div className="row btn-row justify-content-center">
           <Link to ="/create">
-            <button type="button" class="btn btn-primary btn-lg">
+            <button type="button" className="btn btn-primary btn-lg">
               Create Game
             </button>
           </Link>
         </div>
-        <div class="row btn-row justify-content-center">
+        <div className="row btn-row justify-content-center">
           <Link to ="/join">
-            <button type="button" class="btn btn-primary btn-lg">
+            <button type="button" className="btn btn-primary btn-lg">
               Join Game
             </button>
           </Link>
