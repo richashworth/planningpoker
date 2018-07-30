@@ -1,27 +1,37 @@
 import React, { Component } from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import promise from 'redux-promise';
+import reducers from './reducers';
 
 import Header from './containers/Header';
 import Welcome from './pages/Welcome';
 import JoinGame from './pages/JoinGame';
 import CreateGame from './pages/CreateGame';
+import Vote from './pages/Vote.js';
+
+const createStoreWithMiddleware = applyMiddleware(promise)(createStore);
 
 class App extends Component {
   render() {
     return (
-      <div>
-        <Header />
-        <BrowserRouter>
-          <div>
-            <Switch>
-              {/* put most specific routes at top (Switch tag facilitates this) */}
-              <Route path="/create" component={CreateGame} />
-              <Route path="/join" component={JoinGame} />
-              <Route path="/" component={Welcome} />
-            </Switch>
-          </div>
-        </BrowserRouter>
-      </div>
+      <Provider store={createStoreWithMiddleware(reducers)}>
+        <div>
+          <Header />
+          <BrowserRouter>
+            <div>
+              <Switch>
+                {/* put most specific routes at top (Switch tag facilitates this) */}
+                <Route path="/create" component={CreateGame} />
+                <Route path="/join" component={JoinGame} />
+                <Route path="/vote" component={Vote} />
+                <Route path="/" component={Welcome} />
+              </Switch>
+            </div>
+          </BrowserRouter>
+        </div>
+      </Provider>
     );
   }
 }
