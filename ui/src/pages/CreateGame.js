@@ -21,7 +21,6 @@ class CreateGame extends Component {
     // tells the browser not to make a POST request to the server (default form behaviour)
     event.preventDefault();
 
-    // We need to go and fetch weather data
     this.props.createGame(this.state.playerName, () => {
       this.props.history.push('/vote')
     });

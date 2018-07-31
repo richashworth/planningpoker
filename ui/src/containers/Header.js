@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 class Header extends Component {
 
   render() {
-          console.log("sesh")
+          console.log("rendering Header")
           console.log(this.props.sessionId)
           console.log(this.props.playerName)
 
@@ -19,14 +19,7 @@ class Header extends Component {
 }
 
 function mapStateToProps(state){
-  // TODO: add container <GameInfo/> to header for these items
-  if(!state.game){
-    return {
-      sessionId: '-',
-      playerName: 'rich'
-    }
-  }else
-  console.log('mapping+'+state.game)
+  console.log('mapping+'+state.game.sessionId)
   return {
     sessionId: state.game.sessionId,
     playerName: state.game.playerName,

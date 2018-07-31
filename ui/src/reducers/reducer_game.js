@@ -1,10 +1,13 @@
 import { CREATE_GAME } from '../actions'
 
-export default function(state = null, action) {
+const initialGameState = {game: {playerName: '', sessionId: ''}}
+
+export default function(state = initialGameState, action) {
   switch(action.type) {
     case CREATE_GAME:
-    console.log("in reducer "+ action.payload.data);
-      return [action.meta.userName, action.payload.data];
+    console.log("in reducer");
+      const newState = {playerName: action.meta.userName, sessionId: action.payload.data};
+      return newState
     default:
       return state
   }
