@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 class Header extends Component {
 
   render() {
+          console.log("sesh")
           console.log(this.props.sessionId)
           console.log(this.props.playerName)
 
@@ -25,6 +26,7 @@ function mapStateToProps(state){
       playerName: 'rich'
     }
   }else
+  console.log('mapping+'+state.game)
   return {
     sessionId: state.game.sessionId,
     playerName: state.game.playerName,

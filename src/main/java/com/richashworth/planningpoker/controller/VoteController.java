@@ -7,6 +7,7 @@ import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import java.text.DecimalFormat;
  * Created by Rich Ashworth on 09/04/2016.
  */
 @RestController
+@CrossOrigin
 public class VoteController {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");

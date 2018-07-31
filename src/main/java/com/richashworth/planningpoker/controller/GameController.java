@@ -18,6 +18,7 @@ import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnore
  * Created by Rich Ashworth on 09/04/2016.
  */
 @RestController
+@CrossOrigin
 public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
