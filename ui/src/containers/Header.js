@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import '../styles/Header.css';
+
 class Header extends Component {
 
   render() {
@@ -9,11 +11,21 @@ class Header extends Component {
           console.log(this.props.playerName)
 
     return (
-        <div>
-          <h1> Planning Poker </h1>
-          <h3> {this.props.sessionId}</h3>
-          <h3> {this.props.playerName}</h3>
-        </div>
+          <table>
+            <tr>
+              <td>
+                <h1> Planning Poker </h1>
+              </td>
+              <td className='game-details'>
+                <tr>
+                  {this.props.sessionId}
+                </tr>
+                <tr>
+                  {this.props.playerName}
+                </tr>
+              </td>
+            </tr>
+          </table>
     );
   }
 }
