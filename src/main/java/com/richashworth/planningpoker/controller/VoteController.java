@@ -22,8 +22,6 @@ import java.text.DecimalFormat;
 @CrossOrigin
 public class VoteController {
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
     private final MessagingUtils messagingUtils;
@@ -38,9 +36,9 @@ public class VoteController {
     public void vote(
             @RequestParam(name = "sessionId") final Long sessionId,
             @RequestParam(name = "userName") final String userName,
-            @RequestParam(name = "estimateValue") final Double estimateValue
+            @RequestParam(name = "estimateValue") final String estimateValue
     ) {
-        logger.info(userName + " has voted " + DECIMAL_FORMAT.format(estimateValue) + " in session " + sessionId);
+        logger.info(userName + " has voted " + estimateValue + " in session " + sessionId);
         if (!sessionManager.isSessionActive(sessionId)) {
             throw new IllegalArgumentException("Session not active");
         } else if (!CollectionUtils.containsUserEstimate(sessionManager.getResults(sessionId), userName)) {

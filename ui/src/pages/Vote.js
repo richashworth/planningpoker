@@ -5,23 +5,40 @@ import { vote } from '../actions';
 import '../styles/Vote.css';
 
 class Vote extends Component {
+
   render() {
-      return (
-        <div>
-          <p>Please vote on the current item using the buttons below:</p>
-          <div>
-          {[1,2,3,5,8,13,20,100].map(estimateValue => (
-          <button type="button" className="btn btn-primary btn-lg" key={estimateValue}
-            onClick={() => this.props.vote(
-              this.props.playerName, this.props.sessionId, estimateValue,
-                () => {this.props.history.push('/results')}
-              )}>
-            {estimateValue}
+
+    const VoteButtons = ([1,2,3,5,8,13,20,100].map(estimateValue => (
+      <button type="button" className="btn btn-primary btn-lg" key={estimateValue}
+          onClick={() => this.props.vote(
+            this.props.playerName, this.props.sessionId, estimateValue,
+              () => {this.props.history.push('/results')}
+            )}>
+          {estimateValue}
+        </button>
+        )));
+
+    const CoffeeSymbol = '\u2615';
+
+    const CoffeeBreakBtn = (
+        <button type="button" className="btn btn-primary btn-lg"
+          onClick={() => this.props.vote(
+            this.props.playerName, this.props.sessionId, CoffeeSymbol,
+              () => {this.props.history.push('/results')}
+            )}>
+            <div style={{fontSize: '44px'}}>
+              {CoffeeSymbol}
+            </div>
           </button>
-          ))}
-        </div>
+          );
+
+    return (
+      <div>
+        <p>Please vote on the current item using the buttons below:</p>
+        {VoteButtons}
+        {CoffeeBreakBtn}
       </div>
-      );
+    );
   }
 }
 
