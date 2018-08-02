@@ -34,14 +34,14 @@ public class CollectionUtilsTest {
     @Test
     public void testContainsUserEstimate() throws Exception {
         final String userName = "Rich A";
-        final Estimate estimate = new Estimate(userName, 5D);
+        final Estimate estimate = new Estimate(userName, "5");
         final Collection<Estimate> estimates = Sets.newHashSet(estimate);
         assertTrue(CollectionUtils.containsUserEstimate(estimates, userName));
     }
 
     @Test
     public void testNotContainsUserEstimate() throws Exception {
-        final Estimate estimate = new Estimate("Rich A", 5D);
+        final Estimate estimate = new Estimate("Rich A", "5");
         final Collection<Estimate> estimates = Sets.newHashSet(estimate);
         assertFalse(CollectionUtils.containsUserEstimate(estimates, "Jimmy Page"));
     }
