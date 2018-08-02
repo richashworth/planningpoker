@@ -103,7 +103,7 @@ public class SessionManagerTest {
         final Long sessionId = sessionManager.createSession();
         final String userName = "Rich";
         sessionManager.registerUser(userName, sessionId);
-        sessionManager.registerEstimate(sessionId, new Estimate(userName, "1"));
+        sessionManager.registerEstimate(sessionId, new Estimate("changeback", "1"));
         sessionManager.resetSession(sessionId);
         assertTrue(sessionManager.getResults(sessionId).isEmpty());
         assertEquals(Lists.newArrayList(userName), sessionManager.getSessionUsers(sessionId));
