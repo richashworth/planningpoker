@@ -25,7 +25,6 @@ class JoinGame extends Component {
   onFormSubmit(event) {
     // tells the browser not to make a POST request to the server (default form behaviour)
     event.preventDefault();
-    console.log("joining: "+this.state.sessionId);
 
     this.props.joinGame(this.state.playerName, this.state.sessionId, () => {
       this.props.history.push('/vote')
@@ -36,6 +35,7 @@ class JoinGame extends Component {
     return (
       <form onSubmit={this.onFormSubmit} className="input-group">
         <div>
+          <label>Name</label>
           <input
             placeholder="Name"
             className="form-input"

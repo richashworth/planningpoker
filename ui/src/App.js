@@ -9,7 +9,8 @@ import Header from './containers/Header';
 import Welcome from './pages/Welcome';
 import JoinGame from './pages/JoinGame';
 import CreateGame from './pages/CreateGame';
-import Vote from './pages/Vote.js';
+import Vote from './pages/Vote';
+import Results from './pages/Results';
 
 const createStoreWithMiddleware = applyMiddleware(ReduxPromise)(createStore);
 
@@ -26,6 +27,7 @@ class App extends Component {
                 <Route path="/create" component={CreateGame} />
                 <Route path="/join" component={JoinGame} />
                 <Route path="/vote" component={Vote} />
+                <Route path="/results" component={Results} />
                 <Route path="/" component={Welcome} />
               </Switch>
             </div>

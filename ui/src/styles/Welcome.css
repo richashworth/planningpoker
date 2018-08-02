@@ -1,9 +1,5 @@
-.btn-row {
-  padding: 5px;
-}
-
 .btn-row .btn {
-  width: 100%;
+  width: 90%;
   height: 10em;
   margin-bottom: 1em;
 }

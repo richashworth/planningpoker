@@ -6,32 +6,33 @@ import '../styles/Header.css';
 class Header extends Component {
 
   render() {
-          console.log("rendering Header")
-          console.log(this.props.sessionId)
-          console.log(this.props.playerName)
-
     return (
           <table>
+            <tbody>
             <tr>
               <td>
                 <h1> Planning Poker </h1>
               </td>
-              <td className='game-details'>
+              <td className='game-default'>
+                <table>
+                  <tbody>
                 <tr>
                   {this.props.sessionId}
                 </tr>
                 <tr>
                   {this.props.playerName}
                 </tr>
+              </tbody>
+              </table>
               </td>
             </tr>
+          </tbody>
           </table>
     );
   }
 }
 
 function mapStateToProps(state){
-  console.log('mapping+'+state.game.sessionId)
   return {
     sessionId: state.game.sessionId,
     playerName: state.game.playerName,

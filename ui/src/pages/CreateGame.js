@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { createGame } from '../actions';
+import { gameCreated } from '../actions';
 
 class CreateGame extends Component {
 
@@ -22,17 +23,18 @@ class CreateGame extends Component {
     event.preventDefault();
 
     this.props.createGame(this.state.playerName, () => {
+      this.props.gameCreated()
       this.props.history.push('/vote')
     });
   }
 
   render() {
     return (
-      <form onSubmit={this.onFormSubmit} className="input-group">
-        <div>
+      <form onSubmit={this.onFormSubmit}>
+        <div className="form-group">
         <input
           placeholder="Name"
-          className="form-input"
+          className="form-control"
           value={this.state.playerName}
           onChange={this.onPlayerNameInputChange}
         />
@@ -47,4 +49,4 @@ class CreateGame extends Component {
   }
 }
 
-export default connect(null, { createGame })(CreateGame);
+export default connect(null, { createGame, gameCreated })(CreateGame);
