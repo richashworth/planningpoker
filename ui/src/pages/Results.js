@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 
+import '../styles/Results.css';
+
 class Results extends Component {
 
   render() {
