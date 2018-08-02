@@ -7,7 +7,7 @@ class Results extends Component {
 
   render() {
 
-    const adminButton = <button type="button" className="btn btn-primary btn-lg">
+    const adminButton = <button type="button" className="btn-next btn btn-primary btn-lg">
       Next Item
     </button>
 
