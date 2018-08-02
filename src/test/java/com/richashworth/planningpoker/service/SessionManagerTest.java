@@ -102,7 +102,7 @@ public class SessionManagerTest {
     public void testResetSession() {
         final Long sessionId = sessionManager.createSession();
         final String userName = "Rich";
-        sessionManager.registerUser("hi", sessionId);
+        sessionManager.registerUser(userName, sessionId);
         sessionManager.registerEstimate(sessionId, new Estimate(userName, "1"));
         sessionManager.resetSession(sessionId);
         assertTrue(sessionManager.getResults(sessionId).isEmpty());
