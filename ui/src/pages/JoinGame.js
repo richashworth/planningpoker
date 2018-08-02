@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { connect } from 'react-redux';
-import { joinGame } from '../actions';
+import {connect} from 'react-redux';
+import {joinGame} from '../actions';
 
 class JoinGame extends Component {
 
@@ -59,4 +59,4 @@ class JoinGame extends Component {
   }
 }
 
-export default connect(null, { joinGame })(JoinGame);
+export default connect(null, {joinGame})(JoinGame);

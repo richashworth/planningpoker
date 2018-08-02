@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 import '../styles/Results.css';
 
@@ -12,15 +12,15 @@ class Results extends Component {
     </button>
 
     return (
-        <div>
+      <div>
         <h2> Results go here! </h2>
-        { this.props.isAdmin ? adminButton : '' }
+        {this.props.isAdmin ? adminButton : ''}
       </div>
     );
   }
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
     isAdmin: state.game.isAdmin
   };

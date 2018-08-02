@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import { connect } from 'react-redux';
-import { createGame } from '../actions';
-import { gameCreated } from '../actions';
+import {connect} from 'react-redux';
+import {createGame} from '../actions';
+import {gameCreated} from '../actions';
 
 class CreateGame extends Component {
 
@@ -32,21 +32,21 @@ class CreateGame extends Component {
     return (
       <form onSubmit={this.onFormSubmit}>
         <div className="form-group">
-        <input
-          placeholder="Name"
-          className="form-control"
-          value={this.state.playerName}
-          onChange={this.onPlayerNameInputChange}
-        />
-      </div>
-      <div>
-        <button type="submit" className="btn btn-primary">
-          Submit
-        </button>
-      </div>
+          <input
+            placeholder="Name"
+            className="form-control"
+            value={this.state.playerName}
+            onChange={this.onPlayerNameInputChange}
+          />
+        </div>
+        <div>
+          <button type="submit" className="btn btn-primary">
+            Submit
+          </button>
+        </div>
       </form>
     );
   }
 }
 
-export default connect(null, { createGame, gameCreated })(CreateGame);
+export default connect(null, {createGame, gameCreated})(CreateGame);
