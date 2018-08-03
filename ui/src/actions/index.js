@@ -10,6 +10,7 @@ const ROOT_URL = 'http://localhost:9000';
 export const gameCreated = () => ({type: GAME_CREATED});
 
 export function createGame(playerName, callback) {
+
   const request = axios.post(`${ROOT_URL}/createSession`, `userName=${playerName}`)
   request.then(() => callback());
 

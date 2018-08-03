@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import SockJsClient from 'react-stomp';
 
 import '../styles/Results.css';
 
@@ -12,8 +13,11 @@ class Results extends Component {
     </button>
 
     return (
-      <div>
-        <h2> Results go here! </h2>
+       <div>
+         <SockJsClient url='http://localhost:9000/stomp' topics={[`/topic/results/${this.props.sessionId}`]}
+           onMessage={(msg) => { console.log('socket sent: '+JSON.stringify(msg)); }}
+           ref={ (client) => { this.clientRef = client }} />
+
         {this.props.isAdmin ? adminButton : ''}
       </div>
     );
@@ -22,7 +26,8 @@ class Results extends Component {
 
 function mapStateToProps(state) {
   return {
-    isAdmin: state.game.isAdmin
+    isAdmin: state.game.isAdmin,
+    sessionId: state.game.sessionId
   };
 }
 
