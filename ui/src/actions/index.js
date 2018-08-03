@@ -56,9 +56,3 @@ export function resetSession(playerName, sessionId, callback) {
   };
 }
 
-//
-// curl 'http://localhost:9000/createSession' -H 'Origin: http://localhost:3000' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: en-US,en;q=0.9' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Accept: application/json, text/plain, |)}>#*' -H 'Referer: http://localhost:3000/create' -H 'Connection: keep-alive' -H 'DNT: 1' --data 'userName=2g42b' --compressed
-//
-//
-//
-// curl 'http://localhost:9000/reset' -X DELETE -H 'Origin: http://localhost:3000' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: en-US,en;q=0.9' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' -H 'Accept: application/json, text/plain, */*' -H 'Referer: http://localhost:3000/results' -H 'Connection: keep-alive' -H 'DNT: 1' --compressed
