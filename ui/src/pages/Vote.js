@@ -34,7 +34,7 @@ class Vote extends Component {
 
     return (
       <div>
-        <p>Please vote on the current item using the buttons below:</p>
+        <p>Vote on the current item using the buttons below:</p>
         {VoteButtons}
         {CoffeeBreakBtn}
       </div>
