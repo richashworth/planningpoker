@@ -32,7 +32,7 @@ export function joinGame(playerName, sessionId, callback) {
 
   return {
     type: JOIN_GAME,
-    payload: request, // redux-promise will take care of resolving the promise
+    payload: request,
     meta: {userName: playerName, sessionId: sessionId}
   };
 }
