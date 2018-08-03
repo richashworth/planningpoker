@@ -46,6 +46,8 @@ class JoinGame extends Component {
             placeholder="SessionId"
             className="form-input"
             value={this.state.sessionId}
+            type="number"
+            min="1"
             onChange={this.onSessionInputChange}
           />
         </div>
