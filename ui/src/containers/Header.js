@@ -9,23 +9,27 @@ class Header extends Component {
     return (
       <table className="table-header">
         <tbody>
-        <tr>
-          <td>
-            <h1> Planning Poker </h1>
-          </td>
-          <td className='game-default'>
-            <table>
-              <tbody>
-              <tr>
-                {this.props.sessionId}
-              </tr>
-              <tr>
-                {this.props.playerName}
-              </tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
+          <tr>
+            <td>
+              <h1> Planning Poker </h1>
+            </td>
+            <td className='game-default'>
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      {this.props.sessionId}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      {this.props.playerName}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
         </tbody>
       </table>
     );
