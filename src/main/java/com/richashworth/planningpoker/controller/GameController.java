@@ -90,7 +90,7 @@ public class GameController {
         messagingUtils.burstItemMessages(sessionId);
     }
 
-    @RequestMapping(value = "reset", method = RequestMethod.DELETE)
+    @RequestMapping(value = "reset", method = RequestMethod.POST)
     public void reset(
             @RequestParam(name = "sessionId") final Long sessionId,
             @RequestParam(name = "userName") final String userName
