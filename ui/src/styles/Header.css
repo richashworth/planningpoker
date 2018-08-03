@@ -2,8 +2,9 @@
   padding: 50px;
 }
 
-table {
+.table-header {
   width: 100%;
+  margin-bottom: 50px;
   background-color: #01044B;
   color: white;
 }

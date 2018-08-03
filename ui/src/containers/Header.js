@@ -7,7 +7,7 @@ class Header extends Component {
 
   render() {
     return (
-      <table>
+      <table className="table-header">
         <tbody>
         <tr>
           <td>

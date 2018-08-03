@@ -2,24 +2,36 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import SockJsClient from 'react-stomp';
 
+import ResultsTable from '../containers/ResultsTable';
+import {resultsUpdated} from '../actions';
+
 import '../styles/Results.css';
 
 class Results extends Component {
 
   render() {
 
-    const adminButton = <button type="button" className="btn-next btn btn-primary btn-lg">
-      Next Item
-    </button>
+    const adminButton =
+      <button type="button" className="btn-next btn btn-primary btn-lg">
+        Next Item
+      </button>
 
     return (
-       <div>
-         <SockJsClient url='http://localhost:9000/stomp' topics={[`/topic/results/${this.props.sessionId}`]}
-           onMessage={(msg) => { console.log('socket sent: '+JSON.stringify(msg)); }}
-           ref={ (client) => { this.clientRef = client }} />
+      <div>
+         <div>
+           <SockJsClient url='http://localhost:9000/stomp' topics={[`/topic/results/${this.props.sessionId}`]}
+             onMessage={(msg) => { 
+               this.props.resultsUpdated(msg);
+               }}
 
-        {this.props.isAdmin ? adminButton : ''}
-      </div>
+             ref={ (client) => { this.clientRef = client }} />
+
+        </div>
+        <div>
+           <ResultsTable/>
+           {this.props.isAdmin ? adminButton : ''}
+         </div>
+       </div>
     );
   }
 }
@@ -31,4 +43,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Results)
+export default connect(mapStateToProps, {resultsUpdated})(Results)
