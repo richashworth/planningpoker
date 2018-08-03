@@ -18,15 +18,9 @@ class Results extends Component {
 
     return (
       <div>
-         <div>
-           <SockJsClient url='http://localhost:9000/stomp' topics={[`/topic/results/${this.props.sessionId}`]}
-             onMessage={(msg) => { 
-               this.props.resultsUpdated(msg);
-               }}
-
-             ref={ (client) => { this.clientRef = client }} />
-
-        </div>
+         <SockJsClient url='http://localhost:9000/stomp' topics={[`/topic/results/${this.props.sessionId}`]}
+           onMessage={(msg) => {this.props.resultsUpdated(msg)}}
+           ref={ (client) => { this.clientRef = client }} />
         <div>
            <ResultsTable/>
            {this.props.isAdmin ? adminButton : ''}
