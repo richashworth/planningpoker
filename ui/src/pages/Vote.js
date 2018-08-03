@@ -12,9 +12,7 @@ class Vote extends Component {
       <button type="button" className="btn btn-primary btn-lg" key={estimateValue}
               onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, estimateValue,
-                () => {
-                  this.props.history.push('/results')
-                }
+                () => this.props.history.push('/results')
               )}>
         {estimateValue}
       </button>
@@ -26,9 +24,7 @@ class Vote extends Component {
       <button type="button" className="btn btn-primary btn-lg"
               onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, CoffeeSymbol,
-                () => {
-                  this.props.history.push('/results')
-                }
+                () => this.props.history.push('/results')
               )}>
         <div style={{fontSize: '44px'}}>
           {CoffeeSymbol}

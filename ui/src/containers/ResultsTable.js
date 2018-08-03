@@ -20,7 +20,7 @@ class ResultsTable extends Component {
 }
 function _renderVoteRow(data){
   return (
-    <tr><td>{data.userName}</td><td>{data.estimateValue}</td></tr>
+    <tr key={data.userName}><td>{data.userName}</td><td>{data.estimateValue}</td></tr>
   )
 }
 
