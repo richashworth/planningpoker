@@ -3,13 +3,16 @@ import axios from 'axios';
 export const CREATE_GAME = 'create-game';
 export const GAME_CREATED = 'game-created';
 export const JOIN_GAME = 'join-game';
-export const VOTE = 'vote';
 export const RESULTS_UPDATED = 'results-updated';
+export const VOTE = 'vote';
 
 const ROOT_URL = 'http://localhost:9000';
 
+// Events
 export const gameCreated = () => ({type: GAME_CREATED});
+export const resultsUpdated = (results) =>({type: RESULTS_UPDATED, payload: results});
 
+// User-driven actions
 export function createGame(playerName, callback) {
 
   const request = axios.post(`${ROOT_URL}/createSession`, `userName=${playerName}`)
@@ -42,13 +45,5 @@ export function vote(playerName, sessionId, estimateValue, callback) {
 
   return {
     type: VOTE
-  };
-}
-
-export function resultsUpdated(results) {
-
-  return {
-    type: RESULTS_UPDATED,
-    payload: results // redux-promise will take care of resolving the promise
   };
 }
