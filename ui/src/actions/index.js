@@ -48,7 +48,6 @@ export function vote(playerName, sessionId, estimateValue, callback) {
 }
 
 export function resetSession(playerName, sessionId, callback) {
-console.log('in action:'+sessionId+playerName)
   const request = axios.post(`${ROOT_URL}/reset`, `sessionId=${sessionId}&userName=${playerName}`);
   request.then(() => callback());
 
