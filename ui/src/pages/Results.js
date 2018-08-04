@@ -28,7 +28,7 @@ class Results extends Component {
                       }}/>
         <div>
           <ResultsTable/>
-          {this.props.isAdmin ? adminButton : ''}
+          {this.props.isAdmin && adminButton}
         </div>
       </div>
     );
