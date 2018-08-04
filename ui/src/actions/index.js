@@ -15,7 +15,7 @@ export const resultsUpdated = (results) => ({type: RESULTS_UPDATED, payload: res
 
 // User-driven actions
 export function createGame(playerName, callback) {
-  const request = axios.post(`${ROOT_URL}/createSession`, `userName=${playerName}`)
+  const request = axios.post(`${ROOT_URL}/createSession`, `userName=${playerName}`);
   request.then(() => callback());
 
   return {
@@ -27,7 +27,7 @@ export function createGame(playerName, callback) {
 
 export function joinGame(playerName, sessionId, callback) {
   const request = axios.post(`${ROOT_URL}/joinSession`,
-    `userName=${playerName}&sessionId=${sessionId}`)
+    `userName=${playerName}&sessionId=${sessionId}`);
   request.then(() => callback());
 
   return {
@@ -39,7 +39,7 @@ export function joinGame(playerName, sessionId, callback) {
 
 export function vote(playerName, sessionId, estimateValue, callback) {
   const request = axios.post(`${ROOT_URL}/vote`,
-    `userName=${playerName}&sessionId=${sessionId}&estimateValue=${estimateValue}`)
+    `userName=${playerName}&sessionId=${sessionId}&estimateValue=${estimateValue}`);
   request.then(() => callback());
 
   return {

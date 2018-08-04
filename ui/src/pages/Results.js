@@ -23,7 +23,8 @@ class Results extends Component {
       <div>
         <SockJsClient url='http://localhost:9000/stomp' topics={[`/topic/results/${this.props.sessionId}`]}
                       onMessage={(msg) => {
-                        this.props.resultsUpdated(msg)
+                        if(msg.length < 1) this.props.history.push('/vote')
+                        else this.props.resultsUpdated(msg)
                       }}/>
         <div>
           <ResultsTable/>
