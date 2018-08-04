@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Nav} from 'react-bootstrap';
 import {connect} from 'react-redux';
+
+import '../styles/Header.css';
 
 class Header extends Component {
 
@@ -14,14 +16,16 @@ class Header extends Component {
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
-          <Nav pullRight>
-            <NavItem>
-              Session: {this.props.sessionId}
-            </NavItem>
-            <NavItem>
-              User: {this.props.playerName}
-            </NavItem>
-          </Nav>
+          <Navbar.Text pullRight>
+            <Nav>
+              {this.props.playerName}
+            </Nav>
+          </Navbar.Text>
+          <Navbar.Text pullRight>
+            <Nav>
+              {this.props.sessionId ? `Session ${this.props.sessionId}` : ''}
+            </Nav>
+          </Navbar.Text>
         </Navbar.Collapse>
       </Navbar>
     );

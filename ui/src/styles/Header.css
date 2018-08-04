@@ -1,0 +1,18 @@
+.navbar-default {
+  background-color: #00034A;
+  color: #7777;
+}
+
+.navbar-default .navbar-brand {
+  color: white;
+  font-size: 25px;
+}
+
+.navbar-default .navbar-brand:hover {
+  color: white;
+}
+
+.navbar-default .navbar-text {
+  color: white;
+}
+
