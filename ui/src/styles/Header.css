@@ -1,11 +1,11 @@
 .navbar-default {
   background-color: #00034A;
-  color: #7777;
 }
 
 .navbar-default .navbar-brand {
+  font-family: "Lobster", cursive;
   color: white;
-  font-size: 25px;
+  font-size: 45px;
 }
 
 .navbar-default .navbar-brand:hover {
@@ -13,6 +13,6 @@
 }
 
 .navbar-default .navbar-text {
+  font-size: 15px;
   color: white;
 }
-
