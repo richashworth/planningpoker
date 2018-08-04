@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {Provider} from 'react-redux';
-import {createStore, applyMiddleware} from 'redux';
+import {applyMiddleware, createStore} from 'redux';
 import ReduxPromise from 'redux-promise';
 import reducers from './reducers';
 
@@ -23,7 +23,6 @@ class App extends Component {
           <BrowserRouter>
             <div>
               <Switch>
-                {/* put most specific routes at top (Switch tag facilitates this) */}
                 <Route path="/create" component={CreateGame}/>
                 <Route path="/join" component={JoinGame}/>
                 <Route path="/vote" component={Vote}/>

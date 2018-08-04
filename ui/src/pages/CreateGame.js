@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {createGame} from '../actions';
-import {gameCreated} from '../actions';
+import {createGame, gameCreated} from '../actions';
 
 class CreateGame extends Component {
 

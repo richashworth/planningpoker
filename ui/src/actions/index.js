@@ -11,7 +11,7 @@ const ROOT_URL = 'http://localhost:9000';
 
 // Events
 export const gameCreated = () => ({type: GAME_CREATED});
-export const resultsUpdated = (results) =>({type: RESULTS_UPDATED, payload: results});
+export const resultsUpdated = (results) => ({type: RESULTS_UPDATED, payload: results});
 
 // User-driven actions
 export function createGame(playerName, callback) {
