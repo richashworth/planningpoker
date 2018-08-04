@@ -1,8 +1,11 @@
 .btn {
-    width: 115px;
+    width: 95px;
     padding: 18px;
     margin-left: 10px;
     margin-top: 10px;
-    height: 90px;
+    height: 80px;
 }
 
+.coffee {
+  font-size: 35px;
+}
