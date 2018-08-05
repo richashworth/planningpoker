@@ -6,7 +6,6 @@ import Results from '../containers/Results';
 class GamePane extends Component {
 
   render() {
-    console.log('in render GamePane: '+this.props.voted);
     return (
       this.props.voted ? <Results/> : <Vote/>
     );
