@@ -23,15 +23,13 @@ class Vote extends Component {
     const CoffeeSymbol = '\u2615';
 
     const CoffeeBreakBtn = (
-      <button type="button" className="btn-vote btn-primary btn-lg coffee"
+      <button type="button" className="coffee-btn btn-vote btn-primary btn-lg"
         onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, CoffeeSymbol,
                 () => this.props.history.push('/results')
               )}>
-              <div>
                 {CoffeeSymbol}
-              </div>
-            </button>
+      </button>
     );
 
    return (
