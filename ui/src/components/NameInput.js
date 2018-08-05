@@ -7,8 +7,8 @@ const NameInput = (props) => {
         Name
       </label>
       <input
-        pattern=".{0}|.{3,}" required
-        title="Name must contain at least 3 characters"
+        pattern=".{0}|.{3,40}" required
+        title="Please enter a name between 3 and 50 characters"
         placeholder="required"
         className="form-control"
         value={props.playerName}
