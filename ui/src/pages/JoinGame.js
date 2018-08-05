@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {joinGame} from '../actions';
+import NameInput from '../components/NameInput';
 
 class JoinGame extends Component {
 
@@ -33,30 +34,28 @@ class JoinGame extends Component {
 
   render() {
     return (
-      <form onSubmit={this.onFormSubmit} className="input-group">
-        <div>
-          <label>Name</label>
-          <input
-            placeholder="Name"
-            className="form-input"
-            value={this.state.playerName}
-            onChange={this.onPlayerNameInputChange}
-          />
-          <input
-            placeholder="SessionId"
-            className="form-input"
-            value={this.state.sessionId}
-            type="number"
-            min="1"
-            onChange={this.onSessionInputChange}
-          />
+      <div className="container">
+        <form onSubmit={this.onFormSubmit} >
+          <NameInput
+            playerName={this.state.playerName}
+            onPlayerNameInputChange={this.onPlayerNameInputChange}/>
+          <div className="form-group">
+            <label> Session ID </label>
+            <input
+              className="form-control"
+              value={this.state.sessionId}
+              placeholder="required"
+              required
+              type="number"
+              min="1"
+              onChange={this.onSessionInputChange}
+            />
         </div>
-        <div>
           <button type="submit" className="btn btn-primary">
             Join Game
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     );
   }
 }

@@ -8,7 +8,7 @@ const NameInput = (props) => {
     <input
       pattern=".{0}|.{3,}" required
       title="Name must contain at least 3 characters"
-      placeholder="Enter Text"
+      placeholder="required"
       className="form-control"
       value={props.playerName}
       onChange={props.onPlayerNameInputChange}
