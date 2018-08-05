@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
-import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.*;
 
 /**
  * Created by Rich Ashworth on 03/05/2016.
@@ -39,17 +38,17 @@ public class MessagingUtils {
     }
 
     public void sendResultsMessage(long sessionId) {
-        template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), new Message(RESULTS_MESSAGE, sessionManager.getResults(sessionId)));
+        template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), resultsMessage(sessionManager.getResults(sessionId)));
     }
 
     public void sendUsersMessage(long sessionId) {
-        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), new Message(USERS_MESSAGE, sessionManager.getSessionUsers(sessionId)));
+        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(sessionManager.getSessionUsers(sessionId)));
     }
 
     public void sendItemMessage(long sessionId) {
         final String currentItem = sessionManager.getCurrentItem(sessionId);
         if (null != currentItem) {
-            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), new Message(ITEM_MESSAGE, currentItem));
+            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), itemMessage(currentItem));
         }
     }
 
@@ -77,7 +76,7 @@ public class MessagingUtils {
         }
     }
 
-    public enum MessageType {
+    private enum MessageType {
         ITEM_MESSAGE,
         USERS_MESSAGE,
         RESULTS_MESSAGE
@@ -88,6 +87,18 @@ public class MessagingUtils {
     private class Message {
         MessageType type;
         Object payload;
+    }
+
+    Message itemMessage(Object payload) {
+        return new Message(MessageType.ITEM_MESSAGE, payload);
+    }
+
+    Message resultsMessage(Object payload) {
+        return new Message(MessageType.RESULTS_MESSAGE, payload);
+    }
+
+    Message usersMessage(Object payload) {
+        return new Message(MessageType.USERS_MESSAGE, payload);
     }
 
 }
