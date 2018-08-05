@@ -15,8 +15,8 @@ class Vote extends Component {
       <button type="button" className="btn-vote btn-primary btn-lg" key={estimateValue}
         onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, estimateValue)}>
-              {estimateValue}
-            </button>
+                {estimateValue}
+              </button>
     )));
 
     const CoffeeSymbol = '\u2615';
@@ -26,26 +26,26 @@ class Vote extends Component {
         onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, CoffeeSymbol)}>
                 {CoffeeSymbol}
-      </button>
+              </button>
     );
 
    return (
- <Grid>
-   <Row>
-     <Col xs={12} md={8}>
-       Vote on the current item using the buttons below:
-     </Col>
-   </Row>
-   <Row>
-     <Col xs={12} md={8}>
-       {VoteButtons}
-       {CoffeeBreakBtn}
-     </Col>
-     <Col xs={6} md={4}>
-       <UsersTable/>
-     </Col>
-   </Row>
- </Grid>
+     <Grid>
+       <Row>
+         <Col xs={12} md={8}>
+           Vote on the current item using the buttons below:
+         </Col>
+       </Row>
+       <Row>
+         <Col xs={12} md={8}>
+           {VoteButtons}
+           {CoffeeBreakBtn}
+         </Col>
+         <Col xs={6} md={4}>
+           <UsersTable/>
+         </Col>
+       </Row>
+     </Grid>
     );
   }
 }

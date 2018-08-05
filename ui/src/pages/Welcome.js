@@ -5,7 +5,7 @@ import '../styles/Welcome.css';
 
 class Welcome extends Component {
 
-  createButton(label, link) {
+  _renderButton(label, link) {
     return (
       <div className="btn-row">
         <Link to={link}>
@@ -21,8 +21,8 @@ class Welcome extends Component {
     return (
       <div className="vertical-center">
         <div className="container text-center">
-          {this.createButton('Join Game', '/join')}
-          {this.createButton('Host New Game', '/host')}
+          {this._renderButton('Join Game', '/join')}
+          {this._renderButton('Host New Game', '/host')}
         </div>
     </div>
     );
