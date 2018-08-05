@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {vote} from '../actions';
 import UsersTable from './UsersTable';
-import {LEGAL_ESTIMATES} from '../config/Constants';
+import {COFFEE_SYMBOL, LEGAL_ESTIMATES} from '../config/Constants';
 
 import {Col, Grid, Row} from 'react-bootstrap';
 
@@ -20,13 +20,11 @@ class Vote extends Component {
       </button>
     )));
 
-    const CoffeeSymbol = '\u2615';
-
     const CoffeeBreakBtn = (
       <button type="button" className="coffee-btn btn-vote btn-primary btn-lg"
               onClick={() => this.props.vote(
-                this.props.playerName, this.props.sessionId, CoffeeSymbol)}>
-        {CoffeeSymbol}
+                this.props.playerName, this.props.sessionId, COFFEE_SYMBOL)}>
+        {COFFEE_SYMBOL}
       </button>
     );
 
