@@ -10,9 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
-import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.ITEM_MESSAGE;
-import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.RESULTS_MESSAGE;
-import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.USERS_MESSAGE;
+import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.*;
 
 /**
  * Created by Rich Ashworth on 03/05/2016.
@@ -25,29 +23,19 @@ public class MessagingUtils {
     public static final String TOPIC_ITEM = "/topic/item/";
 
     private final SessionManager sessionManager;
-
-    @Data
-    @AllArgsConstructor
-    private class Message {
-        MessageType type;
-        Object payload;
-    }
-
-    public enum MessageType {
-        ITEM_MESSAGE,
-        USERS_MESSAGE,
-        RESULTS_MESSAGE
-    }
-
     @Autowired
     private Clock clock;
-
     @Autowired
     private SimpMessagingTemplate template;
 
     @Autowired
     public MessagingUtils(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
+    }
+
+    @Contract(pure = true)
+    public static String getTopic(String topicRoot, long sessionId) {
+        return topicRoot + sessionId;
     }
 
     public void sendResultsMessage(long sessionId) {
@@ -89,9 +77,17 @@ public class MessagingUtils {
         }
     }
 
-    @Contract(pure = true)
-    public static String getTopic(String topicRoot, long sessionId) {
-        return topicRoot + sessionId;
+    public enum MessageType {
+        ITEM_MESSAGE,
+        USERS_MESSAGE,
+        RESULTS_MESSAGE
+    }
+
+    @Data
+    @AllArgsConstructor
+    private class Message {
+        MessageType type;
+        Object payload;
     }
 
 }

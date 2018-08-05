@@ -16,13 +16,11 @@ import static org.mockito.Mockito.inOrder;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractControllerTest {
 
-    InOrder inOrder;
-
     @Mock
     protected MessagingUtils messagingUtils;
-
     @Mock
     protected SessionManager sessionManager;
+    InOrder inOrder;
 
     @Before
     public void setUp() {
