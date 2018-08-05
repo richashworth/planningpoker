@@ -8,7 +8,7 @@ class Header extends Component {
 
   render() {
     return (
-      <Navbar collapseOnSelect >
+      <Navbar collapseOnSelect className="navbar-top">
         <Navbar.Header>
           <Navbar.Brand>
             planning poker
@@ -17,11 +17,11 @@ class Header extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Navbar.Text pullRight>
-              {this.props.playerName}
-          </Navbar.Text>
-          <Navbar.Text pullRight>
               {this.props.sessionId ? `Session ${this.props.sessionId}` : ''}
           </Navbar.Text>
+          {/* <Navbar.Text pullRight> */}
+          {/*   {this.props.playerName} */}
+          {/* </Navbar.Text> */}
         </Navbar.Collapse>
       </Navbar>
     );

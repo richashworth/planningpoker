@@ -11,6 +11,7 @@ import JoinGame from './pages/JoinGame';
 import CreateGame from './pages/CreateGame';
 import Vote from './pages/Vote';
 import Results from './pages/Results';
+import Footer from './containers/Footer';
 
 const createStoreWithMiddleware = applyMiddleware(ReduxPromise)(createStore);
 
@@ -20,6 +21,7 @@ class App extends Component {
       <Provider store={createStoreWithMiddleware(reducers)}>
         <div>
           <Header/>
+          <main>
           <BrowserRouter>
             <div>
               <Switch>
@@ -31,6 +33,8 @@ class App extends Component {
               </Switch>
             </div>
           </BrowserRouter>
+        </main>
+          <Footer/>
         </div>
       </Provider>
     );

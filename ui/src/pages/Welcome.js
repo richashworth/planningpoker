@@ -19,10 +19,12 @@ class Welcome extends Component {
 
   render() {
     return (
-      <div className="container align-self-center">
-        {this.createButton('Join Game', '/join')}
-        {this.createButton('Create Game', '/create')}
-      </div>
+      <div className="vertical-center">
+        <div className="container text-center">
+          {this.createButton('Join Game', '/join')}
+          {this.createButton('Create Game', '/create')}
+        </div>
+    </div>
     );
   }
 }
