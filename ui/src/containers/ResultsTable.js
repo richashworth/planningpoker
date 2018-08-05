@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 class ResultsTable extends Component {
 
   render() {
-    console.log('calling render with '+JSON.stringify(this.props.results));
     return (
       <div>
         <table>
