@@ -7,6 +7,6 @@ export default function (state = false, action) {
     case VOTE:
       return true
     default:
-      return false
+      return state 
   }
 }

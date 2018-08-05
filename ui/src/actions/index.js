@@ -5,6 +5,7 @@ export const GAME_CREATED = 'game-created';
 export const JOIN_GAME = 'join-game';
 export const RESET_SESSION = 'reset-session';
 export const RESULTS_UPDATED = 'results-updated';
+export const USERS_UPDATED = 'users-updated';
 export const USER_REGISTERED = 'user-registered';
 export const VOTE = 'vote';
 
@@ -17,6 +18,10 @@ export const userRegistered = () => ({type: USER_REGISTERED});
 
 export const resultsUpdated = (results, playerName) => (
   {type: RESULTS_UPDATED, payload: results, meta: {playerName: playerName}}
+);
+
+export const usersUpdated = (users) => (
+  {type: USERS_UPDATED, payload: users}
 );
 
 // User-driven actions

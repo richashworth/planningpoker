@@ -1,6 +1,12 @@
 import {CREATE_GAME, GAME_CREATED, JOIN_GAME, USER_REGISTERED} from '../actions'
 
-const initialGameState = {game: {playerName: '', sessionId: '', isAdmin: false, isRegistered: false}}
+const initialGameState = 
+  { game:
+    { playerName: '', 
+      sessionId: '', 
+      isAdmin: false, 
+      isRegistered: false}
+  }
 
 export default function (state = initialGameState, action) {
   switch (action.type) {

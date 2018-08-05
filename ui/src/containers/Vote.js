@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {vote} from '../actions';
+import UsersTable from './UsersTable';
 
 import {Grid, Row, Col} from 'react-bootstrap';
 
@@ -23,9 +24,7 @@ class Vote extends Component {
     const CoffeeBreakBtn = (
       <button type="button" className="coffee-btn btn-vote btn-primary btn-lg"
         onClick={() => this.props.vote(
-                this.props.playerName, this.props.sessionId, CoffeeSymbol,
-                () => this.props.history.push('/results')
-              )}>
+                this.props.playerName, this.props.sessionId, CoffeeSymbol)}>
                 {CoffeeSymbol}
       </button>
     );
@@ -43,7 +42,7 @@ class Vote extends Component {
        {CoffeeBreakBtn}
      </Col>
      <Col xs={6} md={4}>
-       UsersList
+       <UsersTable/>
      </Col>
    </Row>
  </Grid>

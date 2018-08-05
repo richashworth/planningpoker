@@ -1,6 +1,8 @@
 package com.richashworth.planningpoker.util;
 
 import com.richashworth.planningpoker.service.SessionManager;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.jetbrains.annotations.Contract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -8,6 +10,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
+import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.ITEM_MESSAGE;
+import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.RESULTS_MESSAGE;
+import static com.richashworth.planningpoker.util.MessagingUtils.MessageType.USERS_MESSAGE;
 
 /**
  * Created by Rich Ashworth on 03/05/2016.
@@ -21,6 +26,19 @@ public class MessagingUtils {
 
     private final SessionManager sessionManager;
 
+    @Data
+    @AllArgsConstructor
+    private class Message {
+        MessageType type;
+        Object payload;
+    }
+
+    public enum MessageType {
+        ITEM_MESSAGE,
+        USERS_MESSAGE,
+        RESULTS_MESSAGE
+    }
+
     @Autowired
     private Clock clock;
 
@@ -33,17 +51,17 @@ public class MessagingUtils {
     }
 
     public void sendResultsMessage(long sessionId) {
-        template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), sessionManager.getResults(sessionId));
+        template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), new Message(RESULTS_MESSAGE, sessionManager.getResults(sessionId)));
     }
 
     public void sendUsersMessage(long sessionId) {
-        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), sessionManager.getSessionUsers(sessionId));
+        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), new Message(USERS_MESSAGE, sessionManager.getSessionUsers(sessionId)));
     }
 
     public void sendItemMessage(long sessionId) {
         final String currentItem = sessionManager.getCurrentItem(sessionId);
         if (null != currentItem) {
-            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), currentItem);
+            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), new Message(ITEM_MESSAGE, currentItem));
         }
     }
 
