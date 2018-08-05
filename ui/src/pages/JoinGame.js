@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {joinGame} from '../actions';
+import {joinGame, userRegistered} from '../actions';
 import NameInput from '../components/NameInput';
 
 class JoinGame extends Component {
@@ -28,7 +28,8 @@ class JoinGame extends Component {
     event.preventDefault();
 
     this.props.joinGame(this.state.playerName, this.state.sessionId, () => {
-      this.props.history.push('/vote')
+      this.props.userRegistered();
+      this.props.history.push('/game');
     });
   }
 
@@ -60,4 +61,4 @@ class JoinGame extends Component {
   }
 }
 
-export default connect(null, {joinGame})(JoinGame);
+export default connect(null, {joinGame, userRegistered})(JoinGame);

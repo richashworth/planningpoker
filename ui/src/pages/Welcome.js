@@ -22,7 +22,7 @@ class Welcome extends Component {
       <div className="vertical-center">
         <div className="container text-center">
           {this.createButton('Join Game', '/join')}
-          {this.createButton('Create Game', '/create')}
+          {this.createButton('Host New Game', '/host')}
         </div>
     </div>
     );

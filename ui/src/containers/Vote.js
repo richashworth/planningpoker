@@ -13,9 +13,7 @@ class Vote extends Component {
     const VoteButtons = ([1, 2, 3, 5, 8, 13, 20, 100].map(estimateValue => (
       <button type="button" className="btn-vote btn-primary btn-lg" key={estimateValue}
         onClick={() => this.props.vote(
-                this.props.playerName, this.props.sessionId, estimateValue,
-                () => this.props.history.push('/results')
-              )}>
+                this.props.playerName, this.props.sessionId, estimateValue)}>
               {estimateValue}
             </button>
     )));

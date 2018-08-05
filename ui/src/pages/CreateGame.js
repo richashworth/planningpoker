@@ -25,8 +25,8 @@ class CreateGame extends Component {
     event.preventDefault();
 
     this.props.createGame(this.state.playerName, () => {
-      this.props.gameCreated()
-      this.props.history.push('/vote')
+      this.props.gameCreated();
+      this.props.history.push('/game');
     });
   }
 
@@ -38,7 +38,7 @@ class CreateGame extends Component {
           playerName={this.state.playerName}
           onPlayerNameInputChange={this.onPlayerNameInputChange}/>
         <button type="submit" className="btn btn-primary">
-          Submit
+          Start Game
         </button>
       </form>
     </div>

@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 class ResultsTable extends Component {
 
   render() {
+    console.log('in render restab');
     return (
       <div>
         <table>
