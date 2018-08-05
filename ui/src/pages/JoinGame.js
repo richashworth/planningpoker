@@ -36,7 +36,7 @@ class JoinGame extends Component {
   render() {
     return (
       <div className="container">
-        <form onSubmit={this.onFormSubmit} >
+        <form onSubmit={this.onFormSubmit}>
           <NameInput
             playerName={this.state.playerName}
             onPlayerNameInputChange={this.onPlayerNameInputChange}/>
@@ -51,7 +51,7 @@ class JoinGame extends Component {
               min="1"
               onChange={this.onSessionInputChange}
             />
-        </div>
+          </div>
           <button type="submit" className="btn btn-primary">
             Join Game
           </button>

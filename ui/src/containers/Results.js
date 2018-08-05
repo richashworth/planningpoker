@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Grid, Row, Col} from 'react-bootstrap';
+import {Col, Grid, Row} from 'react-bootstrap';
 import ResultsTable from '../containers/ResultsTable';
 import ResultsChart from '../containers/ResultsChart';
 import {resetSession} from '../actions';
@@ -12,13 +12,13 @@ class Results extends Component {
   render() {
 
     const adminButton =
-        <Row>
-          <button type="button" className="btn-next btn btn-primary btn-lg"
-            onClick={() => this.props.resetSession(
-                this.props.playerName, this.props.sessionId,)}>
-                Next Item
-              </button>
-            </Row>
+      <Row>
+        <button type="button" className="btn-next btn btn-primary btn-lg"
+                onClick={() => this.props.resetSession(
+                  this.props.playerName, this.props.sessionId,)}>
+          Next Item
+        </button>
+      </Row>
 
     return (
       <div>

@@ -1,18 +1,18 @@
 .navbar-top {
-  background-color: #00034A;
+    background-color: #00034A;
 }
 
 .navbar-default .navbar-brand {
-  font-family: "Lobster", cursive;
-  color: white;
-  font-size: 45px;
+    font-family: "Lobster", cursive;
+    color: white;
+    font-size: 45px;
 }
 
 .navbar-default .navbar-brand:hover {
-  color: white;
+    color: white;
 }
 
 .navbar-default .navbar-text {
-  font-size: 15px;
-  color: white;
+    font-size: 15px;
+    color: white;
 }

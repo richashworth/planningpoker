@@ -24,7 +24,7 @@ class Welcome extends Component {
           {this._renderButton('Join Game', '/join')}
           {this._renderButton('Host New Game', '/host')}
         </div>
-    </div>
+      </div>
     );
   }
 }

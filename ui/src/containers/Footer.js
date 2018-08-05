@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 export default class Footer extends Component {
 
@@ -6,8 +6,8 @@ export default class Footer extends Component {
     return (
       <nav className="navbar navbar-default navbar-fixed-bottom">
         <div className="container">
-          
-      </div>
+
+        </div>
       </nav>
     );
   }

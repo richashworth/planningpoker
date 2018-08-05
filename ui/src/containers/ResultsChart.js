@@ -8,8 +8,8 @@ class ResultsChart extends Component {
 
 
   aggregate(data) {
-    const estimates = data.map(x=>x['estimateValue'])
-    return LEGAL_ESTIMATES.map(x=>estimates.filter(y=>y===x).length);
+    const estimates = data.map(x => x['estimateValue'])
+    return LEGAL_ESTIMATES.map(x => estimates.filter(y => y === x).length);
   }
 
   render() {

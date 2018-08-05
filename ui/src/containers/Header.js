@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { Navbar } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {Navbar} from 'react-bootstrap';
+import {connect} from 'react-redux';
 
 import '../styles/Header.css';
 
@@ -13,11 +13,11 @@ class Header extends Component {
           <Navbar.Brand>
             planning poker
           </Navbar.Brand>
-          <Navbar.Toggle />
+          <Navbar.Toggle/>
         </Navbar.Header>
         <Navbar.Collapse>
           <Navbar.Text pullRight>
-              {this.props.sessionId ? `Session ${this.props.sessionId}` : ''}
+            {this.props.sessionId ? `Session ${this.props.sessionId}` : ''}
           </Navbar.Text>
           {/* <Navbar.Text pullRight> */}
           {/*   {this.props.playerName} */}

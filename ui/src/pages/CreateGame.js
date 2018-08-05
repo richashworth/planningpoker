@@ -32,16 +32,16 @@ class CreateGame extends Component {
 
   render() {
     return (
-    <div className="container">
-      <form onSubmit={this.onFormSubmit}>
-        <NameInput
-          playerName={this.state.playerName}
-          onPlayerNameInputChange={this.onPlayerNameInputChange}/>
-        <button type="submit" className="btn btn-primary">
-          Start Game
-        </button>
-      </form>
-    </div>
+      <div className="container">
+        <form onSubmit={this.onFormSubmit}>
+          <NameInput
+            playerName={this.state.playerName}
+            onPlayerNameInputChange={this.onPlayerNameInputChange}/>
+          <button type="submit" className="btn btn-primary">
+            Start Game
+          </button>
+        </form>
+      </div>
     );
   }
 }

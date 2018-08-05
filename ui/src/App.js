@@ -21,17 +21,17 @@ class App extends Component {
         <div>
           <Header/>
           <main>
-          <BrowserRouter>
-            <div>
-              <Switch>
-                <Route path="/host" component={CreateGame}/>
-                <Route path="/join" component={JoinGame}/>
-                <Route path="/game" component={PlayGame}/>
-                <Route path="/" component={Welcome}/>
-              </Switch>
-            </div>
-          </BrowserRouter>
-        </main>
+            <BrowserRouter>
+              <div>
+                <Switch>
+                  <Route path="/host" component={CreateGame}/>
+                  <Route path="/join" component={JoinGame}/>
+                  <Route path="/game" component={PlayGame}/>
+                  <Route path="/" component={Welcome}/>
+                </Switch>
+              </div>
+            </BrowserRouter>
+          </main>
           <Footer/>
         </div>
       </Provider>
