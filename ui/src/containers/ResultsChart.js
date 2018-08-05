@@ -13,7 +13,24 @@ class ResultsChart extends Component {
   }
 
   render() {
+
+    const chartOptions= {
+      legend: {
+        display: false
+      },
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem) {
+            return tooltipItem.yLabel;
+          }
+        }
+      }
+    };
+
+
     const inputData = {
+      options: {
+      },
       labels: LEGAL_ESTIMATES,
       datasets: [
         {
@@ -28,7 +45,7 @@ class ResultsChart extends Component {
     };
     return (
       <div>
-        <Bar data={inputData}/>
+        <Bar options={chartOptions}  data={inputData}/>
       </div>
     );
   }
