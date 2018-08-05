@@ -1,4 +1,4 @@
-.btn {
+.btn-vote {
     width: 95px;
     padding: 18px;
     margin-left: 10px;
@@ -6,6 +6,7 @@
     height: 80px;
 }
 
-.coffee {
+.coffee-btn {
   font-size: 35px;
 }
+

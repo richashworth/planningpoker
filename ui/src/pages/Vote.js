@@ -11,7 +11,7 @@ class Vote extends Component {
   render() {
 
     const VoteButtons = ([1, 2, 3, 5, 8, 13, 20, 100].map(estimateValue => (
-      <button type="button" className="btn btn-primary btn-lg" key={estimateValue}
+      <button type="button" className="btn-vote btn-primary btn-lg" key={estimateValue}
         onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, estimateValue,
                 () => this.props.history.push('/results')
@@ -23,7 +23,7 @@ class Vote extends Component {
     const CoffeeSymbol = '\u2615';
 
     const CoffeeBreakBtn = (
-      <button type="button" className="btn btn-primary btn-lg coffee"
+      <button type="button" className="btn-vote btn-primary btn-lg coffee"
         onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, CoffeeSymbol,
                 () => this.props.history.push('/results')

@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {createGame, gameCreated} from '../actions';
+import NameInput from '../components/NameInput';
+
+import '../styles/Create.css';
 
 class CreateGame extends Component {
 
@@ -29,21 +32,16 @@ class CreateGame extends Component {
 
   render() {
     return (
+    <div className="container">
       <form onSubmit={this.onFormSubmit}>
-        <div className="form-group">
-          <input
-            placeholder="Name"
-            className="form-control"
-            value={this.state.playerName}
-            onChange={this.onPlayerNameInputChange}
-          />
-        </div>
         <div>
+          <NameInput playerName={this.state.playerName} onPlayerNameInputChange={this.onPlayerNameInputChange}/>
           <button type="submit" className="btn btn-primary">
             Submit
           </button>
         </div>
       </form>
+    </div>
     );
   }
 }

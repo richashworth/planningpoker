@@ -6,8 +6,8 @@ export default class Footer extends Component {
     return (
       <nav className="navbar navbar-default navbar-fixed-bottom">
         <div className="container">
-          Footer goes here!
-        </div>
+          
+      </div>
       </nav>
     );
   }
