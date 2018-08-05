@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Table} from 'react-bootstrap';
 import {connect} from 'react-redux';
 
 class UsersTable extends Component {
@@ -6,14 +7,14 @@ class UsersTable extends Component {
   render() {
     return (
       <div>
-        <table>
+        <Table>
           <tbody>
           <tr>
-            <th>User</th>
+            <th> Registered Users</th>
           </tr>
           {this.props.users.map((x) => _renderUserRow(x))}
           </tbody>
-        </table>
+        </Table>
       </div>
     );
   }

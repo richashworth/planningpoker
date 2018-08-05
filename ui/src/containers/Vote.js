@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {vote} from '../actions';
 import UsersTable from './UsersTable';
+import {LEGAL_ESTIMATES} from '../config/Constants';
 
 import {Grid, Row, Col} from 'react-bootstrap';
 
@@ -11,7 +12,7 @@ class Vote extends Component {
 
   render() {
 
-    const VoteButtons = ([1, 2, 3, 5, 8, 13, 20, 100].map(estimateValue => (
+    const VoteButtons = (LEGAL_ESTIMATES.map(estimateValue => (
       <button type="button" className="btn-vote btn-primary btn-lg" key={estimateValue}
         onClick={() => this.props.vote(
                 this.props.playerName, this.props.sessionId, estimateValue)}>

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Grid, Row, Col} from 'react-bootstrap';
 import ResultsTable from '../containers/ResultsTable';
+import ResultsChart from '../containers/ResultsChart';
 import {resetSession} from '../actions';
 
 import '../styles/Results.css';
@@ -24,7 +25,7 @@ class Results extends Component {
         <Grid>
           <Row className="show-grid">
             <Col xs={12} md={8}>
-              Chart goes here
+              <ResultsChart/>
             </Col>
             <Col xs={6} md={4}>
               <ResultsTable/>

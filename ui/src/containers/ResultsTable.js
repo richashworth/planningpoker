@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Table } from 'react-bootstrap';
 import {connect} from 'react-redux';
 
 class ResultsTable extends Component {
@@ -6,7 +7,7 @@ class ResultsTable extends Component {
   render() {
     return (
       <div>
-        <table>
+        <Table responsive>
           <tbody>
           <tr>
             <th>User</th>
@@ -14,7 +15,7 @@ class ResultsTable extends Component {
           </tr>
           {this.props.results.map((x) => _renderVoteRow(x))}
           </tbody>
-        </table>
+        </Table>
       </div>
     );
   }
