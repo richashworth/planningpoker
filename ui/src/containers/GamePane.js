@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import Vote from '../containers/Vote';
 import Results from '../containers/Results';
 
-class PlayGame extends Component {
+class GamePane extends Component {
 
   render() {
     return (
@@ -18,4 +18,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(PlayGame);
+export default connect(mapStateToProps)(GamePane);
