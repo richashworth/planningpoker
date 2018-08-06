@@ -1,5 +1,9 @@
 .btn-next {
-    width: 20em;
+    width: 15em;
     padding: 18px;
+}
+
+.admin-btn-row {
+  margin-top: 30px;
 }
 

@@ -8,11 +8,7 @@
     font-size: 45px;
 }
 
-.navbar-default .navbar-brand:hover {
-    color: white;
-}
-
-.navbar-default .navbar-text {
+.navbar-default .navbar-header-text {
     font-size: 15px;
     color: white;
 }

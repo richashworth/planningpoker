@@ -1,18 +1,24 @@
 import React, {Component} from 'react';
 import {Table} from 'react-bootstrap';
 import {connect} from 'react-redux';
+import _ from 'lodash';
 
 class UsersTable extends Component {
 
   render() {
+
+    const displayedUsers = this.props.filterVoted ? 
+      _.difference(this.props.users, this.props.results.map(x=>x['userName'])) :
+      this.props.users;
+
     return (
       <div>
-        <Table>
+        <Table responsive striped>
           <tbody>
           <tr>
-            <th> Registered Users</th>
+            <th> {this.props.heading} </th>
           </tr>
-          {this.props.users.map((x) => _renderUserRow(x))}
+          {displayedUsers.map((x) => _renderUserRow(x))}
           </tbody>
         </Table>
       </div>
@@ -30,7 +36,8 @@ function _renderUserRow(data) {
 
 function mapStateToProps(state) {
   return {
-    users: state.users
+    users: state.users,
+    results: state.results
   };
 }
 

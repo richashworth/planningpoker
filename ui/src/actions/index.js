@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {ROOT_URL} from '../config/Constants';
 
 export const CREATE_GAME = 'create-game';
 export const GAME_CREATED = 'game-created';
@@ -9,7 +10,6 @@ export const USERS_UPDATED = 'users-updated';
 export const USER_REGISTERED = 'user-registered';
 export const VOTE = 'vote';
 
-const ROOT_URL = 'http://localhost:9000';
 
 // Events
 export const gameCreated = () => ({type: GAME_CREATED});

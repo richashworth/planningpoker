@@ -7,7 +7,7 @@ class ResultsTable extends Component {
   render() {
     return (
       <div>
-        <Table responsive>
+        <Table responsive striped>
           <tbody>
           <tr>
             <th>User</th>

@@ -40,8 +40,8 @@ class Vote extends Component {
             {VoteButtons}
             {CoffeeBreakBtn}
           </Col>
-          <Col xs={6} md={4}>
-            <UsersTable/>
+          <Col xs={3} md={2}>
+            <UsersTable heading = "Users"/>
           </Col>
         </Row>
       </Grid>

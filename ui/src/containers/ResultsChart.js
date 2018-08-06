@@ -18,19 +18,19 @@ class ResultsChart extends Component {
       legend: {
         display: false
       },
+      tooltips: {
+        enabled: false
+      }
     };
 
 
     const inputData = {
-      options: {},
       labels: LEGAL_ESTIMATES,
       datasets: [
         {
-          backgroundColor: 'rgba(255,99,132,0.2)',
-          borderColor: 'rgba(255,99,132,1)',
+          backgroundColor: 'rgba(229,239,245)',
+          borderColor: 'rgba(147,190,216)',
           borderWidth: 1,
-          hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-          hoverBorderColor: 'rgba(255,99,132,1)',
           data: this.aggregate(this.props.results)
         }
       ]

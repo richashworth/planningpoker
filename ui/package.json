@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "chart.js": "^2.7.2",
+    "lodash": "^4.17.10",
     "rc-animate": "^2.4.4",
     "rc-table": "^6.3.0",
     "react": "^16.3.2",

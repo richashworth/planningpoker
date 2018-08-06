@@ -16,12 +16,9 @@ class Header extends Component {
           <Navbar.Toggle/>
         </Navbar.Header>
         <Navbar.Collapse>
-          <Navbar.Text pullRight>
+          <Navbar.Text pullRight className='navbar-header-text'>
             {this.props.sessionId ? `Session ${this.props.sessionId}` : ''}
           </Navbar.Text>
-          {/* <Navbar.Text pullRight> */}
-          {/*   {this.props.playerName} */}
-          {/* </Navbar.Text> */}
         </Navbar.Collapse>
       </Navbar>
     );
