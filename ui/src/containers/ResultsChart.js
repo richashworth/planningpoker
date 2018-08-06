@@ -13,7 +13,6 @@ class ResultsChart extends Component {
   }
 
   render() {
-
     const chartOptions = {
       legend: {
         display: false
@@ -22,7 +21,6 @@ class ResultsChart extends Component {
         enabled: false
       }
     };
-
 
     const inputData = {
       labels: LEGAL_ESTIMATES,
@@ -35,6 +33,7 @@ class ResultsChart extends Component {
         }
       ]
     };
+
     return (
       <div>
         <Bar options={chartOptions} data={inputData}/>
