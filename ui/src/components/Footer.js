@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Navbar, Nav, NavItem} from 'react-bootstrap';
+import {Nav, Navbar, NavItem} from 'react-bootstrap';
 import axios from 'axios';
 import {ROOT_URL} from '../config/Constants';
 
@@ -13,10 +13,9 @@ export default class Footer extends Component {
     this.state = {appVersion: ''};
   }
 
-  componentWillMount(){
-  
-  const request = axios.get(`${ROOT_URL}/version`);
-  request.then()
+  componentWillMount() {
+    const request = axios.get(`${ROOT_URL}/version`);
+    request.then(x => this.setState({appVersion: x.data}));
   }
 
 
@@ -25,7 +24,7 @@ export default class Footer extends Component {
       <Navbar collapseOnSelect className="navbar-fixed-bottom">
         <Nav>
           <Navbar.Text>
-             version {this.props.appVersion}
+            version {this.state.appVersion}
           </Navbar.Text>
         </Nav>
         <Nav pullRight className='navbar-footer-text'>

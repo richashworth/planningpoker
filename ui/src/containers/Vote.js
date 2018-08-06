@@ -41,7 +41,7 @@ class Vote extends Component {
             {CoffeeBreakBtn}
           </Col>
           <Col xs={3} md={2}>
-            <UsersTable heading = "Users"/>
+            <UsersTable heading="Users"/>
           </Col>
         </Row>
       </Grid>

@@ -7,8 +7,8 @@ class UsersTable extends Component {
 
   render() {
 
-    const displayedUsers = this.props.filterVoted ? 
-      _.difference(this.props.users, this.props.results.map(x=>x['userName'])) :
+    const displayedUsers = this.props.filterVoted ?
+      _.difference(this.props.users, this.props.results.map(x => x['userName'])) :
       this.props.users;
 
     return (

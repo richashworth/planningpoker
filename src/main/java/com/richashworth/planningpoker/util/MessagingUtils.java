@@ -76,6 +76,18 @@ public class MessagingUtils {
         }
     }
 
+    Message itemMessage(Object payload) {
+        return new Message(MessageType.ITEM_MESSAGE, payload);
+    }
+
+    Message resultsMessage(Object payload) {
+        return new Message(MessageType.RESULTS_MESSAGE, payload);
+    }
+
+    Message usersMessage(Object payload) {
+        return new Message(MessageType.USERS_MESSAGE, payload);
+    }
+
     private enum MessageType {
         ITEM_MESSAGE,
         USERS_MESSAGE,
@@ -87,18 +99,6 @@ public class MessagingUtils {
     private class Message {
         MessageType type;
         Object payload;
-    }
-
-    Message itemMessage(Object payload) {
-        return new Message(MessageType.ITEM_MESSAGE, payload);
-    }
-
-    Message resultsMessage(Object payload) {
-        return new Message(MessageType.RESULTS_MESSAGE, payload);
-    }
-
-    Message usersMessage(Object payload) {
-        return new Message(MessageType.USERS_MESSAGE, payload);
     }
 
 }

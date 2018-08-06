@@ -10,7 +10,7 @@ import Welcome from './pages/Welcome';
 import JoinGame from './pages/JoinGame';
 import CreateGame from './pages/CreateGame';
 import PlayGame from './pages/PlayGame';
-import Footer from './containers/Footer';
+import Footer from './components/Footer';
 
 const createStoreWithMiddleware = applyMiddleware(ReduxPromise)(createStore);
 
