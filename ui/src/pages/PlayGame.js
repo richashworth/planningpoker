@@ -12,7 +12,7 @@ class PlayGame extends Component {
     }
   }
 
-  handleMessage(msg) {
+  _handleMessage(msg) {
     switch (msg.type) {
       case 'RESULTS_MESSAGE':
         return this.props.resultsUpdated(msg.payload, this.props.playerName);
@@ -35,7 +35,7 @@ class PlayGame extends Component {
             `/topic/results/${this.props.sessionId}`,
             `/topic/users/${this.props.sessionId}`,
           ]}
-          onMessage={(msg) => this.handleMessage(msg)}/>
+          onMessage={(msg) => this._handleMessage(msg)}/>
         <GamePane/>
       </div>
     );

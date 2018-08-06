@@ -6,8 +6,7 @@ import {LEGAL_ESTIMATES} from '../config/Constants';
 
 class ResultsChart extends Component {
 
-
-  aggregate(data) {
+  _aggregate(data) {
     const estimates = data.map(x => x['estimateValue'])
     return LEGAL_ESTIMATES.map(x => estimates.filter(y => y === x).length);
   }
@@ -29,7 +28,7 @@ class ResultsChart extends Component {
           backgroundColor: 'rgba(229,239,245)',
           borderColor: 'rgba(147,190,216)',
           borderWidth: 1,
-          data: this.aggregate(this.props.results)
+          data: this._aggregate(this.props.results)
         }
       ]
     };

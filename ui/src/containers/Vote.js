@@ -11,7 +11,6 @@ import '../styles/Vote.css';
 class Vote extends Component {
 
   render() {
-
     const VoteButtons = (LEGAL_ESTIMATES.map(estimateValue => (
       <button type="button" className="btn-vote btn-primary btn-lg" key={estimateValue}
               onClick={() => this.props.vote(

@@ -10,10 +10,8 @@ export const USERS_UPDATED = 'users-updated';
 export const USER_REGISTERED = 'user-registered';
 export const VOTE = 'vote';
 
-
 // Events
 export const gameCreated = () => ({type: GAME_CREATED});
-
 export const userRegistered = () => ({type: USER_REGISTERED});
 
 export const resultsUpdated = (results, playerName) => (
