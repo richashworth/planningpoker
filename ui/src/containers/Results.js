@@ -11,7 +11,6 @@ import '../styles/Results.css';
 class Results extends Component {
 
   render() {
-
     const adminButton =
       <Row className="admin-btn-row">
         <button type="button" className="btn-next btn btn-primary btn-lg"

@@ -13,7 +13,7 @@ export default class Footer extends Component {
     this.state = {appVersion: ''};
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const request = axios.get(`${ROOT_URL}/version`);
     request.then(x => this.setState({appVersion: x.data}));
   }
