@@ -50,21 +50,22 @@ public class MessagingUtilsTest {
     public void testSendResultsMessage() throws Exception {
         when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
         messagingUtils.sendResultsMessage(SESSION_ID);
-        verifyMessageSent(1, getTopic(TOPIC_RESULTS, SESSION_ID), RESULTS);
+        verifyMessageSent(1, getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(RESULTS));
     }
+
 
     @Test
     public void testSendUsersMessage() throws Exception {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
         messagingUtils.sendUsersMessage(SESSION_ID);
-        verifyMessageSent(1, getTopic(TOPIC_USERS, SESSION_ID), USERS);
+        verifyMessageSent(1, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage((USERS)));
     }
 
     @Test
     public void testSendItemMessage() throws Exception {
         when(sessionManager.getCurrentItem(SESSION_ID)).thenReturn(ITEM);
         messagingUtils.sendItemMessage(SESSION_ID);
-        verifyMessageSent(1, getTopic(TOPIC_ITEM, SESSION_ID), ITEM);
+        verifyMessageSent(1, getTopic(TOPIC_ITEM, SESSION_ID), messagingUtils.itemMessage(ITEM));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class MessagingUtilsTest {
         for (long latency : LATENCIES) {
             verify(clock, times(1)).pause(latency);
         }
-        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_RESULTS, SESSION_ID), RESULTS);
+        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(RESULTS));
     }
 
     @Test
@@ -90,7 +91,7 @@ public class MessagingUtilsTest {
         for (long latency : LATENCIES) {
             verify(clock, times(1)).pause(latency);
         }
-        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_USERS, SESSION_ID), USERS);
+        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage(USERS));
     }
 
     @Test
@@ -100,7 +101,7 @@ public class MessagingUtilsTest {
         for (long latency : LATENCIES) {
             verify(clock, times(1)).pause(latency);
         }
-        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_ITEM, SESSION_ID), ITEM);
+        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_ITEM, SESSION_ID), messagingUtils.itemMessage(ITEM));
     }
 
     private void verifyMessageSent(int numberInvocations, String destination, Object payload) {

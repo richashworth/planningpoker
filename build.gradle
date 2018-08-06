@@ -12,7 +12,6 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.4'
-    id 'com.craigburke.client-dependencies' version '1.1.4'
 }
 
 apply plugin: 'java'
@@ -54,19 +53,6 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:1.6.5'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
-
-clientDependencies {
-    npm {
-        installDir = 'src/main/resources/static/clientlibs'
-        'stomp-websocket'('https://github.com/jmesnil/stomp-websocket.git')
-        'sockjs'('https://github.com/sockjs/sockjs-client.git')
-        'angular'('1.5.x')
-        'angular-chart'('https://github.com/jtblin/angular-chart.js.git')
-        'Chart.js'('https://github.com/chartjs/Chart.js.git')
-    }
-}
-
-tasks.processResources.dependsOn(["clientInstall"])
 
 jacocoTestReport {
     reports {

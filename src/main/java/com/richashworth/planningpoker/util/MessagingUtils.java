@@ -1,6 +1,8 @@
 package com.richashworth.planningpoker.util;
 
 import com.richashworth.planningpoker.service.SessionManager;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.jetbrains.annotations.Contract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,10 +22,8 @@ public class MessagingUtils {
     public static final String TOPIC_ITEM = "/topic/item/";
 
     private final SessionManager sessionManager;
-
     @Autowired
     private Clock clock;
-
     @Autowired
     private SimpMessagingTemplate template;
 
@@ -32,18 +32,23 @@ public class MessagingUtils {
         this.sessionManager = sessionManager;
     }
 
+    @Contract(pure = true)
+    public static String getTopic(String topicRoot, long sessionId) {
+        return topicRoot + sessionId;
+    }
+
     public void sendResultsMessage(long sessionId) {
-        template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), sessionManager.getResults(sessionId));
+        template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), resultsMessage(sessionManager.getResults(sessionId)));
     }
 
     public void sendUsersMessage(long sessionId) {
-        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), sessionManager.getSessionUsers(sessionId));
+        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(sessionManager.getSessionUsers(sessionId)));
     }
 
     public void sendItemMessage(long sessionId) {
         final String currentItem = sessionManager.getCurrentItem(sessionId);
         if (null != currentItem) {
-            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), currentItem);
+            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), itemMessage(currentItem));
         }
     }
 
@@ -71,9 +76,29 @@ public class MessagingUtils {
         }
     }
 
-    @Contract(pure = true)
-    public static String getTopic(String topicRoot, long sessionId) {
-        return topicRoot + sessionId;
+    Message itemMessage(Object payload) {
+        return new Message(MessageType.ITEM_MESSAGE, payload);
+    }
+
+    Message resultsMessage(Object payload) {
+        return new Message(MessageType.RESULTS_MESSAGE, payload);
+    }
+
+    Message usersMessage(Object payload) {
+        return new Message(MessageType.USERS_MESSAGE, payload);
+    }
+
+    private enum MessageType {
+        ITEM_MESSAGE,
+        USERS_MESSAGE,
+        RESULTS_MESSAGE
+    }
+
+    @Data
+    @AllArgsConstructor
+    private class Message {
+        MessageType type;
+        Object payload;
     }
 
 }

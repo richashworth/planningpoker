@@ -46,7 +46,7 @@ public class SessionManagerTest {
     @Test
     public void testGetResults() throws Exception {
         final Long sessionId = sessionManager.createSession();
-        final Estimate estimate = new Estimate("Rich A", 5D);
+        final Estimate estimate = new Estimate("Rich A", "5");
         sessionManager.registerEstimate(sessionId, estimate);
         final List<Estimate> results = sessionManager.getResults(sessionId);
         assertEquals(Lists.newArrayList(estimate), results);
@@ -87,7 +87,7 @@ public class SessionManagerTest {
     public void testClearSessions() {
         final Long sessionId = sessionManager.createSession();
         sessionManager.registerUser("Rich", sessionId);
-        sessionManager.registerEstimate(sessionId, new Estimate("Rich", 8D));
+        sessionManager.registerEstimate(sessionId, new Estimate("Rich", "8"));
         sessionManager.setCurrentItem(sessionId, "my user story");
         sessionManager.clearSessions();
 
@@ -103,7 +103,7 @@ public class SessionManagerTest {
         final Long sessionId = sessionManager.createSession();
         final String userName = "Rich";
         sessionManager.registerUser(userName, sessionId);
-        sessionManager.registerEstimate(sessionId, new Estimate(userName, 1D));
+        sessionManager.registerEstimate(sessionId, new Estimate(userName, "1"));
         sessionManager.resetSession(sessionId);
         assertTrue(sessionManager.getResults(sessionId).isEmpty());
         assertEquals(Lists.newArrayList(userName), sessionManager.getSessionUsers(sessionId));
