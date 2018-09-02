@@ -12,6 +12,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.4'
+    id 'com.craigburke.client-dependencies' version '1.4.0'
 }
 
 apply plugin: 'java'
@@ -53,6 +54,27 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:1.6.5'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
+
+clientDependencies {
+    npm {
+        installDir = 'src/main/resources/static/clientlibs'
+        'chart.js'('2.7.2')
+        'axios'('0.18.0')
+        'lodash'('4.17.10')
+        'react'('16.3.2')
+        'react-bootstrap'('0.32.1')
+        'react-chartjs-2'('2.7.4')
+        'react-dom'('16.3.2')
+        'react-redux'('5.0.7')
+        'react-router-dom'('4.2.2')
+        'react-scripts'('1.1.4')
+        'react-stomp'('3.3.0')
+        'redux'('4.0.0')
+        'redux-promise'('0.6.0')
+    }
+}
+
+tasks.processResources.dependsOn(["clientInstall"])
 
 jacocoTestReport {
     reports {

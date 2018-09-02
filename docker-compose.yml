@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  server:
+    build: .
+    ports:
+    - "9000:9000"
+  ui:
+    volumes:
+    - '.:/usr/src/app'
+    - /usr/src/app/node_modules'
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+    - "8080:3000"
