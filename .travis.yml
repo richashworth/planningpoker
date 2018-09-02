@@ -16,6 +16,7 @@ install:
 
 script:
 - ./gradlew
+- ./heroku/bin/heroku jar:deploy planningpokler-api/build/libs/*.jar --app _heroku-app-name_ HEROKU_API_KEY
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)

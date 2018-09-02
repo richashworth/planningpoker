@@ -42,4 +42,4 @@ jacocoTestReport {
 
 check.dependsOn jacocoTestReport
 
-task stage(dependsOn: ["compile","build"]) {}
+task stage(dependsOn: ["build"]) {}
