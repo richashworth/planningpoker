@@ -1,6 +1,30 @@
 #!/bin/bash
-for userCount in {1..50}
+for name in "Tom" "Ursula" "Anuj" "Sam" "Isaac" "David" "Gavin"
 do
-    curl --data "sessionId=${1}&userName=User ${userCount}" http://localhost:8080/joinSession;
-    curl --data "sessionId=${1}&userName=User ${userCount}&estimateValue=1" http://localhost:8080/vote;
+    echo "${name} is joining session"
+    curl -X POST -F "userName=${name}" -F "sessionId=1" https://planningpoker-tool.herokuapp.com/joinSession;
+    sleep $((RANDOM % 1))
 done
+
+sleep $((RANDOM % 4))
+
+curl -X POST -F "userName=Tom" -F "sessionId=1" -F "estimateValue=2" https://planningpoker-tool.herokuapp.com/vote;
+sleep $((RANDOM % 1))
+
+curl -X POST -F "userName=Isaac" -F "sessionId=1" -F "estimateValue=3" https://planningpoker-tool.herokuapp.com/vote;
+sleep $((RANDOM % 1))
+
+curl -X POST -F "userName=David" -F "sessionId=1" -F "estimateValue=2" https://planningpoker-tool.herokuapp.com/vote;
+sleep $((RANDOM % 1))
+
+curl -X POST -F "userName=Anuj" -F "sessionId=1" -F "estimateValue=20" https://planningpoker-tool.herokuapp.com/vote;
+sleep $((RANDOM % 1))
+
+curl -X POST -F "userName=Ursula" -F "sessionId=1" -F "estimateValue=3" https://planningpoker-tool.herokuapp.com/vote;
+sleep $((RANDOM % 1))
+
+curl -X POST -F "userName=Gavin" -F "sessionId=1" -F "estimateValue=2" https://planningpoker-tool.herokuapp.com/vote;
+sleep $((RANDOM % 1))
+
+curl -X POST -F "userName=Sam" -F "sessionId=1" -F "estimateValue=3" https://planningpoker-tool.herokuapp.com/vote;
+sleep $((RANDOM % 1))
