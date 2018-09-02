@@ -19,7 +19,7 @@ install:
 script:
 - ./gradlew
 - ./heroku/bin/heroku plugins:install heroku-cli-deploy
-- ./heroku/bin/heroku jar:deploy planningpoker-api/build/libs/*.jar --app planningpoker-tool HEROKU_API_KEY
+- ./heroku/bin/heroku deploy:jar planningpoker-api/build/libs/*.jar --app planningpoker-tool HEROKU_API_KEY
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
