@@ -9,14 +9,10 @@ A simple web-based planning poker game. See [this blog post](http://richashworth
 https://planningpoker-tool.herokuapp.com
 
 ## Running the application
-The easiest way to run the app locally is with docker-compose:
-
-`docker-compose up`
-
-## Development
+Planning Poker is built with [Spring Boot](http://projects.spring.io/spring-boot). 
 To build and run from the source code:
 
-`./gradlew`
+`./gradlew clientInstall bootRun`
 
 Alternatively, binaries for the latest release can be found 
 [here](https://github.com/richashworth/planningpoker/releases/latest).

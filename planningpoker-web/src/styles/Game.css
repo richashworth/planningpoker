@@ -1,0 +1,56 @@
+th {
+    background-color: #E2EDF4;
+}
+
+td {
+    word-wrap: break-word;
+    max-width: 100px;
+}
+
+.table-striped > tbody > tr:nth-child(odd) {
+    background-color: ghostwhite;
+}
+
+.tbl-scroll {
+    max-height: 32em;
+    overflow-y: auto;
+    margin-top: -20px;
+}
+
+.game-pane-primary {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.btn-vote {
+    width: 95px;
+    padding: 18px;
+    margin-left: 10px;
+    margin-top: 10px;
+    height: 80px;
+}
+
+.coffee-btn {
+    font-size: 32px;
+    vertical-align: bottom;
+}
+
+.btn-next {
+    width: 15em;
+    padding: 18px;
+}
+
+.admin-btn-row {
+    margin-top: 30px;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}

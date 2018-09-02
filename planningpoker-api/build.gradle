@@ -1,0 +1,45 @@
+plugins {
+    id 'net.researchgate.release' version '2.3.4'
+    id "org.springframework.boot" version "1.5.7.RELEASE"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
+
+jar {
+    baseName = 'planningpoker'
+    version = '2.0.0-SNAPSHOT'
+}
+
+repositories {
+    jcenter()
+    flatDir { dirs '../planningpoker-web/dist/libs' }
+}
+
+dependencies {
+    compile name: 'planningpoker-web'
+    compile 'com.google.guava:guava:19.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.jetbrains:annotations-java5:15.0'
+    compile 'org.projectlombok:lombok:1.16.6'
+    compile 'org.springframework.boot:spring-boot-starter-websocket'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.springframework:spring-messaging'
+    compile 'net.bull.javamelody:javamelody-core:1.32.1'
+
+    testCompile 'org.powermock:powermock-api-mockito:1.6.5'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.5'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+task stage(dependsOn: ["build"]) {}
