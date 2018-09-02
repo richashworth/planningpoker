@@ -1,0 +1,10 @@
+defaultTasks 'planningpoker-web:clean',
+        'planningpoker-web:yarn',
+        'planningpoker-web:yarn_run_build',
+        'planningpoker-web:webjar',
+        'planningpoker-api:clean',
+        'planningpoker-api:build'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.4'
+}

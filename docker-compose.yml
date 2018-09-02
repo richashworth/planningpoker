@@ -10,7 +10,7 @@ services:
     - '.:/usr/src/app'
     - /usr/src/app/node_modules'
     build:
-      context: ./ui
+      context: ./planningpoker-client
       dockerfile: Dockerfile
     ports:
     - "8080:3000"
