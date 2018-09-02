@@ -1,4 +1,4 @@
-export const API_ROOT_URL = 'https://planningpoker-tool.herokuapp.com';
+export const API_ROOT_URL = '';
 
 export const COFFEE_SYMBOL = '\u2615';
 
