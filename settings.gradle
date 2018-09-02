@@ -1,2 +1,2 @@
-include 'planningpoker-api'
 include 'planningpoker-web'
+include 'planningpoker-api'

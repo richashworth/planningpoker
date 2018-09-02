@@ -14,5 +14,8 @@ install:
 - sudo apt-get install -y nodejs
 - sudo npm install -g yarn
 
+script:
+- ./gradlew
+
 after_success:
 - bash <(curl -s https://codecov.io/bash)
