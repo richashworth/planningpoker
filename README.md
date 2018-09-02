@@ -8,6 +8,8 @@ A simple web-based planning poker game. See [this blog post](http://richashworth
 ## Demo
 https://planningpoker-tool.herokuapp.com
 
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/demo.gif" width="700">
+
 ## Running the application
 The easiest way to run the app locally is with docker-compose:
 
@@ -21,9 +23,3 @@ To build and run from the source code:
 Alternatively, binaries for the latest release can be found 
 [here](https://github.com/richashworth/planningpoker/releases/latest).
 
-## Screenshots
-
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/welcome.png" width="900">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/join_game.png" width="900">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/vote.png" width="900">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/results.png" width="900">
