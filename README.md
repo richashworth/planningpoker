@@ -9,20 +9,21 @@ A simple web-based planning poker game. See [this blog post](http://richashworth
 https://planningpoker-tool.herokuapp.com
 
 ## Running the application
-Planning Poker is built with [Spring Boot](http://projects.spring.io/spring-boot). 
+The easiest way to run the app locally is with docker-compose:
+
+`docker-compose up`
+
+## Development
 To build and run from the source code:
 
-`./gradlew clientInstall bootRun`
+`./gradlew`
 
 Alternatively, binaries for the latest release can be found 
 [here](https://github.com/richashworth/planningpoker/releases/latest).
 
 ## Screenshots
 
-<img src="https://i0.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.29.46.png?w=1228&ssl=1" width="500">
-
-
-<img src="https://i2.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.55.49.png?w=1228&ssl=1 " width="500">
-
-
-<img src="https://i2.wp.com/richashworth.com/wp-content/uploads/2016/08/Screen-Shot-2016-08-15-at-18.55.49.png?w=1228&ssl=1" width="500">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/welcome.png" width="500">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/join_game.png" width="500">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/vote.png" width="500">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/results.png" width="500">
