@@ -6,7 +6,7 @@ do
     sleep $((RANDOM % 1))
 done
 
-sleep $((RANDOM % 4))
+sleep 2
 
 curl -X POST -F "userName=Tom" -F "sessionId=1" -F "estimateValue=2" https://planningpoker-tool.herokuapp.com/vote;
 sleep $((RANDOM % 1))
