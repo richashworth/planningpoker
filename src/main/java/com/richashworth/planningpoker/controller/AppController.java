@@ -1,6 +1,6 @@
 package com.richashworth.planningpoker.controller;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.richashworth.planningpoker.PlanningPokerApplication;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -10,20 +10,10 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class AppController {
 
-    @Value("${feedback.recipient.email}")
-    private String feedbackRecipient;
-
     @RequestMapping(value = "version", method = RequestMethod.GET, produces = "text/plain")
     @ResponseBody
     public String getAppVersion() {
-//        String jarVersion = PlanningPokerApplication.class.getPackage().getImplementationVersion();
-//        return null == jarVersion ? "<Local Build>" : jarVersion;
-        return "2.0.0";
+        return PlanningPokerApplication.class.getPackage().getImplementationVersion();
     }
 
-    @RequestMapping(value = "feedbackRecipient", method = RequestMethod.GET, produces = "text/plain")
-    @ResponseBody
-    public String getFeedbackRecipient() {
-        return feedbackRecipient;
-    }
 }
