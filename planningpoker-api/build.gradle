@@ -9,7 +9,10 @@ apply plugin: 'jacoco'
 
 jar {
     baseName = 'planningpoker'
-    version = '2.0.0-SNAPSHOT'
+    manifest {
+        attributes("Implementation-Title": "Planning Poker",
+                "Implementation-Version": version)
+    }
 }
 
 repositories {
