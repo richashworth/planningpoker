@@ -1,4 +1,4 @@
-export const ROOT_URL = 'http://localhost:9000';
+export const API_ROOT_URL = 'http://planningpoker-tool.herokuapp.com';
 
 export const COFFEE_SYMBOL = '\u2615';
 

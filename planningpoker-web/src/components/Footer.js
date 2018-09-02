@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Nav, Navbar, NavItem} from 'react-bootstrap';
 import axios from 'axios';
-import {ROOT_URL} from '../config/Constants';
+import {API_ROOT_URL} from '../config/Constants';
 
 import '../styles/Footer.css';
 
@@ -14,7 +14,7 @@ export default class Footer extends Component {
   }
 
   componentDidMount() {
-    const request = axios.get(`${ROOT_URL}/version`);
+    const request = axios.get(`${API_ROOT_URL}/version`);
     request.then(x => this.setState({appVersion: x.data}));
   }
 

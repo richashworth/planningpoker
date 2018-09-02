@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import GamePane from '../containers/GamePane';
 import SockJsClient from 'react-stomp';
 import {resultsUpdated, usersUpdated} from '../actions';
+import {API_ROOT_URL} from "../config/Constants";
 
 class PlayGame extends Component {
 
@@ -29,7 +30,7 @@ class PlayGame extends Component {
     return (
       <div>
         <SockJsClient
-          url='http://localhost:9000/stomp'
+          url={`${API_ROOT_URL}/stomp`}
           topics={[
             `/topic/items/${this.props.sessionId}`,
             `/topic/results/${this.props.sessionId}`,
