@@ -15,10 +15,11 @@ install:
 - sudo npm install -g yarn
 - wget https://cli-assets.heroku.com/branches/stable/heroku-linux-amd64.tar.gz
 - tar -xf heroku-linux-amd64.tar.gz
+- ./heroku/bin/heroku plugins:install heroku-cli-deploy
+- ./heroku/bin/heroku buildpacks:clear
 
 script:
 - ./gradlew
-- ./heroku/bin/heroku plugins:install heroku-cli-deploy
 - ./heroku/bin/heroku deploy:jar planningpoker-api/build/libs/*.jar --app planningpoker-tool HEROKU_API_KEY
 
 after_success:
