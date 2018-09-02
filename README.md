@@ -23,7 +23,7 @@ Alternatively, binaries for the latest release can be found
 
 ## Screenshots
 
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/welcome.png" width="500">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/join_game.png" width="500">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/vote.png" width="500">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/results.png" width="500">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/welcome.png" width="900">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/join_game.png" width="900">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/vote.png" width="900">
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/results.png" width="900">
