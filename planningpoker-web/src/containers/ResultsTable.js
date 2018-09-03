@@ -5,7 +5,6 @@ import _ from 'lodash';
 
 class ResultsTable extends Component {
 
-
   render() {
     const notVoted = _.difference(this.props.users, this.props.results.map(x => x['userName']));
     return (
