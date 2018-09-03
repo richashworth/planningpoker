@@ -27,7 +27,7 @@ class ResultsTable extends Component {
 function _sortedResults(results) {
   const voteFreqs = _.countBy(results, x => x['estimateValue']);
   const countedResults = results.map(x => ({...x, ...{'count': voteFreqs[parseInt(x['estimateValue'], 10)]}}));
-  return _.orderBy(countedResults, ['count', 'estimateValue', 'userName']);
+  return _.orderBy(countedResults, ['count', 'estimateValue', 'userName'], ['asc', 'asc', 'asc']);
 }
 
 function _renderUserRow(data) {
