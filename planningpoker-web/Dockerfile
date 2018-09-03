@@ -4,7 +4,7 @@ FROM node:9.6.1
 EXPOSE 3000
 
 RUN mkdir /usr/src/app
-WORKDIR /usr/src/app/ui
+WORKDIR /usr/src/app/planningpoker-web
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 

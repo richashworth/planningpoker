@@ -1,16 +1,18 @@
 version: '2'
 
 services:
-  server:
-    build: .
+  api:
+    build:
+      context: ./planningpoker-api
+      dockerfile: Dockerfile
     ports:
     - "9000:9000"
-  ui:
+  web:
     volumes:
     - '.:/usr/src/app'
     - /usr/src/app/node_modules'
     build:
-      context: ./planningpoker-client
+      context: ./planningpoker-web
       dockerfile: Dockerfile
     ports:
     - "8080:3000"
