@@ -7,7 +7,11 @@ class ResultsTable extends Component {
 
   render() {
     const notVoted = _.difference(this.props.users, this.props.results.map(x => x['userName']));
-    const sortedResults = _.orderBy(this.props.results, x => parseInt(x['estimateValue'], 10));
+
+    const voteFreqs = _.countBy(this.props.results, x => x['estimateValue']);
+    const countedResults = this.props.results.map(x => ({...x, ...{'count': voteFreqs[parseInt(x['estimateValue'], 10)]}}));
+    const sortedResults = _.orderBy(countedResults, ['count', 'userName']);
+
     return (
       <div className="tbl-scroll">
         <Table responsive striped>
