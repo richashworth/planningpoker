@@ -10,7 +10,7 @@ class ResultsTable extends Component {
 
     const voteFreqs = _.countBy(this.props.results, x => x['estimateValue']);
     const countedResults = this.props.results.map(x => ({...x, ...{'count': voteFreqs[parseInt(x['estimateValue'], 10)]}}));
-    const sortedResults = _.orderBy(countedResults, ['count', 'userName']);
+    const sortedResults = _.orderBy(countedResults, ['count', 'estimateValue', 'userName']);
 
     return (
       <div className="tbl-scroll">
