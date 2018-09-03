@@ -5,13 +5,9 @@ import _ from 'lodash';
 
 class ResultsTable extends Component {
 
+
   render() {
     const notVoted = _.difference(this.props.users, this.props.results.map(x => x['userName']));
-
-    const voteFreqs = _.countBy(this.props.results, x => x['estimateValue']);
-    const countedResults = this.props.results.map(x => ({...x, ...{'count': voteFreqs[parseInt(x['estimateValue'], 10)]}}));
-    const sortedResults = _.orderBy(countedResults, ['count', 'estimateValue', 'userName']);
-
     return (
       <div className="tbl-scroll">
         <Table responsive striped>
@@ -20,13 +16,19 @@ class ResultsTable extends Component {
             <th>User</th>
             <th>Vote</th>
           </tr>
-          {sortedResults.map(x => _renderVoteRow(x))}
+          {_sortedResults(this.props.results).map(x => _renderVoteRow(x))}
           {notVoted.map((x) => _renderUserRow(x))}
           </tbody>
         </Table>
       </div>
     );
   }
+}
+
+function _sortedResults(results) {
+  const voteFreqs = _.countBy(results, x => x['estimateValue']);
+  const countedResults = results.map(x => ({...x, ...{'count': voteFreqs[parseInt(x['estimateValue'], 10)]}}));
+  return _.orderBy(countedResults, ['count', 'estimateValue', 'userName']);
 }
 
 function _renderUserRow(data) {
