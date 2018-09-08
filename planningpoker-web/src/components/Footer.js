@@ -20,7 +20,7 @@ export default class Footer extends Component {
 
   _renderVersionNav(version) {
     return (
-      <Nav>
+      <Nav className='hidden-xs'>
         <Navbar.Text>
           {version ? `version ${version}` : ''}
         </Navbar.Text>
