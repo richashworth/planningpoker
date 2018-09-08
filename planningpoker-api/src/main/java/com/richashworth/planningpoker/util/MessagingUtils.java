@@ -22,14 +22,14 @@ public class MessagingUtils {
     public static final String TOPIC_ITEM = "/topic/item/";
 
     private final SessionManager sessionManager;
-    @Autowired
-    private Clock clock;
-    @Autowired
-    private SimpMessagingTemplate template;
+    private final Clock clock;
+    private final SimpMessagingTemplate template;
 
     @Autowired
-    public MessagingUtils(SessionManager sessionManager) {
+    public MessagingUtils(SessionManager sessionManager, Clock clock, SimpMessagingTemplate template) {
         this.sessionManager = sessionManager;
+        this.clock = clock;
+        this.template = template;
     }
 
     @Contract(pure = true)
