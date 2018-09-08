@@ -20,6 +20,7 @@ function mapStateToProps(state) {
   return {
     voted: state.voted,
     results: state.results,
+    userName: state.game.playerName,
   };
 }
 
