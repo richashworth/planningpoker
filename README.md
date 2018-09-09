@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/richashworth/planningpoker.svg?branch=master)](https://travis-ci.org/richashworth/planningpoker)
+## About
 [![codecov](https://codecov.io/gh/richashworth/planningpoker/branch/master/graph/badge.svg)](https://codecov.io/gh/richashworth/planningpoker)
 # Planning Poker
+![Heroku](https://heroku-badge.herokuapp.com/?app=planningpoker-tool)
 
 A simple web-based planning poker game. See [this blog post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
 
