@@ -1,29 +1,33 @@
-[![Build Status](https://travis-ci.org/richashworth/planningpoker.svg?branch=master)](https://travis-ci.org/richashworth/planningpoker)
-[![codecov](https://codecov.io/gh/richashworth/planningpoker/branch/master/graph/badge.svg)](https://codecov.io/gh/richashworth/planningpoker)
 # Planning Poker
 
-## About 
-A simple web-based planning poker game. See [this blog post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
+[![Build Status](https://travis-ci.org/richashworth/planningpoker.svg?branch=master)](https://travis-ci.org/richashworth/planningpoker)
+[![codecov](https://codecov.io/gh/richashworth/planningpoker/branch/master/graph/badge.svg)](https://codecov.io/gh/richashworth/planningpoker)
+![Heroku](http://heroku-badge.herokuapp.com/?app=planningpoker-tool&style=flat&svg=1)
+
+## About
+
+A simple web-based planning poker game. See [this blog
+post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
 
 ## Demo
 https://planningpoker-tool.herokuapp.com
 
-## Running the application
-The easiest way to run the app locally is with docker-compose:
+<img src="https://github.com/richashworth/planningpoker/raw/master/doc/demo.gif" width="750">
 
-`docker-compose up`
+## Building
 
-## Development
-To build and run from the source code:
+To build from the source code:
 
 `./gradlew`
 
-Alternatively, binaries for the latest release can be found 
-[here](https://github.com/richashworth/planningpoker/releases/latest).
+## Running
 
-## Screenshots
+Both the web and api apps can be started using docker-compose:
 
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/welcome.png" width="900">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/join_game.png" width="900">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/vote.png" width="900">
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/results.png" width="900">
+`docker-compose up`
+
+
+Alternatively, binaries for the latest release can be downloaded
+[here](https://github.com/richashworth/planningpoker/releases/latest). These can be run with:
+
+`java -jar planningpoker-<version>.jar`
