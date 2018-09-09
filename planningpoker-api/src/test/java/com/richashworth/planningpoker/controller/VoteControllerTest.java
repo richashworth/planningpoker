@@ -8,9 +8,6 @@ import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by Rich Ashworth on 09/08/2016.
- */
 public class VoteControllerTest extends AbstractControllerTest {
 
     @InjectMocks

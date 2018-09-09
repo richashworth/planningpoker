@@ -14,9 +14,6 @@ import java.util.Map;
 import static com.richashworth.planningpoker.service.SessionManager.SESSION_SEQ_START_VALUE;
 import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase;
 
-/**
- * Created by Rich Ashworth on 09/04/2016.
- */
 @RestController
 @CrossOrigin
 public class GameController {

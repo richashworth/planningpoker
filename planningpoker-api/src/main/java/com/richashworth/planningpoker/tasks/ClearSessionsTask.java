@@ -5,9 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by Rich Ashworth on 10/04/2016.
- */
 @Component
 public class ClearSessionsTask {
 

@@ -10,9 +10,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.inOrder;
 
-/**
- * Created by Rich Ashworth on 09/08/2016.
- */
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractControllerTest {
 

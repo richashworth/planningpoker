@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Created by Rich Ashworth on 09/04/2016.
- */
 @Component
 public class SessionManager {
 

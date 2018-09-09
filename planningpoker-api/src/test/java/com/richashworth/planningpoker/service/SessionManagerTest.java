@@ -12,9 +12,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Rich Ashworth on 14/05/2016.
- */
 public class SessionManagerTest {
 
     private SessionManager sessionManager;

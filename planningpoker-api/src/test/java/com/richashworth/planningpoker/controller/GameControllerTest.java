@@ -16,9 +16,6 @@ import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.USE
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by Rich Ashworth on 09/08/2016.
- */
 public class GameControllerTest extends AbstractControllerTest {
 
     @InjectMocks

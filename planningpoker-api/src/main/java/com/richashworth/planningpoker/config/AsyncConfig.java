@@ -7,9 +7,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.concurrent.Executor;
 
-/**
- * Created by Rich Ashworth on 09/05/2016.
- */
 @Configuration
 @EnableAsync
 public class AsyncConfig {

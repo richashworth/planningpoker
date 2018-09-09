@@ -2,9 +2,6 @@ package com.richashworth.planningpoker.util;
 
 import org.springframework.stereotype.Service;
 
-/**
- * Created by Rich Ashworth on 14/08/2016.
- */
 @Service
 public class Clock {
 

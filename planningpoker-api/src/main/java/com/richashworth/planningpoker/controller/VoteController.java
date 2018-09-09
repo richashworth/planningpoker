@@ -9,9 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Created by Rich Ashworth on 09/04/2016.
- */
 @RestController
 @CrossOrigin
 public class VoteController {

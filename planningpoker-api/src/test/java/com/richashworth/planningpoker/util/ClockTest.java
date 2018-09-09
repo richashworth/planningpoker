@@ -7,9 +7,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-/**
- * Created by Rich Ashworth on 14/08/2016.
- */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Clock.class)
 public class ClockTest {

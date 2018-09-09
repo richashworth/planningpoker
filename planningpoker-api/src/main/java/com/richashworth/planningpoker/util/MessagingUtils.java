@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
 
-/**
- * Created by Rich Ashworth on 03/05/2016.
- */
 @Component
 public class MessagingUtils {
 

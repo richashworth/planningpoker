@@ -9,9 +9,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;
 
-/**
- * Created by Rich Ashworth on 14/08/2016.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class ClearSessionsTaskTest {
 

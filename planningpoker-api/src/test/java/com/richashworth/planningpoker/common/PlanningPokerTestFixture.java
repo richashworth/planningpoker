@@ -5,9 +5,6 @@ import com.richashworth.planningpoker.model.Estimate;
 
 import java.util.List;
 
-/**
- * Created by Rich Ashworth on 14/08/2016.
- */
 public class PlanningPokerTestFixture {
     public static final Long SESSION_ID = 1L;
     public static final String ITEM = "A User Story";

@@ -4,9 +4,6 @@ import com.richashworth.planningpoker.model.Estimate;
 
 import java.util.Collection;
 
-/**
- * Created by Rich Ashworth on 04/05/2016.
- */
 public class CollectionUtils {
 
     private CollectionUtils() {

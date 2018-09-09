@@ -11,9 +11,6 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by Rich Ashworth on 04/05/2016.
- */
 public class CollectionUtilsTest {
 
     @Test
