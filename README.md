@@ -16,7 +16,7 @@ https://planningpoker-tool.herokuapp.com
 
 ## Building
 
-To build from the source code
+To build from the source code:
 
 `./gradlew`
 
