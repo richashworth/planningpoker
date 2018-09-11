@@ -1,7 +1,7 @@
 import React from 'react';
 import {ESTIMATION_SCHEMES} from "../config/Constants";
 
-const EstimateSchemeChooser = (props) => {
+const EstimateSchemeChooser = () => {
   const [head, ...tail] = ESTIMATION_SCHEMES;
   return (
     <div className="form-group">
