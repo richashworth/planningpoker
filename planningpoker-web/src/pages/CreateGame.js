@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {createGame, gameCreated} from '../actions';
 import NameInput from '../components/NameInput';
-import EstimateSchemeSelect from "../components/EstimateSchemeSelect";
+import EstimateSchemeChooser from "../components/EstimateSchemeChooser";
 
 import '../styles/Create.css';
 
@@ -38,7 +38,7 @@ class CreateGame extends Component {
           <NameInput
             playerName={this.state.playerName}
             onPlayerNameInputChange={this.onPlayerNameInputChange}/>
-          <EstimateSchemeSelect/>
+          <EstimateSchemeChooser/>
           <button type="submit" className="btn btn-primary">
             Start Game
           </button>

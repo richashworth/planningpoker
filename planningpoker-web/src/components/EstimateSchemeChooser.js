@@ -1,7 +1,7 @@
 import React from 'react';
 import {ESTIMATION_SCHEMES} from "../config/Constants";
 
-const EstimateSchemeSelect = (props) => {
+const EstimateSchemeChooser = (props) => {
   {
     const [head, ...tail] = ESTIMATION_SCHEMES;
     return (
@@ -24,4 +24,4 @@ function _renderRadioBtn(value, isChecked) {
   )
 }
 
-export default EstimateSchemeSelect;
+export default EstimateSchemeChooser;
