@@ -1,10 +1,10 @@
 plugins {
     id 'net.researchgate.release' version '2.6.0'
     id "org.springframework.boot" version "1.5.7.RELEASE"
+    id "com.github.lkishalmi.gatling" version "3.0.2"
 }
 
 apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'jacoco'
 
 jar {
