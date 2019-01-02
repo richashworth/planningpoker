@@ -21,6 +21,6 @@ class CreateGameSimulation extends Simulation {
     )
 
   setUp(createGameScenario.inject(
-    rampUsersPerSec(1) to 1000 during (5 seconds)
+    rampUsersPerSec(1) to 5000 during (5 seconds)
   ).protocols(httpConf))
 }
