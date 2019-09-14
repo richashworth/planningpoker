@@ -1,3 +1,8 @@
+.navbar-default {
+    border-width: 0px;
+    border-radius: 0px;
+}
+
 .navbar-top {
     background-color: #00034A;
 }
