@@ -15,11 +15,16 @@ class Header extends Component {
           </Navbar.Brand>
           <Navbar.Toggle/>
         </Navbar.Header>
-        <Navbar.Collapse>
-          <Navbar.Text pullRight className='navbar-header-text'>
-            {this.props.sessionId ? `Session ${this.props.sessionId}` : ''}
-          </Navbar.Text>
-        </Navbar.Collapse>
+        {this.props.sessionId ?
+          <Navbar.Collapse>
+            <Navbar.Text pullRight className='navbar-header-text'>
+              <a href='/' className='navbar-header-text'> Log Out </a>
+            </Navbar.Text>
+            <Navbar.Text pullRight className='navbar-header-text'>
+              {`Session ${this.props.sessionId}`}
+            </Navbar.Text>
+          </Navbar.Collapse>
+          : ''}
       </Navbar>
     );
   }
