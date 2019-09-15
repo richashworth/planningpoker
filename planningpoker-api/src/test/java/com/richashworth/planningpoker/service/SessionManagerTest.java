@@ -49,7 +49,6 @@ public class SessionManagerTest {
         assertEquals(users, sessionManager.getSessionUsers(sessionId));
     }
 
-
     @Test
     public void testGetSessions() throws Exception {
         final Long sessionOne = sessionManager.createSession();

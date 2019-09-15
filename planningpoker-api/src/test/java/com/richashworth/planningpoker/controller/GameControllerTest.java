@@ -78,6 +78,18 @@ public class GameControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void testLeaveSessions() throws Exception {
+        Long sID = gameController.createSession(USER_NAME);
+        gameController.leaveSession(USER_NAME, sID);
+        assert (sessionManager.getSessionUsers(sID).isEmpty());
+        verify(sessionManager, times(1)).createSession();
+        verify(sessionManager, times(1)).registerUser(USER_NAME, sID);
+        verify(sessionManager, times(1)).removeUser(USER_NAME, sID);
+        verify(sessionManager, times(1)).getSessionUsers(sID);
+        verifyNoMoreInteractions(sessionManager);
+    }
+
+    @Test
     public void testGetSessions() throws Exception {
         final ListMultimap<Long, String> expectedSessions = ArrayListMultimap.create();
         expectedSessions.put(SESSION_ID, USER_NAME);
