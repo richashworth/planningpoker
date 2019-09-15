@@ -13,7 +13,7 @@ class UsersTable extends Component {
           <tr>
             <th> {this.props.heading} </th>
           </tr>
-          {_.union(this.props.playerName, this.props.users)
+          {_.union([this.props.currentUser], this.props.users)
             .map(_.startCase).sort().map((x) => _renderUserRow(x))}
           </tbody>
         </Table>
@@ -33,7 +33,7 @@ function _renderUserRow(data) {
 function mapStateToProps(state) {
   return {
     users: state.users,
-    playerName: state.game.playerName,
+    currentUser: state.game.playerName,
   };
 }
 
