@@ -42,13 +42,6 @@ public class MessagingUtils {
         template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(sessionManager.getSessionUsers(sessionId)));
     }
 
-    public void sendItemMessage(long sessionId) {
-        final String currentItem = sessionManager.getCurrentItem(sessionId);
-        if (null != currentItem) {
-            template.convertAndSend(getTopic(TOPIC_ITEM, sessionId), itemMessage(currentItem));
-        }
-    }
-
     @Async
     public void burstResultsMessages(long sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
@@ -65,18 +58,6 @@ public class MessagingUtils {
         }
     }
 
-    @Async
-    public void burstItemMessages(long sessionId) {
-        for (final long LATENCY_DURATION : LATENCIES) {
-            sendItemMessage(sessionId);
-            clock.pause(LATENCY_DURATION);
-        }
-    }
-
-    Message itemMessage(Object payload) {
-        return new Message(MessageType.ITEM_MESSAGE, payload);
-    }
-
     Message resultsMessage(Object payload) {
         return new Message(MessageType.RESULTS_MESSAGE, payload);
     }
@@ -86,7 +67,6 @@ public class MessagingUtils {
     }
 
     private enum MessageType {
-        ITEM_MESSAGE,
         USERS_MESSAGE,
         RESULTS_MESSAGE
     }

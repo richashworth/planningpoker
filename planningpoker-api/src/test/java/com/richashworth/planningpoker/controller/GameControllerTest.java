@@ -27,7 +27,6 @@ public class GameControllerTest extends AbstractControllerTest {
         gameController.joinSession(SESSION_ID, USER_NAME);
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
         inOrder.verify(messagingUtils).burstUsersMessages(SESSION_ID);
-        inOrder.verify(messagingUtils).burstItemMessages(SESSION_ID);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -65,7 +64,6 @@ public class GameControllerTest extends AbstractControllerTest {
         gameController.refresh(SESSION_ID);
         verify(messagingUtils).sendResultsMessage(SESSION_ID);
         verify(messagingUtils).sendUsersMessage(SESSION_ID);
-        verify(messagingUtils).sendItemMessage(SESSION_ID);
         verifyZeroInteractions(sessionManager);
     }
 
@@ -91,20 +89,10 @@ public class GameControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testSetCurrentItem() throws Exception {
-        final String item = "user story";
-        gameController.setCurrentItem(SESSION_ID, item);
-        inOrder.verify(sessionManager, times(1)).setCurrentItem(SESSION_ID, item);
-        inOrder.verify(messagingUtils, times(1)).burstItemMessages(SESSION_ID);
-        verifyNoMoreInteractions(sessionManager, messagingUtils);
-    }
-
-    @Test
     public void testReset() throws Exception {
         gameController.reset(SESSION_ID, USER_NAME);
         verify(sessionManager).resetSession(SESSION_ID);
         verify(messagingUtils).burstResultsMessages(SESSION_ID);
-        verify(messagingUtils).burstItemMessages(SESSION_ID);
         verifyNoMoreInteractions(sessionManager);
     }
 

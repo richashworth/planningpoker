@@ -50,25 +50,11 @@ public class MessagingUtilsTest {
         verifyMessageSent(1, getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(RESULTS));
     }
 
-
     @Test
     public void testSendUsersMessage() throws Exception {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
         messagingUtils.sendUsersMessage(SESSION_ID);
         verifyMessageSent(1, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage((USERS)));
-    }
-
-    @Test
-    public void testSendItemMessage() throws Exception {
-        when(sessionManager.getCurrentItem(SESSION_ID)).thenReturn(ITEM);
-        messagingUtils.sendItemMessage(SESSION_ID);
-        verifyMessageSent(1, getTopic(TOPIC_ITEM, SESSION_ID), messagingUtils.itemMessage(ITEM));
-    }
-
-    @Test
-    public void testDoNotSendNullItemMessage() throws Exception {
-        messagingUtils.sendItemMessage(SESSION_ID);
-        verifyZeroInteractions(template);
     }
 
     @Test
@@ -89,16 +75,6 @@ public class MessagingUtilsTest {
             verify(clock, times(1)).pause(latency);
         }
         verifyMessageSent(LATENCIES.length, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage(USERS));
-    }
-
-    @Test
-    public void testBurstItemMessages() throws Exception {
-        when(sessionManager.getCurrentItem(SESSION_ID)).thenReturn(ITEM);
-        messagingUtils.burstItemMessages(SESSION_ID);
-        for (long latency : LATENCIES) {
-            verify(clock, times(1)).pause(latency);
-        }
-        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_ITEM, SESSION_ID), messagingUtils.itemMessage(ITEM));
     }
 
     private void verifyMessageSent(int numberInvocations, String destination, Object payload) {

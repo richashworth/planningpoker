@@ -26,10 +26,10 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <div>
-          <Header/>
-          <main>
-            <BrowserRouter>
+        <BrowserRouter>
+          <div>
+            <Header/>
+            <main>
               <div>
                 <Switch>
                   <Route path="/host" component={CreateGame}/>
@@ -38,10 +38,10 @@ class App extends Component {
                   <Route path="/" component={Welcome}/>
                 </Switch>
               </div>
-            </BrowserRouter>
-          </main>
-          <Footer/>
-        </div>
+            </main>
+            <Footer/>
+          </div>
+        </BrowserRouter>
       </Provider>
     );
   }
