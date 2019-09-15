@@ -21,3 +21,12 @@
     font-size: 15px;
     color: white;
 }
+
+.navbar-default button {
+    margin-top: -10px;
+    font-size: 15px;
+    color: white;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color: #337ab7;
+}
