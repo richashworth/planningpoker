@@ -41,7 +41,6 @@ public class GameController {
             sessionManager.registerUser(userName, sessionId);
             logger.info(userName + " has joined session " + sessionId);
             messagingUtils.burstUsersMessages(sessionId);
-            messagingUtils.burstItemMessages(sessionId);
         }
     }
 
@@ -56,13 +55,22 @@ public class GameController {
         return sessionId;
     }
 
+    @RequestMapping(value = "leaveSession", method = RequestMethod.POST)
+    public void leaveSession(
+            @RequestParam(name = "sessionId") final Long sessionId,
+            @RequestParam(name = "userName") final String userName
+    ) {
+        sessionManager.removeUser(userName, sessionId);
+        logger.info(userName + " has left session " + sessionId);
+        messagingUtils.burstUsersMessages(sessionId);
+    }
+
     @RequestMapping(value = "refresh", method = RequestMethod.GET)
     public void refresh(
             @RequestParam(name = "sessionId") final Long sessionId
     ) {
         messagingUtils.sendResultsMessage(sessionId);
         messagingUtils.sendUsersMessage(sessionId);
-        messagingUtils.sendItemMessage(sessionId);
     }
 
     @RequestMapping(value = "sessionUsers", method = RequestMethod.GET)
@@ -78,14 +86,6 @@ public class GameController {
         return Multimaps.asMap(sessionManager.getSessions());
     }
 
-    @RequestMapping(value = "setCurrentItem", method = RequestMethod.POST)
-    public void setCurrentItem(
-            @RequestParam(name = "sessionId") final Long sessionId,
-            @RequestParam(name = "item") final String item
-    ) {
-        sessionManager.setCurrentItem(sessionId, item);
-        messagingUtils.burstItemMessages(sessionId);
-    }
 
     @RequestMapping(value = "reset", method = RequestMethod.POST)
     public void reset(
@@ -96,7 +96,6 @@ public class GameController {
         synchronized (sessionManager) {
             sessionManager.resetSession(sessionId);
             messagingUtils.burstResultsMessages(sessionId);
-            messagingUtils.burstItemMessages(sessionId);
         }
     }
 

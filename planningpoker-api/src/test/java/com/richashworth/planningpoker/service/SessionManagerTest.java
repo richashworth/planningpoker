@@ -22,15 +22,6 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void testGetCurrentItem() throws Exception {
-        final Long sessionId = sessionManager.createSession();
-        sessionManager.setCurrentItem(sessionId, "first");
-        sessionManager.setCurrentItem(sessionId, "second");
-        sessionManager.setCurrentItem(sessionId, "last");
-        assertEquals("last", sessionManager.getCurrentItem(sessionId));
-    }
-
-    @Test
     public void testIsSessionActive() throws Exception {
         sessionManager.createSession();
         sessionManager.createSession();
@@ -85,12 +76,10 @@ public class SessionManagerTest {
         final Long sessionId = sessionManager.createSession();
         sessionManager.registerUser("Rich", sessionId);
         sessionManager.registerEstimate(sessionId, new Estimate("Rich", "8"));
-        sessionManager.setCurrentItem(sessionId, "my user story");
         sessionManager.clearSessions();
 
         assertTrue(sessionManager.getResults(sessionId).isEmpty());
         assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
-        assertNull(sessionManager.getCurrentItem(sessionId));
 
         assertEquals(sessionId, sessionManager.createSession());
     }
