@@ -3,6 +3,7 @@ import {Navbar} from 'react-bootstrap';
 import {leaveGame} from '../actions';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
+import _ from 'lodash';
 
 import '../styles/Header.css';
 
@@ -30,7 +31,7 @@ class Header extends Component {
               {`Session ${this.props.sessionId}`}
             </Navbar.Text>
             <Navbar.Text pullRight className='navbar-header-text'>
-              {this.props.playerName}
+              {_.startCase(this.props.playerName)}
             </Navbar.Text>
           </Navbar.Collapse>
           : ''}
