@@ -30,6 +30,9 @@ class Header extends Component {
             <Navbar.Text pullRight className='navbar-header-text'>
               {`Session ${this.props.sessionId}`}
             </Navbar.Text>
+            <Navbar.Text pullRight className='navbar-header-text'>
+              {this.props.playerName}
+            </Navbar.Text>
           </Navbar.Collapse>
           : ''}
       </Navbar>

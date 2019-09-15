@@ -63,6 +63,7 @@ public class GameController {
         sessionManager.removeUser(userName, sessionId);
         logger.info(userName + " has left session " + sessionId);
         messagingUtils.burstUsersMessages(sessionId);
+        messagingUtils.burstResultsMessages(sessionId);
     }
 
     @RequestMapping(value = "refresh", method = RequestMethod.GET)
