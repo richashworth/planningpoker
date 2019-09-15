@@ -55,10 +55,10 @@ public class GameController {
         return sessionId;
     }
 
-    @RequestMapping(value = "leaveSession", method = RequestMethod.POST)
+    @RequestMapping(value = "logout", method = RequestMethod.POST)
     public void leaveSession(
-            @RequestParam(name = "sessionId") final Long sessionId,
-            @RequestParam(name = "userName") final String userName
+            @RequestParam(name = "userName") final String userName,
+            @RequestParam(name = "sessionId") final Long sessionId
     ) {
         sessionManager.removeUser(userName, sessionId);
         logger.info(userName + " has left session " + sessionId);

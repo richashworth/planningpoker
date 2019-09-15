@@ -4,6 +4,7 @@ import {API_ROOT_URL} from '../config/Constants';
 export const CREATE_GAME = 'create-game';
 export const GAME_CREATED = 'game-created';
 export const JOIN_GAME = 'join-game';
+export const LEAVE_GAME = 'leave-game';
 export const RESET_SESSION = 'reset-session';
 export const RESULTS_UPDATED = 'results-updated';
 export const USERS_UPDATED = 'users-updated';
@@ -32,6 +33,17 @@ export function createGame(playerName, callback) {
     type: CREATE_GAME,
     payload: request, // redux-promise will take care of resolving the promise
     meta: {userName: playerName}
+  };
+}
+
+export function leaveGame(playerName, sessionId, callback) {
+  const request = axios.post(`${API_ROOT_URL}/logout`,
+    `userName=${playerName}&sessionId=${sessionId}`);
+  request.then(() => callback());
+
+  return {
+    type: LEAVE_GAME,
+    payload: request,
   };
 }
 

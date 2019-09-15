@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Navbar} from 'react-bootstrap';
+import {leaveGame} from '../actions';
 import {connect} from 'react-redux';
+import {withRouter} from 'react-router-dom';
 
 import '../styles/Header.css';
 
@@ -18,7 +20,12 @@ class Header extends Component {
         {this.props.sessionId ?
           <Navbar.Collapse>
             <Navbar.Text pullRight className='navbar-header-text'>
-              <a href='/' className='navbar-header-text'> Log Out </a>
+              <button
+                onClick={() => this.props.leaveGame(this.props.playerName, this.props.sessionId, () => {
+                  this.props.history.push('/')
+                })}>
+                Log Out
+              </button>
             </Navbar.Text>
             <Navbar.Text pullRight className='navbar-header-text'>
               {`Session ${this.props.sessionId}`}
@@ -37,4 +44,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(Header);
+export default withRouter(connect(mapStateToProps, {leaveGame})(Header));

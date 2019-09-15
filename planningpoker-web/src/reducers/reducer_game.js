@@ -1,4 +1,4 @@
-import {CREATE_GAME, GAME_CREATED, JOIN_GAME, USER_REGISTERED} from '../actions'
+import {CREATE_GAME, LEAVE_GAME, GAME_CREATED, JOIN_GAME, USER_REGISTERED} from '../actions'
 
 const initialGameState =
   {
@@ -21,6 +21,8 @@ export default function (state = initialGameState, action) {
       return {...state, isRegistered: true};
     case JOIN_GAME:
       return {...state, playerName: action.meta.userName, sessionId: action.meta.sessionId};
+    case LEAVE_GAME:
+      return {...state, playerName: null, sessionId: null, isRegistered: false, isAdmin: false};
     default:
       return state
   }
