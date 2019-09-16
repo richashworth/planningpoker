@@ -78,7 +78,7 @@ public class GameControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testLeaveSessions() throws Exception {
+    public void testLeaveSession() throws Exception {
         Long sID = gameController.createSession(USER_NAME);
         gameController.leaveSession(USER_NAME, sID);
         assert (sessionManager.getSessionUsers(sID).isEmpty());
