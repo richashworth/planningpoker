@@ -7,7 +7,7 @@ export default function (state = initialUsersState, action) {
     case USERS_UPDATED:
       return action.payload;
     case LEAVE_GAME:
-      return initialUsersState;
+      return [];
     default:
       return state
   }
