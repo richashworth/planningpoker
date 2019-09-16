@@ -21,9 +21,10 @@ class Header extends Component {
         {this.props.sessionId ?
           <Navbar.Collapse>
             <Navbar.Text pullRight className='navbar-header-text'>
-              <button onClick={() => this.props.leaveGame(this.props.playerName, this.props.sessionId, () => {
-                this.props.history.push('/')
-              })}>
+              <button className='logout-btn'
+                      onClick={() => this.props.leaveGame(this.props.playerName, this.props.sessionId, () => {
+                        this.props.history.push('/')
+                      })}>
                 Log Out
               </button>
             </Navbar.Text>

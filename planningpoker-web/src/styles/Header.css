@@ -4,6 +4,7 @@
 }
 
 .navbar-top {
+    height: 53px;
     background-color: #337ab7;
 }
 
@@ -22,7 +23,7 @@
     color: white;
 }
 
-.navbar-default button {
+button.logout-btn {
     margin-top: -10px;
     font-size: 15px;
     color: white;
