@@ -25,6 +25,7 @@
 
 .navbar-collapse {
     border-top: 0px;
+    margin-right: -20px;
 }
 
 .collapse.in{
