@@ -28,7 +28,7 @@ class PlayGame extends Component {
 
   render() {
     return (
-      <div>
+      <div className='container'>
         <SockJsClient
           url={`${API_ROOT_URL}/stomp`}
           topics={[

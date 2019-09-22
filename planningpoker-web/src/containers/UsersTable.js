@@ -7,7 +7,7 @@ class UsersTable extends Component {
 
   render() {
     return (
-      <div className="tbl-scroll">
+      <div className="visible-sm visible-md visible-lg tbl-scroll">
         <Table responsive striped>
           <tbody>
           <tr>

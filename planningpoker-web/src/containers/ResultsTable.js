@@ -8,7 +8,7 @@ class ResultsTable extends Component {
   render() {
     const notVoted = _.difference(this.props.users, this.props.results.map(x => x['userName']));
     return (
-      <div className="tbl-scroll">
+      <div className="visible-sm visible-md visible-lg tbl-scroll">
         <Table responsive striped>
           <tbody>
           <tr>

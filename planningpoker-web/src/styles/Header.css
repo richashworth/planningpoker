@@ -23,6 +23,14 @@
     color: white;
 }
 
+.navbar-collapse {
+    border-top: 0px;
+}
+
+.collapse.in{
+    background-color: #337ab7;
+}
+
 button.logout-btn {
     margin-top: -10px;
     font-size: 15px;

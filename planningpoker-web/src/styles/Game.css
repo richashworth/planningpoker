@@ -1,3 +1,4 @@
+
 th {
     background-color: #E2EDF4;
 }
@@ -19,6 +20,7 @@ td {
 
 .game-pane-primary {
     margin-top: 20px;
+    z-index: -1;
     margin-bottom: 30px;
 }
 
