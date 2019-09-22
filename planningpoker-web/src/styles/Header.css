@@ -25,7 +25,6 @@
 
 .navbar-collapse {
     border-top: 0px;
-    margin-right: -20px;
 }
 
 .collapse.in{
@@ -34,6 +33,7 @@
 
 button.logout-btn {
     margin-top: -10px;
+    margin-right: -19px;
     font-size: 15px;
     color: white;
     border-width: 1px;
