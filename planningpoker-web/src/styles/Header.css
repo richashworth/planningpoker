@@ -6,6 +6,7 @@
 .navbar-top {
     height: 53px;
     background-color: #337ab7;
+    z-index: 100;
 }
 
 .navbar-default .navbar-brand {
@@ -25,6 +26,7 @@
 
 .navbar-collapse {
     border-top: 0px;
+    transition: 500ms;
 }
 
 .collapse.in{
