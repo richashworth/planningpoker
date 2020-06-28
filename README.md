@@ -7,7 +7,7 @@
 ## About
 
 A simple web-based planning poker game. See [this blog
-post](http://richashworth.com/2016/08/agile-estimation-for-distributed-teams/) for more information.
+post](https://richashworth.com/blog/agile-estimation-for-distributed-teams/) for more information.
 
 ## Demo
 https://planningpoker-tool.herokuapp.com
