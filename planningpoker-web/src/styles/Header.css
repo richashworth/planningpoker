@@ -5,7 +5,7 @@
 
 .navbar-top {
     height: 53px;
-    background-color: #E2EDF4;
+    background-color: #75227d;
     z-index: 100;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .collapse.in{
-    background-color: #E2EDF4;
+    background-color: #75227d;
 }
 
 button.logout-btn {
