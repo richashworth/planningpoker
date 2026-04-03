@@ -1,17 +1,12 @@
-# base image
-FROM node:9.6.1
+FROM node:20-alpine
 
 EXPOSE 3000
 
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app/planningpoker-web
+WORKDIR /usr/src/app
 
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+COPY package.json package-lock.json ./
+RUN npm ci
 
-COPY package.json /usr/src/app/package.json
+COPY . .
 
-RUN npm install react-scripts@1.1.1 -g
-RUN npm install
-
-# start app
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev", "--", "--host"]

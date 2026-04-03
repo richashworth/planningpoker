@@ -34,7 +34,7 @@ export default class Footer extends Component {
         {this._renderVersionNav(this.state.appVersion)}
         <Nav pullRight className='navbar-footer-text'>
           <NavItem
-            href="https://richashworth.github.io/planningpoker/" target="_blank">
+            href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/" target="_blank">
             About
           </NavItem>
         </Nav>
