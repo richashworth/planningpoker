@@ -1,58 +1,69 @@
-import React, {Component} from 'react';
-import {Table} from 'react-bootstrap';
-import {connect} from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import _ from 'lodash';
 
-class ResultsTable extends Component {
+export default function ResultsTable() {
+  const results = useSelector(state => state.results);
+  const users = useSelector(state => state.users);
 
-  render() {
-    const notVoted = _.difference(this.props.users, this.props.results.map(x => x['userName']));
-    return (
-      <div className="visible-sm visible-md visible-lg tbl-scroll">
-        <Table responsive striped>
-          <tbody>
+  const notVoted = _.difference(users, results.map(x => x.userName));
+
+  const voteFreqs = _.countBy(results, x => x.estimateValue);
+  const countedResults = results.map(x => ({ ...x, count: voteFreqs[parseInt(x.estimateValue, 10)] }));
+  const sortedResults = _.orderBy(countedResults, ['count', 'estimateValue', 'userName'], ['asc', 'asc', 'asc']);
+
+  return (
+    <Box
+      sx={{
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        p: 2.5,
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{ color: 'text.secondary', mb: 1.5, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.7rem' }}
+      >
+        Votes
+      </Typography>
+      <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
           <tr>
-            <th>User</th>
-            <th>Vote</th>
+            <Box component="th" sx={{ textAlign: 'left', pb: 1, fontSize: '0.7rem', color: 'text.secondary', fontWeight: 600, borderBottom: '1px solid', borderColor: 'divider' }}>
+              Player
+            </Box>
+            <Box component="th" sx={{ textAlign: 'right', pb: 1, fontSize: '0.7rem', color: 'text.secondary', fontWeight: 600, borderBottom: '1px solid', borderColor: 'divider' }}>
+              Vote
+            </Box>
           </tr>
-          {_sortedResults(this.props.results).map(x => _renderVoteRow(x))}
-          {notVoted.map((x) => _renderUserRow(x))}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
+        </thead>
+        <tbody>
+          {sortedResults.map(x => (
+            <tr key={x.userName}>
+              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.primary' }}>
+                {_.startCase(x.userName)}
+              </Box>
+              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.primary', textAlign: 'right', fontWeight: 700 }}>
+                {x.estimateValue}
+              </Box>
+            </tr>
+          ))}
+          {notVoted.map(x => (
+            <tr key={x}>
+              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.disabled', fontStyle: 'italic' }}>
+                {_.startCase(x)}
+              </Box>
+              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.disabled', textAlign: 'right' }}>
+                —
+              </Box>
+            </tr>
+          ))}
+        </tbody>
+      </Box>
+    </Box>
+  );
 }
-
-function _sortedResults(results) {
-  const voteFreqs = _.countBy(results, x => x['estimateValue']);
-  const countedResults = results.map(x => ({...x, ...{'count': voteFreqs[parseInt(x['estimateValue'], 10)]}}));
-  return _.orderBy(countedResults, ['count', 'estimateValue', 'userName'], ['asc', 'asc', 'asc']);
-}
-
-function _renderUserRow(data) {
-  return (
-    <tr key={data}>
-      <td>{_.startCase(data)}</td>
-      <td>-</td>
-    </tr>
-  )
-}
-
-function _renderVoteRow(data) {
-  return (
-    <tr key={data.userName}>
-      <td>{_.startCase(data.userName)}</td>
-      <td>{data.estimateValue}</td>
-    </tr>
-  )
-}
-
-function mapStateToProps(state) {
-  return {
-    results: state.results,
-    users: state.users
-  };
-}
-
-export default connect(mapStateToProps)(ResultsTable);
