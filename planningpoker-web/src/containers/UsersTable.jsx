@@ -1,40 +1,48 @@
-import React, {Component} from 'react';
-import {Table} from 'react-bootstrap';
-import {connect} from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import _ from 'lodash';
 
-class UsersTable extends Component {
+export default function UsersTable({ heading }) {
+  const users = useSelector(state => state.users);
+  const currentUser = useSelector(state => state.game.playerName);
 
-  render() {
-    return (
-      <div className="visible-sm visible-md visible-lg tbl-scroll">
-        <Table responsive striped>
-          <tbody>
-          <tr>
-            <th> {this.props.heading} </th>
-          </tr>
-          {_.union([this.props.currentUser], this.props.users)
-            .map(_.startCase).sort().map((x) => _renderUserRow(x))}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
-}
+  const allUsers = _.union([currentUser], users).map(_.startCase).sort();
 
-function _renderUserRow(data) {
   return (
-    <tr key={data}>
-      <td>{data}</td>
-    </tr>
-  )
+    <Box
+      sx={{
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        p: 2.5,
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{ color: 'text.secondary', mb: 1.5, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.7rem' }}
+      >
+        {heading}
+      </Typography>
+      {allUsers.map(name => (
+        <Box key={name} sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.6 }}>
+          <Box
+            sx={{
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              bgcolor: '#22c55e',
+              boxShadow: '0 0 6px rgba(34,197,94,0.4)',
+              flexShrink: 0,
+            }}
+          />
+          <Typography variant="body2" sx={{ color: 'text.primary' }}>
+            {name}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
 }
-
-function mapStateToProps(state) {
-  return {
-    users: state.users,
-    currentUser: state.game.playerName,
-  };
-}
-
-export default connect(mapStateToProps)(UsersTable);
