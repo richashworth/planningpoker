@@ -43,7 +43,7 @@ export default function Vote() {
       <Typography variant="h6" sx={{ mb: 2.5 }}>
         Cast your estimate
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 3, alignItems: 'start' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 260px' }, gap: 3, alignItems: 'start' }}>
         <Box
           sx={{
             display: 'grid',

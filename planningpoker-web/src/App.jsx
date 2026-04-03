@@ -6,6 +6,7 @@ import ReduxPromise from 'redux-promise';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
 import reducer from './reducers';
 import theme from './theme';
 
@@ -34,6 +35,7 @@ export default function App() {
         <BrowserRouter>
           <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Header />
+            <Toolbar />
             <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               <Routes>
                 <Route path="/host" element={<CreateGame />} />
