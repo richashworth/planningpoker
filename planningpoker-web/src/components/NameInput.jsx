@@ -1,22 +1,20 @@
 import React from 'react';
+import TextField from '@mui/material/TextField';
 
-const NameInput = (props) => {
+export default function NameInput({ playerName, onPlayerNameInputChange }) {
   return (
-    <div className="form-group">
-      <label>
-        Name
-      </label>
-      <input
-        autoFocus
-        pattern=".{0}|.{3,20}" required
-        title="Please enter a name between 3 and 20 characters"
-        placeholder="required"
-        className="form-control"
-        value={props.playerName}
-        onChange={props.onPlayerNameInputChange}
-      />
-    </div>
-  )
-};
-
-export default NameInput;
+    <TextField
+      label="Name"
+      value={playerName}
+      onChange={onPlayerNameInputChange}
+      autoFocus
+      required
+      fullWidth
+      inputProps={{
+        pattern: '.{0}|.{3,20}',
+        title: 'Please enter a name between 3 and 20 characters',
+      }}
+      sx={{ mb: 2.5 }}
+    />
+  );
+}
