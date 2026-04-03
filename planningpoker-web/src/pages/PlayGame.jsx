@@ -1,54 +1,47 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
 import GamePane from '../containers/GamePane';
-import SockJsClient from 'react-stomp';
-import {resultsUpdated, usersUpdated} from '../actions';
-import {API_ROOT_URL} from "../config/Constants";
+import useStomp from '../hooks/useStomp';
+import { resultsUpdated, usersUpdated } from '../actions';
+import { API_ROOT_URL } from '../config/Constants';
 
-class PlayGame extends Component {
+export default function PlayGame() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const playerName = useSelector(state => state.game.playerName);
+  const sessionId = useSelector(state => state.game.sessionId);
+  const isUserRegistered = useSelector(state => state.game.isRegistered);
 
-  componentDidMount() {
-    if (!this.props.isUserRegistered) {
-      this.props.history.push('/')
+  useEffect(() => {
+    if (!isUserRegistered) {
+      navigate('/');
     }
-  }
+  }, [isUserRegistered, navigate]);
 
-  _handleMessage(msg) {
-    switch (msg.type) {
-      case 'RESULTS_MESSAGE':
-        return this.props.resultsUpdated(msg.payload, this.props.playerName);
-      case 'USERS_MESSAGE':
-        return this.props.usersUpdated(msg.payload);
-      case 'ITEMS_MESSAGE':
-        return '';
-      default:
-        return '';
-    }
-  }
+  useStomp({
+    url: `${API_ROOT_URL}/stomp`,
+    topics: [
+      `/topic/items/${sessionId}`,
+      `/topic/results/${sessionId}`,
+      `/topic/users/${sessionId}`,
+    ],
+    onMessage: (msg) => {
+      switch (msg.type) {
+        case 'RESULTS_MESSAGE':
+          return dispatch(resultsUpdated(msg.payload, playerName));
+        case 'USERS_MESSAGE':
+          return dispatch(usersUpdated(msg.payload));
+        default:
+          return;
+      }
+    },
+  });
 
-  render() {
-    return (
-      <div className='container'>
-        <SockJsClient
-          url={`${API_ROOT_URL}/stomp`}
-          topics={[
-            `/topic/items/${this.props.sessionId}`,
-            `/topic/results/${this.props.sessionId}`,
-            `/topic/users/${this.props.sessionId}`,
-          ]}
-          onMessage={(msg) => this._handleMessage(msg)}/>
-        <GamePane/>
-      </div>
-    );
-  }
+  return (
+    <Box sx={{ maxWidth: 1100, width: '100%', mx: 'auto', p: 3, pt: 4 }}>
+      <GamePane />
+    </Box>
+  );
 }
-
-function mapStateToProps(state) {
-  return {
-    playerName: state.game.playerName,
-    sessionId: state.game.sessionId,
-    isUserRegistered: state.game.isRegistered,
-  };
-}
-
-export default connect(mapStateToProps, {resultsUpdated, usersUpdated})(PlayGame);
