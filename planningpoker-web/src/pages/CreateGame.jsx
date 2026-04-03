@@ -1,49 +1,45 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {createGame, gameCreated} from '../actions';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { createGame, gameCreated } from '../actions';
 import NameInput from '../components/NameInput';
 
-import '../styles/Create.css';
+export default function CreateGame() {
+  const [playerName, setPlayerName] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-class CreateGame extends Component {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(createGame(playerName, () => {
+      dispatch(gameCreated());
+      navigate('/game');
+    }));
+  };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {playerName: ''};
-
-    this.onPlayerNameInputChange = this.onPlayerNameInputChange.bind(this);
-    this.onFormSubmit = this.onFormSubmit.bind(this);
-  }
-
-  onPlayerNameInputChange(event) {
-    this.setState({playerName: event.target.value});
-  }
-
-  onFormSubmit(event) {
-    // tells the browser not to make a POST request to the server (default form behaviour)
-    event.preventDefault();
-
-    this.props.createGame(this.state.playerName, () => {
-      this.props.gameCreated();
-      this.props.history.push('/game');
-    });
-  }
-
-  render() {
-    return (
-      <div className="container">
-        <form onSubmit={this.onFormSubmit}>
-          <NameInput
-            playerName={this.state.playerName}
-            onPlayerNameInputChange={this.onPlayerNameInputChange}/>
-          <button type="submit" className="btn btn-primary">
-            Start Game
-          </button>
-        </form>
-      </div>
-    );
-  }
+  return (
+    <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
+      <Card sx={{ maxWidth: 420, width: '100%' }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h5" sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}>
+            Host a Game
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <NameInput
+              playerName={playerName}
+              onPlayerNameInputChange={(e) => setPlayerName(e.target.value)}
+            />
+            <Button type="submit" variant="contained" fullWidth size="large" sx={{ py: 1.2 }}>
+              Start Game
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </Box>
+  );
 }
-
-export default connect(null, {createGame, gameCreated})(CreateGame);
