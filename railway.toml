@@ -2,7 +2,6 @@
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-9000} -jar app.jar"
 healthcheckPath = "/actuator/health"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
