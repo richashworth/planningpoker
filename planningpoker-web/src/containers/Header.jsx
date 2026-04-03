@@ -1,51 +1,66 @@
-import React, {Component} from 'react';
-import {Navbar} from 'react-bootstrap';
-import {leaveGame} from '../actions';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
 import _ from 'lodash';
+import { leaveGame } from '../actions';
 
-import '../styles/Header.css';
+export default function Header() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const sessionId = useSelector(state => state.game.sessionId);
+  const playerName = useSelector(state => state.game.playerName);
 
-class Header extends Component {
-
-  render() {
-    return (
-      <Navbar collapseOnSelect className="navbar-top">
-        <Navbar.Header>
-          <Navbar.Brand>
-            planning poker
-          </Navbar.Brand>
-          <Navbar.Toggle/>
-        </Navbar.Header>
-        {this.props.sessionId ?
-          <Navbar.Collapse>
-            <Navbar.Text pullRight className='navbar-header-text'>
-              <button className='logout-btn'
-                      onClick={() => this.props.leaveGame(this.props.playerName, this.props.sessionId, () => {
-                        this.props.history.push('/')
-                      })}>
-                Log Out
-              </button>
-            </Navbar.Text>
-            < Navbar.Text pullRight className='navbar-header-text'>
-              {`Session ${this.props.sessionId}`}
-            </Navbar.Text>
-            <Navbar.Text pullRight className='navbar-header-text'>
-              {_.startCase(this.props.playerName)}
-            </Navbar.Text>
-          </Navbar.Collapse>
-          : ''}
-      </Navbar>
-    );
-  }
-}
-
-function mapStateToProps(state) {
-  return {
-    sessionId: state.game.sessionId,
-    playerName: state.game.playerName,
+  const handleLogout = () => {
+    dispatch(leaveGame(playerName, sessionId, () => navigate('/')));
   };
-}
 
-export default withRouter(connect(mapStateToProps, {leaveGame})(Header));
+  return (
+    <AppBar
+      position="fixed"
+      elevation={0}
+      sx={{
+        bgcolor: '#0a0a0a',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
+      <Toolbar>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          Planning Poker
+        </Typography>
+        {sessionId && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              {_.startCase(playerName)}
+            </Typography>
+            <Chip
+              label={sessionId}
+              size="small"
+              sx={{
+                bgcolor: '#1a1a1a',
+                border: '1px solid',
+                borderColor: 'divider',
+                color: 'text.secondary',
+                fontFamily: 'monospace',
+              }}
+            />
+            <Button
+              variant="text"
+              size="small"
+              onClick={handleLogout}
+              sx={{ color: 'text.secondary', '&:hover': { color: '#ef4444' } }}
+            >
+              Log Out
+            </Button>
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+}
