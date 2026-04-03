@@ -6,7 +6,7 @@ import com.richashworth.planningpoker.model.Estimate;
 import java.util.List;
 
 public class PlanningPokerTestFixture {
-    public static final Long SESSION_ID = 1L;
+    public static final String SESSION_ID = "abc12345";
     public static final String ITEM = "A User Story";
     public static final String USER_NAME = "Rich";
     public static final String ESTIMATE_VALUE = "2";

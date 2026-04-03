@@ -4,7 +4,7 @@ import com.richashworth.planningpoker.PlanningPokerApplication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class AppController {
 
     @RequestMapping(value = "version", method = RequestMethod.GET, produces = "text/plain")

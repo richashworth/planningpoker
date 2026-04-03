@@ -30,20 +30,20 @@ public class MessagingUtils {
     }
 
     @Contract(pure = true)
-    public static String getTopic(String topicRoot, long sessionId) {
+    public static String getTopic(String topicRoot, String sessionId) {
         return topicRoot + sessionId;
     }
 
-    public void sendResultsMessage(long sessionId) {
+    public void sendResultsMessage(String sessionId) {
         template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), resultsMessage(sessionManager.getResults(sessionId)));
     }
 
-    public void sendUsersMessage(long sessionId) {
+    public void sendUsersMessage(String sessionId) {
         template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(sessionManager.getSessionUsers(sessionId)));
     }
 
     @Async
-    public void burstResultsMessages(long sessionId) {
+    public void burstResultsMessages(String sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
             sendResultsMessage(sessionId);
             clock.pause(LATENCY_DURATION);
@@ -51,7 +51,7 @@ public class MessagingUtils {
     }
 
     @Async
-    public void burstUsersMessages(long sessionId) {
+    public void burstUsersMessages(String sessionId) {
         for (final long LATENCY_DURATION : LATENCIES) {
             sendUsersMessage(sessionId);
             clock.pause(LATENCY_DURATION);

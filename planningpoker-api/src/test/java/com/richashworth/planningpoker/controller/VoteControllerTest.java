@@ -16,8 +16,10 @@ class VoteControllerTest extends AbstractControllerTest {
     @Test
     void testVote() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
         voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
         inOrder.verify(sessionManager, times(1)).isSessionActive(SESSION_ID);
+        inOrder.verify(sessionManager, times(1)).getSessionUsers(SESSION_ID);
         inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
         inOrder.verify(sessionManager, times(1)).registerEstimate(SESSION_ID, ESTIMATE);
         inOrder.verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
@@ -27,9 +29,11 @@ class VoteControllerTest extends AbstractControllerTest {
     @Test
     void testVoteUserAlreadyVoted() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
         when(sessionManager.getResults(SESSION_ID)).thenReturn(Lists.newArrayList(ESTIMATE));
         voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
         inOrder.verify(sessionManager, times(1)).isSessionActive(SESSION_ID);
+        inOrder.verify(sessionManager, times(1)).getSessionUsers(SESSION_ID);
         inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
         inOrder.verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
         inOrder.verifyNoMoreInteractions();
@@ -38,7 +42,23 @@ class VoteControllerTest extends AbstractControllerTest {
     @Test
     void testVoteInvalidSession() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> 
+        assertThrows(IllegalArgumentException.class, () ->
             voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE));
+    }
+
+    @Test
+    void testVoteNonMemberRejected() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList());
+        assertThrows(IllegalArgumentException.class, () ->
+            voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE));
+    }
+
+    @Test
+    void testVoteInvalidEstimateRejected() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+        assertThrows(IllegalArgumentException.class, () ->
+            voteController.vote(SESSION_ID, USER_NAME, "999"));
     }
 }

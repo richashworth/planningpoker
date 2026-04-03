@@ -39,8 +39,8 @@ class MessagingUtilsTest {
 
     @Test
     void testGetTopic() {
-        final String result = MessagingUtils.getTopic("/topic/root/", 1L);
-        assertEquals("/topic/root/1", result);
+        final String result = MessagingUtils.getTopic("/topic/root/", "abc123");
+        assertEquals("/topic/root/abc123", result);
     }
 
     @Test

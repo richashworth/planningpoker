@@ -19,7 +19,9 @@ RUN chmod +x gradlew && ./gradlew planningpoker-web:jar planningpoker-api:bootJa
 
 # Stage 3: Runtime
 FROM eclipse-temurin:21-jre
+RUN addgroup --system app && adduser --system --ingroup app app
 WORKDIR /app
 COPY --from=backend /app/planningpoker-api/build/libs/planningpoker-*.jar app.jar
+USER app
 EXPOSE 9000
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
