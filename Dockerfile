@@ -24,4 +24,4 @@ WORKDIR /app
 COPY --from=backend /app/planningpoker-api/build/libs/planningpoker-*.jar app.jar
 USER app
 EXPOSE 9000
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+ENTRYPOINT java -Djava.security.egd=file:/dev/./urandom ${JAVA_OPTS} -jar app.jar
