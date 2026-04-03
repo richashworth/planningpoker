@@ -1,63 +1,55 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {joinGame, userRegistered} from '../actions';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { joinGame, userRegistered } from '../actions';
 import NameInput from '../components/NameInput';
 
-class JoinGame extends Component {
+export default function JoinGame() {
+  const [playerName, setPlayerName] = useState('');
+  const [sessionId, setSessionId] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  constructor(props) {
-    super(props);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(joinGame(playerName, sessionId, () => {
+      dispatch(userRegistered());
+      navigate('/game');
+    }));
+  };
 
-    this.state = {playerName: '', sessionId: ''};
-
-    this.onPlayerNameInputChange = this.onPlayerNameInputChange.bind(this);
-    this.onSessionInputChange = this.onSessionInputChange.bind(this);
-    this.onFormSubmit = this.onFormSubmit.bind(this);
-  }
-
-  onPlayerNameInputChange(event) {
-    this.setState({playerName: event.target.value});
-  }
-
-  onSessionInputChange(event) {
-    this.setState({sessionId: event.target.value});
-  }
-
-  onFormSubmit(event) {
-    // tells the browser not to make a POST request to the server (default form behaviour)
-    event.preventDefault();
-
-    this.props.joinGame(this.state.playerName, this.state.sessionId, () => {
-      this.props.userRegistered();
-      this.props.history.push('/game');
-    });
-  }
-
-  render() {
-    return (
-      <div className="container">
-        <form onSubmit={this.onFormSubmit}>
-          <NameInput
-            playerName={this.state.playerName}
-            onPlayerNameInputChange={this.onPlayerNameInputChange}/>
-          <div className="form-group">
-            <label> Session ID </label>
-            <input
-              className="form-control"
-              value={this.state.sessionId}
-              placeholder="required"
-              required
-              type="text"
-              onChange={this.onSessionInputChange}
+  return (
+    <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
+      <Card sx={{ maxWidth: 420, width: '100%' }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h5" sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}>
+            Join a Game
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <NameInput
+              playerName={playerName}
+              onPlayerNameInputChange={(e) => setPlayerName(e.target.value)}
             />
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Join Game
-          </button>
-        </form>
-      </div>
-    );
-  }
+            <TextField
+              label="Session ID"
+              value={sessionId}
+              onChange={(e) => setSessionId(e.target.value)}
+              required
+              fullWidth
+              sx={{ mb: 2.5 }}
+            />
+            <Button type="submit" variant="contained" fullWidth size="large" sx={{ py: 1.2 }}>
+              Join Game
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </Box>
+  );
 }
-
-export default connect(null, {joinGame, userRegistered})(JoinGame);
