@@ -1,9 +1,13 @@
-import React, {Component} from 'react';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
-import {Provider} from 'react-redux';
-import {applyMiddleware, compose, createStore} from 'redux';
+import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 import ReduxPromise from 'redux-promise';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
 import reducer from './reducers';
+import theme from './theme';
 
 import Header from './containers/Header';
 import Welcome from './pages/Welcome';
@@ -22,29 +26,26 @@ const store = createStore(
   composeEnhancers(applyMiddleware(...middleware)),
 );
 
-class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
+export default function App() {
+  return (
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <BrowserRouter>
-          <div>
-            <Header/>
-            <main>
-              <div>
-                <Switch>
-                  <Route path="/host" component={CreateGame}/>
-                  <Route path="/join" component={JoinGame}/>
-                  <Route path="/game" component={PlayGame}/>
-                  <Route path="/" component={Welcome}/>
-                </Switch>
-              </div>
-            </main>
-            <Footer/>
-          </div>
+          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <Header />
+            <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <Routes>
+                <Route path="/host" element={<CreateGame />} />
+                <Route path="/join" element={<JoinGame />} />
+                <Route path="/game" element={<PlayGame />} />
+                <Route path="/" element={<Welcome />} />
+              </Routes>
+            </Box>
+            <Footer />
+          </Box>
         </BrowserRouter>
-      </Provider>
-    );
-  }
+      </ThemeProvider>
+    </Provider>
+  );
 }
-
-export default App;
