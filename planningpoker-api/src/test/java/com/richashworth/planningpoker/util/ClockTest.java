@@ -1,25 +1,16 @@
 package com.richashworth.planningpoker.util;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.junit.jupiter.api.Test;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Clock.class)
-public class ClockTest {
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-    @InjectMocks
-    private Clock clock;
+class ClockTest {
+
+    private final Clock clock = new Clock();
 
     @Test
-    public void testPause() throws InterruptedException {
-        PowerMockito.mockStatic(Thread.class);
-        PowerMockito.doNothing().when(Thread.class);
-        clock.pause(10000L);
-        PowerMockito.verifyStatic();
+    void testPause() {
+        assertDoesNotThrow(() -> clock.pause(1L));
     }
 
 }

@@ -1,47 +1,77 @@
 plugins {
-    id 'net.researchgate.release' version '2.6.0'
-    id "org.springframework.boot" version "1.5.7.RELEASE"
+    id 'net.researchgate.release' version '3.0.2'
+    id "org.springframework.boot" version "3.2.3"
     id "com.github.lkishalmi.gatling" version "3.0.2"
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'jacoco'
 }
 
-apply plugin: 'java'
-apply plugin: 'jacoco'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 jar {
-    baseName = 'planningpoker'
+    archiveBaseName = 'planningpoker'
     manifest {
         attributes 'Implementation-Version': version
     }
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     flatDir { dirs '../planningpoker-web/dist/libs' }
 }
 
-dependencies {
-    compile name: 'planningpoker-web'
-    compile 'com.google.guava:guava:19.0'
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.jetbrains:annotations-java5:15.0'
-    compile 'org.projectlombok:lombok:1.16.6'
-    compile 'org.springframework.boot:spring-boot-starter-websocket'
-    compile 'org.springframework.boot:spring-boot-devtools'
-    compile 'org.springframework:spring-messaging'
-    compile 'net.bull.javamelody:javamelody-core:1.32.1'
-
-    testCompile 'org.powermock:powermock-api-mockito:1.6.5'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.5'
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = true
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
     }
 }
 
-check.dependsOn jacocoTestReport
+tasks.withType(JavaCompile).configureEach {
+    dependsOn ':planningpoker-web:jar'
+}
 
-task stage(dependsOn: ["build"]) {}
+dependencies {
+    implementation name: 'planningpoker-web'
+    implementation 'com.google.guava:guava:33.1.0-jre'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+    implementation 'org.jetbrains:annotations:24.1.0'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework:spring-messaging'
+    implementation 'net.bull.javamelody:javamelody-core:1.95.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('jacocoTestReport') {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('jacocoTestReport')
+}
+
+tasks.register('stage') {
+    dependsOn 'build'
+}

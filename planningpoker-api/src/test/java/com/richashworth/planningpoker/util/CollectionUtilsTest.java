@@ -2,19 +2,19 @@ package com.richashworth.planningpoker.util;
 
 import com.google.common.collect.Sets;
 import com.richashworth.planningpoker.model.Estimate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CollectionUtilsTest {
+class CollectionUtilsTest {
 
     @Test
-    public void testContainsIgnoreCase() throws Exception {
+    void testContainsIgnoreCase() {
         final List<String> inputList = Arrays.asList("John", "Paul", "George", "Ringo");
         assertTrue(CollectionUtils.containsIgnoreCase(inputList, "Paul"));
         assertTrue(CollectionUtils.containsIgnoreCase(inputList, "JOHN"));
@@ -23,13 +23,13 @@ public class CollectionUtilsTest {
     }
 
     @Test
-    public void testNotContainsIgnoreCase() throws Exception {
+    void testNotContainsIgnoreCase() {
         final List<String> inputList = Arrays.asList("John", "Paul", "George", "Ringo");
         assertFalse(CollectionUtils.containsIgnoreCase(inputList, "Richard"));
     }
 
     @Test
-    public void testContainsUserEstimate() throws Exception {
+    void testContainsUserEstimate() {
         final String userName = "Rich A";
         final Estimate estimate = new Estimate(userName, "5");
         final Collection<Estimate> estimates = Sets.newHashSet(estimate);
@@ -37,7 +37,7 @@ public class CollectionUtilsTest {
     }
 
     @Test
-    public void testNotContainsUserEstimate() throws Exception {
+    void testNotContainsUserEstimate() {
         final Estimate estimate = new Estimate("Rich A", "5");
         final Collection<Estimate> estimates = Sets.newHashSet(estimate);
         assertFalse(CollectionUtils.containsUserEstimate(estimates, "Jimmy Page"));

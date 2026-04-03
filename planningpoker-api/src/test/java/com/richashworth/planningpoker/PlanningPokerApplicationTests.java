@@ -1,16 +1,19 @@
 package com.richashworth.planningpoker;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest("PlanningPokerApplication.class")
-public class PlanningPokerApplicationTests {
+@SpringBootTest(classes = PlanningPokerApplication.class)
+@ActiveProfiles("test")
+@TestPropertySource(properties = {
+    "spring.main.allow-bean-definition-overriding=true",
+    "spring.main.banner-mode=off"
+})
+class PlanningPokerApplicationTests {
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
     }
-
 }

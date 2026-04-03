@@ -2,25 +2,25 @@ package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static org.mockito.Mockito.inOrder;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public abstract class AbstractControllerTest {
 
     @Mock
     protected MessagingUtils messagingUtils;
     @Mock
     protected SessionManager sessionManager;
-    InOrder inOrder;
+    protected InOrder inOrder;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         inOrder = inOrder(sessionManager, messagingUtils);
     }
 }

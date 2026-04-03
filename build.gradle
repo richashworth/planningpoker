@@ -5,6 +5,13 @@ defaultTasks 'planningpoker-web:clean',
         'planningpoker-api:clean',
         'planningpoker-api:build'
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.10'
+wrapper {
+    gradleVersion = '8.10'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+allprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.release = 21
+    }
 }

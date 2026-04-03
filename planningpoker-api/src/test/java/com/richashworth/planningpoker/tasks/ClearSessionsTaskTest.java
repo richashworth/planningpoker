@@ -1,16 +1,16 @@
 package com.richashworth.planningpoker.tasks;
 
 import com.richashworth.planningpoker.service.SessionManager;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ClearSessionsTaskTest {
+@ExtendWith(MockitoExtension.class)
+class ClearSessionsTaskTest {
 
     @InjectMocks
     private ClearSessionsTask clearSessionsTask;
@@ -19,7 +19,7 @@ public class ClearSessionsTaskTest {
     private SessionManager sessionManager;
 
     @Test
-    public void testClearSessions() throws Exception {
+    void testClearSessions() {
         clearSessionsTask.clearSessions();
         verify(sessionManager, times(1)).clearSessions();
         verifyNoMoreInteractions(sessionManager);

@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:21-jdk
 VOLUME /tmp
 ADD /build/libs/planningpoker-*.jar app.jar
 EXPOSE 9000

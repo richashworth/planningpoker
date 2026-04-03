@@ -4,25 +4,25 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.model.Estimate;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SessionManagerTest {
+class SessionManagerTest {
 
     private SessionManager sessionManager;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         sessionManager = new SessionManager();
     }
 
     @Test
-    public void testIsSessionActive() throws Exception {
+    void testIsSessionActive() {
         sessionManager.createSession();
         sessionManager.createSession();
         assertFalse(sessionManager.isSessionActive(0L));
@@ -32,7 +32,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void testGetResults() throws Exception {
+    void testGetResults() {
         final Long sessionId = sessionManager.createSession();
         final Estimate estimate = new Estimate("Rich A", "5");
         sessionManager.registerEstimate(sessionId, estimate);
@@ -41,7 +41,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void testGetSessionUsers() throws Exception {
+    void testGetSessionUsers() {
         final Long sessionId = sessionManager.createSession();
         final ArrayList<String> users = Lists.newArrayList("Alice", "Bob", "Marvin");
         registerUsers(sessionId, users);
@@ -50,7 +50,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void testGetSessions() throws Exception {
+    void testGetSessions() {
         final Long sessionOne = sessionManager.createSession();
         final Long sessionTwo = sessionManager.createSession();
         final ArrayList<String> sessionOneUsers = Lists.newArrayList("Rich", "Helen", "Tim");
@@ -71,7 +71,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void testClearSessions() {
+    void testClearSessions() {
         final Long sessionId = sessionManager.createSession();
         sessionManager.registerUser("Rich", sessionId);
         sessionManager.registerEstimate(sessionId, new Estimate("Rich", "8"));
@@ -84,7 +84,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void testResetSession() {
+    void testResetSession() {
         final Long sessionId = sessionManager.createSession();
         final String userName = "Rich";
         sessionManager.registerUser(userName, sessionId);

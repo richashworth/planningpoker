@@ -6,24 +6,22 @@ import com.richashworth.planningpoker.util.CollectionUtils;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class VoteController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
     private final MessagingUtils messagingUtils;
 
-    @Autowired
     public VoteController(SessionManager sessionManager, MessagingUtils messagingUtils) {
         this.sessionManager = sessionManager;
         this.messagingUtils = messagingUtils;
     }
 
-    @RequestMapping(value = "vote", method = RequestMethod.POST)
+    @PostMapping("vote")
     public void vote(
             @RequestParam(name = "sessionId") final Long sessionId,
             @RequestParam(name = "userName") final String userName,

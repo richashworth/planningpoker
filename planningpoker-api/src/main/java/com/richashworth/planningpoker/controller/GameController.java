@@ -5,7 +5,6 @@ import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,20 +14,19 @@ import static com.richashworth.planningpoker.service.SessionManager.SESSION_SEQ_
 import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
     private final MessagingUtils messagingUtils;
 
-    @Autowired
     public GameController(SessionManager sessionManager, MessagingUtils messagingUtils) {
         this.sessionManager = sessionManager;
         this.messagingUtils = messagingUtils;
     }
 
-    @RequestMapping(value = "joinSession", method = RequestMethod.POST)
+    @PostMapping("joinSession")
     public void joinSession(
             @RequestParam(name = "sessionId") final Long sessionId,
             @RequestParam(name = "userName") final String userName
@@ -44,7 +42,7 @@ public class GameController {
         }
     }
 
-    @RequestMapping(value = "createSession", method = RequestMethod.POST)
+    @PostMapping("createSession")
     public long createSession(
             @RequestParam(name = "userName") final String userName
     ) {
@@ -55,7 +53,7 @@ public class GameController {
         return sessionId;
     }
 
-    @RequestMapping(value = "logout", method = RequestMethod.POST)
+    @PostMapping("logout")
     public void leaveSession(
             @RequestParam(name = "userName") final String userName,
             @RequestParam(name = "sessionId") final Long sessionId
@@ -66,7 +64,7 @@ public class GameController {
         messagingUtils.burstResultsMessages(sessionId);
     }
 
-    @RequestMapping(value = "refresh", method = RequestMethod.GET)
+    @GetMapping("refresh")
     public void refresh(
             @RequestParam(name = "sessionId") final Long sessionId
     ) {
@@ -74,21 +72,19 @@ public class GameController {
         messagingUtils.sendUsersMessage(sessionId);
     }
 
-    @RequestMapping(value = "sessionUsers", method = RequestMethod.GET)
+    @GetMapping("sessionUsers")
     public List<String> getSessionUsers(
             @RequestParam(name = "sessionId") final Long sessionId
     ) {
         return sessionManager.getSessionUsers(sessionId);
     }
 
-    @RequestMapping(value = "sessions", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping("sessions")
     public Map<Long, List<String>> getSessions() {
         return Multimaps.asMap(sessionManager.getSessions());
     }
 
-
-    @RequestMapping(value = "reset", method = RequestMethod.POST)
+    @PostMapping("reset")
     public void reset(
             @RequestParam(name = "sessionId") final Long sessionId,
             @RequestParam(name = "userName") final String userName
@@ -99,5 +95,4 @@ public class GameController {
             messagingUtils.burstResultsMessages(sessionId);
         }
     }
-
 }

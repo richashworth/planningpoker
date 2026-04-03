@@ -4,7 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.service.SessionManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.util.ArrayList;
@@ -13,16 +13,16 @@ import java.util.Map;
 
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.SESSION_ID;
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.USER_NAME;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class GameControllerTest extends AbstractControllerTest {
+class GameControllerTest extends AbstractControllerTest {
 
     @InjectMocks
     private GameController gameController;
 
     @Test
-    public void testJoinSession() throws Exception {
+    void testJoinSession() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         gameController.joinSession(SESSION_ID, USER_NAME);
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
@@ -30,26 +30,29 @@ public class GameControllerTest extends AbstractControllerTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testJoinSessionSameUserName() throws Exception {
+    @Test
+    void testJoinSessionSameUserName() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
-        gameController.joinSession(SESSION_ID, USER_NAME);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testJoinInactiveSession() throws Exception {
-        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(false);
-        gameController.joinSession(SESSION_ID, USER_NAME);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testJoinInvalidSession() throws Exception {
-        gameController.joinSession(SessionManager.SESSION_SEQ_START_VALUE - 1, USER_NAME);
+        assertThrows(IllegalArgumentException.class, () -> 
+            gameController.joinSession(SESSION_ID, USER_NAME));
     }
 
     @Test
-    public void testCreateSession() throws Exception {
+    void testJoinInactiveSession() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(false);
+        assertThrows(IllegalArgumentException.class, () -> 
+            gameController.joinSession(SESSION_ID, USER_NAME));
+    }
+
+    @Test
+    void testJoinInvalidSession() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            gameController.joinSession(SessionManager.SESSION_SEQ_START_VALUE - 1, USER_NAME));
+    }
+
+    @Test
+    void testCreateSession() {
         when(sessionManager.createSession()).thenReturn(SESSION_ID);
         final Long newSessionId = gameController.createSession(USER_NAME);
         assertEquals(SESSION_ID, newSessionId);
@@ -60,15 +63,15 @@ public class GameControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testRefresh() throws Exception {
+    void testRefresh() {
         gameController.refresh(SESSION_ID);
         verify(messagingUtils).sendResultsMessage(SESSION_ID);
         verify(messagingUtils).sendUsersMessage(SESSION_ID);
-        verifyZeroInteractions(sessionManager);
+        verifyNoInteractions(sessionManager);
     }
 
     @Test
-    public void testGetSessionUsers() throws Exception {
+    void testGetSessionUsers() {
         final ArrayList<String> expected = Lists.newArrayList(USER_NAME);
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(expected);
         final List<String> results = gameController.getSessionUsers(SESSION_ID);
@@ -78,10 +81,10 @@ public class GameControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testLeaveSession() throws Exception {
+    void testLeaveSession() {
         Long sID = gameController.createSession(USER_NAME);
         gameController.leaveSession(USER_NAME, sID);
-        assert (sessionManager.getSessionUsers(sID).isEmpty());
+        assertTrue(sessionManager.getSessionUsers(sID).isEmpty());
         verify(sessionManager, times(1)).createSession();
         verify(sessionManager, times(1)).registerUser(USER_NAME, sID);
         verify(sessionManager, times(1)).removeUser(USER_NAME, sID);
@@ -90,7 +93,7 @@ public class GameControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testGetSessions() throws Exception {
+    void testGetSessions() {
         final ListMultimap<Long, String> expectedSessions = ArrayListMultimap.create();
         expectedSessions.put(SESSION_ID, USER_NAME);
         when(sessionManager.getSessions()).thenReturn(expectedSessions);
@@ -101,11 +104,10 @@ public class GameControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testReset() throws Exception {
+    void testReset() {
         gameController.reset(SESSION_ID, USER_NAME);
         verify(sessionManager).resetSession(SESSION_ID);
         verify(messagingUtils).burstResultsMessages(SESSION_ID);
         verifyNoMoreInteractions(sessionManager);
     }
-
 }

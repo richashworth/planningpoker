@@ -1,23 +1,23 @@
 package com.richashworth.planningpoker.util;
 
 import com.richashworth.planningpoker.service.SessionManager;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
 import static com.richashworth.planningpoker.util.MessagingUtils.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MessagingUtilsTest {
+@ExtendWith(MockitoExtension.class)
+class MessagingUtilsTest {
 
     @InjectMocks
     private MessagingUtils messagingUtils;
@@ -31,34 +31,34 @@ public class MessagingUtilsTest {
     @Mock
     private SimpMessagingTemplate template;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         ReflectionTestUtils.setField(messagingUtils, "clock", clock);
         ReflectionTestUtils.setField(messagingUtils, "template", template);
     }
 
     @Test
-    public void testGetTopic() throws Exception {
+    void testGetTopic() {
         final String result = MessagingUtils.getTopic("/topic/root/", 1L);
         assertEquals("/topic/root/1", result);
     }
 
     @Test
-    public void testSendResultsMessage() throws Exception {
+    void testSendResultsMessage() {
         when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
         messagingUtils.sendResultsMessage(SESSION_ID);
         verifyMessageSent(1, getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(RESULTS));
     }
 
     @Test
-    public void testSendUsersMessage() throws Exception {
+    void testSendUsersMessage() {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
         messagingUtils.sendUsersMessage(SESSION_ID);
         verifyMessageSent(1, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage((USERS)));
     }
 
     @Test
-    public void testBurstResultsMessages() throws Exception {
+    void testBurstResultsMessages() {
         when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
         messagingUtils.burstResultsMessages(SESSION_ID);
         for (long latency : LATENCIES) {
@@ -68,7 +68,7 @@ public class MessagingUtilsTest {
     }
 
     @Test
-    public void testBurstUsersMessages() throws Exception {
+    void testBurstUsersMessages() {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
         messagingUtils.burstUsersMessages(SESSION_ID);
         for (long latency : LATENCIES) {

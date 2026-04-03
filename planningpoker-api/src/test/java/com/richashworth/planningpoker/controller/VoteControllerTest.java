@@ -1,20 +1,20 @@
 package com.richashworth.planningpoker.controller;
 
 import com.google.common.collect.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
-public class VoteControllerTest extends AbstractControllerTest {
+class VoteControllerTest extends AbstractControllerTest {
 
     @InjectMocks
     private VoteController voteController;
 
     @Test
-    public void testVote() throws Exception {
+    void testVote() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
         inOrder.verify(sessionManager, times(1)).isSessionActive(SESSION_ID);
@@ -25,7 +25,7 @@ public class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testVoteUserAlreadyVoted() throws Exception {
+    void testVoteUserAlreadyVoted() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         when(sessionManager.getResults(SESSION_ID)).thenReturn(Lists.newArrayList(ESTIMATE));
         voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
@@ -35,10 +35,10 @@ public class VoteControllerTest extends AbstractControllerTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testVoteInvalidSession() throws Exception {
+    @Test
+    void testVoteInvalidSession() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(false);
-        voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
+        assertThrows(IllegalArgumentException.class, () -> 
+            voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE));
     }
-
 }
