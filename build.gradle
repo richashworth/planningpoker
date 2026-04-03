@@ -1,7 +1,5 @@
 defaultTasks 'planningpoker-web:clean',
-        'planningpoker-web:yarn',
-        'planningpoker-web:yarn_run_build',
-        'planningpoker-web:webjar',
+        'planningpoker-web:jar',
         'planningpoker-api:clean',
         'planningpoker-api:build'
 

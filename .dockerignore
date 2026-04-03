@@ -1,0 +1,8 @@
+.git
+.claude
+.vscode
+.playwright-mcp
+**/node_modules
+**/dist
+**/build
+planningpoker-api/build
