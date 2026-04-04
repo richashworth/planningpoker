@@ -8,14 +8,14 @@ const shared = {
     h6: { fontWeight: 600, letterSpacing: '-0.01em' },
     body2: { letterSpacing: '0.01em' },
   },
-  shape: { borderRadius: 12 },
+  shape: { borderRadius: 4 },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
           fontWeight: 600,
-          borderRadius: 10,
+          borderRadius: 4,
           transition: 'all 0.2s ease',
         },
         sizeLarge: {
@@ -61,7 +61,7 @@ export const darkTheme = createTheme({
         root: {
           border: '1px solid #2e2e33',
           backgroundImage: 'none',
-          borderRadius: 16,
+          borderRadius: 4,
         },
       },
     },
@@ -94,7 +94,7 @@ export const lightTheme = createTheme({
         root: {
           border: '1px solid #e4e4e7',
           backgroundImage: 'none',
-          borderRadius: 16,
+          borderRadius: 4,
           boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
         },
       },

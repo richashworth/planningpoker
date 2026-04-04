@@ -28,20 +28,14 @@ const store = createStore(
   composeEnhancers(applyMiddleware(...middleware)),
 );
 
-const SettingsContext = createContext({
-  mode: 'dark',
-  cardStyle: 'rounded',
-  toggleColorMode: () => {},
-  setCardStyle: () => {},
-});
+const ColorModeContext = createContext({ toggleColorMode: () => {}, mode: 'dark' });
 
-export function useSettings() {
-  return useContext(SettingsContext);
+export function useColorMode() {
+  return useContext(ColorModeContext);
 }
 
 export default function App() {
   const [mode, setMode] = useState(() => localStorage.getItem('pp-theme') || 'dark');
-  const [cardStyle, setCardStyleState] = useState(() => localStorage.getItem('pp-card-style') || 'rounded');
 
   const toggleColorMode = useCallback(() => {
     setMode(prev => {
@@ -51,16 +45,11 @@ export default function App() {
     });
   }, []);
 
-  const setCardStyle = useCallback((style) => {
-    setCardStyleState(style);
-    localStorage.setItem('pp-card-style', style);
-  }, []);
-
   const theme = useMemo(() => mode === 'dark' ? darkTheme : lightTheme, [mode]);
 
   return (
     <Provider store={store}>
-      <SettingsContext.Provider value={{ mode, cardStyle, toggleColorMode, setCardStyle }}>
+      <ColorModeContext.Provider value={{ toggleColorMode, mode }}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <BrowserRouter>
@@ -69,19 +58,19 @@ export default function App() {
               <Toolbar />
               <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Suspense fallback={null}>
-                <Routes>
-                  <Route path="/host" element={<CreateGame />} />
-                  <Route path="/join" element={<JoinGame />} />
-                  <Route path="/game" element={<PlayGame />} />
-                  <Route path="/" element={<Welcome />} />
-                </Routes>
-              </Suspense>
+                  <Routes>
+                    <Route path="/host" element={<CreateGame />} />
+                    <Route path="/join" element={<JoinGame />} />
+                    <Route path="/game" element={<PlayGame />} />
+                    <Route path="/" element={<Welcome />} />
+                  </Routes>
+                </Suspense>
               </Box>
               <Footer />
             </Box>
           </BrowserRouter>
         </ThemeProvider>
-      </SettingsContext.Provider>
+      </ColorModeContext.Provider>
     </Provider>
   );
 }

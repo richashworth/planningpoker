@@ -16,7 +16,7 @@ export default function UsersTable({ heading }) {
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 3,
+        borderRadius: 1,
         p: 2,
         transition: 'border-color 0.3s ease, background-color 0.3s ease',
       }}

@@ -5,17 +5,19 @@ import Typography from '@mui/material/Typography';
 import { vote } from '../actions';
 import UsersTable from './UsersTable';
 import { COFFEE_SYMBOL, LEGAL_ESTIMATES } from '../config/Constants';
-import { useSettings } from '../App';
 
-const baseCardSx = {
+const voteCardSx = {
+  aspectRatio: '3 / 4',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  fontSize: '1.25rem',
   fontWeight: 700,
   color: 'text.primary',
   bgcolor: 'background.paper',
   border: '1px solid',
   borderColor: 'divider',
+  borderRadius: 0.5,
   cursor: 'pointer',
   userSelect: 'none',
   transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -32,53 +34,10 @@ const baseCardSx = {
   },
 };
 
-const styleVariants = {
-  square: {
-    borderRadius: 0.5,
-    aspectRatio: '3 / 4',
-    fontSize: '1.25rem',
-  },
-  rounded: {
-    borderRadius: 3,
-    aspectRatio: '3 / 4',
-    fontSize: '1.25rem',
-  },
-  cards: {
-    borderRadius: 3,
-    aspectRatio: '2.5 / 4',
-    fontSize: '1.25rem',
-    position: 'relative',
-  },
-};
-
-function VoteCard({ value, cardStyle, onClick, sx: extraSx }) {
-  const variant = styleVariants[cardStyle] || styleVariants.rounded;
-
-  return (
-    <Box
-      sx={{ ...baseCardSx, ...variant, ...extraSx }}
-      onClick={onClick}
-    >
-      {value}
-      {cardStyle === 'cards' && (
-        <>
-          <Box sx={{ position: 'absolute', top: 5, left: 6, fontSize: '0.5rem', color: 'text.disabled', lineHeight: 1 }}>
-            {value}
-          </Box>
-          <Box sx={{ position: 'absolute', bottom: 5, right: 6, fontSize: '0.5rem', color: 'text.disabled', lineHeight: 1, transform: 'rotate(180deg)' }}>
-            {value}
-          </Box>
-        </>
-      )}
-    </Box>
-  );
-}
-
 export default function Vote() {
   const dispatch = useDispatch();
   const sessionId = useSelector(state => state.game.sessionId);
   const playerName = useSelector(state => state.game.playerName);
-  const { cardStyle } = useSettings();
 
   const doVote = (val) => dispatch(vote(playerName, sessionId, val));
 
@@ -96,14 +55,13 @@ export default function Vote() {
           }}
         >
           {LEGAL_ESTIMATES.map(val => (
-            <VoteCard key={val} value={val} cardStyle={cardStyle} onClick={() => doVote(val)} />
+            <Box key={val} sx={voteCardSx} onClick={() => doVote(val)}>
+              {val}
+            </Box>
           ))}
-          <VoteCard
-            value={COFFEE_SYMBOL}
-            cardStyle={cardStyle}
-            onClick={() => doVote(COFFEE_SYMBOL)}
-            sx={{ fontSize: '1.5rem' }}
-          />
+          <Box sx={{ ...voteCardSx, fontSize: '1.5rem' }} onClick={() => doVote(COFFEE_SYMBOL)}>
+            {COFFEE_SYMBOL}
+          </Box>
         </Box>
         <UsersTable heading="Players" />
       </Box>
