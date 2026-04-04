@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-buildDir = 'dist'
+layout.buildDirectory = file('dist')
 
 jar {
     from(fileTree('build')) {

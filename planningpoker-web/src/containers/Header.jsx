@@ -13,7 +13,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
-import _ from 'lodash';
+import startCase from 'lodash/startCase';
 import { leaveGame } from '../actions';
 import { useColorMode } from '../App';
 
@@ -62,7 +62,7 @@ export default function Header() {
           {sessionId && (
             <>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)', display: { xs: 'none', sm: 'block' } }}>
-                {_.startCase(playerName)}
+                {startCase(playerName)}
               </Typography>
               <Chip
                 label={sessionId}

@@ -1,7 +1,5 @@
 plugins {
-    id 'net.researchgate.release' version '3.0.2'
     id "org.springframework.boot" version "3.4.4"
-    id "com.github.lkishalmi.gatling" version "3.0.2"
     id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
     id 'jacoco'

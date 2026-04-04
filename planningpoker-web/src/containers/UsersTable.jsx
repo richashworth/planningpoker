@@ -2,13 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import _ from 'lodash';
+import startCase from 'lodash/startCase';
+import union from 'lodash/union';
 
 export default function UsersTable({ heading }) {
   const users = useSelector(state => state.users);
   const currentUser = useSelector(state => state.game.playerName);
 
-  const allUsers = _.union([currentUser], users).map(_.startCase).sort();
+  const allUsers = union([currentUser], users).map(startCase).sort();
 
   return (
     <Box
