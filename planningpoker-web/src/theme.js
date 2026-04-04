@@ -31,13 +31,6 @@ const shared = {
     },
     MuiTextField: {
       defaultProps: { variant: 'outlined', size: 'medium' },
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: 10,
-          },
-        },
-      },
     },
   },
 };
@@ -47,9 +40,9 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: { main: '#3b82f6' },
-    background: { default: '#09090b', paper: '#18181b' },
-    text: { primary: '#fafafa', secondary: '#a1a1aa', disabled: '#52525b' },
-    divider: '#27272a',
+    background: { default: '#121215', paper: '#1e1e22' },
+    text: { primary: '#f4f4f5', secondary: '#a1a1aa', disabled: '#71717a' },
+    divider: '#2e2e33',
     success: { main: '#22c55e' },
     error: { main: '#ef4444' },
   },
@@ -58,7 +51,7 @@ export const darkTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#09090b',
+          backgroundColor: '#121215',
           transition: 'background-color 0.3s ease, color 0.3s ease',
         },
       },
@@ -66,7 +59,7 @@ export const darkTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          border: '1px solid #27272a',
+          border: '1px solid #2e2e33',
           backgroundImage: 'none',
           borderRadius: 16,
         },

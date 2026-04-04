@@ -29,7 +29,7 @@ export default function Header() {
       elevation={0}
       sx={{
         bgcolor: (t) => t.palette.mode === 'dark'
-          ? 'rgba(9, 9, 11, 0.8)'
+          ? 'rgba(18, 18, 21, 0.8)'
           : 'rgba(250, 250, 250, 0.8)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid',
