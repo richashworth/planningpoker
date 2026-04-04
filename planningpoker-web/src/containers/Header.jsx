@@ -22,6 +22,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import startCase from 'lodash/startCase';
 import { leaveGame } from '../actions';
 import { useColorMode } from '../App';
+import Logo from '../components/Logo';
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -52,8 +53,9 @@ export default function Header() {
         boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
       }}
     >
-      <Toolbar sx={{ gap: 1 }}>
-        <Typography variant="h6" sx={{ fontSize: '1.1rem', color: '#fff' }}>
+      <Toolbar>
+        <Logo size={48} sx={{ mr: 2 }} />
+        <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 500, fontFamily: '"Sora", Inter, sans-serif', letterSpacing: 'normal', color: '#fff' }}>
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
