@@ -26,11 +26,14 @@ Hosts can pick an estimation scheme (Fibonacci, T-shirt, Simple, or Custom) when
 - [ ] Preset schemes: Fibonacci (default), T-shirt sizes, Simple (1-5)
 - [ ] Custom scheme: host defines 2-20 values (max 10 chars each, no duplicates)
 - [ ] Meta-card toggles: ? (unsure) and Coffee (break), default on
-- [ ] Scheme locked for session duration
-- [ ] Joiners receive scheme info on join
 - [ ] Vote cards render dynamically from session scheme
 - [ ] Results chart labels reflect session scheme
-- [ ] Server validates votes against session scheme (not hardcoded set)
+
+### Validated in Phase 2 (API Contract)
+
+- [x] Scheme locked for session duration — no mutation endpoint exists
+- [x] Joiners receive scheme info on join — joinSession returns SessionResponse with scheme metadata
+- [x] Server validates votes against session scheme (not hardcoded set) — VoteController uses per-session getSessionLegalValues
 
 ### Out of Scope
 
@@ -81,4 +84,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 after initialization*
+*Last updated: 2026-04-04 after Phase 2 completion*
