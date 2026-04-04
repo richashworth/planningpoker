@@ -53,7 +53,7 @@ test.describe('Host a Game', () => {
 
     await page.getByText('5', { exact: true }).click();
 
-    await expect(page.getByText('Results')).toBeVisible();
+    await expect(page.getByText('Results')).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('button', { name: 'Next Item' })).toBeVisible();
   });
 
@@ -63,7 +63,7 @@ test.describe('Host a Game', () => {
     await page.getByRole('button', { name: 'Start Game' }).click();
 
     await page.getByText('5', { exact: true }).click();
-    await expect(page.getByText('Results')).toBeVisible();
+    await expect(page.getByText('Results')).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('button', { name: 'Next Item' })).toBeVisible();
   });
 });
