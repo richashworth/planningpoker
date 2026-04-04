@@ -2,11 +2,8 @@ import { describe, it, expect } from 'vitest';
 import reducer from '../reducer_game';
 import { CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED } from '../../actions';
 
-// Note: the reducer's initialGameState wraps everything in { game: { ... } }.
-// This is a legacy quirk — combineReducers maps state.game to this reducer,
-// so properties like isAdmin live at the top level of this reducer's state.
 const initialState = {
-  game: { playerName: '', sessionId: '', isAdmin: false, isRegistered: false },
+  playerName: '', sessionId: '', isAdmin: false, isRegistered: false,
 };
 
 describe('game reducer', () => {
