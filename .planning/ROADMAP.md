@@ -62,8 +62,8 @@ Plans:
 **Plans:** 0/2 plans complete
 
 Plans:
-- [ ] 03-01-PLAN.md — Scheme selector on CreateGame page with action creator wiring
-- [ ] 03-02-PLAN.md — Dynamic vote cards and scheme-aware results chart
+- [x] 03-01-PLAN.md — Scheme selector on CreateGame page with action creator wiring
+- [x] 03-02-PLAN.md — Dynamic vote cards and scheme-aware results chart
 **UI hint**: yes
 
 ## Progress
