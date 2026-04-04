@@ -28,14 +28,20 @@ const store = createStore(
   composeEnhancers(applyMiddleware(...middleware)),
 );
 
-const ColorModeContext = createContext({ toggleColorMode: () => {} });
+const SettingsContext = createContext({
+  mode: 'dark',
+  cardStyle: 'rounded',
+  toggleColorMode: () => {},
+  setCardStyle: () => {},
+});
 
-export function useColorMode() {
-  return useContext(ColorModeContext);
+export function useSettings() {
+  return useContext(SettingsContext);
 }
 
 export default function App() {
   const [mode, setMode] = useState(() => localStorage.getItem('pp-theme') || 'dark');
+  const [cardStyle, setCardStyleState] = useState(() => localStorage.getItem('pp-card-style') || 'rounded');
 
   const toggleColorMode = useCallback(() => {
     setMode(prev => {
@@ -45,11 +51,16 @@ export default function App() {
     });
   }, []);
 
+  const setCardStyle = useCallback((style) => {
+    setCardStyleState(style);
+    localStorage.setItem('pp-card-style', style);
+  }, []);
+
   const theme = useMemo(() => mode === 'dark' ? darkTheme : lightTheme, [mode]);
 
   return (
     <Provider store={store}>
-      <ColorModeContext.Provider value={{ toggleColorMode, mode }}>
+      <SettingsContext.Provider value={{ mode, cardStyle, toggleColorMode, setCardStyle }}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <BrowserRouter>
@@ -70,7 +81,7 @@ export default function App() {
             </Box>
           </BrowserRouter>
         </ThemeProvider>
-      </ColorModeContext.Provider>
+      </SettingsContext.Provider>
     </Provider>
   );
 }
