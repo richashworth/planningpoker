@@ -73,7 +73,7 @@ public class MessagingUtils {
 
     @Data
     @AllArgsConstructor
-    private class Message {
+    private static class Message {
         MessageType type;
         Object payload;
     }
