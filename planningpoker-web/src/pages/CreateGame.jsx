@@ -38,7 +38,7 @@ function validateCustomValues(input) {
 
 export default function CreateGame() {
   const [playerName, setPlayerName] = useState('');
-  const [schemeType, setSchemeType] = useState('fibonacci');
+  const [schemeType, setSchemeType] = useState('story_points');
   const [customValues, setCustomValues] = useState('');
   const [includeUnsure, setIncludeUnsure] = useState(true);
   const [includeCoffee, setIncludeCoffee] = useState(true);
@@ -105,7 +105,7 @@ export default function CreateGame() {
               size="small"
               sx={{ mb: 2 }}
             >
-              <ToggleButton value="fibonacci">Fibonacci</ToggleButton>
+              <ToggleButton value="story_points">Story Points</ToggleButton>
               <ToggleButton value="tshirt">T-shirt</ToggleButton>
               <ToggleButton value="simple">Simple</ToggleButton>
               <ToggleButton value="time">Time</ToggleButton>
