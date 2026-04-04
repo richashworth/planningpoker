@@ -45,7 +45,7 @@ Plans:
 **Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 02-01-PLAN.md — Backend API: DTOs, GameController JSON endpoints, VoteController per-session validation, tests
+- [x] 02-01-PLAN.md — Backend API: DTOs, GameController JSON endpoints, VoteController per-session validation, tests
 - [ ] 02-02-PLAN.md — Frontend Redux: action creators JSON body/response, reducer scheme state, Constants.js
 **UI hint**: yes
 
