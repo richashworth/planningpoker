@@ -28,14 +28,19 @@ const store = createStore(
   composeEnhancers(applyMiddleware(...middleware)),
 );
 
-const ColorModeContext = createContext({ toggleColorMode: () => {}, mode: 'dark' });
+const ColorModeContext = createContext({ toggleColorMode: () => {}, mode: 'light' });
 
 export function useColorMode() {
   return useContext(ColorModeContext);
 }
 
 export default function App() {
-  const [mode, setMode] = useState(() => localStorage.getItem('pp-theme') || 'dark');
+  const [mode, setMode] = useState(() => {
+    const stored = localStorage.getItem('pp-theme');
+    if (stored) return stored;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    return 'light';
+  });
 
   const toggleColorMode = useCallback(() => {
     setMode(prev => {

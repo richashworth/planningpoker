@@ -11,6 +11,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Switch from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
@@ -42,11 +43,6 @@ export default function Header() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleThemeToggle = () => {
-    setAnchorEl(null);
-    toggleColorMode();
-  };
-
   return (
     <AppBar
       position="fixed"
@@ -61,6 +57,27 @@ export default function Header() {
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+          <LightModeOutlinedIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.7)', mr: 0.5 }} />
+          <Switch
+            checked={mode === 'dark'}
+            onChange={toggleColorMode}
+            size="small"
+            aria-label="Toggle dark mode"
+            sx={{
+              '& .MuiSwitch-switchBase.Mui-checked': {
+                color: 'rgba(255,255,255,0.9)',
+              },
+              '& .MuiSwitch-switchBase': {
+                color: 'rgba(255,255,255,0.9)',
+              },
+              '& .MuiSwitch-track': {
+                bgcolor: 'rgba(255,255,255,0.3) !important',
+              },
+            }}
+          />
+          <DarkModeOutlinedIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.7)', ml: 0.5 }} />
+        </Box>
         {sessionId ? (
           <>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', display: { xs: 'none', sm: 'block' } }}>
@@ -111,15 +128,6 @@ export default function Header() {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <MenuItem onClick={handleThemeToggle}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  {mode === 'dark'
-                    ? <LightModeOutlinedIcon fontSize="small" />
-                    : <DarkModeOutlinedIcon fontSize="small" />
-                  }
-                </ListItemIcon>
-                <ListItemText>{mode === 'dark' ? 'Light mode' : 'Dark mode'}</ListItemText>
-              </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon sx={{ minWidth: 36 }}>
                   <LogoutIcon fontSize="small" />
@@ -128,22 +136,7 @@ export default function Header() {
               </MenuItem>
             </Menu>
           </>
-        ) : (
-          <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'} arrow>
-            <Button
-              onClick={toggleColorMode}
-              startIcon={mode === 'dark' ? <LightModeOutlinedIcon fontSize="small" /> : <DarkModeOutlinedIcon fontSize="small" />}
-              sx={{
-                color: 'rgba(255,255,255,0.8)',
-                fontSize: '0.8rem',
-                textTransform: 'none',
-                '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              {mode === 'dark' ? 'Light mode' : 'Dark mode'}
-            </Button>
-          </Tooltip>
-        )}
+        ) : null}
       </Toolbar>
     </AppBar>
   );
