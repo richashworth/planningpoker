@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { vote } from '../actions';
 import UsersTable from './UsersTable';
-import { COFFEE_SYMBOL, LEGAL_ESTIMATES } from '../config/Constants';
 
 function cardSx(isSelected, isDisabled) {
   return {
@@ -48,6 +47,7 @@ export default function Vote() {
   const dispatch = useDispatch();
   const sessionId = useSelector(state => state.game.sessionId);
   const playerName = useSelector(state => state.game.playerName);
+  const legalEstimates = useSelector(state => state.game.legalEstimates);
   const [selected, setSelected] = useState(null);
 
   const doVote = (val) => {
@@ -56,7 +56,7 @@ export default function Vote() {
     dispatch(vote(playerName, sessionId, val));
   };
 
-  const allValues = [...LEGAL_ESTIMATES, COFFEE_SYMBOL];
+  const allValues = legalEstimates;
 
   return (
     <Box>
@@ -81,7 +81,7 @@ export default function Vote() {
               aria-label={`Vote ${val}`}
               sx={{
                 ...cardSx(selected === val, selected !== null && selected !== val),
-                ...(val === COFFEE_SYMBOL && { fontSize: '1.5rem' }),
+                ...(val === '\u2615' && { fontSize: '1.5rem' }),
               }}
               onClick={() => doVote(val)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doVote(val); } }}
