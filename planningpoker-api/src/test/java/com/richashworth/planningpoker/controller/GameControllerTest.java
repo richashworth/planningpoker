@@ -1,6 +1,10 @@
 package com.richashworth.planningpoker.controller;
 
 import com.google.common.collect.Lists;
+import com.richashworth.planningpoker.model.CreateSessionRequest;
+import com.richashworth.planningpoker.model.SchemeConfig;
+import com.richashworth.planningpoker.model.SchemeType;
+import com.richashworth.planningpoker.model.SessionResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
@@ -10,6 +14,7 @@ import java.util.List;
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.SESSION_ID;
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.USER_NAME;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class GameControllerTest extends AbstractControllerTest {
@@ -20,10 +25,18 @@ class GameControllerTest extends AbstractControllerTest {
     @Test
     void testJoinSession() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
-        gameController.joinSession(SESSION_ID, USER_NAME);
+        SchemeConfig config = new SchemeConfig("fibonacci", null, true, true);
+        when(sessionManager.getSessionSchemeConfig(SESSION_ID)).thenReturn(config);
+        List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
+        SessionResponse response = gameController.joinSession(SESSION_ID, USER_NAME);
+        assertEquals("fibonacci", response.schemeType());
+        assertTrue(response.values().contains("0"));
+        assertTrue(response.values().contains("?"));
+        assertTrue(response.includeUnsure());
+        assertTrue(response.includeCoffee());
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
         inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
-        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -43,13 +56,37 @@ class GameControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreateSession() {
-        when(sessionManager.createSession()).thenReturn(SESSION_ID);
-        final String newSessionId = gameController.createSession(USER_NAME);
-        assertEquals(SESSION_ID, newSessionId);
-        inOrder.verify(sessionManager, times(1)).createSession();
+        CreateSessionRequest request = new CreateSessionRequest(USER_NAME, null, null, null, null);
+        when(sessionManager.createSession(any(SchemeConfig.class))).thenReturn(SESSION_ID);
+        List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
+        final SessionResponse response = gameController.createSession(request);
+        assertEquals(SESSION_ID, response.sessionId());
+        assertEquals("fibonacci", response.schemeType());
+        assertTrue(response.values().contains("0"));
+        assertTrue(response.values().contains("?"));
+        assertTrue(response.includeUnsure());
+        assertTrue(response.includeCoffee());
+        inOrder.verify(sessionManager, times(1)).createSession(any(SchemeConfig.class));
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
         inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
-        inOrder.verifyNoMoreInteractions();
+        verify(sessionManager).getSessionLegalValues(SESSION_ID);
+    }
+
+    @Test
+    void testCreateSessionWithTshirtScheme() {
+        CreateSessionRequest request = new CreateSessionRequest(USER_NAME, "tshirt", null, true, false);
+        when(sessionManager.createSession(any(SchemeConfig.class))).thenReturn(SESSION_ID);
+        List<String> tshirtValues = SchemeType.resolveValues("tshirt", null, true, false);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(tshirtValues);
+        final SessionResponse response = gameController.createSession(request);
+        assertEquals(SESSION_ID, response.sessionId());
+        assertEquals("tshirt", response.schemeType());
+        assertTrue(response.values().contains("XS"));
+        assertTrue(response.values().contains("?"));
+        assertFalse(response.values().contains("\u2615"));
+        assertTrue(response.includeUnsure());
+        assertFalse(response.includeCoffee());
     }
 
     @Test
@@ -100,13 +137,15 @@ class GameControllerTest extends AbstractControllerTest {
 
     @Test
     void testCreateSessionRejectsShortName() {
+        CreateSessionRequest request = new CreateSessionRequest("AB", null, null, null, null);
         assertThrows(IllegalArgumentException.class, () ->
-            gameController.createSession("AB"));
+            gameController.createSession(request));
     }
 
     @Test
     void testCreateSessionRejectsInvalidChars() {
+        CreateSessionRequest request = new CreateSessionRequest("<script>", null, null, null, null);
         assertThrows(IllegalArgumentException.class, () ->
-            gameController.createSession("<script>"));
+            gameController.createSession(request));
     }
 }

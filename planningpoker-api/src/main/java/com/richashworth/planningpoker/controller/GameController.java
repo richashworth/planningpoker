@@ -1,11 +1,15 @@
 package com.richashworth.planningpoker.controller;
 
+import com.richashworth.planningpoker.model.CreateSessionRequest;
+import com.richashworth.planningpoker.model.SchemeConfig;
+import com.richashworth.planningpoker.model.SessionResponse;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +34,7 @@ public class GameController {
     }
 
     @PostMapping("joinSession")
-    public void joinSession(
+    public SessionResponse joinSession(
             @RequestParam(name = "sessionId") final String sessionId,
             @RequestParam(name = "userName") final String userName
     ) {
@@ -46,21 +50,26 @@ public class GameController {
             }
         }
         messagingUtils.burstUsersMessages(sessionId);
+        SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
+        List<String> values = sessionManager.getSessionLegalValues(sessionId);
+        return new SessionResponse(null, config.schemeType(), values,
+                config.includeUnsure(), config.includeCoffee());
     }
 
     @PostMapping("createSession")
-    public String createSession(
-            @RequestParam(name = "userName") final String userName
-    ) {
-        validateUserName(userName);
+    public SessionResponse createSession(@RequestBody CreateSessionRequest request) {
+        validateUserName(request.userName());
         final String sessionId;
+        final SchemeConfig schemeConfig = buildSchemeConfig(request);
         synchronized (sessionManager) {
-            sessionId = sessionManager.createSession();
-            sessionManager.registerUser(userName, sessionId);
-            logger.info("{} has created session {}", userName, sessionId);
+            sessionId = sessionManager.createSession(schemeConfig);
+            sessionManager.registerUser(request.userName(), sessionId);
+            logger.info("{} has created session {}", request.userName(), sessionId);
         }
         messagingUtils.burstUsersMessages(sessionId);
-        return sessionId;
+        List<String> values = sessionManager.getSessionLegalValues(sessionId);
+        return new SessionResponse(sessionId, schemeConfig.schemeType(), values,
+                schemeConfig.includeUnsure(), schemeConfig.includeCoffee());
     }
 
     @PostMapping("logout")
@@ -103,6 +112,17 @@ public class GameController {
             sessionManager.resetSession(sessionId);
             messagingUtils.burstResultsMessages(sessionId);
         }
+    }
+
+    private SchemeConfig buildSchemeConfig(CreateSessionRequest request) {
+        String schemeType = request.schemeType() != null ? request.schemeType() : "fibonacci";
+        boolean includeUnsure = request.includeUnsure() != null ? request.includeUnsure() : true;
+        boolean includeCoffee = request.includeCoffee() != null ? request.includeCoffee() : true;
+        List<String> customValues = null;
+        if (request.customValues() != null && !request.customValues().isBlank()) {
+            customValues = List.of(request.customValues().split(","));
+        }
+        return new SchemeConfig(schemeType, customValues, includeUnsure, includeCoffee);
     }
 
     private void validateUserName(String userName) {
