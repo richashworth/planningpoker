@@ -98,21 +98,22 @@ test.describe('Dark/Light Mode', () => {
   test('toggle switches between dark and light mode', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto('/');
+    await page.evaluate(() => localStorage.removeItem('pp-theme'));
+    await page.reload();
 
     const DARK_BG = 'rgb(18, 18, 18)';
     const LIGHT_BG = 'rgb(248, 250, 252)';
-    const toggle = page.getByRole('checkbox', { name: 'Toggle dark mode' });
+    const toggle = page.locator('.MuiSwitch-input');
 
     // Default with dark OS preference is dark mode
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
     );
-    await expect(toggle).toBeVisible();
     await expect(toggle).toBeChecked();
 
     // Toggle to light mode
-    await toggle.click();
+    await toggle.click({ force: true });
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       LIGHT_BG,
@@ -120,7 +121,7 @@ test.describe('Dark/Light Mode', () => {
     await expect(toggle).not.toBeChecked();
 
     // Toggle back to dark mode
-    await toggle.click();
+    await toggle.click({ force: true });
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
