@@ -61,7 +61,7 @@ export default function Vote() {
   return (
     <Box>
       <Typography variant="h6" sx={{ mb: 3, fontSize: '1.1rem' }}>
-        {selected ? 'Vote submitted — waiting for others...' : 'Cast your estimate'}
+        Cast your estimate
       </Typography>
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start' }}>
         <Box

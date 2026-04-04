@@ -15,9 +15,22 @@ export default function Results() {
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 3, fontSize: '1.1rem' }}>
-        Results
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
+          Results
+        </Typography>
+        {isAdmin && (
+          <Button
+            variant="contained"
+            size="large"
+            disableElevation
+            onClick={() => dispatch(resetSession(playerName, sessionId))}
+            sx={{ px: 4 }}
+          >
+            Next Item
+          </Button>
+        )}
+      </Box>
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start' }}>
         <Box>
           <Box
@@ -27,25 +40,11 @@ export default function Results() {
               borderColor: 'divider',
               borderRadius: 1,
               p: 2.5,
-              mb: 2.5,
               transition: 'border-color 0.3s ease, background-color 0.3s ease',
             }}
           >
             <ResultsChart />
           </Box>
-          {isAdmin && (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button
-                variant="contained"
-                size="large"
-                disableElevation
-                onClick={() => dispatch(resetSession(playerName, sessionId))}
-                sx={{ px: 4 }}
-              >
-                Next Item
-              </Button>
-            </Box>
-          )}
         </Box>
         <ResultsTable />
       </Box>
