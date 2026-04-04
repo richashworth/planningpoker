@@ -18,8 +18,8 @@
 - [ ] **API-01**: createSession accepts scheme parameters and returns JSON with scheme metadata
 - [ ] **API-02**: joinSession returns scheme metadata so joiners see correct cards
 - [ ] **API-03**: Server validates votes against the session's scheme (not hardcoded set)
-- [ ] **API-04**: Scheme state is stored per-session in SessionManager
-- [ ] **API-05**: Scheme state is cleaned up when sessions are evicted/cleared
+- [x] **API-04**: Scheme state is stored per-session in SessionManager
+- [x] **API-05**: Scheme state is cleaned up when sessions are evicted/cleared
 
 ### Frontend
 
@@ -63,8 +63,8 @@
 | API-01 | Phase 2 | Pending |
 | API-02 | Phase 2 | Pending |
 | API-03 | Phase 2 | Pending |
-| API-04 | Phase 1 | Pending |
-| API-05 | Phase 1 | Pending |
+| API-04 | Phase 1 | Complete |
+| API-05 | Phase 1 | Complete |
 | UI-01 | Phase 3 | Pending |
 | UI-02 | Phase 3 | Pending |
 | UI-03 | Phase 3 | Pending |

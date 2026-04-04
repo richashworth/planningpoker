@@ -12,7 +12,7 @@ Three phases deliver customisable estimation schemes onto an existing in-memory 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Backend Foundation** - SchemeType enum, SchemeConfig record, and SessionManager scheme storage
+- [x] **Phase 1: Backend Foundation** - SchemeType enum, SchemeConfig record, and SessionManager scheme storage (completed 2026-04-04)
 - [ ] **Phase 2: API Contract** - Upgraded create/join endpoints returning JSON, per-session vote validation, Redux wiring
 - [ ] **Phase 3: Frontend UI** - Scheme selector on CreateGame, dynamic vote cards, scheme-aware results chart
 
@@ -27,10 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A `SchemeConfig` record exists that can be serialised to JSON by Jackson without configuration
   3. `SessionManager` stores and retrieves scheme config per session ID
   4. Creating or evicting a session also creates or removes its scheme entry — no orphaned map entries
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 01-01-PLAN.md — SchemeType enum, SchemeConfig record, SessionManager scheme storage and cleanup
+- [x] 01-01-PLAN.md — SchemeType enum, SchemeConfig record, SessionManager scheme storage and cleanup
 
 ### Phase 2: API Contract
 **Goal**: The create and join endpoints return scheme metadata as JSON, and the server validates votes against the session's actual scheme; the Redux layer consumes both responses correctly
@@ -71,7 +71,7 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Backend Foundation | 0/1 | Not started | - |
+| 1. Backend Foundation | 1/1 | Complete   | 2026-04-04 |
 | 2. API Contract | 0/? | Not started | - |
 | 3. Frontend UI | 0/? | Not started | - |
 
