@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -6,6 +6,7 @@ import GamePane from '../containers/GamePane';
 import useStomp from '../hooks/useStomp';
 import { resultsUpdated, usersUpdated } from '../actions';
 import { API_ROOT_URL } from '../config/Constants';
+import axios from 'axios';
 
 export default function PlayGame() {
   const dispatch = useDispatch();
@@ -13,6 +14,8 @@ export default function PlayGame() {
   const playerName = useSelector(state => state.game.playerName);
   const sessionId = useSelector(state => state.game.sessionId);
   const isUserRegistered = useSelector(state => state.game.isRegistered);
+  const voted = useSelector(state => state.voted);
+  const lastResultsTime = useRef(0);
 
   useEffect(() => {
     if (!isUserRegistered) {
@@ -20,7 +23,7 @@ export default function PlayGame() {
     }
   }, [isUserRegistered, navigate]);
 
-  useStomp({
+  const { connected } = useStomp({
     url: `${API_ROOT_URL}/stomp`,
     topics: [
       `/topic/items/${sessionId}`,
@@ -30,6 +33,7 @@ export default function PlayGame() {
     onMessage: (msg) => {
       switch (msg.type) {
         case 'RESULTS_MESSAGE':
+          lastResultsTime.current = Date.now();
           return dispatch(resultsUpdated(msg.payload, playerName));
         case 'USERS_MESSAGE':
           return dispatch(usersUpdated(msg.payload));
@@ -39,9 +43,23 @@ export default function PlayGame() {
     },
   });
 
+  // Fallback: if we voted but no WS results arrive within 8s, ask backend to re-broadcast
+  useEffect(() => {
+    if (!voted || !sessionId) return;
+
+    const timer = setTimeout(() => {
+      const elapsed = Date.now() - lastResultsTime.current;
+      if (elapsed > 6000) {
+        axios.get(`${API_ROOT_URL}/refresh?sessionId=${sessionId}`).catch(() => {});
+      }
+    }, 8000);
+
+    return () => clearTimeout(timer);
+  }, [voted, sessionId]);
+
   return (
     <Box sx={{ maxWidth: 1100, width: '100%', mx: 'auto', p: 3, pt: 4 }}>
-      <GamePane />
+      <GamePane connected={connected} />
     </Box>
   );
 }

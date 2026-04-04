@@ -60,12 +60,13 @@ export function joinGame(playerName, sessionId, callback) {
 }
 
 export function vote(playerName, sessionId, estimateValue) {
-  axios.post(`${API_ROOT_URL}/vote`,
+  const request = axios.post(`${API_ROOT_URL}/vote`,
     `userName=${playerName}&sessionId=${sessionId}&estimateValue=${estimateValue}`);
 
   return {
     type: VOTE,
-    payload: playerName
+    payload: request,
+    meta: { userName: playerName, estimateValue }
   };
 }
 

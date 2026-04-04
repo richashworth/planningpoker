@@ -8,7 +8,8 @@ export default function (state = false, action) {
       return (action.payload.length < 1) ? false :
         action.payload.some(res => res['userName'] === action.meta.playerName);
     case VOTE:
-      return true;
+      // redux-promise sets action.error = true if the POST rejected
+      return action.error ? false : true;
     default:
       return state
   }
