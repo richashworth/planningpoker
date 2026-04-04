@@ -1,0 +1,82 @@
+# Requirements: Planning Poker — Estimation Schemes
+
+**Defined:** 2026-04-04
+**Core Value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
+
+## v1 Requirements
+
+### Scheme Definition
+
+- [ ] **SCHM-01**: Host can select from preset schemes: Fibonacci (default), T-shirt sizes, Simple (1-5)
+- [ ] **SCHM-02**: Host can define a custom scheme with 2-20 values (max 10 chars each, no duplicates)
+- [ ] **SCHM-03**: Host can toggle ? (unsure) meta-card on/off (default: on)
+- [ ] **SCHM-04**: Host can toggle Coffee (break) meta-card on/off (default: on)
+- [ ] **SCHM-05**: Scheme is locked for the session duration
+
+### API & State
+
+- [ ] **API-01**: createSession accepts scheme parameters and returns JSON with scheme metadata
+- [ ] **API-02**: joinSession returns scheme metadata so joiners see correct cards
+- [ ] **API-03**: Server validates votes against the session's scheme (not hardcoded set)
+- [ ] **API-04**: Scheme state is stored per-session in SessionManager
+- [ ] **API-05**: Scheme state is cleaned up when sessions are evicted/cleared
+
+### Frontend
+
+- [ ] **UI-01**: CreateGame page shows scheme selector (ToggleButtonGroup for presets)
+- [ ] **UI-02**: Custom scheme shows input field for defining values
+- [ ] **UI-03**: Meta-card toggles (switches) visible on CreateGame page
+- [ ] **UI-04**: Vote cards render dynamically from session scheme
+- [ ] **UI-05**: Results chart labels reflect session scheme values
+- [ ] **UI-06**: Redux state stores scheme info from create/join responses
+
+## v2 Requirements
+
+### Persistence
+
+- **PERS-01**: Host can save custom schemes for reuse across sessions
+- **PERS-02**: Recently used schemes shown as quick-pick options
+
+### UX Polish
+
+- **UX-01**: Scheme preview showing sample cards before game creation
+- **UX-02**: Animated card transitions when scheme loads
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Mid-session scheme change | No ecosystem precedent; adds complexity for no clear benefit |
+| Label/value separation for averaging | App is qualitative, not quantitative — averaging mixed types is meaningless |
+| Saved custom schemes | Requires persistence the app deliberately does not have; defer to v2 |
+| Chat/messaging | Separate milestone (backlog 999.1) |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| SCHM-01 | TBD | Pending |
+| SCHM-02 | TBD | Pending |
+| SCHM-03 | TBD | Pending |
+| SCHM-04 | TBD | Pending |
+| SCHM-05 | TBD | Pending |
+| API-01 | TBD | Pending |
+| API-02 | TBD | Pending |
+| API-03 | TBD | Pending |
+| API-04 | TBD | Pending |
+| API-05 | TBD | Pending |
+| UI-01 | TBD | Pending |
+| UI-02 | TBD | Pending |
+| UI-03 | TBD | Pending |
+| UI-04 | TBD | Pending |
+| UI-05 | TBD | Pending |
+| UI-06 | TBD | Pending |
+
+**Coverage:**
+- v1 requirements: 16 total
+- Mapped to phases: 0
+- Unmapped: 16
+
+---
+*Requirements defined: 2026-04-04*
+*Last updated: 2026-04-04 after initial definition*
