@@ -11,10 +11,18 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { browserName: 'chromium' } },
   ],
-  webServer: {
-    command: 'npm run dev',
-    port: 3000,
-    reuseExistingServer: true,
-    timeout: 15000,
-  },
+  webServer: [
+    {
+      command: 'cd .. && ./gradlew planningpoker-api:bootRun --no-daemon',
+      port: 9000,
+      reuseExistingServer: true,
+      timeout: 60000,
+    },
+    {
+      command: 'npm run dev',
+      port: 3000,
+      reuseExistingServer: true,
+      timeout: 15000,
+    },
+  ],
 });
