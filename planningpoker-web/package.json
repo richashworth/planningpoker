@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^7.3.9",
+    "@mui/icons-material": "^5.18.0",
     "@mui/material": "^5.15.0",
     "@stomp/stompjs": "^7.0.0",
     "axios": "^1.7.0",
