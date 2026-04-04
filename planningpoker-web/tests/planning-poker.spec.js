@@ -100,14 +100,23 @@ test.describe('Dark/Light Mode', () => {
     const toggle = page.getByRole('button', { name: 'Toggle dark mode' });
     await expect(toggle).toBeVisible();
 
-    // Default is dark mode
+    // Default is dark mode — wait for initial render to settle
     const darkBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
     await toggle.click();
+    // Wait for CSS transition (300ms) to complete
+    await page.waitForFunction(
+      (prev) => getComputedStyle(document.body).backgroundColor !== prev,
+      darkBg,
+    );
     const lightBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     expect(lightBg).not.toBe(darkBg);
 
     await toggle.click();
+    await page.waitForFunction(
+      (prev) => getComputedStyle(document.body).backgroundColor !== prev,
+      lightBg,
+    );
     const backToDarkBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     expect(backToDarkBg).toBe(darkBg);
   });
