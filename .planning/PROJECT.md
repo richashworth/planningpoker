@@ -1,92 +1,74 @@
-# Planning Poker — Estimation Schemes
+# Planning Poker
 
 ## What This Is
 
-A real-time planning poker web app where distributed teams estimate work collaboratively. Currently supports only Fibonacci-style estimates. This milestone adds customizable estimation schemes so hosts can choose the scale that fits their team.
+A real-time planning poker web app where distributed teams estimate work collaboratively. Hosts choose an estimation scheme (Fibonacci, T-shirt sizes, Simple 1-5, or Custom) when creating a game, and all participants see the correct cards for that session.
 
 ## Core Value
 
-Hosts can pick an estimation scheme (Fibonacci, T-shirt, Simple, or Custom) when creating a game, and all participants see the correct cards for that session.
+Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
+
+## Current State
+
+Shipped v1.0 (Estimation Schemes) on 2026-04-04.
+
+- **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets to value lists; SchemeConfig record carries scheme metadata per session.
+- **Frontend:** React 18 + MUI v5 + Redux 4. Scheme selector on CreateGame, dynamic vote cards from Redux state, scheme-aware results chart.
+- **API:** createSession/joinSession return JSON with scheme metadata. VoteController validates votes per-session (not hardcoded).
+- **Stats:** ~2,875 lines added across 36 files in 3 phases / 5 plans.
 
 ## Requirements
 
 ### Validated
 
-- Session creation with host naming — existing
-- Join session by ID — existing
-- Real-time vote/reveal via WebSocket — existing
-- Results chart and table display — existing
-- Reset rounds — existing
-- Dark/light theme toggle — existing
-- Copy session ID — existing
+- ✓ Preset scheme selection (Fibonacci, T-shirt, Simple) — v1.0
+- ✓ Custom scheme with 2-20 values, validation — v1.0
+- ✓ Meta-card toggles (? unsure, Coffee break) — v1.0
+- ✓ Scheme locked for session duration — v1.0
+- ✓ JSON API contract for create/join with scheme metadata — v1.0
+- ✓ Per-session vote validation against scheme — v1.0
+- ✓ Redux stores scheme info from API responses — v1.0
+- ✓ Dynamic vote cards and scheme-aware results chart — v1.0
 
 ### Active
 
-(All v1 requirements validated -- see below)
-
-### Validated in Phase 3 (Frontend UI)
-
-- [x] Host selects estimation scheme when creating a game
-- [x] Preset schemes: Fibonacci (default), T-shirt sizes, Simple (1-5)
-- [x] Custom scheme: host defines 2-20 values (max 10 chars each, no duplicates)
-- [x] Meta-card toggles: ? (unsure) and Coffee (break), default on
-- [x] Vote cards render dynamically from session scheme
-- [x] Results chart labels reflect session scheme
-
-### Validated in Phase 2 (API Contract)
-
-- [x] Scheme locked for session duration — no mutation endpoint exists
-- [x] Joiners receive scheme info on join — joinSession returns SessionResponse with scheme metadata
-- [x] Server validates votes against session scheme (not hardcoded set) — VoteController uses per-session getSessionLegalValues
+(None — next milestone not yet defined)
 
 ### Out of Scope
 
-- Changing scheme mid-session — complexity not justified, scheme is per-game
-- Saving custom schemes for reuse — defer to future milestone
+- Mid-session scheme change — no ecosystem precedent; scheme is per-game
+- Saved custom schemes for reuse — requires persistence; defer to future milestone
 - Chat/messaging — separate milestone (backlog 999.1)
 - User authentication — not needed, name-based identity is sufficient
-
-## Context
-
-- Full design spec exists: `docs/superpowers/specs/2026-04-04-estimation-schemes-design.md`
-- Detailed implementation plan exists: `docs/superpowers/plans/2026-04-04-estimation-schemes.md`
-- Backend is Spring Boot 3.4 (Java 21), all state in-memory via synchronized Guava maps
-- Frontend is React 18 + MUI v5 + Redux 4, communicates via REST (axios) + WebSocket (STOMP)
-- Vote validation uses per-session scheme values in VoteController.java (Phase 2)
-- Vote.jsx and ResultsChart.jsx read legalEstimates from Redux state (Phase 3)
-- API responses for createSession/joinSession return JSON with scheme metadata (Phase 2)
+- Label/value separation for averaging — app is qualitative, not quantitative
 
 ## Constraints
 
 - **Tech stack**: Spring Boot 3.4 + Java 21 backend, React 18 + MUI v5 frontend — no new frameworks
 - **Backwards compatibility**: Default to Fibonacci so existing flows work unchanged
 - **In-memory state**: No database — scheme config stored in SessionManager maps like existing state
-- **API evolution**: createSession response changes from string to JSON — frontend must handle both during development
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Scheme resolved to values on server, stored per session | Single source of truth for vote validation | -- Pending |
-| Frontend resolves preset names locally, only custom values transmitted | Reduces payload size, presets are static | -- Pending |
-| Meta-cards (?, Coffee) are toggles, not part of scheme definition | Orthogonal concern, cleaner API | -- Pending |
+| Scheme resolved to values on server, stored per session | Single source of truth for vote validation | ✓ Good |
+| Frontend resolves preset names locally, only custom values transmitted | Reduces payload size, presets are static | ✓ Good |
+| Meta-cards (?, Coffee) are toggles, not part of scheme definition | Orthogonal concern, cleaner API | ✓ Good |
+| No-arg createSession() delegates to overload with Fibonacci defaults | Backward compatibility for existing tests/flows | ✓ Good |
+| createSession response changed from string to JSON | Required for scheme metadata; coordinated backend+frontend in Phase 2 | ✓ Good |
 
-## Evolution
+## Context
 
-This document evolves at phase transitions and milestone boundaries.
+- Full design spec: `docs/superpowers/specs/2026-04-04-estimation-schemes-design.md`
+- Implementation plan: `docs/superpowers/plans/2026-04-04-estimation-schemes.md`
+- Deployed at: https://planning-poker.up.railway.app
 
-**After each phase transition** (via `/gsd:transition`):
-1. Requirements invalidated? -> Move to Out of Scope with reason
-2. Requirements validated? -> Move to Validated with phase reference
-3. New requirements emerged? -> Add to Active
-4. Decisions to log? -> Add to Key Decisions
-5. "What This Is" still accurate? -> Update if drifted
+## Tech Debt (from v1.0 audit)
 
-**After each milestone** (via `/gsd:complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
+- LEGAL_ESTIMATES and COFFEE_SYMBOL in Constants.js are dead exports (superseded by Redux state)
+- No Playwright e2e coverage for non-Fibonacci schemes, custom values, or meta-card toggles
+- reducer_game.js CREATE_GAME/JOIN_GAME cases lack action.error guard (pre-existing)
 
 ---
-*Last updated: 2026-04-04 after Phase 3 completion*
+*Last updated: 2026-04-04 after v1.0 milestone*
