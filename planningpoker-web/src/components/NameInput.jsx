@@ -11,8 +11,8 @@ export default function NameInput({ playerName, onPlayerNameInputChange }) {
       required
       fullWidth
       inputProps={{
-        pattern: '.{0}|.{3,20}',
-        title: 'Please enter a name between 3 and 20 characters',
+        pattern: '[a-zA-Z0-9 _-]{3,20}',
+        title: 'Name must be 3-20 characters: letters, numbers, spaces, hyphens, or underscores',
       }}
       sx={{ mb: 2.5 }}
     />

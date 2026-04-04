@@ -11,7 +11,7 @@ export default function ResultsTable() {
   const notVoted = _.difference(users, results.map(x => x.userName));
 
   const voteFreqs = _.countBy(results, x => x.estimateValue);
-  const countedResults = results.map(x => ({ ...x, count: voteFreqs[parseInt(x.estimateValue, 10)] }));
+  const countedResults = results.map(x => ({ ...x, count: voteFreqs[x.estimateValue] }));
   const sortedResults = _.orderBy(countedResults, ['count', 'estimateValue', 'userName'], ['asc', 'asc', 'asc']);
 
   return (
@@ -31,13 +31,13 @@ export default function ResultsTable() {
       >
         Votes
       </Typography>
-      <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse' }}>
+      <Box component="table" aria-label="Voting results" sx={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <Box component="th" sx={{ textAlign: 'left', pb: 0.75, fontSize: '0.65rem', color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <Box component="th" scope="col" sx={{ textAlign: 'left', pb: 0.75, fontSize: '0.65rem', color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Player
             </Box>
-            <Box component="th" sx={{ textAlign: 'right', pb: 0.75, fontSize: '0.65rem', color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <Box component="th" scope="col" sx={{ textAlign: 'right', pb: 0.75, fontSize: '0.65rem', color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Vote
             </Box>
           </tr>

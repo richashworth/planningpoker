@@ -16,6 +16,8 @@ export default function CreateGame() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const nameRegex = /^[a-zA-Z0-9 _-]{3,20}$/;
+    if (!nameRegex.test(playerName)) return;
     dispatch(createGame(playerName, () => {
       dispatch(gameCreated());
       navigate('/game');

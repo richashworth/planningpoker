@@ -74,11 +74,15 @@ export default function Vote() {
           {allValues.map(val => (
             <Box
               key={val}
+              role="button"
+              tabIndex={0}
+              aria-label={`Vote ${val}`}
               sx={{
                 ...cardSx(selected === val, selected !== null && selected !== val),
                 ...(val === COFFEE_SYMBOL && { fontSize: '1.5rem' }),
               }}
               onClick={() => doVote(val)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doVote(val); } }}
             >
               {val}
             </Box>
