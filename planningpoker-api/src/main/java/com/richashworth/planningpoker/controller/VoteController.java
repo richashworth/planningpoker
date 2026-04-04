@@ -6,12 +6,13 @@ import com.richashworth.planningpoker.util.CollectionUtils;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
 @RestController
-@CrossOrigin(origins = "*")
 public class VoteController {
 
     private static final Set<String> LEGAL_ESTIMATES = Set.of(

@@ -4,14 +4,16 @@ import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase;
 
 @RestController
-@CrossOrigin(origins = "*")
 public class GameController {
 
     private static final int MAX_USERNAME_LENGTH = 20;
