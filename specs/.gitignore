@@ -1,0 +1,11 @@
+# TLC model checker intermediate files
+states/
+*.bin
+*_TTrace_*.tla
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.tex
+*.dvi
+*.ps

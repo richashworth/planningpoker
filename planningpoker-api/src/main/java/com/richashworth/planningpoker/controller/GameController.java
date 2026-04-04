@@ -33,15 +33,17 @@ public class GameController {
             @RequestParam(name = "userName") final String userName
     ) {
         validateUserName(userName);
-        if (!sessionManager.isSessionActive(sessionId)) {
-            throw new IllegalArgumentException("session not found");
-        } else if (containsIgnoreCase(sessionManager.getSessionUsers(sessionId), userName)) {
-            throw new IllegalArgumentException("user exists");
-        } else {
-            sessionManager.registerUser(userName, sessionId);
-            logger.info("{} has joined session {}", userName, sessionId);
-            messagingUtils.burstUsersMessages(sessionId);
+        synchronized (sessionManager) {
+            if (!sessionManager.isSessionActive(sessionId)) {
+                throw new IllegalArgumentException("session not found");
+            } else if (containsIgnoreCase(sessionManager.getSessionUsers(sessionId), userName)) {
+                throw new IllegalArgumentException("user exists");
+            } else {
+                sessionManager.registerUser(userName, sessionId);
+                logger.info("{} has joined session {}", userName, sessionId);
+            }
         }
+        messagingUtils.burstUsersMessages(sessionId);
     }
 
     @PostMapping("createSession")
@@ -62,8 +64,10 @@ public class GameController {
             @RequestParam(name = "sessionId") final String sessionId
     ) {
         validateSessionMembership(sessionId, userName);
-        sessionManager.removeUser(userName, sessionId);
-        logger.info("{} has left session {}", userName, sessionId);
+        synchronized (sessionManager) {
+            sessionManager.removeUser(userName, sessionId);
+            logger.info("{} has left session {}", userName, sessionId);
+        }
         messagingUtils.burstUsersMessages(sessionId);
         messagingUtils.burstResultsMessages(sessionId);
     }

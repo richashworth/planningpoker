@@ -44,9 +44,11 @@ public class VoteController {
             throw new IllegalArgumentException("Invalid estimate value");
         }
         logger.info("{} has voted {} in session {}", userName, estimateValue, sessionId);
-        if (!CollectionUtils.containsUserEstimate(sessionManager.getResults(sessionId), userName)) {
-            final Estimate estimate = new Estimate(userName, estimateValue);
-            sessionManager.registerEstimate(sessionId, estimate);
+        synchronized (sessionManager) {
+            if (!CollectionUtils.containsUserEstimate(sessionManager.getResults(sessionId), userName)) {
+                final Estimate estimate = new Estimate(userName, estimateValue);
+                sessionManager.registerEstimate(sessionId, estimate);
+            }
         }
         messagingUtils.burstResultsMessages(sessionId);
     }
