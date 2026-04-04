@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 Phase: v1.0 complete
 Plan: N/A
 Status: Milestone shipped
-Last activity: 2026-04-05 - Completed quick task 260405-0ko: Add logo, favicon, and header styling
+Last activity: 2026-04-05 - Completed quick task 260405-0y1: Rename Fibonacci estimation scheme to Story Points
 
 Progress: [██████████] 100%
 
@@ -53,6 +53,7 @@ None — all v1.0 blockers resolved.
 | 260404-qgg | Fix dark/light mode: system default, icon-only toggle, consistent position | 2026-04-04 | 117c50e | [260404-qgg-fix-dark-light-mode-system-default-icon-](./quick/260404-qgg-fix-dark-light-mode-system-default-icon-/) |
 | 260404-rsd | v1.0 cleanup: remove dead exports, add error guards, add scheme e2e tests | 2026-04-04 | 6e83736 | [260404-rsd-v1-0-cleanup-remove-dead-exports-add-err](./quick/260404-rsd-v1-0-cleanup-remove-dead-exports-add-err/) |
 | 260405-0ko | Add logo, favicon, and header styling to match Fidra design language | 2026-04-05 | f4b6574 | [260405-0ko-add-logo-favicon-and-header-styling-to-m](./quick/260405-0ko-add-logo-favicon-and-header-styling-to-m/) |
+| 260405-0y1 | Rename Fibonacci estimation scheme to Story Points | 2026-04-05 | 9c6cff3 | [260405-0y1-rename-fibonacci-estimation-scheme-to-st](./quick/260405-0y1-rename-fibonacci-estimation-scheme-to-st/) |
 
 ## Session Continuity
 
