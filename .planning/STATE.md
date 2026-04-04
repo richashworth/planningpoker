@@ -51,9 +51,10 @@ None — all v1.0 blockers resolved.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260404-qgg | Fix dark/light mode: system default, icon-only toggle, consistent position | 2026-04-04 | 117c50e | [260404-qgg-fix-dark-light-mode-system-default-icon-](./quick/260404-qgg-fix-dark-light-mode-system-default-icon-/) |
+| 260404-rsd | v1.0 cleanup: remove dead exports, add error guards, add scheme e2e tests | 2026-04-04 | 6e83736 | [260404-rsd-v1-0-cleanup-remove-dead-exports-add-err](./quick/260404-rsd-v1-0-cleanup-remove-dead-exports-add-err/) |
 
 ## Session Continuity
 
 Last session: 2026-04-04
-Stopped at: Milestone v1.0 shipped
+Stopped at: Completed quick task 260404-rsd
 Resume file: N/A
