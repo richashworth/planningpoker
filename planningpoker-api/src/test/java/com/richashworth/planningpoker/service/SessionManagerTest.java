@@ -121,13 +121,13 @@ class SessionManagerTest {
         sessionManager.registerUser("Bob", idleSession);
         sessionManager.registerEstimate(idleSession, new Estimate("Bob", "3"));
 
-        // Use reflection to backdate the idle session's lastActivity to 3 hours ago
+        // Use reflection to backdate the idle session's lastActivity to 25 hours ago
         Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
         lastActivityField.setAccessible(true);
         @SuppressWarnings("unchecked")
         ConcurrentHashMap<String, Instant> lastActivity =
                 (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-        lastActivity.put(idleSession, Instant.now().minusSeconds(3 * 60 * 60));
+        lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
 
         sessionManager.evictIdleSessions();
 
@@ -141,9 +141,9 @@ class SessionManagerTest {
 
     @Test
     void testMaxSessionsLimit() {
-        // We can't easily create 10,000 sessions in a unit test, but we can verify the
+        // We can't easily create 100,000 sessions in a unit test, but we can verify the
         // constant is set correctly
-        assertEquals(10_000, SessionManager.MAX_SESSIONS);
+        assertEquals(100_000, SessionManager.MAX_SESSIONS);
     }
 
     private void registerUsers(String sessionId, ArrayList<String> users) {

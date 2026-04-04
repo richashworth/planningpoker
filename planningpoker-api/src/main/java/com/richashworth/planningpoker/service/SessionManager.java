@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class SessionManager {
 
-    static final int MAX_SESSIONS = 10_000;
+    static final int MAX_SESSIONS = 100_000;
     static final int MAX_ID_ATTEMPTS = 100;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -95,7 +95,7 @@ public class SessionManager {
     }
 
     public void evictIdleSessions() {
-        Instant cutoff = Instant.now().minusSeconds(2 * 60 * 60);
+        Instant cutoff = Instant.now().minusSeconds(24 * 60 * 60);
         List<String> toEvict = new ArrayList<>();
         lastActivity.forEach((sessionId, lastActive) -> {
             if (lastActive.isBefore(cutoff)) {
