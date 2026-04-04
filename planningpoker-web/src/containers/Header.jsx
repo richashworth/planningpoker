@@ -57,40 +57,41 @@ export default function Header() {
       }}
     >
       <Toolbar sx={{ gap: 1 }}>
-        <Typography variant="h6" sx={{ fontSize: '1.1rem', color: '#fff', mr: 1.5 }}>
+        <Typography variant="h6" sx={{ fontSize: '1.1rem', color: '#fff' }}>
           Planning Poker
         </Typography>
-        {sessionId && (
-          <Chip
-            label={sessionId}
-            size="small"
-            deleteIcon={
-              <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
-                {copied
-                  ? <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />
-                  : <ContentCopyIcon sx={{ fontSize: 14 }} />
-                }
-              </Tooltip>
-            }
-            onDelete={handleCopy}
-            sx={{
-              bgcolor: 'rgba(255,255,255,0.15)',
-              border: '1px solid rgba(255,255,255,0.25)',
-              color: 'rgba(255,255,255,0.9)',
-              fontFamily: 'monospace',
-              fontSize: '0.75rem',
-              height: 26,
-              borderRadius: 1,
-              '& .MuiChip-deleteIcon': {
-                color: 'rgba(255,255,255,0.6)',
-                '&:hover': { color: '#fff' },
-              },
-            }}
-          />
-        )}
         <Box sx={{ flexGrow: 1 }} />
         {sessionId ? (
           <>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', display: { xs: 'none', sm: 'block' } }}>
+              Session
+            </Typography>
+            <Chip
+              label={sessionId}
+              size="small"
+              deleteIcon={
+                <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
+                  {copied
+                    ? <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />
+                    : <ContentCopyIcon sx={{ fontSize: 14 }} />
+                  }
+                </Tooltip>
+              }
+              onDelete={handleCopy}
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.15)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                color: 'rgba(255,255,255,0.9)',
+                fontFamily: 'monospace',
+                fontSize: '0.75rem',
+                height: 26,
+                borderRadius: 1,
+                '& .MuiChip-deleteIcon': {
+                  color: 'rgba(255,255,255,0.6)',
+                  '&:hover': { color: '#fff' },
+                },
+              }}
+            />
             <Button
               onClick={(e) => setAnchorEl(e.currentTarget)}
               endIcon={<ArrowDropDownIcon />}
