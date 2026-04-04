@@ -115,7 +115,7 @@ public class GameController {
     }
 
     private SchemeConfig buildSchemeConfig(CreateSessionRequest request) {
-        String schemeType = request.schemeType() != null ? request.schemeType() : "fibonacci";
+        String schemeType = request.schemeType() != null ? request.schemeType() : "story_points";
         boolean includeUnsure = request.includeUnsure() != null ? request.includeUnsure() : true;
         boolean includeCoffee = request.includeCoffee() != null ? request.includeCoffee() : true;
         List<String> customValues = null;

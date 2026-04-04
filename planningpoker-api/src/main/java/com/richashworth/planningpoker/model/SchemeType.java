@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum SchemeType {
-    FIBONACCI(List.of("0", "0.5", "1", "2", "3", "5", "8", "13", "20", "50", "100", "\u221e")),
+    STORY_POINTS(List.of("0", "0.5", "1", "2", "3", "5", "8", "13", "20", "50", "100", "\u221e")),
     TSHIRT(List.of("XS", "S", "M", "L", "XL", "XXL")),
     SIMPLE(List.of("1", "2", "3", "4", "5")),
     TIME(List.of("1h", "½d", "1d", "2d", "1w", "2w", "1mo", "3mo", "6mo+"));
@@ -29,6 +29,9 @@ public enum SchemeType {
     }
 
     public static SchemeType fromString(String name) {
+        if ("fibonacci".equalsIgnoreCase(name)) {
+            return STORY_POINTS;
+        }
         for (SchemeType type : values()) {
             if (type.name().equalsIgnoreCase(name)) {
                 return type;

@@ -150,7 +150,7 @@ class SessionManagerTest {
 
     @Test
     void testCreateSessionWithScheme() {
-        SchemeConfig config = new SchemeConfig("fibonacci", null, true, true);
+        SchemeConfig config = new SchemeConfig("story_points", null, true, true);
         String sessionId = sessionManager.createSession(config);
         assertNotNull(sessionId);
         assertEquals(8, sessionId.length());
@@ -162,14 +162,14 @@ class SessionManagerTest {
         assertTrue(legalValues.contains("\u2615"));
         SchemeConfig retrieved = sessionManager.getSessionSchemeConfig(sessionId);
         assertNotNull(retrieved);
-        assertEquals("fibonacci", retrieved.schemeType());
+        assertEquals("story_points", retrieved.schemeType());
     }
 
     @Test
     void testCreateSessionDefaultScheme() {
         String sessionId = sessionManager.createSession();
         List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
-        List<String> expected = SchemeType.resolveValues("fibonacci", null, true, true);
+        List<String> expected = SchemeType.resolveValues("story_points", null, true, true);
         assertEquals(expected, legalValues);
     }
 
@@ -194,7 +194,7 @@ class SessionManagerTest {
 
     @Test
     void testClearSessionsCleansSchemeData() {
-        String sessionId = sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
+        String sessionId = sessionManager.createSession(new SchemeConfig("story_points", null, true, true));
         sessionManager.clearSessions();
         assertNull(sessionManager.getSessionSchemeConfig(sessionId));
         assertTrue(sessionManager.getSessionLegalValues(sessionId).isEmpty());
@@ -202,7 +202,7 @@ class SessionManagerTest {
 
     @Test
     void testEvictIdleSessionsCleansSchemeData() throws Exception {
-        String activeSession = sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
+        String activeSession = sessionManager.createSession(new SchemeConfig("story_points", null, true, true));
         String idleSession = sessionManager.createSession(new SchemeConfig("tshirt", null, false, false));
 
         // Backdate lastActivity for idle session

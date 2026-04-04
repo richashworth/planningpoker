@@ -34,7 +34,7 @@ public class SessionManager {
     }
 
     public String createSession() {
-        return createSession(new SchemeConfig("fibonacci", null, true, true));
+        return createSession(new SchemeConfig("story_points", null, true, true));
     }
 
     public String createSession(SchemeConfig config) {

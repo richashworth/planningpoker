@@ -12,7 +12,7 @@ import static org.mockito.Mockito.*;
 
 class VoteControllerTest extends AbstractControllerTest {
 
-    private static final List<String> FIBONACCI_VALUES = List.of(
+    private static final List<String> STORY_POINT_VALUES = List.of(
             "0", "0.5", "1", "2", "3", "5", "8", "13", "20", "50", "100", "\u221e", "?", "\u2615"
     );
 
@@ -21,7 +21,7 @@ class VoteControllerTest extends AbstractControllerTest {
 
     @Test
     void testVote() {
-        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(FIBONACCI_VALUES);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
         voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
@@ -36,7 +36,7 @@ class VoteControllerTest extends AbstractControllerTest {
 
     @Test
     void testVoteUserAlreadyVoted() {
-        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(FIBONACCI_VALUES);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
         when(sessionManager.getResults(SESSION_ID)).thenReturn(Lists.newArrayList(ESTIMATE));
@@ -51,7 +51,7 @@ class VoteControllerTest extends AbstractControllerTest {
 
     @Test
     void testVoteInvalidSession() {
-        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(FIBONACCI_VALUES);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(false);
         assertThrows(IllegalArgumentException.class, () ->
             voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE));
@@ -59,7 +59,7 @@ class VoteControllerTest extends AbstractControllerTest {
 
     @Test
     void testVoteNonMemberRejected() {
-        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(FIBONACCI_VALUES);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList());
         assertThrows(IllegalArgumentException.class, () ->
@@ -68,7 +68,7 @@ class VoteControllerTest extends AbstractControllerTest {
 
     @Test
     void testVoteInvalidEstimateRejected() {
-        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(FIBONACCI_VALUES);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
         assertThrows(IllegalArgumentException.class, () ->
             voteController.vote(SESSION_ID, USER_NAME, "999"));
     }
