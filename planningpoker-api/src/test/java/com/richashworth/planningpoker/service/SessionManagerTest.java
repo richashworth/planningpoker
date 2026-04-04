@@ -2,6 +2,8 @@ package com.richashworth.planningpoker.service;
 
 import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.SchemeConfig;
+import com.richashworth.planningpoker.model.SchemeType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -144,6 +146,82 @@ class SessionManagerTest {
         // We can't easily create 100,000 sessions in a unit test, but we can verify the
         // constant is set correctly
         assertEquals(100_000, SessionManager.MAX_SESSIONS);
+    }
+
+    @Test
+    void testCreateSessionWithScheme() {
+        SchemeConfig config = new SchemeConfig("fibonacci", null, true, true);
+        String sessionId = sessionManager.createSession(config);
+        assertNotNull(sessionId);
+        assertEquals(8, sessionId.length());
+        assertTrue(sessionManager.isSessionActive(sessionId));
+        List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
+        assertTrue(legalValues.contains("0"));
+        assertTrue(legalValues.contains("0.5"));
+        assertTrue(legalValues.contains("?"));
+        assertTrue(legalValues.contains("\u2615"));
+        SchemeConfig retrieved = sessionManager.getSessionSchemeConfig(sessionId);
+        assertNotNull(retrieved);
+        assertEquals("fibonacci", retrieved.schemeType());
+    }
+
+    @Test
+    void testCreateSessionDefaultScheme() {
+        String sessionId = sessionManager.createSession();
+        List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
+        List<String> expected = SchemeType.resolveValues("fibonacci", null, true, true);
+        assertEquals(expected, legalValues);
+    }
+
+    @Test
+    void testGetSessionLegalValuesReturnsDefensiveCopy() {
+        String sessionId = sessionManager.createSession();
+        List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
+        assertThrows(UnsupportedOperationException.class, legalValues::clear);
+    }
+
+    @Test
+    void testGetSessionSchemeConfigForUnknownSession() {
+        assertNull(sessionManager.getSessionSchemeConfig("nonexistent"));
+    }
+
+    @Test
+    void testGetSessionLegalValuesForUnknownSession() {
+        List<String> values = sessionManager.getSessionLegalValues("nonexistent");
+        assertNotNull(values);
+        assertTrue(values.isEmpty());
+    }
+
+    @Test
+    void testClearSessionsCleansSchemeData() {
+        String sessionId = sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
+        sessionManager.clearSessions();
+        assertNull(sessionManager.getSessionSchemeConfig(sessionId));
+        assertTrue(sessionManager.getSessionLegalValues(sessionId).isEmpty());
+    }
+
+    @Test
+    void testEvictIdleSessionsCleansSchemeData() throws Exception {
+        String activeSession = sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
+        String idleSession = sessionManager.createSession(new SchemeConfig("tshirt", null, false, false));
+
+        // Backdate lastActivity for idle session
+        Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+        lastActivityField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ConcurrentHashMap<String, Instant> lastActivity =
+                (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
+        lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+
+        sessionManager.evictIdleSessions();
+
+        // Active session scheme data preserved
+        assertNotNull(sessionManager.getSessionSchemeConfig(activeSession));
+        assertFalse(sessionManager.getSessionLegalValues(activeSession).isEmpty());
+
+        // Idle session scheme data cleaned up
+        assertNull(sessionManager.getSessionSchemeConfig(idleSession));
+        assertTrue(sessionManager.getSessionLegalValues(idleSession).isEmpty());
     }
 
     private void registerUsers(String sessionId, ArrayList<String> users) {
