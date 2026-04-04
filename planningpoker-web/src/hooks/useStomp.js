@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
 export default function useStomp({ url, topics, onMessage }) {
   const onMessageRef = useRef(onMessage);
   onMessageRef.current = onMessage;
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(null); // null = not yet attempted
+  const hasConnected = useRef(false);
 
   useEffect(() => {
     if (!url || !topics || topics.length === 0) return;
@@ -14,6 +15,7 @@ export default function useStomp({ url, topics, onMessage }) {
       webSocketFactory: () => new SockJS(url),
       reconnectDelay: 3000,
       onConnect: () => {
+        hasConnected.current = true;
         setConnected(true);
         topics.forEach(topic => {
           client.subscribe(topic, (message) => {
@@ -22,9 +24,9 @@ export default function useStomp({ url, topics, onMessage }) {
           });
         });
       },
-      onDisconnect: () => setConnected(false),
-      onStompError: () => setConnected(false),
-      onWebSocketClose: () => setConnected(false),
+      onDisconnect: () => { if (hasConnected.current) setConnected(false); },
+      onStompError: () => { if (hasConnected.current) setConnected(false); },
+      onWebSocketClose: () => { if (hasConnected.current) setConnected(false); },
     });
 
     client.activate();
