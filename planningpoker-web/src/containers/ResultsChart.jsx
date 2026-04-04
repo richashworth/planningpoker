@@ -51,11 +51,11 @@ export default function ResultsChart() {
     labels: LEGAL_ESTIMATES,
     datasets: [{
       data: aggregateData,
-      backgroundColor: 'rgba(59, 130, 246, 0.35)',
-      borderColor: 'rgba(59, 130, 246, 0.7)',
+      backgroundColor: 'rgba(102, 126, 234, 0.35)',
+      borderColor: 'rgba(102, 126, 234, 0.7)',
       borderWidth: 1,
       borderRadius: 4,
-      hoverBackgroundColor: 'rgba(59, 130, 246, 0.55)',
+      hoverBackgroundColor: 'rgba(102, 126, 234, 0.55)',
     }],
   };
 

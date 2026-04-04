@@ -33,8 +33,8 @@ function cardSx(isSelected, isDisabled) {
         borderColor: 'primary.main',
         transform: 'translateY(-3px)',
         boxShadow: (t) => t.palette.mode === 'dark'
-          ? '0 8px 24px rgba(59,130,246,0.12)'
-          : '0 8px 24px rgba(37,99,235,0.1)',
+          ? '0 8px 24px rgba(102,126,234,0.15)'
+          : '0 8px 24px rgba(102,126,234,0.12)',
       },
       '&:active': {
         transform: 'translateY(0) scale(0.98)',

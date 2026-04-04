@@ -8,14 +8,14 @@ const shared = {
     h6: { fontWeight: 600, letterSpacing: '-0.01em' },
     body2: { letterSpacing: '0.01em' },
   },
-  shape: { borderRadius: 4 },
+  shape: { borderRadius: 12 },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
           fontWeight: 600,
-          borderRadius: 4,
+          borderRadius: 8,
           transition: 'all 0.2s ease',
         },
         sizeLarge: {
@@ -32,6 +32,11 @@ const shared = {
     MuiTextField: {
       defaultProps: { variant: 'outlined', size: 'medium' },
     },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: { borderRadius: 8 },
+      },
+    },
   },
 };
 
@@ -39,8 +44,9 @@ export const darkTheme = createTheme({
   ...shared,
   palette: {
     mode: 'dark',
-    primary: { main: '#3b82f6' },
-    background: { default: '#121215', paper: '#1e1e22' },
+    primary: { main: '#667eea' },
+    secondary: { main: '#764ba2' },
+    background: { default: '#121212', paper: '#1e1e1e' },
     text: { primary: '#f4f4f5', secondary: '#a1a1aa', disabled: '#71717a' },
     divider: '#2e2e33',
     success: { main: '#22c55e' },
@@ -51,7 +57,7 @@ export const darkTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#121215',
+          backgroundColor: '#121212',
           transition: 'background-color 0.3s ease, color 0.3s ease',
         },
       },
@@ -61,7 +67,7 @@ export const darkTheme = createTheme({
         root: {
           border: '1px solid #2e2e33',
           backgroundImage: 'none',
-          borderRadius: 4,
+          borderRadius: 12,
         },
       },
     },
@@ -72,8 +78,9 @@ export const lightTheme = createTheme({
   ...shared,
   palette: {
     mode: 'light',
-    primary: { main: '#2563eb' },
-    background: { default: '#fafafa', paper: '#ffffff' },
+    primary: { main: '#667eea' },
+    secondary: { main: '#764ba2' },
+    background: { default: '#f8fafc', paper: '#ffffff' },
     text: { primary: '#09090b', secondary: '#71717a', disabled: '#a1a1aa' },
     divider: '#e4e4e7',
     success: { main: '#16a34a' },
@@ -84,7 +91,7 @@ export const lightTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#fafafa',
+          backgroundColor: '#f8fafc',
           transition: 'background-color 0.3s ease, color 0.3s ease',
         },
       },
@@ -94,8 +101,8 @@ export const lightTheme = createTheme({
         root: {
           border: '1px solid #e4e4e7',
           backgroundImage: 'none',
-          borderRadius: 4,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          borderRadius: 12,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         },
       },
     },

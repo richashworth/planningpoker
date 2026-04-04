@@ -7,10 +7,12 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
-import Switch from '@mui/material/Switch';
+import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import _ from 'lodash';
 import { leaveGame } from '../actions';
 import { useColorMode } from '../App';
@@ -38,23 +40,28 @@ export default function Header() {
       position="fixed"
       elevation={0}
       sx={{
-        bgcolor: (t) => t.palette.mode === 'dark'
-          ? 'rgba(18, 18, 21, 0.8)'
-          : 'rgba(250, 250, 250, 0.8)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        transition: 'background-color 0.3s ease',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
       }}
     >
       <Toolbar sx={{ gap: 1 }}>
-        <Typography variant="h6" sx={{ flexGrow: 1, fontSize: '1.1rem' }}>
+        <Typography variant="h6" sx={{ flexGrow: 1, fontSize: '1.1rem', color: '#fff' }}>
           Planning Poker
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'} arrow>
+            <IconButton
+              onClick={toggleColorMode}
+              size="small"
+              sx={{ color: 'rgba(255,255,255,0.8)', '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.1)' } }}
+              aria-label="Toggle dark mode"
+            >
+              {mode === 'dark' ? <LightModeOutlinedIcon fontSize="small" /> : <DarkModeOutlinedIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
           {sessionId && (
             <>
-              <Typography variant="body2" sx={{ color: 'text.secondary', display: { xs: 'none', sm: 'block' } }}>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)', display: { xs: 'none', sm: 'block' } }}>
                 {_.startCase(playerName)}
               </Typography>
               <Chip
@@ -63,24 +70,23 @@ export default function Header() {
                 deleteIcon={
                   <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
                     {copied
-                      ? <CheckIcon sx={{ fontSize: 14, color: 'success.main' }} />
+                      ? <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />
                       : <ContentCopyIcon sx={{ fontSize: 14 }} />
                     }
                   </Tooltip>
                 }
                 onDelete={handleCopy}
                 sx={{
-                  bgcolor: 'action.hover',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  color: 'text.secondary',
+                  bgcolor: 'rgba(255,255,255,0.15)',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  color: 'rgba(255,255,255,0.9)',
                   fontFamily: 'monospace',
                   fontSize: '0.75rem',
                   height: 26,
                   borderRadius: 1,
                   '& .MuiChip-deleteIcon': {
-                    color: 'text.disabled',
-                    '&:hover': { color: 'text.secondary' },
+                    color: 'rgba(255,255,255,0.6)',
+                    '&:hover': { color: '#fff' },
                   },
                 }}
               />
@@ -89,32 +95,16 @@ export default function Header() {
                 size="small"
                 onClick={handleLogout}
                 sx={{
-                  color: 'text.secondary',
+                  color: 'rgba(255,255,255,0.8)',
                   fontSize: '0.8rem',
                   minWidth: 'auto',
-                  '&:hover': { color: 'error.main', bgcolor: 'transparent' },
+                  '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.1)' },
                 }}
               >
                 Log out
               </Button>
             </>
           )}
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 0.5 }}>
-            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem', mr: 0.5 }}>
-              {mode === 'dark' ? 'Dark' : 'Light'}
-            </Typography>
-            <Switch
-              checked={mode === 'dark'}
-              onChange={toggleColorMode}
-              size="small"
-              sx={{
-                '& .MuiSwitch-switchBase.Mui-checked': { color: '#fafafa' },
-                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#3b82f6' },
-                '& .MuiSwitch-track': { borderRadius: 10 },
-              }}
-              inputProps={{ 'aria-label': 'Toggle dark mode' }}
-            />
-          </Box>
         </Box>
       </Toolbar>
     </AppBar>
