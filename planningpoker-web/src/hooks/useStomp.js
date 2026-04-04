@@ -11,6 +11,11 @@ export default function useStomp({ url, topics, onMessage }) {
   useEffect(() => {
     if (!url || !topics || topics.length === 0) return;
 
+    // If not connected after 5s, show the banner
+    const timeout = setTimeout(() => {
+      if (!hasConnected.current) setConnected(false);
+    }, 5000);
+
     const client = new Client({
       webSocketFactory: () => new SockJS(url),
       reconnectDelay: 3000,
@@ -32,6 +37,7 @@ export default function useStomp({ url, topics, onMessage }) {
     client.activate();
 
     return () => {
+      clearTimeout(timeout);
       if (client.active) {
         client.deactivate();
       }
