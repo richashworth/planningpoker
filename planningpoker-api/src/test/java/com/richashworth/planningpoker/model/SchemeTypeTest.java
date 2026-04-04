@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class SchemeTypeTest {
 
     @Test
-    void testStoryPointsValues() {
-        List<String> values = SchemeType.STORY_POINTS.getValues();
-        assertEquals(List.of("0", "0.5", "1", "2", "3", "5", "8", "13", "20", "50", "100", "\u221e"), values);
-        assertEquals(12, values.size());
+    void testFibonacciValues() {
+        List<String> values = SchemeType.FIBONACCI.getValues();
+        assertEquals(List.of("1", "2", "3", "5", "8", "13"), values);
+        assertEquals(6, values.size());
     }
 
     @Test
@@ -40,8 +40,8 @@ class SchemeTypeTest {
 
     @Test
     void testFromStringCaseInsensitive() {
-        assertEquals(SchemeType.STORY_POINTS, SchemeType.fromString("story_points"));
-        assertEquals(SchemeType.STORY_POINTS, SchemeType.fromString("STORY_POINTS"));
+        assertEquals(SchemeType.FIBONACCI, SchemeType.fromString("fibonacci"));
+        assertEquals(SchemeType.FIBONACCI, SchemeType.fromString("FIBONACCI"));
         assertEquals(SchemeType.TSHIRT, SchemeType.fromString("TSHIRT"));
         assertEquals(SchemeType.TSHIRT, SchemeType.fromString("tshirt"));
         assertEquals(SchemeType.SIMPLE, SchemeType.fromString("simple"));
@@ -51,13 +51,13 @@ class SchemeTypeTest {
     }
 
     @Test
-    void testFromStringBackwardCompatFibonacci() {
-        assertEquals(SchemeType.STORY_POINTS, SchemeType.fromString("fibonacci"));
+    void testFromStringBackwardCompatStoryPoints() {
+        assertEquals(SchemeType.FIBONACCI, SchemeType.fromString("story_points"));
     }
 
     @Test
-    void testFromStringBackwardCompatFibonacciUppercase() {
-        assertEquals(SchemeType.STORY_POINTS, SchemeType.fromString("FIBONACCI"));
+    void testFromStringBackwardCompatStoryPointsUppercase() {
+        assertEquals(SchemeType.FIBONACCI, SchemeType.fromString("STORY_POINTS"));
     }
 
     @Test
@@ -71,16 +71,16 @@ class SchemeTypeTest {
     }
 
     @Test
-    void testResolveStoryPointsWithBothToggles() {
-        List<String> values = SchemeType.resolveValues("story_points", null, true, true);
-        List<String> expected = List.of("0", "0.5", "1", "2", "3", "5", "8", "13", "20", "50", "100", "\u221e", "?", "\u2615");
+    void testResolveFibonacciWithBothToggles() {
+        List<String> values = SchemeType.resolveValues("fibonacci", null, true, true);
+        List<String> expected = List.of("1", "2", "3", "5", "8", "13", "?", "\u2615");
         assertEquals(expected, values);
     }
 
     @Test
-    void testResolveStoryPointsNoToggles() {
-        List<String> values = SchemeType.resolveValues("story_points", null, false, false);
-        assertEquals(SchemeType.STORY_POINTS.getValues(), values);
+    void testResolveFibonacciNoToggles() {
+        List<String> values = SchemeType.resolveValues("fibonacci", null, false, false);
+        assertEquals(SchemeType.FIBONACCI.getValues(), values);
         assertFalse(values.contains("?"));
         assertFalse(values.contains("\u2615"));
     }
@@ -142,8 +142,8 @@ class SchemeTypeTest {
 
     @Test
     void testSchemeConfigRecordFields() {
-        SchemeConfig config = new SchemeConfig("story_points", null, true, true);
-        assertEquals("story_points", config.schemeType());
+        SchemeConfig config = new SchemeConfig("fibonacci", null, true, true);
+        assertEquals("fibonacci", config.schemeType());
         assertNull(config.customValues());
         assertTrue(config.includeUnsure());
         assertTrue(config.includeCoffee());

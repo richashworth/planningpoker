@@ -6,7 +6,7 @@ const initialGameState = {
   isAdmin: false,
   isRegistered: false,
   legalEstimates: [],
-  schemeType: 'story_points',
+  schemeType: 'fibonacci',
   includeUnsure: true,
   includeCoffee: true
 };

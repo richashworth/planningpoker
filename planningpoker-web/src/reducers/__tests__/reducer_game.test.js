@@ -4,7 +4,7 @@ import { CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED } fro
 
 const initialState = {
   playerName: '', sessionId: '', isAdmin: false, isRegistered: false,
-  legalEstimates: [], schemeType: 'story_points', includeUnsure: true, includeCoffee: true,
+  legalEstimates: [], schemeType: 'fibonacci', includeUnsure: true, includeCoffee: true,
 };
 
 describe('game reducer', () => {

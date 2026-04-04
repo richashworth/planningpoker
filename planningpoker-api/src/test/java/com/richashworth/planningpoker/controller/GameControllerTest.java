@@ -25,13 +25,13 @@ class GameControllerTest extends AbstractControllerTest {
     @Test
     void testJoinSession() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
-        SchemeConfig config = new SchemeConfig("story_points", null, true, true);
+        SchemeConfig config = new SchemeConfig("fibonacci", null, true, true);
         when(sessionManager.getSessionSchemeConfig(SESSION_ID)).thenReturn(config);
-        List<String> storyPointValues = SchemeType.resolveValues("story_points", null, true, true);
-        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(storyPointValues);
+        List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
         SessionResponse response = gameController.joinSession(SESSION_ID, USER_NAME);
-        assertEquals("story_points", response.schemeType());
-        assertTrue(response.values().contains("0"));
+        assertEquals("fibonacci", response.schemeType());
+        assertTrue(response.values().contains("1"));
         assertTrue(response.values().contains("?"));
         assertTrue(response.includeUnsure());
         assertTrue(response.includeCoffee());
@@ -58,12 +58,12 @@ class GameControllerTest extends AbstractControllerTest {
     void testCreateSession() {
         CreateSessionRequest request = new CreateSessionRequest(USER_NAME, null, null, null, null);
         when(sessionManager.createSession(any(SchemeConfig.class))).thenReturn(SESSION_ID);
-        List<String> storyPointValues = SchemeType.resolveValues("story_points", null, true, true);
-        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(storyPointValues);
+        List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
+        when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
         final SessionResponse response = gameController.createSession(request);
         assertEquals(SESSION_ID, response.sessionId());
-        assertEquals("story_points", response.schemeType());
-        assertTrue(response.values().contains("0"));
+        assertEquals("fibonacci", response.schemeType());
+        assertTrue(response.values().contains("1"));
         assertTrue(response.values().contains("?"));
         assertTrue(response.includeUnsure());
         assertTrue(response.includeCoffee());
