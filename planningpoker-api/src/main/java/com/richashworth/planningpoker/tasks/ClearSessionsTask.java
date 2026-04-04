@@ -19,4 +19,9 @@ public class ClearSessionsTask {
     public void clearSessions() {
         sessionManager.clearSessions();
     }
+
+    @Scheduled(fixedRate = 300000)
+    public void evictIdleSessions() {
+        sessionManager.evictIdleSessions();
+    }
 }

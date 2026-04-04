@@ -25,4 +25,11 @@ class ClearSessionsTaskTest {
         verifyNoMoreInteractions(sessionManager);
     }
 
+    @Test
+    void testEvictIdleSessions() {
+        clearSessionsTask.evictIdleSessions();
+        verify(sessionManager, times(1)).evictIdleSessions();
+        verifyNoMoreInteractions(sessionManager);
+    }
+
 }
