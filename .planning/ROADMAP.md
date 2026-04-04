@@ -27,10 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A `SchemeConfig` record exists that can be serialised to JSON by Jackson without configuration
   3. `SessionManager` stores and retrieves scheme config per session ID
   4. Creating or evicting a session also creates or removes its scheme entry — no orphaned map entries
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] TBD
+- [ ] 01-01-PLAN.md — SchemeType enum, SchemeConfig record, SessionManager scheme storage and cleanup
 
 ### Phase 2: API Contract
 **Goal**: The create and join endpoints return scheme metadata as JSON, and the server validates votes against the session's actual scheme; the Redux layer consumes both responses correctly
@@ -71,7 +71,7 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Backend Foundation | 0/? | Not started | - |
+| 1. Backend Foundation | 0/1 | Not started | - |
 | 2. API Contract | 0/? | Not started | - |
 | 3. Frontend UI | 0/? | Not started | - |
 
