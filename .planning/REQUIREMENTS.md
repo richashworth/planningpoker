@@ -7,10 +7,10 @@
 
 ### Scheme Definition
 
-- [ ] **SCHM-01**: Host can select from preset schemes: Fibonacci (default), T-shirt sizes, Simple (1-5)
-- [ ] **SCHM-02**: Host can define a custom scheme with 2-20 values (max 10 chars each, no duplicates)
-- [ ] **SCHM-03**: Host can toggle ? (unsure) meta-card on/off (default: on)
-- [ ] **SCHM-04**: Host can toggle Coffee (break) meta-card on/off (default: on)
+- [x] **SCHM-01**: Host can select from preset schemes: Fibonacci (default), T-shirt sizes, Simple (1-5)
+- [x] **SCHM-02**: Host can define a custom scheme with 2-20 values (max 10 chars each, no duplicates)
+- [x] **SCHM-03**: Host can toggle ? (unsure) meta-card on/off (default: on)
+- [x] **SCHM-04**: Host can toggle Coffee (break) meta-card on/off (default: on)
 - [ ] **SCHM-05**: Scheme is locked for the session duration
 
 ### API & State
@@ -23,11 +23,11 @@
 
 ### Frontend
 
-- [ ] **UI-01**: CreateGame page shows scheme selector (ToggleButtonGroup for presets)
-- [ ] **UI-02**: Custom scheme shows input field for defining values
-- [ ] **UI-03**: Meta-card toggles (switches) visible on CreateGame page
-- [ ] **UI-04**: Vote cards render dynamically from session scheme
-- [ ] **UI-05**: Results chart labels reflect session scheme values
+- [x] **UI-01**: CreateGame page shows scheme selector (ToggleButtonGroup for presets)
+- [x] **UI-02**: Custom scheme shows input field for defining values
+- [x] **UI-03**: Meta-card toggles (switches) visible on CreateGame page
+- [x] **UI-04**: Vote cards render dynamically from session scheme
+- [x] **UI-05**: Results chart labels reflect session scheme values
 - [ ] **UI-06**: Redux state stores scheme info from create/join responses
 
 ## v2 Requirements
@@ -55,21 +55,21 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SCHM-01 | Phase 3 | Pending |
-| SCHM-02 | Phase 3 | Pending |
-| SCHM-03 | Phase 3 | Pending |
-| SCHM-04 | Phase 3 | Pending |
+| SCHM-01 | Phase 3 | Complete |
+| SCHM-02 | Phase 3 | Complete |
+| SCHM-03 | Phase 3 | Complete |
+| SCHM-04 | Phase 3 | Complete |
 | SCHM-05 | Phase 2 | Pending |
 | API-01 | Phase 2 | Pending |
 | API-02 | Phase 2 | Pending |
 | API-03 | Phase 2 | Pending |
 | API-04 | Phase 1 | Complete |
 | API-05 | Phase 1 | Complete |
-| UI-01 | Phase 3 | Pending |
-| UI-02 | Phase 3 | Pending |
-| UI-03 | Phase 3 | Pending |
-| UI-04 | Phase 3 | Pending |
-| UI-05 | Phase 3 | Pending |
+| UI-01 | Phase 3 | Complete |
+| UI-02 | Phase 3 | Complete |
+| UI-03 | Phase 3 | Complete |
+| UI-04 | Phase 3 | Complete |
+| UI-05 | Phase 3 | Complete |
 | UI-06 | Phase 2 | Pending |
 
 **Coverage:**

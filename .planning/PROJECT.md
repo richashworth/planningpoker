@@ -22,12 +22,16 @@ Hosts can pick an estimation scheme (Fibonacci, T-shirt, Simple, or Custom) when
 
 ### Active
 
-- [ ] Host selects estimation scheme when creating a game
-- [ ] Preset schemes: Fibonacci (default), T-shirt sizes, Simple (1-5)
-- [ ] Custom scheme: host defines 2-20 values (max 10 chars each, no duplicates)
-- [ ] Meta-card toggles: ? (unsure) and Coffee (break), default on
-- [ ] Vote cards render dynamically from session scheme
-- [ ] Results chart labels reflect session scheme
+(All v1 requirements validated -- see below)
+
+### Validated in Phase 3 (Frontend UI)
+
+- [x] Host selects estimation scheme when creating a game
+- [x] Preset schemes: Fibonacci (default), T-shirt sizes, Simple (1-5)
+- [x] Custom scheme: host defines 2-20 values (max 10 chars each, no duplicates)
+- [x] Meta-card toggles: ? (unsure) and Coffee (break), default on
+- [x] Vote cards render dynamically from session scheme
+- [x] Results chart labels reflect session scheme
 
 ### Validated in Phase 2 (API Contract)
 
@@ -48,8 +52,9 @@ Hosts can pick an estimation scheme (Fibonacci, T-shirt, Simple, or Custom) when
 - Detailed implementation plan exists: `docs/superpowers/plans/2026-04-04-estimation-schemes.md`
 - Backend is Spring Boot 3.4 (Java 21), all state in-memory via synchronized Guava maps
 - Frontend is React 18 + MUI v5 + Redux 4, communicates via REST (axios) + WebSocket (STOMP)
-- Vote validation currently uses hardcoded `LEGAL_ESTIMATES` in `Constants.js` and `VoteController.java`
-- API responses for createSession/joinSession need to change from plain strings/void to JSON
+- Vote validation uses per-session scheme values in VoteController.java (Phase 2)
+- Vote.jsx and ResultsChart.jsx read legalEstimates from Redux state (Phase 3)
+- API responses for createSession/joinSession return JSON with scheme metadata (Phase 2)
 
 ## Constraints
 
@@ -84,4 +89,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 after Phase 2 completion*
+*Last updated: 2026-04-04 after Phase 3 completion*
