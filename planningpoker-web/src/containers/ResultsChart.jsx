@@ -9,16 +9,15 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { LEGAL_ESTIMATES } from '../config/Constants';
-
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
 export default function ResultsChart() {
   const results = useSelector(state => state.results);
+  const legalEstimates = useSelector(state => state.game.legalEstimates);
   const theme = useTheme();
 
   const estimates = results.map(x => x.estimateValue);
-  const aggregateData = LEGAL_ESTIMATES.map(x => estimates.filter(y => y === x).length);
+  const aggregateData = legalEstimates.map(x => estimates.filter(y => y === x).length);
 
   const tickColor = theme.palette.text.secondary;
   const gridColor = theme.palette.divider;
@@ -48,7 +47,7 @@ export default function ResultsChart() {
   };
 
   const data = {
-    labels: LEGAL_ESTIMATES,
+    labels: legalEstimates,
     datasets: [{
       data: aggregateData,
       backgroundColor: 'rgba(102, 126, 234, 0.35)',
