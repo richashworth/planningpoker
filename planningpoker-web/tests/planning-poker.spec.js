@@ -231,6 +231,76 @@ test.describe('Multi-User Flows', () => {
   });
 });
 
+test.describe('Estimation Schemes', () => {
+  test('T-shirt scheme shows correct cards', async ({ page }) => {
+    await page.goto('/host');
+    await page.getByLabel('Name').fill('Alice');
+    await page.getByRole('button', { name: 'T-shirt' }).click();
+    await page.getByRole('button', { name: 'Start Game' }).click();
+
+    await expect(page).toHaveURL('/game');
+    await expect(page.getByText('XS', { exact: true })).toBeVisible();
+    await expect(page.getByText('S', { exact: true })).toBeVisible();
+    await expect(page.getByText('M', { exact: true })).toBeVisible();
+    await expect(page.getByText('L', { exact: true })).toBeVisible();
+    await expect(page.getByText('XL', { exact: true })).toBeVisible();
+    await expect(page.getByText('XXL', { exact: true })).toBeVisible();
+    await expect(page.getByText('?', { exact: true })).toBeVisible();
+    await expect(page.getByText('\u2615', { exact: true })).toBeVisible();
+    await expect(page.getByText('13', { exact: true })).not.toBeVisible();
+  });
+
+  test('Simple scheme shows correct cards', async ({ page }) => {
+    await page.goto('/host');
+    await page.getByLabel('Name').fill('Alice');
+    await page.getByRole('button', { name: 'Simple' }).click();
+    await page.getByRole('button', { name: 'Start Game' }).click();
+
+    await expect(page).toHaveURL('/game');
+    await expect(page.getByText('1', { exact: true })).toBeVisible();
+    await expect(page.getByText('2', { exact: true })).toBeVisible();
+    await expect(page.getByText('3', { exact: true })).toBeVisible();
+    await expect(page.getByText('4', { exact: true })).toBeVisible();
+    await expect(page.getByText('5', { exact: true })).toBeVisible();
+    await expect(page.getByText('?', { exact: true })).toBeVisible();
+    await expect(page.getByText('13', { exact: true })).not.toBeVisible();
+  });
+
+  test('Custom scheme shows user-defined cards', async ({ page }) => {
+    await page.goto('/host');
+    await page.getByLabel('Name').fill('Alice');
+    await page.getByRole('button', { name: 'Custom' }).click();
+    await page.getByLabel('Custom Values').fill('Easy, Medium, Hard');
+    await page.getByRole('button', { name: 'Start Game' }).click();
+
+    await expect(page).toHaveURL('/game');
+    await expect(page.getByText('Easy', { exact: true })).toBeVisible();
+    await expect(page.getByText('Medium', { exact: true })).toBeVisible();
+    await expect(page.getByText('Hard', { exact: true })).toBeVisible();
+    await expect(page.getByText('?', { exact: true })).toBeVisible();
+  });
+
+  test('disabling meta-card toggles hides ? and coffee cards', async ({ page }) => {
+    await page.goto('/host');
+    await page.getByLabel('Name').fill('Alice');
+
+    // Uncheck Include ? (unsure) switch
+    const unsureSwitch = page.getByText('Include ? (unsure)').locator('..').locator('.MuiSwitch-input');
+    await unsureSwitch.click({ force: true });
+
+    // Uncheck Include ☕ (break) switch
+    const coffeeSwitch = page.getByText(/Include.*break/).locator('..').locator('.MuiSwitch-input');
+    await coffeeSwitch.click({ force: true });
+
+    await page.getByRole('button', { name: 'Start Game' }).click();
+
+    await expect(page).toHaveURL('/game');
+    await expect(page.getByText('5', { exact: true })).toBeVisible();
+    await expect(page.getByText('?', { exact: true })).not.toBeVisible();
+    await expect(page.getByText('\u2615', { exact: true })).not.toBeVisible();
+  });
+});
+
 test.describe('Copy Session ID', () => {
   test('copy button shows checkmark after click', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
