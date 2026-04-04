@@ -20,6 +20,9 @@ bin/
 .claude/
 .playwright-mcp/
 
+# Test output
+test-results/
+
 # Java
 *.class
 hs_err_pid*
