@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
@@ -8,6 +8,10 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CheckIcon from '@mui/icons-material/Check';
 import _ from 'lodash';
 import { leaveGame } from '../actions';
 import { useColorMode } from '../App';
@@ -18,9 +22,16 @@ export default function Header() {
   const sessionId = useSelector(state => state.game.sessionId);
   const playerName = useSelector(state => state.game.playerName);
   const { toggleColorMode, mode } = useColorMode();
+  const [copied, setCopied] = useState(false);
 
   const handleLogout = () => {
     dispatch(leaveGame(playerName, sessionId, () => navigate('/')));
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(sessionId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -50,6 +61,15 @@ export default function Header() {
               <Chip
                 label={sessionId}
                 size="small"
+                deleteIcon={
+                  <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
+                    {copied
+                      ? <CheckIcon sx={{ fontSize: 14, color: 'success.main' }} />
+                      : <ContentCopyIcon sx={{ fontSize: 14 }} />
+                    }
+                  </Tooltip>
+                }
+                onDelete={handleCopy}
                 sx={{
                   bgcolor: 'action.hover',
                   border: '1px solid',
@@ -58,6 +78,10 @@ export default function Header() {
                   fontFamily: 'monospace',
                   fontSize: '0.75rem',
                   height: 26,
+                  '& .MuiChip-deleteIcon': {
+                    color: 'text.disabled',
+                    '&:hover': { color: 'text.secondary' },
+                  },
                 }}
               />
               <Button
