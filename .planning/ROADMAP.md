@@ -42,10 +42,11 @@ Plans:
   3. A vote cast with a value outside the session's scheme is rejected (HTTP 400); a vote matching the scheme is accepted
   4. The scheme is locked at session creation — no endpoint exists to change it mid-session
   5. Redux `sessionId` is correctly populated from the JSON create response; downstream vote and reset requests use the correct session ID
-**Plans**: TBD
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] TBD
+- [ ] 02-01-PLAN.md — Backend API: DTOs, GameController JSON endpoints, VoteController per-session validation, tests
+- [ ] 02-02-PLAN.md — Frontend Redux: action creators JSON body/response, reducer scheme state, Constants.js
 **UI hint**: yes
 
 ### Phase 3: Frontend UI
@@ -72,7 +73,7 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 1/1 | Complete   | 2026-04-04 |
-| 2. API Contract | 0/? | Not started | - |
+| 2. API Contract | 0/2 | Planned | - |
 | 3. Frontend UI | 0/? | Not started | - |
 
 ## Backlog

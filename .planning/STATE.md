@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 3 context gathered
+status: planned
+stopped_at: Phase 2 planned (2 plans in 2 waves)
 last_updated: "2026-04-04T15:14:34.656Z"
 last_activity: 2026-04-04
 progress:
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
-**Current focus:** Phase 01 — backend-foundation
+**Current focus:** Phase 02 — api-contract
 
 ## Current Position
 
-Phase: 02
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 02 (api-contract) — PLANNED
+Plan: 0 of 2
+Status: 2 plans ready for execution
 Last activity: 2026-04-04
 
 Progress: [░░░░░░░░░░] 0%
