@@ -88,7 +88,8 @@ test.describe('Logout', () => {
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 
-    await page.getByRole('button', { name: 'Log out' }).click();
+    await page.getByRole('button', { name: /Alice/i }).click();
+    await page.getByRole('menuitem', { name: 'Log out' }).click();
     await expect(page).toHaveURL('/');
   });
 });
@@ -97,11 +98,7 @@ test.describe('Dark/Light Mode', () => {
   test('toggle switches between dark and light mode', async ({ page }) => {
     await page.goto('/');
 
-    const toggle = page.getByRole('button', { name: 'Toggle dark mode' });
-    await expect(toggle).toBeVisible();
-
-    // Default is dark mode
-    // Theme uses 300ms CSS transition, so wait for specific target colors
+    // Default is dark mode — button shows "Light mode" as the toggle action
     const DARK_BG = 'rgb(18, 18, 18)';
     const LIGHT_BG = 'rgb(248, 250, 252)';
 
@@ -109,16 +106,18 @@ test.describe('Dark/Light Mode', () => {
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
     );
+    await expect(page.getByRole('button', { name: 'Light mode' })).toBeVisible();
 
     // Toggle to light mode
-    await toggle.click();
+    await page.getByRole('button', { name: 'Light mode' }).click();
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       LIGHT_BG,
     );
+    await expect(page.getByRole('button', { name: 'Dark mode' })).toBeVisible();
 
     // Toggle back to dark mode
-    await toggle.click();
+    await page.getByRole('button', { name: 'Dark mode' }).click();
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
