@@ -20,6 +20,9 @@ bin/
 .claude/
 .playwright-mcp/
 
+# Git worktrees
+.worktrees/
+
 # Test output
 test-results/
 
