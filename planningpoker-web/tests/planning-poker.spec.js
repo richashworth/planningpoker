@@ -96,28 +96,31 @@ test.describe('Logout', () => {
 
 test.describe('Dark/Light Mode', () => {
   test('toggle switches between dark and light mode', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto('/');
 
-    // Default is dark mode — button shows "Light mode" as the toggle action
     const DARK_BG = 'rgb(18, 18, 18)';
     const LIGHT_BG = 'rgb(248, 250, 252)';
+    const toggle = page.getByRole('checkbox', { name: 'Toggle dark mode' });
 
+    // Default with dark OS preference is dark mode
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
     );
-    await expect(page.getByRole('button', { name: 'Light mode' })).toBeVisible();
+    await expect(toggle).toBeVisible();
+    await expect(toggle).toBeChecked();
 
     // Toggle to light mode
-    await page.getByRole('button', { name: 'Light mode' }).click();
+    await toggle.click();
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       LIGHT_BG,
     );
-    await expect(page.getByRole('button', { name: 'Dark mode' })).toBeVisible();
+    await expect(toggle).not.toBeChecked();
 
     // Toggle back to dark mode
-    await page.getByRole('button', { name: 'Dark mode' }).click();
+    await toggle.click();
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
