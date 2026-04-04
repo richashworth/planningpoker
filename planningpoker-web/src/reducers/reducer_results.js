@@ -11,7 +11,7 @@ export default function (state = initialResultsState, action) {
       // Optimistic: immediately add this user's vote to results
       return [...state, { userName: action.meta.userName, estimateValue: action.meta.estimateValue }];
     case RESET_SESSION:
-      // Optimistic: immediately clear results
+      if (action.error) return state;
       return [];
     case LEAVE_GAME:
       return [];

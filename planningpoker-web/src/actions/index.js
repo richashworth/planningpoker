@@ -27,7 +27,10 @@ export const usersUpdated = (users) => (
 // User-driven actions
 export function createGame(playerName, callback) {
   const request = axios.post(`${API_ROOT_URL}/createSession`, new URLSearchParams({ userName: playerName }));
-  request.then(() => callback());
+  request.then(() => callback()).catch(err => {
+    const msg = err.response?.data?.error || 'Failed to create session';
+    alert(msg);
+  });
 
   return {
     type: CREATE_GAME,
@@ -39,7 +42,9 @@ export function createGame(playerName, callback) {
 export function leaveGame(playerName, sessionId, callback) {
   const request = axios.post(`${API_ROOT_URL}/logout`,
     new URLSearchParams({ userName: playerName, sessionId }));
-  request.then(() => callback());
+  request.then(() => callback()).catch(err => {
+    console.error('Failed to leave session', err);
+  });
 
   return {
     type: LEAVE_GAME,
@@ -50,7 +55,10 @@ export function leaveGame(playerName, sessionId, callback) {
 export function joinGame(playerName, sessionId, callback) {
   const request = axios.post(`${API_ROOT_URL}/joinSession`,
     new URLSearchParams({ userName: playerName, sessionId }));
-  request.then(() => callback());
+  request.then(() => callback()).catch(err => {
+    const msg = err.response?.data?.error || 'Failed to join session';
+    alert(msg);
+  });
 
   return {
     type: JOIN_GAME,
@@ -71,9 +79,10 @@ export function vote(playerName, sessionId, estimateValue) {
 }
 
 export function resetSession(playerName, sessionId) {
-  axios.post(`${API_ROOT_URL}/reset`, new URLSearchParams({ sessionId, userName: playerName }));
+  const request = axios.post(`${API_ROOT_URL}/reset`, new URLSearchParams({ sessionId, userName: playerName }));
 
   return {
-    type: RESET_SESSION
+    type: RESET_SESSION,
+    payload: request
   };
 }
