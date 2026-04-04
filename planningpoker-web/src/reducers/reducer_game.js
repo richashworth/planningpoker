@@ -14,6 +14,7 @@ const initialGameState = {
 export default function (state = initialGameState, action) {
   switch (action.type) {
     case CREATE_GAME:
+      if (action.error) return state;
       return {
         ...state,
         playerName: action.meta.userName,
@@ -28,6 +29,7 @@ export default function (state = initialGameState, action) {
     case USER_REGISTERED:
       return {...state, isRegistered: true};
     case JOIN_GAME:
+      if (action.error) return state;
       return {
         ...state,
         playerName: action.meta.userName,
