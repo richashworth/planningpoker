@@ -13,12 +13,7 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { createGame, gameCreated } from '../actions';
 import NameInput from '../components/NameInput';
-
-const SCHEME_VALUES = {
-  fibonacci: ['0', '0.5', '1', '2', '3', '5', '8', '13', '20', '50', '100', '\u221e'],
-  tshirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-  simple: ['1', '2', '3', '4', '5'],
-}
+import { SCHEME_VALUES } from '../config/Constants';
 
 function getPreviewValues(schemeType, customValues, includeUnsure, includeCoffee) {
   let values = schemeType === 'custom'
