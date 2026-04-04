@@ -1,8 +1,8 @@
 plugins {
     id 'net.researchgate.release' version '3.0.2'
-    id "org.springframework.boot" version "3.2.3"
+    id "org.springframework.boot" version "3.4.4"
     id "com.github.lkishalmi.gatling" version "3.0.2"
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
     id 'jacoco'
 }
@@ -37,11 +37,11 @@ tasks.withType(JavaCompile).configureEach {
 
 dependencies {
     implementation name: 'planningpoker-web'
-    implementation 'com.google.guava:guava:33.1.0-jre'
-    implementation 'org.apache.commons:commons-lang3:3.14.0'
-    implementation 'org.jetbrains:annotations:24.1.0'
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation 'com.google.guava:guava:33.4.0-jre'
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.jetbrains:annotations:26.0.2'
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
     
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -50,10 +50,10 @@ dependencies {
     implementation 'org.springframework:spring-messaging'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
-    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
+    testImplementation 'org.mockito:mockito-core:5.15.2'
 }
 
 tasks.named('test') {
