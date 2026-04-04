@@ -11,7 +11,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Switch from '@mui/material/Switch';
+import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
@@ -57,27 +57,15 @@ export default function Header() {
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-          <LightModeOutlinedIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.7)', mr: 0.5 }} />
-          <Switch
-            checked={mode === 'dark'}
-            onChange={toggleColorMode}
-            size="small"
+        <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
+          <IconButton
+            onClick={toggleColorMode}
             aria-label="Toggle dark mode"
-            sx={{
-              '& .MuiSwitch-switchBase.Mui-checked': {
-                color: 'rgba(255,255,255,0.9)',
-              },
-              '& .MuiSwitch-switchBase': {
-                color: 'rgba(255,255,255,0.9)',
-              },
-              '& .MuiSwitch-track': {
-                bgcolor: 'rgba(255,255,255,0.3) !important',
-              },
-            }}
-          />
-          <DarkModeOutlinedIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.7)', ml: 0.5 }} />
-        </Box>
+            sx={{ color: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
+          >
+            {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+          </IconButton>
+        </Tooltip>
         {sessionId ? (
           <>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', display: { xs: 'none', sm: 'block' } }}>

@@ -103,25 +103,23 @@ test.describe('Dark/Light Mode', () => {
 
     const DARK_BG = 'rgb(18, 18, 18)';
     const LIGHT_BG = 'rgb(248, 250, 252)';
-    const toggle = page.locator('.MuiSwitch-input');
+    const toggle = page.getByRole('button', { name: 'Toggle dark mode' });
 
     // Default with dark OS preference is dark mode
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
     );
-    await expect(toggle).toBeChecked();
 
     // Toggle to light mode
-    await toggle.click({ force: true });
+    await toggle.click();
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       LIGHT_BG,
     );
-    await expect(toggle).not.toBeChecked();
 
     // Toggle back to dark mode
-    await toggle.click({ force: true });
+    await toggle.click();
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
