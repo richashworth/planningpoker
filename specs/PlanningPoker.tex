@@ -1,0 +1,1467 @@
+\batchmode %% Suppresses most terminal output.
+\documentclass{article}
+\usepackage{color}
+\definecolor{boxshade}{gray}{0.85}
+\setlength{\textwidth}{360pt}
+\setlength{\textheight}{541pt}
+\usepackage{latexsym}
+\usepackage{ifthen}
+% \usepackage{color}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SWITCHES                                                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newboolean{shading} 
+\setboolean{shading}{false}
+\makeatletter
+ %% this is needed only when inserted into the file, not when
+ %% used as a package file.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                           %
+% DEFINITIONS OF SYMBOL-PRODUCING COMMANDS                                  %
+%                                                                           %
+%    TLA+      LaTeX                                                        %
+%    symbol    command                                                      %
+%    ------    -------                                                      %
+%    =>        \implies                                                     %
+%    <:        \ltcolon                                                     %
+%    :>        \colongt                                                     %
+%    ==        \defeq                                                       %
+%    ..        \dotdot                                                      %
+%    ::        \coloncolon                                                  %
+%    =|        \eqdash                                                      %
+%    ++        \pp                                                          %
+%    --        \mm                                                          %
+%    **        \stst                                                        %
+%    //        \slsl                                                        %
+%    ^         \ct                                                          %
+%    \A        \A                                                           %
+%    \E        \E                                                           %
+%    \AA       \AA                                                          %
+%    \EE       \EE                                                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\symlength}
+\newcommand{\implies}{\Rightarrow}
+\newcommand{\ltcolon}{\mathrel{<\!\!\mbox{:}}}
+\newcommand{\colongt}{\mathrel{\!\mbox{:}\!\!>}}
+\newcommand{\defeq}{\;\mathrel{\smash   %% keep this symbol from being too tall
+    {{\stackrel{\scriptscriptstyle\Delta}{=}}}}\;}
+\newcommand{\dotdot}{\mathrel{\ldotp\ldotp}}
+\newcommand{\coloncolon}{\mathrel{::\;}}
+\newcommand{\eqdash}{\mathrel = \joinrel \hspace{-.28em}|}
+\newcommand{\pp}{\mathbin{++}}
+\newcommand{\mm}{\mathbin{--}}
+\newcommand{\stst}{*\!*}
+\newcommand{\slsl}{/\!/}
+\newcommand{\ct}{\hat{\hspace{.4em}}}
+\newcommand{\A}{\forall}
+\newcommand{\E}{\exists}
+\renewcommand{\AA}{\makebox{$\raisebox{.05em}{\makebox[0pt][l]{%
+   $\forall\hspace{-.517em}\forall\hspace{-.517em}\forall$}}%
+   \forall\hspace{-.517em}\forall \hspace{-.517em}\forall\,$}}
+\newcommand{\EE}{\makebox{$\raisebox{.05em}{\makebox[0pt][l]{%
+   $\exists\hspace{-.517em}\exists\hspace{-.517em}\exists$}}%
+   \exists\hspace{-.517em}\exists\hspace{-.517em}\exists\,$}}
+\newcommand{\whileop}{\.{\stackrel
+  {\mbox{\raisebox{-.3em}[0pt][0pt]{$\scriptscriptstyle+\;\,$}}}%
+  {-\hspace{-.16em}\triangleright}}}
+
+% Commands are defined to produce the upper-case keywords.
+% Note that some have space after them.
+\newcommand{\ASSUME}{\textsc{assume }}
+\newcommand{\ASSUMPTION}{\textsc{assumption }}
+\newcommand{\AXIOM}{\textsc{axiom }}
+\newcommand{\BOOLEAN}{\textsc{boolean }}
+\newcommand{\CASE}{\textsc{case }}
+\newcommand{\CONSTANT}{\textsc{constant }}
+\newcommand{\CONSTANTS}{\textsc{constants }}
+\newcommand{\ELSE}{\settowidth{\symlength}{\THEN}%
+   \makebox[\symlength][l]{\textsc{ else}}}
+\newcommand{\EXCEPT}{\textsc{ except }}
+\newcommand{\EXTENDS}{\textsc{extends }}
+\newcommand{\FALSE}{\textsc{false}}
+\newcommand{\IF}{\textsc{if }}
+\newcommand{\IN}{\settowidth{\symlength}{\LET}%
+   \makebox[\symlength][l]{\textsc{in}}}
+\newcommand{\INSTANCE}{\textsc{instance }}
+\newcommand{\LET}{\textsc{let }}
+\newcommand{\LOCAL}{\textsc{local }}
+\newcommand{\MODULE}{\textsc{module }}
+\newcommand{\OTHER}{\textsc{other }}
+\newcommand{\STRING}{\textsc{string}}
+\newcommand{\THEN}{\textsc{ then }}
+\newcommand{\THEOREM}{\textsc{theorem }}
+\newcommand{\LEMMA}{\textsc{lemma }}
+\newcommand{\PROPOSITION}{\textsc{proposition }}
+\newcommand{\COROLLARY}{\textsc{corollary }}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\VARIABLE}{\textsc{variable }}
+\newcommand{\VARIABLES}{\textsc{variables }}
+\newcommand{\WITH}{\textsc{ with }}
+\newcommand{\WF}{\textrm{WF}}
+\newcommand{\SF}{\textrm{SF}}
+\newcommand{\CHOOSE}{\textsc{choose }}
+\newcommand{\ENABLED}{\textsc{enabled }}
+\newcommand{\UNCHANGED}{\textsc{unchanged }}
+\newcommand{\SUBSET}{\textsc{subset }}
+\newcommand{\UNION}{\textsc{union }}
+\newcommand{\DOMAIN}{\textsc{domain }}
+% Added for tla2tex
+\newcommand{\BY}{\textsc{by }}
+\newcommand{\OBVIOUS}{\textsc{obvious }}
+\newcommand{\HAVE}{\textsc{have }}
+\newcommand{\QED}{\textsc{qed }}
+\newcommand{\TAKE}{\textsc{take }}
+\newcommand{\DEF}{\textsc{ def }}
+\newcommand{\HIDE}{\textsc{hide }}
+\newcommand{\RECURSIVE}{\textsc{recursive }}
+\newcommand{\USE}{\textsc{use }}
+\newcommand{\DEFINE}{\textsc{define }}
+\newcommand{\PROOF}{\textsc{proof }}
+\newcommand{\WITNESS}{\textsc{witness }}
+\newcommand{\PICK}{\textsc{pick }}
+\newcommand{\DEFS}{\textsc{defs }}
+\newcommand{\PROVE}{\settowidth{\symlength}{\ASSUME}%
+   \makebox[\symlength][l]{\textsc{prove}}\@s{-4.1}}%
+  %% The \@s{-4.1) is a kludge added on 24 Oct 2009 [happy birthday, Ellen]
+  %% so the correct alignment occurs if the user types
+  %%   ASSUME X
+  %%   PROVE  Y
+  %% because it cancels the extra 4.1 pts added because of the 
+  %% extra space after the PROVE.  This seems to works OK.
+  %% However, the 4.1 equals Parameters.LaTeXLeftSpace(1) and
+  %% should be changed if that method ever changes.
+\newcommand{\SUFFICES}{\textsc{suffices }}
+\newcommand{\NEW}{\textsc{new }}
+\newcommand{\LAMBDA}{\textsc{lambda }}
+\newcommand{\STATE}{\textsc{state }}
+\newcommand{\ACTION}{\textsc{action }}
+\newcommand{\TEMPORAL}{\textsc{temporal }}
+\newcommand{\ONLY}{\textsc{only }}              %% added by LL on 2 Oct 2009
+\newcommand{\OMITTED}{\textsc{omitted }}        %% added by LL on 31 Oct 2009
+\newcommand{\@pfstepnum}[2]{\ensuremath{\langle#1\rangle}\textrm{#2}}
+\newcommand{\bang}{\@s{1}\mbox{\small !}\@s{1}}
+%% We should format || differently in PlusCal code than in TLA+ formulas.
+\newcommand{\p@barbar}{\ifpcalsymbols
+   \,\,\rule[-.25em]{.075em}{1em}\hspace*{.2em}\rule[-.25em]{.075em}{1em}\,\,%
+   \else \,||\,\fi}
+%% PlusCal keywords
+\newcommand{\p@fair}{\textbf{fair }}
+\newcommand{\p@semicolon}{\textbf{\,; }}
+\newcommand{\p@algorithm}{\textbf{algorithm }}
+\newcommand{\p@mmfair}{\textbf{-{}-fair }}
+\newcommand{\p@mmalgorithm}{\textbf{-{}-algorithm }}
+\newcommand{\p@assert}{\textbf{assert }}
+\newcommand{\p@await}{\textbf{await }}
+\newcommand{\p@begin}{\textbf{begin }}
+\newcommand{\p@end}{\textbf{end }}
+\newcommand{\p@call}{\textbf{call }}
+\newcommand{\p@define}{\textbf{define }}
+\newcommand{\p@do}{\textbf{ do }}
+\newcommand{\p@either}{\textbf{either }}
+\newcommand{\p@or}{\textbf{or }}
+\newcommand{\p@goto}{\textbf{goto }}
+\newcommand{\p@if}{\textbf{if }}
+\newcommand{\p@then}{\,\,\textbf{then }}
+\newcommand{\p@else}{\ifcsyntax \textbf{else } \else \,\,\textbf{else }\fi}
+\newcommand{\p@elsif}{\,\,\textbf{elsif }}
+\newcommand{\p@macro}{\textbf{macro }}
+\newcommand{\p@print}{\textbf{print }}
+\newcommand{\p@procedure}{\textbf{procedure }}
+\newcommand{\p@process}{\textbf{process }}
+\newcommand{\p@return}{\textbf{return}}
+\newcommand{\p@skip}{\textbf{skip}}
+\newcommand{\p@variable}{\textbf{variable }}
+\newcommand{\p@variables}{\textbf{variables }}
+\newcommand{\p@while}{\textbf{while }}
+\newcommand{\p@when}{\textbf{when }}
+\newcommand{\p@with}{\textbf{with }}
+\newcommand{\p@lparen}{\textbf{(\,\,}}
+\newcommand{\p@rparen}{\textbf{\,\,) }}   
+\newcommand{\p@lbrace}{\textbf{\{\,\,}}   
+\newcommand{\p@rbrace}{\textbf{\,\,\} }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% REDEFINE STANDARD COMMANDS TO MAKE THEM FORMAT BETTER %
+%                                                       %
+% We redefine \in and \notin                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\_}{\rule{.4em}{.06em}\hspace{.05em}}
+\newlength{\equalswidth}
+\let\oldin=\in
+\let\oldnotin=\notin
+\renewcommand{\in}{%
+   {\settowidth{\equalswidth}{$\.{=}$}\makebox[\equalswidth][c]{$\oldin$}}}
+\renewcommand{\notin}{%
+   {\settowidth{\equalswidth}{$\.{=}$}\makebox[\equalswidth]{$\oldnotin$}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                  %
+% HORIZONTAL BARS:                                 %
+%                                                  %
+%   \moduleLeftDash    |~~~~~~~~~~                 %
+%   \moduleRightDash    ~~~~~~~~~~|                %
+%   \midbar            |----------|                %
+%   \bottombar         |__________|                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\charwidth}\settowidth{\charwidth}{{\small\tt M}}
+\newlength{\boxrulewd}\setlength{\boxrulewd}{.4pt}
+\newlength{\boxlineht}\setlength{\boxlineht}{.5\baselineskip}
+\newcommand{\boxsep}{\charwidth}
+\newlength{\boxruleht}\setlength{\boxruleht}{.5ex}
+\newlength{\boxruledp}\setlength{\boxruledp}{-\boxruleht}
+\addtolength{\boxruledp}{\boxrulewd}
+\newcommand{\boxrule}{\leaders\hrule height \boxruleht depth \boxruledp
+                      \hfill\mbox{}}
+\newcommand{\@computerule}{%
+  \setlength{\boxruleht}{.5ex}%
+  \setlength{\boxruledp}{-\boxruleht}%
+  \addtolength{\boxruledp}{\boxrulewd}}
+
+\newcommand{\bottombar}{\hspace{-\boxsep}%
+  \raisebox{-\boxrulewd}[0pt][0pt]{\rule[.5ex]{\boxrulewd}{\boxlineht}}%
+  \boxrule
+  \raisebox{-\boxrulewd}[0pt][0pt]{%
+      \rule[.5ex]{\boxrulewd}{\boxlineht}}\hspace{-\boxsep}\vspace{0pt}}
+
+\newcommand{\moduleLeftDash}%
+   {\hspace*{-\boxsep}%
+     \raisebox{-\boxlineht}[0pt][0pt]{\rule[.5ex]{\boxrulewd
+               }{\boxlineht}}%
+    \boxrule\hspace*{.4em }}
+
+\newcommand{\moduleRightDash}%
+    {\hspace*{.4em}\boxrule
+    \raisebox{-\boxlineht}[0pt][0pt]{\rule[.5ex]{\boxrulewd
+               }{\boxlineht}}\hspace{-\boxsep}}%\vspace{.2em}
+
+\newcommand{\midbar}{\hspace{-\boxsep}\raisebox{-.5\boxlineht}[0pt][0pt]{%
+   \rule[.5ex]{\boxrulewd}{\boxlineht}}\boxrule\raisebox{-.5\boxlineht%
+   }[0pt][0pt]{\rule[.5ex]{\boxrulewd}{\boxlineht}}\hspace{-\boxsep}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FORMATING COMMANDS                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PLUSCAL SHADING                                                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The TeX pcalshading switch is set on to cause PlusCal shading to be
+% performed.  This changes the behavior of the following commands and
+% environments to cause full-width shading to be performed on all lines.
+% 
+%   \tstrut \@x cpar mcom \@pvspace
+% 
+% The TeX pcalsymbols switch is turned on when typesetting a PlusCal algorithm,
+% whether or not shading is being performed.  It causes symbols (other than
+% parentheses and braces and PlusCal-only keywords) that should be typeset
+% differently depending on whether they are in an algorithm to be typeset
+% appropriately.  Currently, the only such symbol is "||".
+%
+% The TeX csyntax switch is turned on when typesetting a PlusCal algorithm in
+% c-syntax.  This allows symbols to be format differently in the two syntaxes.
+% The "else" keyword is the only one that is.
+
+\newif\ifpcalshading \pcalshadingfalse
+\newif\ifpcalsymbols \pcalsymbolsfalse
+\newif\ifcsyntax     \csyntaxtrue
+
+% The \@pvspace command makes a vertical space.  It uses \vspace
+% except with \ifpcalshading, in which case it sets \pvcalvspace
+% and the space is added by a following \@x command.
+%
+\newlength{\pcalvspace}\setlength{\pcalvspace}{0pt}%
+\newcommand{\@pvspace}[1]{%
+  \ifpcalshading
+     \par\global\setlength{\pcalvspace}{#1}%
+  \else
+     \par\vspace{#1}%
+  \fi
+}
+
+% The lcom environment was changed to set \lcomindent equal to
+% the indentation it produces.  This length is used by the
+% cpar environment to make shading extend for the full width
+% of the line.  This assumes that lcom environments are not
+% nested.  I hope TLATeX does not nest them.
+%
+\newlength{\lcomindent}%
+\setlength{\lcomindent}{0pt}%
+
+%\tstrut: A strut to produce inter-paragraph space in a comment.
+%\rstrut: A strut to extend the bottom of a one-line comment so
+%         there's no break in the shading between comments on 
+%         successive lines.
+\newcommand\tstrut%
+  {\raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{1.15em}}}%
+   \global\setlength{\vshadelen}{0pt}}
+\newcommand\rstrut{\raisebox{-.25em}{\rule{0pt}{1.15em}}%
+ \global\setlength{\vshadelen}{0pt}}
+
+
+% \.{op} formats operator op in math mode with empty boxes on either side.
+% Used because TeX otherwise vary the amount of space it leaves around op.
+\renewcommand{\.}[1]{\ensuremath{\mbox{}#1\mbox{}}}
+
+% \@s{n} produces an n-point space
+\newcommand{\@s}[1]{\hspace{#1pt}}           
+
+% \@x{txt} starts a specification line in the beginning with txt
+% in the final LaTeX source.
+\newlength{\@xlen}
+\newcommand\xtstrut%
+  {\setlength{\@xlen}{1.05em}%
+   \addtolength{\@xlen}{\pcalvspace}%
+    \raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{\@xlen}}}%
+   \global\setlength{\vshadelen}{0pt}%
+   \global\setlength{\pcalvspace}{0pt}}
+
+\newcommand{\@x}[1]{\par
+  \ifpcalshading
+  \makebox[0pt][l]{\shadebox{\xtstrut\hspace*{\textwidth}}}%
+  \fi
+  \mbox{$\mbox{}#1\mbox{}$}}  
+
+% \@xx{txt} continues a specification line with the text txt.
+\newcommand{\@xx}[1]{\mbox{$\mbox{}#1\mbox{}$}}  
+
+% \@y{cmt} produces a one-line comment.
+\newcommand{\@y}[1]{\mbox{\footnotesize\hspace{.65em}%
+  \ifthenelse{\boolean{shading}}{%
+      \shadebox{#1\hspace{-\the\lastskip}\rstrut}}%
+               {#1\hspace{-\the\lastskip}\rstrut}}}
+
+% \@z{cmt} produces a zero-width one-line comment.
+\newcommand{\@z}[1]{\makebox[0pt][l]{\footnotesize
+  \ifthenelse{\boolean{shading}}{%
+      \shadebox{#1\hspace{-\the\lastskip}\rstrut}}%
+               {#1\hspace{-\the\lastskip}\rstrut}}}
+
+
+% \@w{str} produces the TLA+ string "str".
+\newcommand{\@w}[1]{\textsf{``{#1}''}}             
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SHADING                                                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\graymargin{1}
+  % The number of points of margin in the shaded box.
+
+% \definecolor{boxshade}{gray}{.85}
+% Defines the darkness of the shading: 1 = white, 0 = black
+% Added by TLATeX only if needed.
+
+% \shadebox{txt} puts txt in a shaded box.
+\newlength{\templena}
+\newlength{\templenb}
+\newsavebox{\tempboxa}
+\newcommand{\shadebox}[1]{{\setlength{\fboxsep}{\graymargin pt}%
+     \savebox{\tempboxa}{#1}%
+     \settoheight{\templena}{\usebox{\tempboxa}}%
+     \settodepth{\templenb}{\usebox{\tempboxa}}%
+     \hspace*{-\fboxsep}\raisebox{0pt}[\templena][\templenb]%
+        {\colorbox{boxshade}{\usebox{\tempboxa}}}\hspace*{-\fboxsep}}}
+
+% \vshade{n} makes an n-point inter-paragraph space, with
+%  shading if the `shading' flag is true.
+\newlength{\vshadelen}
+\setlength{\vshadelen}{0pt}
+\newcommand{\vshade}[1]{\ifthenelse{\boolean{shading}}%
+   {\global\setlength{\vshadelen}{#1pt}}%
+   {\vspace{#1pt}}}
+
+\newlength{\boxwidth}
+\newlength{\multicommentdepth}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE cpar ENVIRONMENT                                                      %
+% ^^^^^^^^^^^^^^^^^^^^                                                      %
+% The LaTeX input                                                           %
+%                                                                           %
+%   \begin{cpar}{pop}{nest}{isLabel}{d}{e}{arg6}                            %
+%     XXXXXXXXXXXXXXX                                                       %
+%     XXXXXXXXXXXXXXX                                                       %
+%     XXXXXXXXXXXXXXX                                                       %
+%   \end{cpar}                                                              %
+%                                                                           %
+% produces one of two possible results.  If isLabel is the letter "T",      %
+% it produces the following, where [label] is the result of typesetting     %
+% arg6 in an LR box, and d is is a number representing a distance in        %
+% points.                                                                   %
+%                                                                           %
+%   prevailing |<-- d -->[label]<- e ->XXXXXXXXXXXXXXX                      %
+%         left |                       XXXXXXXXXXXXXXX                      %
+%       margin |                       XXXXXXXXXXXXXXX                      %
+%                                                                           %
+% If isLabel is the letter "F", then it produces                            %
+%                                                                           %
+%   prevailing |<-- d -->XXXXXXXXXXXXXXXXXXXXXXX                            %
+%         left |         <- e ->XXXXXXXXXXXXXXXX                            %
+%       margin |                XXXXXXXXXXXXXXXX                            %
+%                                                                           %
+% where d and e are numbers representing distances in points.               %
+%                                                                           %
+% The prevailing left margin is the one in effect before the most recent    %
+% pop (argument 1) cpar environments with "T" as the nest argument, where   %
+% pop is a number \geq 0.                                                   %
+%                                                                           %
+% If the nest argument is the letter "T", then the prevailing left          %
+% margin is moved to the left of the second (and following) lines of        %
+% X's.  Otherwise, the prevailing left margin is left unchanged.            %
+%                                                                           %
+% An \unnest{n} command moves the prevailing left margin to where it was    %
+% before the most recent n cpar environments with "T" as the nesting        %
+% argument.                                                                 %
+%                                                                           %
+% The environment leaves no vertical space above or below it, or between    %
+% its paragraphs.  (TLATeX inserts the proper amount of vertical space.)    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{pardepth}
+\setcounter{pardepth}{0}
+
+% \setgmargin{txt} defines \gmarginN to be txt, where N is \roman{pardepth}.
+% \thegmargin equals \gmarginN, where N is \roman{pardepth}.
+\newcommand{\setgmargin}[1]{%
+  \expandafter\xdef\csname gmargin\roman{pardepth}\endcsname{#1}}
+\newcommand{\thegmargin}{\csname gmargin\roman{pardepth}\endcsname}
+\newcommand{\gmargin}{0pt}
+
+\newsavebox{\tempsbox}
+
+\newlength{\@cparht}
+\newlength{\@cpardp}
+\newenvironment{cpar}[6]{%
+  \addtocounter{pardepth}{-#1}%
+  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+                                 \begin{minipage}[t]{\linewidth}}{}%
+  \begin{list}{}{%
+     \edef\temp{\thegmargin}
+     \ifthenelse{\equal{#3}{T}}%
+       {\settowidth{\leftmargin}{\hspace{\temp}\footnotesize #6\hspace{#5pt}}%
+        \addtolength{\leftmargin}{#4pt}}%
+       {\setlength{\leftmargin}{#4pt}%
+        \addtolength{\leftmargin}{#5pt}%
+        \addtolength{\leftmargin}{\temp}%
+        \setlength{\itemindent}{-#5pt}}%
+      \ifthenelse{\equal{#2}{T}}{\addtocounter{pardepth}{1}%
+                                 \setgmargin{\the\leftmargin}}{}%
+      \setlength{\labelwidth}{0pt}%
+      \setlength{\labelsep}{0pt}%
+      \setlength{\itemindent}{-\leftmargin}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\parsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parskip}{0pt}%
+      \setlength{\itemsep}{0pt}
+      \setlength{\itemindent}{#4pt}%
+      \addtolength{\itemindent}{-\leftmargin}}%
+   \ifthenelse{\equal{#3}{T}}%
+      {\item[\tstrut\footnotesize \hspace{\temp}{#6}\hspace{#5pt}]
+        }%
+      {\item[\tstrut\hspace{\temp}]%
+         }%
+   \footnotesize}
+ {\hspace{-\the\lastskip}\tstrut
+ \end{list}%
+  \ifthenelse{\boolean{shading}}%
+          {\end{minipage}%
+           \end{lrbox}%
+           \ifpcalshading
+             \setlength{\@cparht}{\ht\tempsbox}%
+             \setlength{\@cpardp}{\dp\tempsbox}%
+             \addtolength{\@cparht}{.15em}%
+             \addtolength{\@cpardp}{.2em}%
+             \addtolength{\@cparht}{\@cpardp}%
+            % I don't know what's going on here.  I want to add a
+            % \pcalvspace high shaded line, but I don't know how to
+            % do it.  A little trial and error shows that the following
+            % does a reasonable job approximating that, eliminating
+            % the line if \pcalvspace is small.
+            \addtolength{\@cparht}{\pcalvspace}%
+             \ifdim \pcalvspace > .8em
+               \addtolength{\pcalvspace}{-.2em}%
+               \hspace*{-\lcomindent}%
+               \shadebox{\rule{0pt}{\pcalvspace}\hspace*{\textwidth}}\par
+               \global\setlength{\pcalvspace}{0pt}%
+               \fi
+             \hspace*{-\lcomindent}%
+             \makebox[0pt][l]{\raisebox{-\@cpardp}[0pt][0pt]{%
+                 \shadebox{\rule{0pt}{\@cparht}\hspace*{\textwidth}}}}%
+             \hspace*{\lcomindent}\usebox{\tempsbox}%
+             \par
+           \else
+             \shadebox{\usebox{\tempsbox}}\par
+           \fi}%
+           {}%
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE ppar ENVIRONMENT                                                       %
+% ^^^^^^^^^^^^^^^^^^^^                                                       %
+% The environment                                                            %
+%                                                                            %
+%   \begin{ppar} ... \end{ppar}                                              %
+%                                                                            %
+% is equivalent to                                                           %
+%                                                                            %
+%   \begin{cpar}{0}{F}{F}{0}{0}{} ... \end{cpar}                             %
+%                                                                            %
+% The environment is put around each line of the output for a PlusCal        %
+% algorithm.                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newenvironment{ppar}{%
+%  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+%                                 \begin{minipage}[t]{\linewidth}}{}%
+%  \begin{list}{}{%
+%     \edef\temp{\thegmargin}
+%        \setlength{\leftmargin}{0pt}%
+%        \addtolength{\leftmargin}{\temp}%
+%        \setlength{\itemindent}{0pt}%
+%      \setlength{\labelwidth}{0pt}%
+%      \setlength{\labelsep}{0pt}%
+%      \setlength{\itemindent}{-\leftmargin}%
+%      \setlength{\topsep}{0pt}%
+%      \setlength{\parsep}{0pt}%
+%      \setlength{\partopsep}{0pt}%
+%      \setlength{\parskip}{0pt}%
+%      \setlength{\itemsep}{0pt}
+%      \setlength{\itemindent}{0pt}%
+%      \addtolength{\itemindent}{-\leftmargin}}%
+%      \item[\tstrut\hspace{\temp}]}%
+% {\hspace{-\the\lastskip}\tstrut
+% \end{list}%
+%  \ifthenelse{\boolean{shading}}{\end{minipage}  
+%                                 \end{lrbox}%
+%                                 \shadebox{\usebox{\tempsbox}}\par}{}%
+%  }
+
+ %%% TESTING
+ \newcommand{\xtest}[1]{\par
+ \makebox[0pt][l]{\shadebox{\xtstrut\hspace*{\textwidth}}}%
+ \mbox{$\mbox{}#1\mbox{}$}} 
+
+% \newcommand{\xxtest}[1]{\par
+% \makebox[0pt][l]{\shadebox{\xtstrut{#1}\hspace*{\textwidth}}}%
+% \mbox{$\mbox{}#1\mbox{}$}} 
+
+%\newlength{\pcalvspace}
+%\setlength{\pcalvspace}{0pt}
+% \newlength{\xxtestlen}
+% \setlength{\xxtestlen}{0pt}
+% \newcommand\xtstrut%
+%   {\setlength{\xxtestlen}{1.15em}%
+%    \addtolength{\xxtestlen}{\pcalvspace}%
+%     \raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{\xxtestlen}}}%
+%    \global\setlength{\vshadelen}{0pt}%
+%    \global\setlength{\pcalvspace}{0pt}}
+   
+   %%%% TESTING
+   
+   %% The xcpar environment
+   %%  Note: overloaded use of \pcalvspace for testing.
+   %%
+%   \newlength{\xcparht}%
+%   \newlength{\xcpardp}%
+   
+%   \newenvironment{xcpar}[6]{%
+%  \addtocounter{pardepth}{-#1}%
+%  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+%                                 \begin{minipage}[t]{\linewidth}}{}%
+%  \begin{list}{}{%
+%     \edef\temp{\thegmargin}%
+%     \ifthenelse{\equal{#3}{T}}%
+%       {\settowidth{\leftmargin}{\hspace{\temp}\footnotesize #6\hspace{#5pt}}%
+%        \addtolength{\leftmargin}{#4pt}}%
+%       {\setlength{\leftmargin}{#4pt}%
+%        \addtolength{\leftmargin}{#5pt}%
+%        \addtolength{\leftmargin}{\temp}%
+%        \setlength{\itemindent}{-#5pt}}%
+%      \ifthenelse{\equal{#2}{T}}{\addtocounter{pardepth}{1}%
+%                                 \setgmargin{\the\leftmargin}}{}%
+%      \setlength{\labelwidth}{0pt}%
+%      \setlength{\labelsep}{0pt}%
+%      \setlength{\itemindent}{-\leftmargin}%
+%      \setlength{\topsep}{0pt}%
+%      \setlength{\parsep}{0pt}%
+%      \setlength{\partopsep}{0pt}%
+%      \setlength{\parskip}{0pt}%
+%      \setlength{\itemsep}{0pt}%
+%      \setlength{\itemindent}{#4pt}%
+%      \addtolength{\itemindent}{-\leftmargin}}%
+%   \ifthenelse{\equal{#3}{T}}%
+%      {\item[\xtstrut\footnotesize \hspace{\temp}{#6}\hspace{#5pt}]%
+%        }%
+%      {\item[\xtstrut\hspace{\temp}]%
+%         }%
+%   \footnotesize}
+% {\hspace{-\the\lastskip}\tstrut
+% \end{list}%
+%  \ifthenelse{\boolean{shading}}{\end{minipage}  
+%                                 \end{lrbox}%
+%                                 \setlength{\xcparht}{\ht\tempsbox}%
+%                                 \setlength{\xcpardp}{\dp\tempsbox}%
+%                                 \addtolength{\xcparht}{.15em}%
+%                                 \addtolength{\xcpardp}{.2em}%
+%                                 \addtolength{\xcparht}{\xcpardp}%
+%                                 \hspace*{-\lcomindent}%
+%                                 \makebox[0pt][l]{\raisebox{-\xcpardp}[0pt][0pt]{%
+%                                      \shadebox{\rule{0pt}{\xcparht}\hspace*{\textwidth}}}}%
+%                                 \hspace*{\lcomindent}\usebox{\tempsbox}%
+%                                 \par}{}%
+%  }
+%  
+% \newlength{\xmcomlen}
+%\newenvironment{xmcom}[1]{%
+%  \setcounter{pardepth}{0}%
+%  \hspace{.65em}%
+%  \begin{lrbox}{\alignbox}\sloppypar%
+%      \setboolean{shading}{false}%
+%      \setlength{\boxwidth}{#1pt}%
+%      \addtolength{\boxwidth}{-.65em}%
+%      \begin{minipage}[t]{\boxwidth}\footnotesize
+%      \parskip=0pt\relax}%
+%       {\end{minipage}\end{lrbox}%
+%       \setlength{\xmcomlen}{\textwidth}%
+%       \addtolength{\xmcomlen}{-\wd\alignbox}%
+%       \settodepth{\alignwidth}{\usebox{\alignbox}}%
+%       \global\setlength{\multicommentdepth}{\alignwidth}%
+%       \setlength{\boxwidth}{\alignwidth}%
+%       \global\addtolength{\alignwidth}{-\maxdepth}%
+%       \addtolength{\boxwidth}{.1em}%
+%       \raisebox{0pt}[0pt][0pt]{%
+%        \ifthenelse{\boolean{shading}}%
+%          {\hspace*{-\xmcomlen}\shadebox{\rule[-\boxwidth]{0pt}{0pt}%
+%                                 \hspace*{\xmcomlen}\usebox{\alignbox}}}%
+%          {\usebox{\alignbox}}}%
+%       \vspace*{\alignwidth}\pagebreak[0]\vspace{-\alignwidth}\par}
+% % a multi-line comment, whose first argument is its width in points.
+%  
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE lcom ENVIRONMENT                                                       %
+% ^^^^^^^^^^^^^^^^^^^^                                                       %
+% A multi-line comment with no text to its left is typeset in an lcom        % 
+% environment, whose argument is a number representing the indentation       % 
+% of the left margin, in points.  All the text of the comment should be      % 
+% inside cpar environments.                                                  % 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{lcom}[1]{%
+  \setlength{\lcomindent}{#1pt} % Added for PlusCal handling.
+  \par\vspace{.2em}%
+  \sloppypar
+  \setcounter{pardepth}{0}%
+  \footnotesize
+  \begin{list}{}{%
+    \setlength{\leftmargin}{#1pt}
+    \setlength{\labelwidth}{0pt}%
+    \setlength{\labelsep}{0pt}%
+    \setlength{\itemindent}{0pt}%
+    \setlength{\topsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+    \setlength{\parskip}{0pt}}
+    \item[]}%
+  {\end{list}\vspace{.3em}\setlength{\lcomindent}{0pt}%
+ }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE mcom ENVIRONMENT AND \mutivspace COMMAND                              %
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                              %
+%                                                                           %
+% A part of the spec containing a right-comment of the form                 %
+%                                                                           %
+%      xxxx (*************)                                                 %
+%      yyyy (* ccccccccc *)                                                 %
+%      ...  (* ccccccccc *)                                                 %
+%           (* ccccccccc *)                                                 %
+%           (* ccccccccc *)                                                 %
+%           (*************)                                                 %
+%                                                                           %
+% is typeset by                                                             %
+%                                                                           %
+%     XXXX \begin{mcom}{d}                                                  %
+%            CCCC ... CCC                                                   %
+%          \end{mcom}                                                       %
+%     YYYY ...                                                              %
+%     \multivspace{n}                                                       %
+%                                                                           %
+% where the number d is the width in points of the comment, n is the        %
+% number of xxxx, yyyy, ...  lines to the left of the comment.              %
+% All the text of the comment should be typeset in cpar environments.       %
+%                                                                           %
+% This puts the comment into a single box (so no page breaks can occur      %
+% within it).  The entire box is shaded iff the shading flag is true.       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\xmcomlen}%
+\newenvironment{mcom}[1]{%
+  \setcounter{pardepth}{0}%
+  \hspace{.65em}%
+  \begin{lrbox}{\alignbox}\sloppypar%
+      \setboolean{shading}{false}%
+      \setlength{\boxwidth}{#1pt}%
+      \addtolength{\boxwidth}{-.65em}%
+      \begin{minipage}[t]{\boxwidth}\footnotesize
+      \parskip=0pt\relax}%
+       {\end{minipage}\end{lrbox}%
+       \setlength{\xmcomlen}{\textwidth}%       % For PlusCal shading
+       \addtolength{\xmcomlen}{-\wd\alignbox}%  % For PlusCal shading
+       \settodepth{\alignwidth}{\usebox{\alignbox}}%
+       \global\setlength{\multicommentdepth}{\alignwidth}%
+       \setlength{\boxwidth}{\alignwidth}%      % For PlusCal shading
+       \global\addtolength{\alignwidth}{-\maxdepth}%
+       \addtolength{\boxwidth}{.1em}%           % For PlusCal shading
+      \raisebox{0pt}[0pt][0pt]{%
+        \ifthenelse{\boolean{shading}}%
+          {\ifpcalshading
+             \hspace*{-\xmcomlen}%
+             \shadebox{\rule[-\boxwidth]{0pt}{0pt}\hspace*{\xmcomlen}%
+                          \usebox{\alignbox}}%
+           \else
+             \shadebox{\usebox{\alignbox}}
+           \fi
+          }%
+          {\usebox{\alignbox}}}%
+       \vspace*{\alignwidth}\pagebreak[0]\vspace{-\alignwidth}\par}
+ % a multi-line comment, whose first argument is its width in points.
+
+
+% \multispace{n} produces the vertical space indicated by "|"s in 
+% this situation
+%   
+%     xxxx (*************)
+%     xxxx (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (*************)
+%
+% where n is the number of "xxxx" lines.
+\newcommand{\multivspace}[1]{\addtolength{\multicommentdepth}{-#1\baselineskip}%
+ \addtolength{\multicommentdepth}{1.2em}%
+ \ifthenelse{\lengthtest{\multicommentdepth > 0pt}}%
+    {\par\vspace{\multicommentdepth}\par}{}}
+
+%\newenvironment{hpar}[2]{%
+%  \begin{list}{}{\setlength{\leftmargin}{#1pt}%
+%                 \addtolength{\leftmargin}{#2pt}%
+%                 \setlength{\itemindent}{-#2pt}%
+%                 \setlength{\topsep}{0pt}%
+%                 \setlength{\parsep}{0pt}%
+%                 \setlength{\partopsep}{0pt}%
+%                 \setlength{\parskip}{0pt}%
+%                 \addtolength{\labelsep}{0pt}}%
+%  \item[]\footnotesize}{\end{list}}
+%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    % Typesets a sequence of paragraphs like this:                         %
+%    %                                                                      %
+%    %      left |<-- d1 --> XXXXXXXXXXXXXXXXXXXXXXXX                       %
+%    %    margin |           <- d2 -> XXXXXXXXXXXXXXX                       %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %           |                                                          %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %                                                                      %
+%    % where d1 = #1pt and d2 = #2pt, but with no vspace between            %
+%    % paragraphs.                                                          %
+%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Commands for repeated characters that produce dashes.              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \raisedDash{wd}{ht}{thk} makes a horizontal line wd characters wide, 
+% raised a distance ht ex's above the baseline, with a thickness of 
+% thk em's.
+\newcommand{\raisedDash}[3]{\raisebox{#2ex}{\setlength{\alignwidth}{.5em}%
+  \rule{#1\alignwidth}{#3em}}}
+
+% The following commands take a single argument n and produce the
+% output for n repeated characters, as follows
+%   \cdash:    -
+%   \tdash:    ~
+%   \ceqdash:  =
+%   \usdash:   _
+\newcommand{\cdash}[1]{\raisedDash{#1}{.5}{.04}}
+\newcommand{\usdash}[1]{\raisedDash{#1}{0}{.04}}
+\newcommand{\ceqdash}[1]{\raisedDash{#1}{.5}{.08}}
+\newcommand{\tdash}[1]{\raisedDash{#1}{1}{.08}}
+
+\newlength{\spacewidth}
+\setlength{\spacewidth}{.2em}
+\newcommand{\e}[1]{\hspace{#1\spacewidth}}
+%% \e{i} produces space corresponding to i input spaces.
+
+
+%% Alignment-file Commands
+
+\newlength{\alignboxwidth}
+\newlength{\alignwidth}
+\newsavebox{\alignbox}
+
+% \al{i}{j}{txt} is used in the alignment file to put "%{i}{j}{wd}"
+% in the log file, where wd is the width of the line up to that point,
+% and txt is the following text.
+\newcommand{\al}[3]{%
+  \typeout{\%{#1}{#2}{\the\alignwidth}}%
+  \cl{#3}}
+
+%% \cl{txt} continues a specification line in the alignment file
+%% with text txt.
+\newcommand{\cl}[1]{%
+  \savebox{\alignbox}{\mbox{$\mbox{}#1\mbox{}$}}%
+  \settowidth{\alignboxwidth}{\usebox{\alignbox}}%
+  \addtolength{\alignwidth}{\alignboxwidth}%
+  \usebox{\alignbox}}
+
+% \fl{txt} in the alignment file begins a specification line that
+% starts with the text txt.
+\newcommand{\fl}[1]{%
+  \par
+  \savebox{\alignbox}{\mbox{$\mbox{}#1\mbox{}$}}%
+  \settowidth{\alignwidth}{\usebox{\alignbox}}%
+  \usebox{\alignbox}}
+
+
+
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ordinarily, TeX typesets letters in math mode in a special math italic    %
+% font.  This makes it typeset "it" to look like the product of the         %
+% variables i and t, rather than like the word "it".  The following         %
+% commands tell TeX to use an ordinary italic font instead.                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifx\documentclass\undefined
+\else
+  \DeclareSymbolFont{tlaitalics}{\encodingdefault}{cmr}{m}{it}
+  \let\itfam\symtlaitalics
+\fi
+
+\makeatletter
+\newcommand{\tlx@c}{\c@tlx@ctr\advance\c@tlx@ctr\@ne}
+\newcounter{tlx@ctr}
+\c@tlx@ctr=\itfam \multiply\c@tlx@ctr"100\relax \advance\c@tlx@ctr "7061\relax
+\mathcode`a=\tlx@c \mathcode`b=\tlx@c \mathcode`c=\tlx@c \mathcode`d=\tlx@c
+\mathcode`e=\tlx@c \mathcode`f=\tlx@c \mathcode`g=\tlx@c \mathcode`h=\tlx@c
+\mathcode`i=\tlx@c \mathcode`j=\tlx@c \mathcode`k=\tlx@c \mathcode`l=\tlx@c
+\mathcode`m=\tlx@c \mathcode`n=\tlx@c \mathcode`o=\tlx@c \mathcode`p=\tlx@c
+\mathcode`q=\tlx@c \mathcode`r=\tlx@c \mathcode`s=\tlx@c \mathcode`t=\tlx@c
+\mathcode`u=\tlx@c \mathcode`v=\tlx@c \mathcode`w=\tlx@c \mathcode`x=\tlx@c
+\mathcode`y=\tlx@c \mathcode`z=\tlx@c
+\c@tlx@ctr=\itfam \multiply\c@tlx@ctr"100\relax \advance\c@tlx@ctr "7041\relax
+\mathcode`A=\tlx@c \mathcode`B=\tlx@c \mathcode`C=\tlx@c \mathcode`D=\tlx@c
+\mathcode`E=\tlx@c \mathcode`F=\tlx@c \mathcode`G=\tlx@c \mathcode`H=\tlx@c
+\mathcode`I=\tlx@c \mathcode`J=\tlx@c \mathcode`K=\tlx@c \mathcode`L=\tlx@c
+\mathcode`M=\tlx@c \mathcode`N=\tlx@c \mathcode`O=\tlx@c \mathcode`P=\tlx@c
+\mathcode`Q=\tlx@c \mathcode`R=\tlx@c \mathcode`S=\tlx@c \mathcode`T=\tlx@c
+\mathcode`U=\tlx@c \mathcode`V=\tlx@c \mathcode`W=\tlx@c \mathcode`X=\tlx@c
+\mathcode`Y=\tlx@c \mathcode`Z=\tlx@c
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                THE describe ENVIRONMENT                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+% It is like the description environment except it takes an argument
+% ARG that should be the text of the widest label.  It adjusts the
+% indentation so each item with label LABEL produces
+%%      LABEL             blah blah blah
+%%      <- width of ARG ->blah blah blah
+%%                        blah blah blah
+\newenvironment{describe}[1]%
+   {\begin{list}{}{\settowidth{\labelwidth}{#1}%
+            \setlength{\labelsep}{.5em}%
+            \setlength{\leftmargin}{\labelwidth}% 
+            \addtolength{\leftmargin}{\labelsep}%
+            \addtolength{\leftmargin}{\parindent}%
+            \def\makelabel##1{\rm ##1\hfill}}%
+            \setlength{\topsep}{0pt}}%% 
+                % Sets \topsep to 0 to reduce vertical space above
+                % and below embedded displayed equations
+   {\end{list}}
+
+%   For tlatex.TeX
+\usepackage{verbatim}
+\makeatletter
+\def\tla{\let\%\relax%
+         \@bsphack
+         \typeout{\%{\the\linewidth}}%
+             \let\do\@makeother\dospecials\catcode`\^^M\active
+             \let\verbatim@startline\relax
+             \let\verbatim@addtoline\@gobble
+             \let\verbatim@processline\relax
+             \let\verbatim@finish\relax
+             \verbatim@}
+\let\endtla=\@esphack
+
+\let\pcal=\tla
+\let\endpcal=\endtla
+\let\ppcal=\tla
+\let\endppcal=\endtla
+
+% The tlatex environment is used by TLATeX.TeX to typeset TLA+.
+% TLATeX.TLA starts its files by writing a \tlatex command.  This
+% command/environment sets \parindent to 0 and defines \% to its
+% standard definition because the writing of the log files is messed up
+% if \% is defined to be something else.  It also executes
+% \@computerule to determine the dimensions for the TLA horizonatl
+% bars.
+\newenvironment{tlatex}{\@computerule%
+                        \setlength{\parindent}{0pt}%
+                       \makeatletter\chardef\%=`\%}{}
+
+
+% The notla environment produces no output.  You can turn a 
+% tla environment to a notla environment to prevent tlatex.TeX from
+% re-formatting the environment.
+
+\def\notla{\let\%\relax%
+         \@bsphack
+             \let\do\@makeother\dospecials\catcode`\^^M\active
+             \let\verbatim@startline\relax
+             \let\verbatim@addtoline\@gobble
+             \let\verbatim@processline\relax
+             \let\verbatim@finish\relax
+             \verbatim@}
+\let\endnotla=\@esphack
+
+\let\nopcal=\notla
+\let\endnopcal=\endnotla
+\let\noppcal=\notla
+\let\endnoppcal=\endnotla
+
+%%%%%%%%%%%%%%%%%%%%%%%% end of tlatex.sty file %%%%%%%%%%%%%%%%%%%%%%% 
+% last modified on Fri  3 August 2012 at 14:23:49 PST by lamport
+
+\begin{document}
+\tlatex
+\setboolean{shading}{true}
+\@x{}\moduleLeftDash\@xx{ {\MODULE} PlanningPoker}\moduleRightDash\@xx{}%
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+This spec models the concurrent state management of a Planning Poker
+ web application (Spring Boot + React). All session state lives in
+ memory, protected by synchronized collection wrappers. The wrappers
+ make individual reads and writes thread-safe, but compound operations
+ like ``check if user exists, then add user'' are NOT atomic.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+The spec splits these non-atomic operations into separate Check and Act
+ steps, allowing \ensuremath{TLC} to explore every possible interleaving. This
+ exposes three classes of \ensuremath{TOCTOU} (time-of-check-to-time-of-use)
+ bugs:
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{T}{T}{5.0}{2.5}{%
+1.}%
+Double-join: two threads both pass the ``not a member'' check and
+ both add the same username, creating a duplicate.
+\end{cpar}%
+\begin{cpar}{1}{T}{T}{5.0}{2.5}{%
+2.}%
+Double-vote: two threads both pass the ``hasn\mbox{'}t voted'' check and
+ both record a vote, giving one user two estimates.
+\end{cpar}%
+\begin{cpar}{1}{T}{T}{5.0}{2.5}{%
+3.}%
+Ghost writes: a thread passes all checks, then the weekly cron
+ clears all sessions, then the thread completes its write --
+ leaving orphaned data in a dead session.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{1}{F}{F}{0}{0}{}%
+ With just 1 session, 2 users, 2 estimates, and 2 threads, \ensuremath{TLC}
+ explores
+ 35,530 distinct states and finds concrete violation traces for all
+ three bug classes in under one second.
+\end{cpar}%
+\end{lcom}%
+\@x{ {\EXTENDS} Integers ,\, Sequences ,\, FiniteSets}%
+\@pvspace{8.0pt}%
+\@x{ {\CONSTANTS}}%
+\@x{\@s{16.4} Users ,\,\@s{38.63}}%
+\@y{\@s{0}%
+ Set of usernames
+}%
+\@xx{}%
+\@x{\@s{16.4} Estimates ,\,\@s{20.50}}%
+\@y{\@s{0}%
+ Set of legal estimate values
+}%
+\@xx{}%
+\@x{\@s{16.4} Sessions ,\,\@s{26.77}}%
+\@y{\@s{0}%
+ Set of session \ensuremath{IDs} (typically singleton for small model)
+}%
+\@xx{}%
+\@x{\@s{16.4} Threads\@s{34.79}}%
+\@y{\@s{0}%
+ Set of \ensuremath{HTTP} request handler threads
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\VARIABLES}}%
+\@x{\@s{16.4} activeSessions ,\,\@s{19.83}}%
+\@y{\@s{0}%
+ Set of currently active session \ensuremath{IDs
+}}%
+\@xx{}%
+\@x{\@s{16.4} sessionUsers ,\,\@s{26.33}}%
+\@y{\@s{0}%
+ Function: \ensuremath{session \.{\rightarrow}} sequence of joined usernames
+ (allows duplicates)
+}%
+\@xx{}%
+\@x{\@s{16.4} sessionEstimates ,\,\@s{8.2}}%
+\@y{\@s{0}%
+ Function: \ensuremath{session \.{\rightarrow}} sequence of (user, estimate)
+ pairs
+}%
+\@xx{}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ The vulnerability window: \ensuremath{threadState} records what a thread
+ intends
+}%
+\@xx{}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ to do after passing its check. Between check and act, anything can
+}%
+\@xx{}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ happen -- another thread can join the same user, or the cron can
+}%
+\@xx{}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ wipe the session entirely. The thread proceeds blindly.
+}%
+\@xx{}%
+\@x{\@s{16.4} threadState\@s{39.18}}%
+\@y{\@s{0}%
+ Function: thread \ensuremath{\.{\rightarrow}} record describing pending
+ operation
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+ \@x{ vars \.{\defeq} {\langle} activeSessions ,\, sessionUsers ,\,
+ sessionEstimates ,\, threadState {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Thread states
+}%
+\@xx{}%
+\@x{ Idle \.{\defeq} [ type \.{\mapsto}\@w{idle} ]}%
+ \@x{ PendingJoin ( u ,\, s ) \.{\defeq} [ type \.{\mapsto}\@w{join} ,\, user
+ \.{\mapsto} u ,\, session \.{\mapsto} s ]}%
+ \@x{ PendingVote ( u ,\, s ,\, e ) \.{\defeq} [ type \.{\mapsto}\@w{vote} ,\,
+ user \.{\mapsto} u ,\, session \.{\mapsto} s ,\, estimate \.{\mapsto} e ]}%
+ \@x{ PendingLogout ( u ,\, s ) \.{\defeq} [ type \.{\mapsto}\@w{logout} ,\,
+ user \.{\mapsto} u ,\, session \.{\mapsto} s ]}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Helper: check if user appears in a sequence of usernames \cdash{3}
+}%
+\@xx{}%
+\@x{ UserInSeq ( seq ,\, u ) \.{\defeq}}%
+ \@x{\@s{16.4} \E\, i \.{\in} 1 \.{\dotdot} Len ( seq ) \.{:} seq [ i ] \.{=}
+ u}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Helper: filter a sequence, keeping only elements satisfying
+ predicate \cdash{3}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{SelectSeq} is built-in for \ensuremath{Sequences}, used for
+ estimates.
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ For user sequences we filter by inequality.
+}%
+\@xx{}%
+\@x{ FilterUsers ( seq ,\, u ) \.{\defeq}}%
+\@x{\@s{16.4} SelectSeq ( seq ,\, {\LAMBDA} x \.{:} x \.{\neq} u )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Helper: count estimates for a user in a session \cdash{3}
+}%
+\@xx{}%
+\@x{ UserEstimateCount ( s ,\, u ) \.{\defeq}}%
+ \@x{\@s{16.4} \.{\LET} matchingPairs \.{\defeq} \{ i \.{\in} 1 \.{\dotdot}
+ Len ( sessionEstimates [ s ] ) \.{:}}%
+\@x{\@s{128.47} sessionEstimates [ s ] [ i ] [ 1 ] \.{=} u \}}%
+\@x{\@s{16.4} \.{\IN} Cardinality ( matchingPairs )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Type Invariant \cdash{3}
+}%
+\@xx{}%
+\@x{ TypeOK \.{\defeq}}%
+\@x{\@s{16.4} \.{\land}\@s{9.74} activeSessions \.{\subseteq} Sessions}%
+\@x{\@s{16.4} \.{\land}\@s{9.74} \A\, s \.{\in} Sessions \.{:}}%
+ \@x{\@s{41.35} \.{\land} \A\, i \.{\in} 1 \.{\dotdot} Len ( sessionUsers [ s
+ ] ) \.{:} sessionUsers [ s ] [ i ] \.{\in} Users}%
+ \@x{\@s{41.35} \.{\land} \A\, i \.{\in} 1 \.{\dotdot} Len ( sessionEstimates
+ [ s ] ) \.{:}}%
+\@x{\@s{56.56} \.{\land} sessionEstimates [ s ] [ i ] [ 1 ] \.{\in} Users}%
+ \@x{\@s{56.56} \.{\land} sessionEstimates [ s ] [ i ] [ 2 ] \.{\in}
+ Estimates}%
+ \@x{\@s{16.4} \.{\land}\@s{9.74} \A\, t \.{\in} Threads \.{:} threadState [ t
+ ] . type \.{\in} \{\@w{idle} ,\,\@w{join} ,\,\@w{vote} ,\,\@w{logout} \}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Initial State \cdash{3}
+}%
+\@xx{}%
+\@x{ Init \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} activeSessions \.{=} \{ \}}%
+ \@x{\@s{16.4} \.{\land} sessionUsers \.{=} [ s \.{\in} Sessions \.{\mapsto}
+ {\langle} {\rangle} ]}%
+ \@x{\@s{16.4} \.{\land} sessionEstimates \.{=} [ s \.{\in} Sessions
+ \.{\mapsto} {\langle} {\rangle} ]}%
+ \@x{\@s{16.4} \.{\land} threadState \.{=} [ t\@s{4.48} \.{\in} Threads
+ \.{\mapsto} Idle ]}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Actions \cdash{3}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Create a new session and join the creator to it (atomic)
+}%
+\@xx{}%
+\@x{ CreateSession ( s ,\, u ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} s \.{\notin} activeSessions}%
+ \@x{\@s{16.4} \.{\land} activeSessions \.{'} \.{=} activeSessions \.{\cup} \{
+ s \}}%
+ \@x{\@s{16.4} \.{\land} sessionUsers \.{'} \.{=} [ sessionUsers {\EXCEPT}
+ {\bang} [ s ] \.{=} Append ( sessionUsers [ s ] ,\, u ) ]}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} sessionEstimates ,\,
+ threadState {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Join: split into check and act to model \ensuremath{TOCTOU}
+ \cdash{3}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Phase 1: Thread checks that session is active and user is not already a
+ member
+}%
+\@xx{}%
+\@x{ JoinCheck ( t ,\, u ,\, s ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} threadState [ t ] \.{=} Idle}%
+\@x{\@s{16.4} \.{\land} s \.{\in} activeSessions}%
+\@x{\@s{16.4} \.{\land} {\lnot} UserInSeq ( sessionUsers [ s ] ,\, u )}%
+ \@x{\@s{16.4} \.{\land} threadState \.{'} \.{=} [ threadState {\EXCEPT}
+ {\bang} [ t ] \.{=} PendingJoin ( u ,\, s ) ]}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} activeSessions ,\,
+ sessionUsers ,\, sessionEstimates {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Phase 2: Thread proceeds to add the user (without re-checking guards)
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Appends to sequence — if another thread already added same user, this
+ creates a duplicate
+}%
+\@xx{}%
+\@x{ JoinAct ( t ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land}\@s{7.33} threadState [ t ] . type \.{=}\@w{join}}%
+ \@x{\@s{16.4} \.{\land}\@s{7.33} \.{\LET} u \.{\defeq} threadState [ t ] .
+ user}%
+\@x{\@s{55.24} s\@s{1.22} \.{\defeq} threadState [ t ] . session}%
+\@x{\@s{34.84} \.{\IN}}%
+ \@x{\@s{38.94} \.{\land} sessionUsers \.{'} \.{=} [ sessionUsers {\EXCEPT}
+ {\bang} [ s ] \.{=} Append ( sessionUsers [ s ] ,\, u ) ]}%
+ \@x{\@s{38.94} \.{\land} threadState \.{'} \.{=} [ threadState {\EXCEPT}
+ {\bang} [ t ] \.{=} Idle ]}%
+ \@x{\@s{16.4} \.{\land}\@s{7.33} {\UNCHANGED} {\langle} activeSessions ,\,
+ sessionEstimates {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Vote: split into check and act to model \ensuremath{TOCTOU}
+ \cdash{3}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Phase 1: Thread checks membership and that user hasn\mbox{'}t voted
+}%
+\@xx{}%
+\@x{ VoteCheck ( t ,\, u ,\, s ,\, e ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} threadState [ t ] \.{=} Idle}%
+\@x{\@s{16.4} \.{\land} s \.{\in} activeSessions}%
+\@x{\@s{16.4} \.{\land} UserInSeq ( sessionUsers [ s ] ,\, u )}%
+\@x{\@s{16.4} \.{\land} UserEstimateCount ( s ,\, u ) \.{=} 0}%
+ \@x{\@s{16.4} \.{\land} threadState \.{'} \.{=} [ threadState {\EXCEPT}
+ {\bang} [ t ] \.{=} PendingVote ( u ,\, s ,\, e ) ]}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} activeSessions ,\,
+ sessionUsers ,\, sessionEstimates {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Phase 2: Thread writes the estimate (without re-checking)
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Uses \ensuremath{Append} to model \ensuremath{ListMultimap} which allows
+ duplicate entries
+}%
+\@xx{}%
+\@x{ VoteAct ( t ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land}\@s{7.98} threadState [ t ] . type \.{=}\@w{vote}}%
+ \@x{\@s{16.4} \.{\land}\@s{7.98} \.{\LET} u \.{\defeq} threadState [ t ] .
+ user}%
+\@x{\@s{55.89} s\@s{1.22} \.{\defeq} threadState [ t ] . session}%
+\@x{\@s{55.89} e\@s{0.78} \.{\defeq} threadState [ t ] . estimate}%
+\@x{\@s{35.49} \.{\IN}}%
+ \@x{\@s{39.59} \.{\land} sessionEstimates \.{'} \.{=} [ sessionEstimates
+ {\EXCEPT}}%
+ \@x{\@s{54.80} {\bang} [ s ] \.{=} Append ( sessionEstimates [ s ] ,\,
+ {\langle} u ,\, e {\rangle} ) ]}%
+ \@x{\@s{39.59} \.{\land} threadState \.{'} \.{=} [ threadState {\EXCEPT}
+ {\bang} [ t ] \.{=} Idle ]}%
+ \@x{\@s{16.4} \.{\land}\@s{7.98} {\UNCHANGED} {\langle} activeSessions ,\,
+ sessionUsers {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Reset: atomic (synchronized block in implementation)
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Does NOT cancel in-flight thread operations — they will complete after reset
+}%
+\@xx{}%
+\@x{ Reset ( u ,\, s ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} s \.{\in} activeSessions}%
+\@x{\@s{16.4} \.{\land} UserInSeq ( sessionUsers [ s ] ,\, u )}%
+ \@x{\@s{16.4} \.{\land} sessionEstimates \.{'} \.{=} [ sessionEstimates
+ {\EXCEPT} {\bang} [ s ] \.{=} {\langle} {\rangle} ]}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} activeSessions ,\,
+ sessionUsers ,\, threadState {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} \ensuremath{Logout}: split into check and act to model
+ \ensuremath{TOCTOU} \cdash{3}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Phase 1: Thread checks membership and records intent
+}%
+\@xx{}%
+\@x{ LogoutCheck ( t ,\, u ,\, s ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} threadState [ t ] \.{=} Idle}%
+\@x{\@s{16.4} \.{\land} s \.{\in} activeSessions}%
+\@x{\@s{16.4} \.{\land} UserInSeq ( sessionUsers [ s ] ,\, u )}%
+ \@x{\@s{16.4} \.{\land} threadState \.{'} \.{=} [ threadState {\EXCEPT}
+ {\bang} [ t ] \.{=} PendingLogout ( u ,\, s ) ]}%
+ \@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} activeSessions ,\,
+ sessionUsers ,\, sessionEstimates {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ Phase 2: Thread removes user and their estimates (without re-checking)
+}%
+\@xx{}%
+\@x{ LogoutAct ( t ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} threadState [ t ] . type \.{=}\@w{logout}}%
+\@x{\@s{16.4} \.{\land} \.{\LET} u \.{\defeq} threadState [ t ] . user}%
+\@x{\@s{47.91} s\@s{1.22} \.{\defeq} threadState [ t ] . session}%
+\@x{\@s{27.51} \.{\IN}}%
+ \@x{\@s{31.61} \.{\land} sessionUsers \.{'} \.{=} [ sessionUsers {\EXCEPT}
+ {\bang} [ s ] \.{=} FilterUsers ( sessionUsers [ s ] ,\, u ) ]}%
+ \@x{\@s{31.61} \.{\land} sessionEstimates \.{'} \.{=} [ sessionEstimates
+ {\EXCEPT} {\bang} [ s ] \.{=}}%
+ \@x{\@s{46.82} SelectSeq ( sessionEstimates [ s ] ,\, {\LAMBDA} pair \.{:}
+ pair [ 1 ] \.{\neq} u ) ]}%
+ \@x{\@s{31.61} \.{\land} threadState \.{'} \.{=} [ threadState {\EXCEPT}
+ {\bang} [ t ] \.{=} Idle ]}%
+\@x{\@s{16.4} \.{\land} {\UNCHANGED} {\langle} activeSessions {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{ClearSessionsTask}: wipes all sessions unconditionally
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ In-flight thread operations are NOT cancelled — they continue on their thread
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ and will write ghost data to the cleared session.
+}%
+\@xx{}%
+\@x{ ClearSessions \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} activeSessions \.{'} \.{=} \{ \}}%
+ \@x{\@s{16.4} \.{\land} sessionUsers \.{'} \.{=} [ s \.{\in} Sessions
+ \.{\mapsto} {\langle} {\rangle} ]}%
+ \@x{\@s{16.4} \.{\land} sessionEstimates \.{'} \.{=} [ s \.{\in} Sessions
+ \.{\mapsto} {\langle} {\rangle} ]}%
+\@x{\@s{16.4} \.{\land} {\UNCHANGED} threadState}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Next-State Relation \cdash{3}
+}%
+\@xx{}%
+\@x{ Next \.{\defeq}}%
+ \@x{\@s{16.4} \.{\lor} \E\, s\@s{1.22} \.{\in} Sessions ,\, u \.{\in} Users
+ \.{:} CreateSession ( s ,\, u )}%
+ \@x{\@s{16.4} \.{\lor} \E\, t\@s{1.86} \.{\in} Threads ,\, u \.{\in} Users
+ ,\, s \.{\in} Sessions \.{:} JoinCheck ( t ,\, u ,\, s )}%
+\@x{\@s{16.4} \.{\lor} \E\, t\@s{1.86} \.{\in} Threads \.{:} JoinAct ( t )}%
+ \@x{\@s{16.4} \.{\lor} \E\, t\@s{1.86} \.{\in} Threads ,\, u \.{\in} Users
+ ,\, s \.{\in} Sessions ,\, e \.{\in} Estimates \.{:} VoteCheck ( t ,\, u ,\,
+ s ,\, e )}%
+\@x{\@s{16.4} \.{\lor} \E\, t\@s{1.86} \.{\in} Threads \.{:} VoteAct ( t )}%
+ \@x{\@s{16.4} \.{\lor} \E\, u \.{\in} Users ,\, s \.{\in} Sessions \.{:}
+ Reset ( u ,\, s )}%
+ \@x{\@s{16.4} \.{\lor} \E\, t\@s{1.86} \.{\in} Threads ,\, u \.{\in} Users
+ ,\, s \.{\in} Sessions \.{:} LogoutCheck ( t ,\, u ,\, s )}%
+\@x{\@s{16.4} \.{\lor} \E\, t\@s{1.86} \.{\in} Threads \.{:} LogoutAct ( t )}%
+\@x{\@s{16.4} \.{\lor} ClearSessions}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Specification \cdash{3}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Safety-only spec: \ensuremath{{\WF}\_vars(Next)} suffices since no liveness
+ properties
+}%
+\@xx{}%
+ \@x{ Spec \.{\defeq} Init \.{\land} {\Box} [ Next ]_{ vars} \.{\land} {\WF}_{
+ vars} ( Next )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \cdash{3} Safety Invariants \cdash{3}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ EXPECTED VIOLATION: A user must not have two estimates in the same session
+ round.
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ The \ensuremath{TOCTOU} race on vote allows two threads to both pass the
+ ``no estimate'' check
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ and both write, giving the user two estimates.
+}%
+\@xx{}%
+\@x{ NoDoubleVote \.{\defeq}}%
+\@x{\@s{16.4} \A\, s \.{\in} Sessions \.{:}}%
+\@x{\@s{27.72} \A\, u \.{\in} Users \.{:}}%
+\@x{\@s{39.04} UserEstimateCount ( s ,\, u ) \.{\leq} 1}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ EXPECTED VIOLATION: No session should have duplicate usernames in its user
+ list.
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ The \ensuremath{TOCTOU} race on join allows two threads to both pass the
+ ``not a member'' check
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ and both append, creating duplicate entries.
+}%
+\@xx{}%
+\@x{ NoDuplicateUsername \.{\defeq}}%
+\@x{\@s{16.4} \A\, s \.{\in} Sessions \.{:}}%
+\@x{\@s{27.72} \A\, i \.{\in} 1 \.{\dotdot} Len ( sessionUsers [ s ] ) \.{:}}%
+\@x{\@s{39.04} \A\, j \.{\in} 1 \.{\dotdot} Len ( sessionUsers [ s ] ) \.{:}}%
+ \@x{\@s{50.36} ( i \.{\neq} j ) \.{\implies} ( sessionUsers [ s ] [ i ]
+ \.{\neq} sessionUsers [ s ] [ j ] )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ EXPECTED VIOLATION: A non-member should not have an estimate in a session.
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ After \ensuremath{ClearSessions} or \ensuremath{Logout}, in-flight
+ \ensuremath{VoteAct} writes ghost estimate to session
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ where the user is no longer a member.
+}%
+\@xx{}%
+\@x{ AllEstimatesHaveMembers \.{\defeq}}%
+\@x{\@s{16.4} \A\, s \.{\in} Sessions \.{:}}%
+ \@x{\@s{27.72} \A\, i \.{\in} 1 \.{\dotdot} Len ( sessionEstimates [ s ] )
+ \.{:}}%
+ \@x{\@s{39.04} UserInSeq ( sessionUsers [ s ] ,\, sessionEstimates [ s ] [ i
+ ] [ 1 ] )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ EXPECTED VIOLATION: After clear, no inactive session should have data.
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Ghost writes from in-flight \ensuremath{JoinAct} or \ensuremath{VoteAct} can
+ add data after clear.
+}%
+\@xx{}%
+\@x{ ClearedSessionsAreEmpty \.{\defeq}}%
+\@x{\@s{16.4} \A\, s \.{\in} Sessions \.{:}}%
+\@x{\@s{27.72} s \.{\notin} activeSessions \.{\implies}}%
+\@x{\@s{40.83} \.{\land} sessionUsers [ s ] \.{=} {\langle} {\rangle}}%
+\@x{\@s{40.83} \.{\land} sessionEstimates [ s ] \.{=} {\langle} {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}\bottombar\@xx{}%
+\end{document}
