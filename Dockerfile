@@ -16,7 +16,6 @@ COPY planningpoker-web/build.gradle planningpoker-web/build.gradle
 COPY --from=frontend /app/planningpoker-web/build/ planningpoker-web/build/
 RUN mkdir -p planningpoker-web/dist/libs
 RUN chmod +x gradlew && ./gradlew planningpoker-web:jar --no-daemon
-RUN ls -la planningpoker-web/dist/libs/
 RUN ./gradlew planningpoker-api:bootJar --no-daemon
 
 # Stage 3: Runtime
