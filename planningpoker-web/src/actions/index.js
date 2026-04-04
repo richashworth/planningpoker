@@ -25,13 +25,13 @@ export const usersUpdated = (users) => (
 );
 
 // User-driven actions
-export function createGame(playerName, callback) {
+export function createGame(playerName, schemeOptions, callback) {
   const request = axios.post(`${API_ROOT_URL}/createSession`, {
     userName: playerName,
-    schemeType: 'fibonacci',
-    customValues: null,
-    includeUnsure: true,
-    includeCoffee: true
+    schemeType: schemeOptions.schemeType,
+    customValues: schemeOptions.customValues,
+    includeUnsure: schemeOptions.includeUnsure,
+    includeCoffee: schemeOptions.includeCoffee
   });
   request.then(() => callback()).catch(err => {
     const msg = err.response?.data?.error || 'Failed to create session';
