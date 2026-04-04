@@ -60,10 +60,12 @@ export default function Vote() {
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 3, fontSize: '1.1rem' }}>
-        Cast your estimate
-      </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 42, mb: 3 }}>
+        <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
+          Cast your estimate
+        </Typography>
+      </Box>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start', minHeight: 300 }}>
         <Box
           sx={{
             display: 'grid',
