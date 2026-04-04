@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  backend-tests:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,13 +32,16 @@ jobs:
           key: gradle-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: gradle-
 
-      - name: Build frontend + web JAR
-        run: |
-          cd planningpoker-web && npm ci && npm run build && cd ..
-          ./gradlew planningpoker-web:jar --no-daemon
+      - name: Install frontend dependencies
+        run: cd planningpoker-web && npm ci
 
       - name: Run frontend unit tests
         run: cd planningpoker-web && npm test
+
+      - name: Build frontend + web JAR
+        run: |
+          cd planningpoker-web && npm run build && cd ..
+          ./gradlew planningpoker-web:jar --no-daemon
 
       - name: Run backend tests
         run: ./gradlew planningpoker-api:test --no-daemon
