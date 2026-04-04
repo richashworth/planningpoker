@@ -15,7 +15,7 @@ export default function Results() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 42, mb: 3 }}>
         <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
           Results
         </Typography>
@@ -31,7 +31,7 @@ export default function Results() {
           </Button>
         )}
       </Box>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start', minHeight: 300 }}>
         <Box>
           <Box
             sx={{
