@@ -4,6 +4,7 @@ import { CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED } fro
 
 const initialState = {
   playerName: '', sessionId: '', isAdmin: false, isRegistered: false,
+  legalEstimates: [], schemeType: 'fibonacci', includeUnsure: true, includeCoffee: true,
 };
 
 describe('game reducer', () => {
@@ -11,15 +12,24 @@ describe('game reducer', () => {
     expect(reducer(undefined, { type: '@@INIT' })).toEqual(initialState);
   });
 
-  it('sets playerName and sessionId on CREATE_GAME', () => {
+  it('sets playerName and session fields on CREATE_GAME', () => {
     const action = {
       type: CREATE_GAME,
-      payload: { data: 'abc12345' },
+      payload: { data: { sessionId: 'abc12345', values: ['1','2','3'], schemeType: 'simple', includeUnsure: false, includeCoffee: true } },
       meta: { userName: 'alice' },
     };
     const state = reducer(initialState, action);
     expect(state.playerName).toBe('alice');
     expect(state.sessionId).toBe('abc12345');
+    expect(state.legalEstimates).toEqual(['1','2','3']);
+    expect(state.schemeType).toBe('simple');
+    expect(state.includeUnsure).toBe(false);
+    expect(state.includeCoffee).toBe(true);
+  });
+
+  it('returns current state on CREATE_GAME with error', () => {
+    const action = { type: CREATE_GAME, error: true, payload: new Error('fail') };
+    expect(reducer(initialState, action)).toEqual(initialState);
   });
 
   it('sets isAdmin and isRegistered on GAME_CREATED', () => {
@@ -33,14 +43,24 @@ describe('game reducer', () => {
     expect(state.isRegistered).toBe(true);
   });
 
-  it('sets playerName and sessionId on JOIN_GAME', () => {
+  it('sets playerName and session fields on JOIN_GAME', () => {
     const action = {
       type: JOIN_GAME,
+      payload: { data: { values: ['XS','S','M','L','XL','XXL'], schemeType: 'tshirt', includeUnsure: true, includeCoffee: false } },
       meta: { userName: 'bob', sessionId: 'xyz98765' },
     };
     const state = reducer(initialState, action);
     expect(state.playerName).toBe('bob');
     expect(state.sessionId).toBe('xyz98765');
+    expect(state.legalEstimates).toEqual(['XS','S','M','L','XL','XXL']);
+    expect(state.schemeType).toBe('tshirt');
+    expect(state.includeUnsure).toBe(true);
+    expect(state.includeCoffee).toBe(false);
+  });
+
+  it('returns current state on JOIN_GAME with error', () => {
+    const action = { type: JOIN_GAME, error: true, payload: new Error('fail') };
+    expect(reducer(initialState, action)).toEqual(initialState);
   });
 
   it('resets to initial state on LEAVE_GAME', () => {
@@ -49,6 +69,10 @@ describe('game reducer', () => {
       sessionId: 'abc12345',
       isAdmin: true,
       isRegistered: true,
+      legalEstimates: ['1','2','3'],
+      schemeType: 'simple',
+      includeUnsure: false,
+      includeCoffee: false,
     };
     expect(reducer(active, { type: LEAVE_GAME })).toEqual(initialState);
   });
