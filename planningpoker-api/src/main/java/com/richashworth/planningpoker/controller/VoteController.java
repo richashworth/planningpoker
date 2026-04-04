@@ -10,14 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 public class VoteController {
-
-    private static final Set<String> LEGAL_ESTIMATES = Set.of(
-            "0", "0.5", "1", "2", "3", "5", "8", "13", "20", "50", "100", "\u221e", "?", "\u2615"
-    );
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SessionManager sessionManager;
@@ -34,7 +30,8 @@ public class VoteController {
             @RequestParam(name = "userName") final String userName,
             @RequestParam(name = "estimateValue") final String estimateValue
     ) {
-        if (!LEGAL_ESTIMATES.contains(estimateValue)) {
+        List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
+        if (!legalValues.contains(estimateValue)) {
             throw new IllegalArgumentException("Invalid estimate value");
         }
         synchronized (sessionManager) {
