@@ -26,7 +26,7 @@ export const usersUpdated = (users) => (
 
 // User-driven actions
 export function createGame(playerName, callback) {
-  const request = axios.post(`${API_ROOT_URL}/createSession`, `userName=${playerName}`);
+  const request = axios.post(`${API_ROOT_URL}/createSession`, new URLSearchParams({ userName: playerName }));
   request.then(() => callback());
 
   return {
@@ -38,7 +38,7 @@ export function createGame(playerName, callback) {
 
 export function leaveGame(playerName, sessionId, callback) {
   const request = axios.post(`${API_ROOT_URL}/logout`,
-    `userName=${playerName}&sessionId=${sessionId}`);
+    new URLSearchParams({ userName: playerName, sessionId }));
   request.then(() => callback());
 
   return {
@@ -49,7 +49,7 @@ export function leaveGame(playerName, sessionId, callback) {
 
 export function joinGame(playerName, sessionId, callback) {
   const request = axios.post(`${API_ROOT_URL}/joinSession`,
-    `userName=${playerName}&sessionId=${sessionId}`);
+    new URLSearchParams({ userName: playerName, sessionId }));
   request.then(() => callback());
 
   return {
@@ -61,7 +61,7 @@ export function joinGame(playerName, sessionId, callback) {
 
 export function vote(playerName, sessionId, estimateValue) {
   const request = axios.post(`${API_ROOT_URL}/vote`,
-    `userName=${playerName}&sessionId=${sessionId}&estimateValue=${estimateValue}`);
+    new URLSearchParams({ userName: playerName, sessionId, estimateValue }));
 
   return {
     type: VOTE,
@@ -71,7 +71,7 @@ export function vote(playerName, sessionId, estimateValue) {
 }
 
 export function resetSession(playerName, sessionId) {
-  axios.post(`${API_ROOT_URL}/reset`, `sessionId=${sessionId}&userName=${playerName}`);
+  axios.post(`${API_ROOT_URL}/reset`, new URLSearchParams({ sessionId, userName: playerName }));
 
   return {
     type: RESET_SESSION
