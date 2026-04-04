@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useTheme } from '@mui/material/styles';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,9 +15,13 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
 export default function ResultsChart() {
   const results = useSelector(state => state.results);
+  const theme = useTheme();
 
   const estimates = results.map(x => x.estimateValue);
   const aggregateData = LEGAL_ESTIMATES.map(x => estimates.filter(y => y === x).length);
+
+  const tickColor = theme.palette.text.secondary;
+  const gridColor = theme.palette.divider;
 
   const options = {
     responsive: true,
@@ -29,25 +34,15 @@ export default function ResultsChart() {
         beginAtZero: true,
         ticks: {
           stepSize: Math.max(...aggregateData) < 8 ? 1 : undefined,
-          color: '#a0a0a0',
+          color: tickColor,
         },
-        grid: {
-          color: '#262626',
-        },
-        border: {
-          color: '#262626',
-        },
+        grid: { color: gridColor },
+        border: { color: gridColor },
       },
       x: {
-        ticks: {
-          color: '#a0a0a0',
-        },
-        grid: {
-          color: 'transparent',
-        },
-        border: {
-          color: '#262626',
-        },
+        ticks: { color: tickColor },
+        grid: { color: 'transparent' },
+        border: { color: gridColor },
       },
     },
   };

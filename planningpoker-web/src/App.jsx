@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo, createContext, useContext, useCallback } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { applyMiddleware, compose, createStore } from 'redux';
@@ -8,7 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import reducer from './reducers';
-import theme from './theme';
+import { darkTheme, lightTheme } from './theme';
 
 import Header from './containers/Header';
 import Welcome from './pages/Welcome';
@@ -27,27 +27,47 @@ const store = createStore(
   composeEnhancers(applyMiddleware(...middleware)),
 );
 
+const ColorModeContext = createContext({ toggleColorMode: () => {} });
+
+export function useColorMode() {
+  return useContext(ColorModeContext);
+}
+
 export default function App() {
+  const [mode, setMode] = useState(() => localStorage.getItem('pp-theme') || 'dark');
+
+  const toggleColorMode = useCallback(() => {
+    setMode(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('pp-theme', next);
+      return next;
+    });
+  }, []);
+
+  const theme = useMemo(() => mode === 'dark' ? darkTheme : lightTheme, [mode]);
+
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Header />
-            <Toolbar />
-            <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <Routes>
-                <Route path="/host" element={<CreateGame />} />
-                <Route path="/join" element={<JoinGame />} />
-                <Route path="/game" element={<PlayGame />} />
-                <Route path="/" element={<Welcome />} />
-              </Routes>
+      <ColorModeContext.Provider value={{ toggleColorMode, mode }}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <BrowserRouter>
+            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <Header />
+              <Toolbar />
+              <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <Routes>
+                  <Route path="/host" element={<CreateGame />} />
+                  <Route path="/join" element={<JoinGame />} />
+                  <Route path="/game" element={<PlayGame />} />
+                  <Route path="/" element={<Welcome />} />
+                </Routes>
+              </Box>
+              <Footer />
             </Box>
-            <Footer />
-          </Box>
-        </BrowserRouter>
-      </ThemeProvider>
+          </BrowserRouter>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
     </Provider>
   );
 }
