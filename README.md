@@ -1,33 +1,53 @@
 # Planning Poker
 
-[![Build Status](https://travis-ci.org/richashworth/planningpoker.svg?branch=master)](https://travis-ci.org/richashworth/planningpoker)
-[![codecov](https://codecov.io/gh/richashworth/planningpoker/branch/master/graph/badge.svg)](https://codecov.io/gh/richashworth/planningpoker)
-![Heroku](http://heroku-badge.herokuapp.com/?app=planningpoker-tool&style=flat&svg=1)
+[![CI](https://github.com/richashworth/planningpoker/actions/workflows/ci.yml/badge.svg)](https://github.com/richashworth/planningpoker/actions/workflows/ci.yml)
 
-## About
+A web-based planning poker tool for agile estimation. See [this blog post](https://richashworth.com/blog/agile-estimation-for-distributed-teams/) for more information.
 
-A simple web-based planning poker game. See [this blog
-post](https://richashworth.com/blog/agile-estimation-for-distributed-teams/) for more information.
+**Live:** https://planning-poker.up.railway.app
 
-## Demo
-https://planningpoker-tool.herokuapp.com
+## Tech Stack
 
-<img src="https://github.com/richashworth/planningpoker/raw/master/doc/demo.gif" width="750">
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, MUI v5, Redux, react-router v6, chart.js 4 |
+| Backend | Spring Boot 3.4, Java 21 |
+| Real-time | STOMP over SockJS (WebSocket) |
+| Build | Gradle 8.14, Vite 5 |
+| CI | GitHub Actions |
+| Hosting | Railway |
+
+## Running Locally
+
+Start the backend (port 9000):
+
+```bash
+./gradlew planningpoker-api:bootRun
+```
+
+Start the frontend dev server (port 3000, proxies API to 9000):
+
+```bash
+cd planningpoker-web && npm install && npm run dev
+```
 
 ## Building
 
-To build from the source code:
+Build the deployable fat JAR (serves both frontend and API):
 
-`./gradlew`
+```bash
+cd planningpoker-web && npm install && npm run build && cd ..
+./gradlew planningpoker-web:jar
+./gradlew planningpoker-api:bootJar
+java -jar planningpoker-api/build/libs/planningpoker-api-*.jar
+```
 
-## Running
+## Testing
 
-Both the web and api apps can be started using docker-compose:
+```bash
+# Backend unit tests
+./gradlew planningpoker-api:test
 
-`docker-compose up`
-
-
-Alternatively, binaries for the latest release can be downloaded
-[here](https://github.com/richashworth/planningpoker/releases/latest). These can be run with:
-
-`java -jar planningpoker-<version>.jar`
+# E2E tests (requires backend running on port 9000)
+cd planningpoker-web && npx playwright test
+```
