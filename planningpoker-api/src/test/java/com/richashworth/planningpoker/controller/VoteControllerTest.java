@@ -56,8 +56,6 @@ class VoteControllerTest extends AbstractControllerTest {
 
     @Test
     void testVoteInvalidEstimateRejected() {
-        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
-        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
         assertThrows(IllegalArgumentException.class, () ->
             voteController.vote(SESSION_ID, USER_NAME, "999"));
     }

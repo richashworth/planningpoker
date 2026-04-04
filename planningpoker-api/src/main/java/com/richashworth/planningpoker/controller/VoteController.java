@@ -34,18 +34,18 @@ public class VoteController {
             @RequestParam(name = "userName") final String userName,
             @RequestParam(name = "estimateValue") final String estimateValue
     ) {
-        if (!sessionManager.isSessionActive(sessionId)) {
-            throw new IllegalArgumentException("Session not active");
-        }
-        if (!com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase(
-                sessionManager.getSessionUsers(sessionId), userName)) {
-            throw new IllegalArgumentException("User is not a member of this session");
-        }
         if (!LEGAL_ESTIMATES.contains(estimateValue)) {
             throw new IllegalArgumentException("Invalid estimate value");
         }
-        logger.info("{} has voted {} in session {}", userName, estimateValue, sessionId);
         synchronized (sessionManager) {
+            if (!sessionManager.isSessionActive(sessionId)) {
+                throw new IllegalArgumentException("Session not active");
+            }
+            if (!CollectionUtils.containsIgnoreCase(
+                    sessionManager.getSessionUsers(sessionId), userName)) {
+                throw new IllegalArgumentException("User is not a member of this session");
+            }
+            logger.info("{} has voted {} in session {}", userName, estimateValue, sessionId);
             if (!CollectionUtils.containsUserEstimate(sessionManager.getResults(sessionId), userName)) {
                 final Estimate estimate = new Estimate(userName, estimateValue);
                 sessionManager.registerEstimate(sessionId, estimate);

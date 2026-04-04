@@ -53,9 +53,12 @@ public class GameController {
             @RequestParam(name = "userName") final String userName
     ) {
         validateUserName(userName);
-        final String sessionId = sessionManager.createSession();
-        sessionManager.registerUser(userName, sessionId);
-        logger.info("{} has created session {}", userName, sessionId);
+        final String sessionId;
+        synchronized (sessionManager) {
+            sessionId = sessionManager.createSession();
+            sessionManager.registerUser(userName, sessionId);
+            logger.info("{} has created session {}", userName, sessionId);
+        }
         messagingUtils.burstUsersMessages(sessionId);
         return sessionId;
     }
@@ -65,8 +68,8 @@ public class GameController {
             @RequestParam(name = "userName") final String userName,
             @RequestParam(name = "sessionId") final String sessionId
     ) {
-        validateSessionMembership(sessionId, userName);
         synchronized (sessionManager) {
+            validateSessionMembership(sessionId, userName);
             sessionManager.removeUser(userName, sessionId);
             logger.info("{} has left session {}", userName, sessionId);
         }
@@ -94,9 +97,9 @@ public class GameController {
             @RequestParam(name = "sessionId") final String sessionId,
             @RequestParam(name = "userName") final String userName
     ) {
-        validateSessionMembership(sessionId, userName);
-        logger.info("{} has reset session {}", userName, sessionId);
         synchronized (sessionManager) {
+            validateSessionMembership(sessionId, userName);
+            logger.info("{} has reset session {}", userName, sessionId);
             sessionManager.resetSession(sessionId);
             messagingUtils.burstResultsMessages(sessionId);
         }
