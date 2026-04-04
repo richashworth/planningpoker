@@ -51,9 +51,10 @@ test.describe('Host a Game', () => {
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 
+    await expect(page.getByText('Reconnecting')).not.toBeVisible();
     await page.getByText('5', { exact: true }).click();
 
-    await expect(page.getByText('Results')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Results')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Next Item' })).toBeVisible();
   });
 
@@ -62,8 +63,9 @@ test.describe('Host a Game', () => {
     await page.getByLabel('Name').fill('Alice');
     await page.getByRole('button', { name: 'Start Game' }).click();
 
+    await expect(page.getByText('Reconnecting')).not.toBeVisible();
     await page.getByText('5', { exact: true }).click();
-    await expect(page.getByText('Results')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Results')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Next Item' })).toBeVisible();
   });
 });
