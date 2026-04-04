@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 03
-Last activity: 2026-04-04
+Last activity: 2026-04-04 - Completed quick task 260404-qgg: Fix dark/light mode toggle
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -75,6 +75,12 @@ None yet.
 
 - **Phase 2 coordination risk:** createSession response changes from string to JSON — backend and Redux reducer fix must land in the same deploy. Verify `Content-Type: application/json` is returned by Spring so Axios parses automatically.
 - **Symbol canonicalisation:** Coffee symbol `\u2615` must match exactly between `SchemeType.resolveValues()` and `Constants.js` — unit-test both.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260404-qgg | Fix dark/light mode: system default, icon-only toggle, consistent position | 2026-04-04 | 117c50e | [260404-qgg-fix-dark-light-mode-system-default-icon-](./quick/260404-qgg-fix-dark-light-mode-system-default-icon-/) |
 
 ## Session Continuity
 
