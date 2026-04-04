@@ -6,6 +6,9 @@ export default defineConfig({
   define: {
     global: 'globalThis',
   },
+  test: {
+    exclude: ['tests/**', 'node_modules/**'],
+  },
   build: {
     outDir: 'build',
     rollupOptions: {

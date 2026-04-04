@@ -37,6 +37,9 @@ jobs:
           cd planningpoker-web && npm ci && npm run build && cd ..
           ./gradlew planningpoker-web:jar --no-daemon
 
+      - name: Run frontend unit tests
+        run: cd planningpoker-web && npm test
+
       - name: Run backend tests
         run: ./gradlew planningpoker-api:test --no-daemon
 
