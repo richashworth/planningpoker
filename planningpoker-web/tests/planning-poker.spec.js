@@ -97,16 +97,19 @@ test.describe('Dark/Light Mode', () => {
   test('toggle switches between dark and light mode', async ({ page }) => {
     await page.goto('/');
 
-    const toggle = page.getByRole('checkbox', { name: 'Toggle dark mode' });
-    await expect(toggle).toBeChecked();
+    const toggle = page.getByRole('button', { name: 'Toggle dark mode' });
+    await expect(toggle).toBeVisible();
+
+    // Default is dark mode
+    const darkBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
     await toggle.click();
-    await expect(toggle).not.toBeChecked();
-    await expect(page.getByText('Light')).toBeVisible();
+    const lightBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(lightBg).not.toBe(darkBg);
 
     await toggle.click();
-    await expect(toggle).toBeChecked();
-    await expect(page.getByText('Dark')).toBeVisible();
+    const backToDarkBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(backToDarkBg).toBe(darkBg);
   });
 });
 
