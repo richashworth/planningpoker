@@ -108,6 +108,7 @@ export default function CreateGame() {
               <ToggleButton value="fibonacci">Fibonacci</ToggleButton>
               <ToggleButton value="tshirt">T-shirt</ToggleButton>
               <ToggleButton value="simple">Simple</ToggleButton>
+              <ToggleButton value="time">Time</ToggleButton>
               <ToggleButton value="custom">Custom</ToggleButton>
             </ToggleButtonGroup>
 

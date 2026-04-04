@@ -32,6 +32,13 @@ class SchemeTypeTest {
     }
 
     @Test
+    void testTimeValues() {
+        List<String> values = SchemeType.TIME.getValues();
+        assertEquals(List.of("1h", "½d", "1d", "2d", "1w", "2w", "1mo", "3mo", "6mo+"), values);
+        assertEquals(9, values.size());
+    }
+
+    @Test
     void testFromStringCaseInsensitive() {
         assertEquals(SchemeType.FIBONACCI, SchemeType.fromString("fibonacci"));
         assertEquals(SchemeType.FIBONACCI, SchemeType.fromString("FIBONACCI"));
@@ -39,6 +46,8 @@ class SchemeTypeTest {
         assertEquals(SchemeType.TSHIRT, SchemeType.fromString("tshirt"));
         assertEquals(SchemeType.SIMPLE, SchemeType.fromString("simple"));
         assertEquals(SchemeType.SIMPLE, SchemeType.fromString("SIMPLE"));
+        assertEquals(SchemeType.TIME, SchemeType.fromString("time"));
+        assertEquals(SchemeType.TIME, SchemeType.fromString("TIME"));
     }
 
     @Test

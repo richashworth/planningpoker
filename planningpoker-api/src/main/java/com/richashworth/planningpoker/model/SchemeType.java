@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 public enum SchemeType {
     FIBONACCI(List.of("0", "0.5", "1", "2", "3", "5", "8", "13", "20", "50", "100", "\u221e")),
     TSHIRT(List.of("XS", "S", "M", "L", "XL", "XXL")),
-    SIMPLE(List.of("1", "2", "3", "4", "5"));
+    SIMPLE(List.of("1", "2", "3", "4", "5")),
+    TIME(List.of("1h", "½d", "1d", "2d", "1w", "2w", "1mo", "3mo", "6mo+"));
 
     private static final String UNSURE = "?";
     private static final String COFFEE = "\u2615";

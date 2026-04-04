@@ -5,4 +5,5 @@ export const SCHEME_VALUES = {
   fibonacci: ['0', '0.5', '1', '2', '3', '5', '8', '13', '20', '50', '100', '\u221e'],
   tshirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   simple: ['1', '2', '3', '4', '5'],
+  time: ['1h', '½d', '1d', '2d', '1w', '2w', '1mo', '3mo', '6mo+'],
 }
