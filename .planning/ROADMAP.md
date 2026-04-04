@@ -59,10 +59,11 @@ Plans:
   3. Host can toggle the ? (unsure) and Coffee (break) meta-cards on or off before creating the session
   4. Vote cards on the Vote page render dynamically from the session's scheme — no hardcoded card list
   5. Results chart labels match the scheme values cast in that session
-**Plans**: TBD
+**Plans:** 0/2 plans complete
 
 Plans:
-- [ ] TBD
+- [ ] 03-01-PLAN.md — Scheme selector on CreateGame page with action creator wiring
+- [ ] 03-02-PLAN.md — Dynamic vote cards and scheme-aware results chart
 **UI hint**: yes
 
 ## Progress
@@ -74,7 +75,7 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 1/1 | Complete   | 2026-04-04 |
 | 2. API Contract | 0/2 | Planned | - |
-| 3. Frontend UI | 0/? | Not started | - |
+| 3. Frontend UI | 0/2 | Planned | - |
 
 ## Backlog
 
