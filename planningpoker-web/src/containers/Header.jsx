@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
 import _ from 'lodash';
 import { leaveGame } from '../actions';
 import { useColorMode } from '../App';
@@ -28,19 +28,23 @@ export default function Header() {
       position="fixed"
       elevation={0}
       sx={{
-        bgcolor: 'background.default',
+        bgcolor: (t) => t.palette.mode === 'dark'
+          ? 'rgba(9, 9, 11, 0.8)'
+          : 'rgba(250, 250, 250, 0.8)',
+        backdropFilter: 'blur(12px)',
         borderBottom: '1px solid',
         borderColor: 'divider',
+        transition: 'background-color 0.3s ease',
       }}
     >
-      <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+      <Toolbar sx={{ gap: 1 }}>
+        <Typography variant="h6" sx={{ flexGrow: 1, fontSize: '1.1rem' }}>
           Planning Poker
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {sessionId && (
             <>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', display: { xs: 'none', sm: 'block' } }}>
                 {_.startCase(playerName)}
               </Typography>
               <Chip
@@ -52,26 +56,47 @@ export default function Header() {
                   borderColor: 'divider',
                   color: 'text.secondary',
                   fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  height: 26,
                 }}
               />
               <Button
                 variant="text"
                 size="small"
                 onClick={handleLogout}
-                sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '0.8rem',
+                  minWidth: 'auto',
+                  '&:hover': { color: 'error.main', bgcolor: 'transparent' },
+                }}
               >
-                Log Out
+                Log out
               </Button>
             </>
           )}
-          <IconButton
-            onClick={toggleColorMode}
-            size="small"
-            sx={{ color: 'text.secondary', ml: 0.5 }}
-            aria-label="Toggle dark mode"
-          >
-            {mode === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19'}
-          </IconButton>
+          <Box sx={{ display: 'flex', alignItems: 'center', ml: 0.5 }}>
+            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem', mr: 0.5 }}>
+              {mode === 'dark' ? 'Dark' : 'Light'}
+            </Typography>
+            <Switch
+              checked={mode === 'dark'}
+              onChange={toggleColorMode}
+              size="small"
+              sx={{
+                '& .MuiSwitch-switchBase.Mui-checked': {
+                  color: '#fafafa',
+                },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                  bgcolor: '#3b82f6',
+                },
+                '& .MuiSwitch-track': {
+                  borderRadius: 10,
+                },
+              }}
+              inputProps={{ 'aria-label': 'Toggle dark mode' }}
+            />
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>

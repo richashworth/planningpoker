@@ -24,9 +24,9 @@ export default function CreateGame() {
 
   return (
     <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
-      <Card sx={{ maxWidth: 420, width: '100%' }}>
+      <Card sx={{ maxWidth: 400, width: '100%' }}>
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}>
+          <Typography variant="h5" sx={{ mb: 3, textAlign: 'center' }}>
             Host a Game
           </Typography>
           <form onSubmit={handleSubmit}>
@@ -34,7 +34,7 @@ export default function CreateGame() {
               playerName={playerName}
               onPlayerNameInputChange={(e) => setPlayerName(e.target.value)}
             />
-            <Button type="submit" variant="contained" fullWidth size="large" sx={{ py: 1.2 }}>
+            <Button type="submit" variant="contained" fullWidth size="large" disableElevation>
               Start Game
             </Button>
           </form>

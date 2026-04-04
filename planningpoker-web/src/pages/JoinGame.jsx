@@ -26,9 +26,9 @@ export default function JoinGame() {
 
   return (
     <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
-      <Card sx={{ maxWidth: 420, width: '100%' }}>
+      <Card sx={{ maxWidth: 400, width: '100%' }}>
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}>
+          <Typography variant="h5" sx={{ mb: 3, textAlign: 'center' }}>
             Join a Game
           </Typography>
           <form onSubmit={handleSubmit}>
@@ -44,7 +44,7 @@ export default function JoinGame() {
               fullWidth
               sx={{ mb: 2.5 }}
             />
-            <Button type="submit" variant="contained" fullWidth size="large" sx={{ py: 1.2 }}>
+            <Button type="submit" variant="contained" fullWidth size="large" disableElevation>
               Join Game
             </Button>
           </form>

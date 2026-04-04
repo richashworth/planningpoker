@@ -10,7 +10,8 @@ export default function Footer() {
 
   useEffect(() => {
     axios.get(`${API_ROOT_URL}/version`)
-      .then(res => setAppVersion(res.data));
+      .then(res => setAppVersion(res.data))
+      .catch(() => {});
   }, []);
 
   return (
@@ -24,16 +25,18 @@ export default function Footer() {
         py: 1.5,
         borderTop: '1px solid',
         borderColor: 'divider',
+        transition: 'border-color 0.3s ease',
       }}
     >
-      <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+      <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem' }}>
         {appVersion ? `v${appVersion}` : ''}
       </Typography>
       <Link
         href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/"
         target="_blank"
         rel="noopener noreferrer"
-        sx={{ color: 'text.secondary', fontSize: '0.75rem', '&:hover': { color: 'primary.main' } }}
+        underline="none"
+        sx={{ color: 'text.disabled', fontSize: '0.7rem', '&:hover': { color: 'text.secondary' } }}
       >
         About
       </Link>

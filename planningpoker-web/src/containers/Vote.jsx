@@ -11,23 +11,26 @@ const voteCardSx = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '1.3rem',
+  fontSize: '1.25rem',
   fontWeight: 700,
   color: 'text.primary',
   bgcolor: 'background.paper',
   border: '1px solid',
   borderColor: 'divider',
-  borderRadius: 2,
+  borderRadius: 3,
   cursor: 'pointer',
   userSelect: 'none',
-  transition: 'all 0.15s ease-out',
+  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
     borderColor: 'primary.main',
-    transform: 'translateY(-4px)',
-    boxShadow: '0 8px 24px rgba(59,130,246,0.15)',
+    transform: 'translateY(-3px)',
+    boxShadow: (t) => t.palette.mode === 'dark'
+      ? '0 8px 24px rgba(59,130,246,0.12)'
+      : '0 8px 24px rgba(37,99,235,0.1)',
   },
   '&:active': {
-    transform: 'translateY(-1px)',
+    transform: 'translateY(0) scale(0.98)',
+    transition: 'all 0.1s ease',
   },
 };
 
@@ -40,15 +43,15 @@ export default function Vote() {
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 2.5 }}>
+      <Typography variant="h6" sx={{ mb: 3, fontSize: '1.1rem' }}>
         Cast your estimate
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 260px' }, gap: 3, alignItems: 'start' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start' }}>
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(88px, 1fr))',
-            gap: 1,
+            gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+            gap: 0.75,
           }}
         >
           {LEGAL_ESTIMATES.map(val => (
@@ -56,7 +59,7 @@ export default function Vote() {
               {val}
             </Box>
           ))}
-          <Box sx={{ ...voteCardSx, fontSize: '1.7rem' }} onClick={() => doVote(COFFEE_SYMBOL)}>
+          <Box sx={{ ...voteCardSx, fontSize: '1.5rem' }} onClick={() => doVote(COFFEE_SYMBOL)}>
             {COFFEE_SYMBOL}
           </Box>
         </Box>

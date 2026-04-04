@@ -16,29 +16,29 @@ export default function UsersTable({ heading }) {
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 2,
-        p: 2.5,
+        borderRadius: 3,
+        p: 2,
+        transition: 'border-color 0.3s ease, background-color 0.3s ease',
       }}
     >
       <Typography
-        variant="subtitle2"
-        sx={{ color: 'text.secondary', mb: 1.5, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.7rem' }}
+        variant="overline"
+        sx={{ color: 'text.secondary', mb: 1.5, display: 'block', fontSize: '0.65rem', letterSpacing: '0.08em' }}
       >
         {heading}
       </Typography>
       {allUsers.map(name => (
-        <Box key={name} sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.6 }}>
+        <Box key={name} sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.5 }}>
           <Box
             sx={{
-              width: 7,
-              height: 7,
+              width: 6,
+              height: 6,
               borderRadius: '50%',
-              bgcolor: '#22c55e',
-              boxShadow: '0 0 6px rgba(34,197,94,0.4)',
+              bgcolor: 'success.main',
               flexShrink: 0,
             }}
           />
-          <Typography variant="body2" sx={{ color: 'text.primary' }}>
+          <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.85rem' }}>
             {name}
           </Typography>
         </Box>

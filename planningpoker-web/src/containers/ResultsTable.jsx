@@ -20,23 +20,24 @@ export default function ResultsTable() {
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 2,
-        p: 2.5,
+        borderRadius: 3,
+        p: 2,
+        transition: 'border-color 0.3s ease, background-color 0.3s ease',
       }}
     >
       <Typography
-        variant="subtitle2"
-        sx={{ color: 'text.secondary', mb: 1.5, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.7rem' }}
+        variant="overline"
+        sx={{ color: 'text.secondary', mb: 1.5, display: 'block', fontSize: '0.65rem', letterSpacing: '0.08em' }}
       >
         Votes
       </Typography>
       <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <Box component="th" sx={{ textAlign: 'left', pb: 1, fontSize: '0.7rem', color: 'text.secondary', fontWeight: 600, borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Box component="th" sx={{ textAlign: 'left', pb: 0.75, fontSize: '0.65rem', color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Player
             </Box>
-            <Box component="th" sx={{ textAlign: 'right', pb: 1, fontSize: '0.7rem', color: 'text.secondary', fontWeight: 600, borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Box component="th" sx={{ textAlign: 'right', pb: 0.75, fontSize: '0.65rem', color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Vote
             </Box>
           </tr>
@@ -44,20 +45,20 @@ export default function ResultsTable() {
         <tbody>
           {sortedResults.map(x => (
             <tr key={x.userName}>
-              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.primary' }}>
+              <Box component="td" sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.primary' }}>
                 {_.startCase(x.userName)}
               </Box>
-              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.primary', textAlign: 'right', fontWeight: 700 }}>
+              <Box component="td" sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.primary', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
                 {x.estimateValue}
               </Box>
             </tr>
           ))}
           {notVoted.map(x => (
             <tr key={x}>
-              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.disabled', fontStyle: 'italic' }}>
+              <Box component="td" sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.disabled', fontStyle: 'italic' }}>
                 {_.startCase(x)}
               </Box>
-              <Box component="td" sx={{ py: 0.6, fontSize: '0.88rem', color: 'text.disabled', textAlign: 'right' }}>
+              <Box component="td" sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.disabled', textAlign: 'right' }}>
                 —
               </Box>
             </tr>

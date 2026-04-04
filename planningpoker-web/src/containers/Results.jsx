@@ -15,19 +15,20 @@ export default function Results() {
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 2.5 }}>
+      <Typography variant="h6" sx={{ mb: 3, fontSize: '1.1rem' }}>
         Results
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 260px' }, gap: 3, alignItems: 'start' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start' }}>
         <Box>
           <Box
             sx={{
               bgcolor: 'background.paper',
               border: '1px solid',
               borderColor: 'divider',
-              borderRadius: 2,
+              borderRadius: 3,
               p: 2.5,
-              mb: 3,
+              mb: 2.5,
+              transition: 'border-color 0.3s ease, background-color 0.3s ease',
             }}
           >
             <ResultsChart />
@@ -37,8 +38,9 @@ export default function Results() {
               <Button
                 variant="contained"
                 size="large"
+                disableElevation
                 onClick={() => dispatch(resetSession(playerName, sessionId))}
-                sx={{ px: 4, py: 1.2 }}
+                sx={{ px: 4 }}
               >
                 Next Item
               </Button>
