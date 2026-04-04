@@ -26,7 +26,13 @@ export const usersUpdated = (users) => (
 
 // User-driven actions
 export function createGame(playerName, callback) {
-  const request = axios.post(`${API_ROOT_URL}/createSession`, new URLSearchParams({ userName: playerName }));
+  const request = axios.post(`${API_ROOT_URL}/createSession`, {
+    userName: playerName,
+    schemeType: 'fibonacci',
+    customValues: null,
+    includeUnsure: true,
+    includeCoffee: true
+  });
   request.then(() => callback()).catch(err => {
     const msg = err.response?.data?.error || 'Failed to create session';
     alert(msg);
@@ -34,7 +40,7 @@ export function createGame(playerName, callback) {
 
   return {
     type: CREATE_GAME,
-    payload: request, // redux-promise will take care of resolving the promise
+    payload: request,
     meta: {userName: playerName}
   };
 }

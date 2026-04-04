@@ -4,19 +4,39 @@ const initialGameState = {
   playerName: '',
   sessionId: '',
   isAdmin: false,
-  isRegistered: false
+  isRegistered: false,
+  legalEstimates: [],
+  schemeType: 'fibonacci',
+  includeUnsure: true,
+  includeCoffee: true
 };
 
 export default function (state = initialGameState, action) {
   switch (action.type) {
     case CREATE_GAME:
-      return {...state, playerName: action.meta.userName, sessionId: action.payload.data};
+      return {
+        ...state,
+        playerName: action.meta.userName,
+        sessionId: action.payload.data.sessionId,
+        legalEstimates: action.payload.data.values,
+        schemeType: action.payload.data.schemeType,
+        includeUnsure: action.payload.data.includeUnsure,
+        includeCoffee: action.payload.data.includeCoffee
+      };
     case GAME_CREATED:
       return {...state, isAdmin: true, isRegistered: true};
     case USER_REGISTERED:
       return {...state, isRegistered: true};
     case JOIN_GAME:
-      return {...state, playerName: action.meta.userName, sessionId: action.meta.sessionId};
+      return {
+        ...state,
+        playerName: action.meta.userName,
+        sessionId: action.meta.sessionId,
+        legalEstimates: action.payload.data.values,
+        schemeType: action.payload.data.schemeType,
+        includeUnsure: action.payload.data.includeUnsure,
+        includeCoffee: action.payload.data.includeCoffee
+      };
     case LEAVE_GAME:
       return initialGameState;
     default:
