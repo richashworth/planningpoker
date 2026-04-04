@@ -1,4 +1,4 @@
-import React, { useState, useMemo, createContext, useContext, useCallback } from 'react';
+import React, { useState, useMemo, createContext, useContext, useCallback, lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { applyMiddleware, compose, createStore } from 'redux';
@@ -11,11 +11,12 @@ import reducer from './reducers';
 import { darkTheme, lightTheme } from './theme';
 
 import Header from './containers/Header';
-import Welcome from './pages/Welcome';
-import JoinGame from './pages/JoinGame';
-import CreateGame from './pages/CreateGame';
-import PlayGame from './pages/PlayGame';
 import Footer from './components/Footer';
+
+const Welcome = lazy(() => import('./pages/Welcome'));
+const JoinGame = lazy(() => import('./pages/JoinGame'));
+const CreateGame = lazy(() => import('./pages/CreateGame'));
+const PlayGame = lazy(() => import('./pages/PlayGame'));
 
 const middleware = [ReduxPromise];
 
@@ -56,12 +57,14 @@ export default function App() {
               <Header />
               <Toolbar />
               <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <Suspense fallback={null}>
                 <Routes>
                   <Route path="/host" element={<CreateGame />} />
                   <Route path="/join" element={<JoinGame />} />
                   <Route path="/game" element={<PlayGame />} />
                   <Route path="/" element={<Welcome />} />
                 </Routes>
+              </Suspense>
               </Box>
               <Footer />
             </Box>
