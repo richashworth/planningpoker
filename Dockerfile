@@ -23,4 +23,4 @@ RUN addgroup --system app && adduser --system --ingroup app app
 WORKDIR /app
 COPY --from=backend /app/planningpoker-api/build/libs/planningpoker-*.jar app.jar
 USER app
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
