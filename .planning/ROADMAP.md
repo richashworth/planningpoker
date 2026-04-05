@@ -40,8 +40,8 @@
 **UI hint**: yes
 
 Plans:
-- [ ] 04-01-PLAN.md — Scheme metadata, SchemeTile component, and CreateGame tile grid rewrite
-- [ ] 04-02-PLAN.md — E2e test selector updates and visual verification
+- [x] 04-01-PLAN.md — Scheme metadata, SchemeTile component, and CreateGame tile grid rewrite
+- [x] 04-02-PLAN.md — E2e test selector updates and visual verification
 
 ## Progress
 
