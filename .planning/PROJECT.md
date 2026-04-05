@@ -10,12 +10,12 @@ Hosts can pick an estimation scheme when creating a game, and all participants s
 
 ## Current State
 
-Shipped v1.0 (Estimation Schemes) on 2026-04-04.
+Shipped v1.0 (Estimation Schemes) on 2026-04-04, v1.1 (CreateGame Redesign) on 2026-04-05.
 
 - **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets to value lists; SchemeConfig record carries scheme metadata per session.
-- **Frontend:** React 18 + MUI v5 + Redux 4. Scheme selector on CreateGame, dynamic vote cards from Redux state, scheme-aware results chart.
+- **Frontend:** React 18 + MUI v5 + Redux 4. CreateGame uses tile grid (SchemeTile component) with MUI rounded icons, names, and value chips. 2-column desktop / 3-column icon-only mobile responsive layout. Stripe-style shadow design. Card Preview section removed.
 - **API:** createSession/joinSession return JSON with scheme metadata. VoteController validates votes per-session (not hardcoded).
-- **Stats:** ~2,875 lines added across 36 files in 3 phases / 5 plans.
+- **Stats:** ~4,355 lines added across 2 milestones (v1.0: 3 phases/5 plans, v1.1: 1 phase/2 plans).
 
 ## Requirements
 
@@ -29,6 +29,13 @@ Shipped v1.0 (Estimation Schemes) on 2026-04-04.
 - ✓ Per-session vote validation against scheme — v1.0
 - ✓ Redux stores scheme info from API responses — v1.0
 - ✓ Dynamic vote cards and scheme-aware results chart — v1.0
+- ✓ Tile grid scheme selector with icons, names, value chips — v1.1
+- ✓ Tile click selection with visual feedback (border, checkmark) — v1.1
+- ✓ Inline Custom input within tile — v1.1
+- ✓ 2-column desktop / 3-column icon-only mobile responsive layout — v1.1
+- ✓ Unsure toggle switch (Coffee toggle removed by design) — v1.1
+- ✓ Card Preview section removed — v1.1
+- ✓ Backwards compatibility: default Fibonacci, all e2e tests pass, API unchanged — v1.1
 
 ### Active
 
@@ -57,6 +64,10 @@ Shipped v1.0 (Estimation Schemes) on 2026-04-04.
 | Meta-cards (?, Coffee) are toggles, not part of scheme definition | Orthogonal concern, cleaner API | ✓ Good |
 | No-arg createSession() delegates to overload with Fibonacci defaults | Backward compatibility for existing tests/flows | ✓ Good |
 | createSession response changed from string to JSON | Required for scheme metadata; coordinated backend+frontend in Phase 2 | ✓ Good |
+| Box with sx grid instead of Card for SchemeTile | Avoid nested Card MUI issues | ✓ Good |
+| data-testid selectors for scheme tiles in e2e tests | More stable than text-based or role selectors | ✓ Good |
+| Removed Coffee break toggle, kept Unsure only | UAT feedback — Coffee toggle not useful | ✓ Good |
+| Stripe-style shadow depth with Linear icons | UAT refinement — cleaner professional design | ✓ Good |
 
 ## Context
 
@@ -64,11 +75,11 @@ Shipped v1.0 (Estimation Schemes) on 2026-04-04.
 - Implementation plan: `docs/superpowers/plans/2026-04-04-estimation-schemes.md`
 - Deployed at: https://planning-poker.up.railway.app
 
-## Tech Debt (from v1.0 audit)
+## Tech Debt
 
-- LEGAL_ESTIMATES and COFFEE_SYMBOL in Constants.js are dead exports (superseded by Redux state)
-- No Playwright e2e coverage for non-Fibonacci schemes, custom values, or meta-card toggles
+- LEGAL_ESTIMATES in Constants.js is a dead export (superseded by Redux state)
 - reducer_game.js CREATE_GAME/JOIN_GAME cases lack action.error guard (pre-existing)
+- VERIFICATION.md for Phase 4 is stale after UAT-driven changes (doc accuracy only)
 
 ---
-*Last updated: 2026-04-04 after v1.0 milestone*
+*Last updated: 2026-04-05 after v1.1 milestone*
