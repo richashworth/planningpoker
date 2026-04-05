@@ -31,7 +31,7 @@ test.describe('Host a Game', () => {
 
     await expect(page).toHaveURL('/game');
     await expect(page.getByText('Cast your estimate')).toBeVisible();
-    await expect(page.getByText('0', { exact: true })).toBeVisible();
+    await expect(page.getByText('1', { exact: true })).toBeVisible();
     await expect(page.getByText('13', { exact: true })).toBeVisible();
     await expect(page.getByText('?', { exact: true })).toBeVisible();
   });
