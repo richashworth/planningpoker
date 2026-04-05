@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Estimation Schemes
-status: completed
-stopped_at: Milestone v1.0 shipped
+milestone: v1.1
+milestone_name: CreateGame Redesign
+status: active
+stopped_at: null
 last_updated: "2026-04-04"
 last_activity: 2026-04-04
 progress:
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
-**Current focus:** Planning next milestone
+**Current focus:** CreateGame redesign — tile grid scheme selector
 
 ## Current Position
 
-Phase: v1.0 complete
-Plan: N/A
-Status: Milestone shipped
-Last activity: 2026-04-05 - Completed quick task 260405-dhh: Change app title font from Sora to Lobster
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-05 — Milestone v1.1 started
 
 Progress: [██████████] 100%
 

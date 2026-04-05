@@ -8,6 +8,18 @@ A real-time planning poker web app where distributed teams estimate work collabo
 
 Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
 
+## Current Milestone: v1.1 CreateGame Redesign
+
+**Goal:** Replace the ToggleButtonGroup scheme selector with a self-documenting tile grid — emoji icons, descriptions, and value chips per scheme.
+
+**Target features:**
+- Tile grid scheme selector with emoji icons and value previews baked into each tile
+- One-line description per scheme for context
+- No separate Card Preview section (tiles already show values)
+- Pill-style toggles for extra cards (? Unsure, ☕ Break)
+- Responsive: 2-col on desktop with full detail, 3-col icon-only on mobile
+- Custom scheme tile spans full width with inline input
+
 ## Current State
 
 Shipped v1.0 (Estimation Schemes) on 2026-04-04.
@@ -32,7 +44,12 @@ Shipped v1.0 (Estimation Schemes) on 2026-04-04.
 
 ### Active
 
-(None — next milestone not yet defined)
+- [ ] Tile grid scheme selector with emoji icons and value chips
+- [ ] One-line description per scheme
+- [ ] Remove separate Card Preview section
+- [ ] Pill-style toggles for extra cards (? and ☕)
+- [ ] Responsive layout: 2-col desktop, 3-col icon-only mobile
+- [ ] Custom scheme tile full-width with inline input
 
 ### Out of Scope
 
