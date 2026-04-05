@@ -36,14 +36,18 @@
   7. "? Unsure" and "☕ Break" options appear as toggle switches (on/off track with sliding indicator)
   8. Default scheme remains Fibonacci — existing flows work unchanged
   9. All existing Playwright e2e tests pass after the redesign
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 04-01-PLAN.md — Scheme metadata, SchemeTile component, and CreateGame tile grid rewrite
+- [ ] 04-02-PLAN.md — E2e test selector updates and visual verification
 
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 4. CreateGame Tile Grid Redesign | 0/? | Not started | - |
+| 4. CreateGame Tile Grid Redesign | 0/2 | Not started | - |
 
 ## Backlog
 
