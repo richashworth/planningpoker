@@ -40,16 +40,7 @@ See PROJECT.md Key Decisions table for full log.
 
 ### Pending Todos
 
-1. [ ] **Fix mobile header (critical):** On 375px, title truncates to "P...", chip + player name crammed together. Hide title on xs, rethink chip placement on small screens.
-2. [ ] **Shorten session chip label:** `Session ID: 22c60020` is too wordy (12-char prefix for 8-char value). Consider `#22c60020` or icon prefix instead.
-3. [ ] **Add spacing between chip and player button:** No visual separation on desktop — they look like one compound widget. Add gap or subtle divider.
-4. [ ] **Reconsider Lobster font:** Strong personality clash with Inter. Either lean into it elsewhere (Welcome heading?) or switch header to Inter/Sora.
-5. [ ] **Remove duplicate title on Welcome page:** "Planning Poker" appears in both header and body h3. Drop body title or rephrase.
-6. [ ] **Increase logo opacity:** SVG strokes at 0.2/0.5 are nearly invisible. Bump to 0.4/0.7 minimum.
-7. [ ] **Tone down header shadow in dark mode:** Fixed `boxShadow` lightens the dark background beneath. Reduce or remove in dark mode.
-8. [ ] **Make footer theme toggle more discoverable:** Uses `text.disabled` colour — looks like a watermark. Bump to `text.secondary`, consider adding "Dark"/"Light" label.
-9. [ ] **Improve footer layout:** Three isolated items spread across full width. Group version + toggle on left, About on right.
-10. [ ] **Simplify player menu or add items:** Single-item dropdown (just "Log out") is overengineered. Either add settings/profile items or replace with a direct logout icon button.
+10 pending — see `.planning/todos/pending/` for details.
 
 ### Blockers/Concerns
 
