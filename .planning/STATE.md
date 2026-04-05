@@ -40,7 +40,7 @@ See PROJECT.md Key Decisions table for full log.
 
 ### Pending Todos
 
-10 pending — see `.planning/todos/pending/` for details.
+7 pending — see `.planning/todos/pending/` for details.
 
 ### Blockers/Concerns
 
