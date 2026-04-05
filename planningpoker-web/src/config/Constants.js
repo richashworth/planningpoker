@@ -9,36 +9,11 @@ export const SCHEME_VALUES = {
 }
 
 export const SCHEME_METADATA = {
-  fibonacci: {
-    key: 'fibonacci',
-    icon: '\uD83D\uDD22',
-    name: 'Fibonacci',
-    description: 'Classic exponential scale for relative sizing',
-  },
-  tshirt: {
-    key: 'tshirt',
-    icon: '\uD83D\uDC55',
-    name: 'T-shirt',
-    description: 'Simple size labels from XS to XXL',
-  },
-  simple: {
-    key: 'simple',
-    icon: '\u2B50',
-    name: 'Simple',
-    description: 'Linear 1-5 scale for quick estimates',
-  },
-  time: {
-    key: 'time',
-    icon: '\u23F1\uFE0F',
-    name: 'Time',
-    description: 'Duration-based estimates from hours to months',
-  },
-  custom: {
-    key: 'custom',
-    icon: '\u270F\uFE0F',
-    name: 'Custom',
-    description: 'Define your own estimation values',
-  },
+  fibonacci: { key: 'fibonacci', name: 'Fibonacci' },
+  tshirt: { key: 'tshirt', name: 'T-shirt' },
+  simple: { key: 'simple', name: 'Simple' },
+  time: { key: 'time', name: 'Time' },
+  custom: { key: 'custom', name: 'Custom' },
 }
 
 export const SCHEME_ORDER = ['fibonacci', 'tshirt', 'simple', 'time', 'custom']
