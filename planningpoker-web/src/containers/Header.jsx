@@ -83,6 +83,7 @@ export default function Header() {
               }
               onDelete={handleCopy}
               sx={{
+                ml: 1,
                 bgcolor: 'rgba(255,255,255,0.15)',
                 border: '1px solid rgba(255,255,255,0.25)',
                 color: 'rgba(255,255,255,0.9)',
