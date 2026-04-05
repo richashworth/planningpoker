@@ -16,8 +16,12 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import IconButton from '@mui/material/IconButton';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import startCase from 'lodash/startCase';
 import { leaveGame } from '../actions';
+import { useColorMode } from '../App';
 import Logo from '../components/Logo';
 
 export default function Header() {
@@ -25,6 +29,7 @@ export default function Header() {
   const navigate = useNavigate();
   const sessionId = useSelector(state => state.game.sessionId);
   const playerName = useSelector(state => state.game.playerName);
+  const { toggleColorMode, mode } = useColorMode();
   const [copied, setCopied] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -54,6 +59,15 @@ export default function Header() {
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
+        <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
+          <IconButton
+            onClick={toggleColorMode}
+            aria-label="Toggle dark mode"
+            sx={{ color: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
+          >
+            {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+          </IconButton>
+        </Tooltip>
         {sessionId ? (
           <>
             <Chip
