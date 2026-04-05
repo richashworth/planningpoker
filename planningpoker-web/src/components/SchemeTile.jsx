@@ -2,9 +2,24 @@ import React from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
+import TagRoundedIcon from '@mui/icons-material/TagRounded'
+import StraightenRoundedIcon from '@mui/icons-material/StraightenRounded'
+import LinearScaleRoundedIcon from '@mui/icons-material/LinearScaleRounded'
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded'
+import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
 
-export default function SchemeTile({ scheme, values, selected, onClick, isCustom, customInput }) {
+const SCHEME_ICONS = {
+  fibonacci: TagRoundedIcon,
+  tshirt: StraightenRoundedIcon,
+  simple: LinearScaleRoundedIcon,
+  time: ScheduleRoundedIcon,
+  custom: TuneRoundedIcon,
+}
+
+export default function SchemeTile({ scheme, values, selected, onClick, isCustom, customInput, sx: sxProp }) {
+  const Icon = SCHEME_ICONS[scheme.key]
+
   return (
     <Box
       data-testid={`scheme-tile-${scheme.key}`}
@@ -12,35 +27,39 @@ export default function SchemeTile({ scheme, values, selected, onClick, isCustom
       aria-selected={selected}
       onClick={onClick}
       sx={{
-        border: '2px solid',
+        border: '1px solid',
         borderColor: selected ? 'primary.main' : 'divider',
-        borderRadius: 2,
-        p: 2,
+        borderRadius: 1.5,
+        p: 1.5,
         cursor: 'pointer',
         bgcolor: selected ? 'action.selected' : 'transparent',
-        transition: 'border-color 0.2s, background-color 0.2s',
-        position: 'relative',
-        ...(!isCustom && { height: '100%', boxSizing: 'border-box' }),
+        transition: 'all 0.15s ease',
         ...(!selected && {
           '&:hover': {
-            borderColor: 'primary.main',
+            borderColor: 'text.disabled',
             bgcolor: 'action.hover',
           },
         }),
+        ...sxProp,
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-        <Typography sx={{ fontSize: '1.8rem', lineHeight: 1, flexShrink: 0 }}>
-          {scheme.icon}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+        <Icon
+          sx={{
+            fontSize: '1.25rem',
+            color: selected ? 'primary.main' : 'text.secondary',
+            flexShrink: 0,
+          }}
+        />
+        <Typography
+          variant="body2"
+          sx={{ flex: 1, fontWeight: selected ? 600 : 500, color: selected ? 'text.primary' : 'text.secondary' }}
+        >
+          {scheme.name}
         </Typography>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="subtitle2" fontWeight={700}>
-            {scheme.name}
-          </Typography>
-        </Box>
         {selected && (
-          <CheckCircleIcon
-            sx={{ color: 'primary.main', flexShrink: 0, fontSize: '1.25rem' }}
+          <CheckRoundedIcon
+            sx={{ color: 'primary.main', flexShrink: 0, fontSize: '1rem' }}
           />
         )}
       </Box>
@@ -55,7 +74,18 @@ export default function SchemeTile({ scheme, values, selected, onClick, isCustom
           sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}
         >
           {values.map((value) => (
-            <Chip key={value} label={value} size="small" variant="outlined" />
+            <Chip
+              key={value}
+              label={value}
+              size="small"
+              sx={{
+                height: 22,
+                fontSize: '0.7rem',
+                bgcolor: 'action.hover',
+                border: 'none',
+                color: 'text.secondary',
+              }}
+            />
           ))}
         </Box>
       ) : null}

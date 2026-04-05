@@ -277,7 +277,7 @@ test.describe('Estimation Schemes', () => {
     await expect(page.getByText('Hard', { exact: true })).toBeVisible();
   });
 
-  test('enabling meta-card toggles shows ? and coffee cards', async ({ page }) => {
+  test('enabling unsure toggle shows ? card', async ({ page }) => {
     await page.goto('/host');
     await page.getByLabel('Your Name').fill('Alice');
 
@@ -285,16 +285,11 @@ test.describe('Estimation Schemes', () => {
     const unsureSwitch = page.getByText('Include ? (unsure)').locator('..').locator('.MuiSwitch-input');
     await unsureSwitch.click({ force: true });
 
-    // Enable Include ☕ (break) switch (defaults OFF)
-    const coffeeSwitch = page.getByText(/Include.*break/).locator('..').locator('.MuiSwitch-input');
-    await coffeeSwitch.click({ force: true });
-
     await page.getByRole('button', { name: 'Start Game' }).click();
 
     await expect(page).toHaveURL('/game');
     await expect(page.getByText('5', { exact: true })).toBeVisible();
     await expect(page.getByText('?', { exact: true })).toBeVisible();
-    await expect(page.getByText('\u2615', { exact: true })).toBeVisible();
   });
 });
 

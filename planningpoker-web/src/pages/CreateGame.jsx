@@ -30,7 +30,6 @@ export default function CreateGame() {
   const [schemeType, setSchemeType] = useState('fibonacci')
   const [customValues, setCustomValues] = useState('')
   const [includeUnsure, setIncludeUnsure] = useState(false)
-  const [includeCoffee, setIncludeCoffee] = useState(false)
   const [customError, setCustomError] = useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -63,7 +62,7 @@ export default function CreateGame() {
       schemeType,
       customValues: schemeType === 'custom' ? customValues : null,
       includeUnsure,
-      includeCoffee
+      includeCoffee: false
     }, () => {
       dispatch(gameCreated())
       navigate('/game')
@@ -92,6 +91,7 @@ export default function CreateGame() {
               sx={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
+                gridTemplateRows: '1fr 1fr auto',
                 gap: 1.5,
                 mb: 2.5,
                 '@media (max-width: 479px)': {
@@ -105,50 +105,40 @@ export default function CreateGame() {
                 const meta = SCHEME_METADATA[key]
                 const isCustom = key === 'custom'
                 return (
-                  <Box
+                  <SchemeTile
                     key={key}
-                    sx={isCustom ? { gridColumn: '1 / -1' } : { display: 'flex' }}
-                  >
-                    <SchemeTile
-                      scheme={meta}
-                      values={SCHEME_VALUES[key]}
-                      selected={schemeType === key}
-                      onClick={() => setSchemeType(key)}
-                      isCustom={isCustom}
-                      customInput={
-                        isCustom && schemeType === 'custom' ? (
-                          <TextField
-                            label="Custom Values"
-                            placeholder="S, M, L, XL"
-                            value={customValues}
-                            onChange={handleCustomChange}
-                            error={!!customError && customError !== 'Duplicate values removed'}
-                            helperText={customError || 'Enter 2-20 comma-separated values'}
-                            fullWidth
-                            size="small"
-                            sx={{ mt: 1 }}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        ) : null
-                      }
-                    />
-                  </Box>
+                    scheme={meta}
+                    values={SCHEME_VALUES[key] ? [...SCHEME_VALUES[key], ...(includeUnsure ? ['?'] : [])] : undefined}
+                    selected={schemeType === key}
+                    onClick={() => setSchemeType(key)}
+                    isCustom={isCustom}
+                    sx={isCustom ? { gridColumn: '1 / -1' } : undefined}
+                    customInput={
+                      isCustom && schemeType === 'custom' ? (
+                        <TextField
+                          label="Custom Values"
+                          placeholder="S, M, L, XL"
+                          value={customValues}
+                          onChange={handleCustomChange}
+                          error={!!customError && customError !== 'Duplicate values removed'}
+                          helperText={customError || 'Enter 2-20 comma-separated values'}
+                          fullWidth
+                          size="small"
+                          sx={{ mt: 1 }}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : null
+                    }
+                  />
                 )
               })}
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 2.5 }}>
-              <FormControlLabel
-                control={<Switch checked={includeUnsure} onChange={(e) => setIncludeUnsure(e.target.checked)} size="small" />}
-                label="Include ? (unsure)"
-                sx={{ flex: 1 }}
-              />
-              <FormControlLabel
-                control={<Switch checked={includeCoffee} onChange={(e) => setIncludeCoffee(e.target.checked)} size="small" />}
-                label={`Include \u2615 (break)`}
-                sx={{ flex: 1 }}
-              />
-            </Box>
+            <FormControlLabel
+              control={<Switch checked={includeUnsure} onChange={(e) => setIncludeUnsure(e.target.checked)} size="small" />}
+              label="Include ? (unsure)"
+              sx={{ mb: 2.5 }}
+            />
 
             <Button type="submit" variant="contained" fullWidth size="large" disableElevation disabled={!isCustomValid()}>
               Start Game
