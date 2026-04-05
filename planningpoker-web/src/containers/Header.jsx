@@ -55,7 +55,7 @@ export default function Header() {
     >
       <Toolbar>
         <Logo size={48} sx={{ mr: 2 }} />
-        <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 500, fontFamily: '"Lobster", cursive', letterSpacing: 'normal', color: '#fff' }}>
+        <Typography variant="h5" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500, fontFamily: '"Lobster", cursive', letterSpacing: 'normal', color: '#fff' }}>
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />

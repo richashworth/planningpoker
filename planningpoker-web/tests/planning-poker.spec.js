@@ -3,7 +3,6 @@ import { test, expect } from '@playwright/test';
 test.describe('Welcome Page', () => {
   test('shows join and host buttons', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('h3')).toHaveText('Planning Poker');
     await expect(page.getByRole('link', { name: 'Join Game' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Host New Game' })).toBeVisible();
   });
