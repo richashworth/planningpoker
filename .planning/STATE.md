@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 Phase: v1.0 complete
 Plan: N/A
 Status: Milestone shipped
-Last activity: 2026-04-05 - Completed quick task 260405-cid: Move dark/light toggle from header to footer, merge Session label into chip
+Last activity: 2026-04-05 - Completed quick task 260405-dhh: Change app title font from Sora to Lobster
 
 Progress: [██████████] 100%
 
@@ -56,6 +56,7 @@ None — all v1.0 blockers resolved.
 | 260405-0y1 | Rename Fibonacci estimation scheme to Story Points | 2026-04-05 | 9c6cff3 | [260405-0y1-rename-fibonacci-estimation-scheme-to-st](./quick/260405-0y1-rename-fibonacci-estimation-scheme-to-st/) |
 | 260405-13o | Rename STORY_POINTS back to FIBONACCI and cap at 13 | 2026-04-05 | 1e639be | [260405-13o-rename-story-points-back-to-fibonacci-an](./quick/260405-13o-rename-story-points-back-to-fibonacci-an/) |
 | 260405-cid | Move dark/light toggle from header to footer, merge Session label into chip | 2026-04-05 | 44ed94e | [260405-cid-move-dark-light-toggle-from-header-to-fo](./quick/260405-cid-move-dark-light-toggle-from-header-to-fo/) |
+| 260405-dhh | Change app title font from Sora to Lobster | 2026-04-05 | ed4dc7c | [260405-dhh-change-app-title-font-in-header-jsx-from](./quick/260405-dhh-change-app-title-font-in-header-jsx-from/) |
 
 ## Session Continuity
 
