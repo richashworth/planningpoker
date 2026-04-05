@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.1 CreateGame Redesign (Shipped: 2026-04-05)
+
+**Phases completed:** 1 phase, 2 plans, 4 tasks
+
+**Key accomplishments:**
+
+- Replaced ToggleButtonGroup scheme selector with self-documenting 2-column tile grid (SchemeTile component) with responsive icon-only mobile layout
+- Updated Playwright e2e selectors from ToggleButton role queries to data-testid queries for tile grid
+- UAT-driven refinements: Stripe-style shadow design, Linear icons, coffee toggle removal, toggle defaults OFF
+- Inline Custom scheme input within tile, Card Preview section removed
+
+**Stats:** 30 files changed, +1,480 / -221 lines | Git range: `54e8e29..7c321f3`
+
+---
+
 ## v1.0 Estimation Schemes (Shipped: 2026-04-04)
 
 **Phases completed:** 4 phases, 5 plans, 7 tasks

@@ -36,6 +36,39 @@
 2. Backend→frontend coordination for breaking API changes (string→JSON) is best done in a single phase with both sides committed together
 3. Dead exports (LEGAL_ESTIMATES, COFFEE_SYMBOL) should be cleaned up in the same phase that supersedes them
 
+## Milestone: v1.1 — CreateGame Redesign
+
+**Shipped:** 2026-04-05
+**Phases:** 1 | **Plans:** 2
+
+### What Was Built
+- SchemeTile component: Box-based tile grid replacing ToggleButtonGroup
+- 2-column desktop / 3-column icon-only mobile responsive layout
+- Inline Custom scheme input within tile, Card Preview section removed
+- Playwright e2e selector updates from role queries to data-testid
+
+### What Worked
+- Single-phase frontend-only redesign kept scope tight — no backend changes needed
+- data-testid approach for tile selectors made e2e updates straightforward
+- UAT-driven iteration (4 fix commits) refined design quality significantly: Stripe-style shadows, Linear icons, coffee toggle removal, toggle defaults OFF
+- Milestone audit (13/13 requirements satisfied) confirmed completeness before archival
+
+### What Was Inefficient
+- VERIFICATION.md became stale after UAT-driven changes — verification should run after UAT, not before
+- Multiple UAT fix rounds (4 commits) suggest the initial design spec could have been tighter on visual details
+- ROADMAP.md progress table and REQUIREMENTS.md checkboxes again fell out of sync (all still marked Pending/0 plans despite completion)
+
+### Patterns Established
+- SchemeTile as presentational component with customInput prop for extensibility
+- `SCHEME_METADATA` + `SCHEME_ORDER` constants for scheme display data
+- Stripe-style shadow depth as design language for tile components
+- UAT → fix → re-verify as standard quality loop for UI phases
+
+### Key Lessons
+1. Run verification *after* UAT, not before — UAT always drives changes that invalidate earlier verification
+2. Traceability sync issue persists from v1.0 — need automated or discipline-enforced checkbox updates at plan completion
+3. For UI redesigns, investing more in visual spec upfront (specific shadow values, icon choices) reduces UAT fix rounds
+
 ---
 
 ## Cross-Milestone Trends
@@ -45,7 +78,9 @@
 | Milestone | Phases | Plans | Key Change |
 |-----------|--------|-------|------------|
 | v1.0 | 3 | 5 | First milestone; established 3-phase layered delivery pattern |
+| v1.1 | 1 | 2 | UAT-driven iteration loop; milestone audit before archival |
 
 ### Top Lessons (Verified Across Milestones)
 
-1. (Awaiting v1.1 data for cross-validation)
+1. Traceability tables (ROADMAP progress + REQUIREMENTS checkboxes) consistently fall out of sync — confirmed in both v1.0 and v1.1. Need enforcement at plan completion.
+2. Zero-deviation plan execution is achievable when scope is well-defined — all 7 plans across both milestones executed as written (UAT refinements are post-plan).
