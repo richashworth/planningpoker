@@ -12,11 +12,11 @@ export default function Logo({ size = 32, sx, ...props }) {
     >
       {/* Back card */}
       <g transform="rotate(12, 16, 16)">
-        <rect x="7" y="3" width="18" height="24" rx="2.5" fill="none" stroke="white" strokeWidth="0.7" strokeOpacity="0.2" />
+        <rect x="7" y="3" width="18" height="24" rx="2.5" fill="none" stroke="white" strokeWidth="0.7" strokeOpacity="0.4" />
       </g>
       {/* Front card */}
       <g transform="rotate(-5, 16, 16)">
-        <rect x="7" y="4" width="18" height="24" rx="2.5" fill="none" stroke="white" strokeWidth="0.8" strokeOpacity="0.5" />
+        <rect x="7" y="4" width="18" height="24" rx="2.5" fill="none" stroke="white" strokeWidth="0.8" strokeOpacity="0.7" />
         {/* Corner rank PP */}
         <text x="10" y="12.5" fontFamily="Inter, sans-serif" fontSize="7" fontWeight="700" fill="white" letterSpacing="-0.5">PP</text>
         {/* Nautilus spiral — counter-clockwise, tapering */}

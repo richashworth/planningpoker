@@ -15,9 +15,15 @@ import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import LogoutIcon from '@mui/icons-material/Logout';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import startCase from 'lodash/startCase';
 import { leaveGame } from '../actions';
+import { useColorMode } from '../App';
 import Logo from '../components/Logo';
 
 export default function Header() {
@@ -25,6 +31,7 @@ export default function Header() {
   const navigate = useNavigate();
   const sessionId = useSelector(state => state.game.sessionId);
   const playerName = useSelector(state => state.game.playerName);
+  const { toggleColorMode, mode } = useColorMode();
   const [copied, setCopied] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -50,10 +57,19 @@ export default function Header() {
     >
       <Toolbar>
         <Logo size={48} sx={{ mr: 2 }} />
-        <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 500, fontFamily: '"Lobster", cursive', letterSpacing: 'normal', color: '#fff' }}>
+        <Typography variant="h5" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500, fontFamily: '"Lobster", cursive', letterSpacing: 'normal', color: '#fff' }}>
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
+        <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
+          <IconButton
+            onClick={toggleColorMode}
+            aria-label="Toggle dark mode"
+            sx={{ color: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
+          >
+            {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+          </IconButton>
+        </Tooltip>
         {sessionId ? (
           <>
             <Chip
@@ -69,6 +85,7 @@ export default function Header() {
               }
               onDelete={handleCopy}
               sx={{
+                ml: 1,
                 bgcolor: 'rgba(255,255,255,0.15)',
                 border: '1px solid rgba(255,255,255,0.25)',
                 color: 'rgba(255,255,255,0.9)',
@@ -87,6 +104,7 @@ export default function Header() {
               onClick={(e) => setAnchorEl(e.currentTarget)}
               endIcon={<ArrowDropDownIcon />}
               sx={{
+                ml: 1.5,
                 color: 'rgba(255,255,255,0.9)',
                 fontSize: '0.85rem',
                 textTransform: 'none',
@@ -102,6 +120,13 @@ export default function Header() {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
+              <MenuItem component="a" href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/" target="_blank" rel="noopener noreferrer" onClick={() => setAnchorEl(null)}>
+                <ListItemIcon sx={{ minWidth: 36 }}>
+                  <InfoOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>About</ListItemText>
+              </MenuItem>
+              <Divider />
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon sx={{ minWidth: 36 }}>
                   <LogoutIcon fontSize="small" />
