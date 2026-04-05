@@ -42,7 +42,7 @@ test.describe('Host a Game', () => {
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 
-    await expect(page.locator('.MuiChip-label')).toHaveText(/^[a-f0-9]{8}$/);
+    await expect(page.locator('.MuiChip-label')).toHaveText(/^Session ID: [a-f0-9]{8}$/);
   });
 
   test('host can vote and see results', async ({ page }) => {
@@ -136,7 +136,8 @@ async function hostGame(page, name) {
   await page.getByLabel('Name').fill(name);
   await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page).toHaveURL('/game');
-  return await page.locator('.MuiChip-label').textContent();
+  const chipText = await page.locator('.MuiChip-label').textContent();
+  return chipText.replace(/^Session ID:\s*/, '');
 }
 
 // Helper to join a session
