@@ -20,6 +20,7 @@ export default function SchemeTile({ scheme, values, selected, onClick, isCustom
         bgcolor: selected ? 'action.selected' : 'transparent',
         transition: 'border-color 0.2s, background-color 0.2s',
         position: 'relative',
+        ...(!isCustom && { height: '100%', boxSizing: 'border-box' }),
         ...(!selected && {
           '&:hover': {
             borderColor: 'primary.main',
@@ -35,14 +36,6 @@ export default function SchemeTile({ scheme, values, selected, onClick, isCustom
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="subtitle2" fontWeight={700}>
             {scheme.name}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            className="scheme-description"
-            sx={{ display: 'block' }}
-          >
-            {scheme.description}
           </Typography>
         </Box>
         {selected && (

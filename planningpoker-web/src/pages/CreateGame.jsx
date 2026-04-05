@@ -29,8 +29,8 @@ export default function CreateGame() {
   const [playerName, setPlayerName] = useState('')
   const [schemeType, setSchemeType] = useState('fibonacci')
   const [customValues, setCustomValues] = useState('')
-  const [includeUnsure, setIncludeUnsure] = useState(true)
-  const [includeCoffee, setIncludeCoffee] = useState(true)
+  const [includeUnsure, setIncludeUnsure] = useState(false)
+  const [includeCoffee, setIncludeCoffee] = useState(false)
   const [customError, setCustomError] = useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -97,7 +97,6 @@ export default function CreateGame() {
                 '@media (max-width: 479px)': {
                   gridTemplateColumns: 'repeat(3, 1fr)',
                   gap: 1,
-                  '& .scheme-description': { display: 'none' },
                   '& .scheme-values': { display: 'none' },
                 },
               }}
@@ -108,7 +107,7 @@ export default function CreateGame() {
                 return (
                   <Box
                     key={key}
-                    sx={isCustom ? { gridColumn: '1 / -1' } : {}}
+                    sx={isCustom ? { gridColumn: '1 / -1' } : { display: 'flex' }}
                   >
                     <SchemeTile
                       scheme={meta}

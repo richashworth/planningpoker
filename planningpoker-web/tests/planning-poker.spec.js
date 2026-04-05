@@ -26,19 +26,18 @@ test.describe('Welcome Page', () => {
 test.describe('Host a Game', () => {
   test('creates a session and shows vote cards', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByRole('button', { name: 'Start Game' }).click();
 
     await expect(page).toHaveURL('/game');
     await expect(page.getByText('Cast your estimate')).toBeVisible();
     await expect(page.getByText('1', { exact: true })).toBeVisible();
     await expect(page.getByText('13', { exact: true })).toBeVisible();
-    await expect(page.getByText('?', { exact: true })).toBeVisible();
   });
 
   test('shows session ID in header after creating game', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 
@@ -47,7 +46,7 @@ test.describe('Host a Game', () => {
 
   test('host can vote and see results', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 
@@ -60,7 +59,7 @@ test.describe('Host a Game', () => {
 
   test('host sees Next Item button after voting', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 
@@ -74,7 +73,7 @@ test.describe('Host a Game', () => {
 test.describe('Join a Game', () => {
   test('requires name and session ID', async ({ page }) => {
     await page.goto('/join');
-    await expect(page.getByLabel('Name')).toBeVisible();
+    await expect(page.getByLabel('Your Name')).toBeVisible();
     await expect(page.getByLabel('Session ID')).toBeVisible();
   });
 
@@ -87,7 +86,7 @@ test.describe('Join a Game', () => {
 test.describe('Logout', () => {
   test('log out returns to welcome page', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 
@@ -133,7 +132,7 @@ test.describe('Dark/Light Mode', () => {
 // Helper to create a session and return the session ID
 async function hostGame(page, name) {
   await page.goto('/host');
-  await page.getByLabel('Name').fill(name);
+  await page.getByLabel('Your Name').fill(name);
   await page.getByRole('button', { name: 'Start Game' }).click();
   await expect(page).toHaveURL('/game');
   const chipText = await page.locator('.MuiChip-label').textContent();
@@ -143,7 +142,7 @@ async function hostGame(page, name) {
 // Helper to join a session
 async function joinGame(page, name, sessionId) {
   await page.goto('/join');
-  await page.getByLabel('Name').fill(name);
+  await page.getByLabel('Your Name').fill(name);
   await page.getByLabel('Session ID').fill(sessionId);
   await page.getByRole('button', { name: 'Join Game' }).click();
   await expect(page).toHaveURL('/game');
@@ -236,7 +235,7 @@ test.describe('Multi-User Flows', () => {
 test.describe('Estimation Schemes', () => {
   test('T-shirt scheme shows correct cards', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByTestId('scheme-tile-tshirt').click();
     await page.getByRole('button', { name: 'Start Game' }).click();
 
@@ -247,14 +246,12 @@ test.describe('Estimation Schemes', () => {
     await expect(page.getByText('L', { exact: true })).toBeVisible();
     await expect(page.getByText('XL', { exact: true })).toBeVisible();
     await expect(page.getByText('XXL', { exact: true })).toBeVisible();
-    await expect(page.getByText('?', { exact: true })).toBeVisible();
-    await expect(page.getByText('\u2615', { exact: true })).toBeVisible();
     await expect(page.getByText('13', { exact: true })).not.toBeVisible();
   });
 
   test('Simple scheme shows correct cards', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByTestId('scheme-tile-simple').click();
     await page.getByRole('button', { name: 'Start Game' }).click();
 
@@ -264,13 +261,12 @@ test.describe('Estimation Schemes', () => {
     await expect(page.getByText('3', { exact: true })).toBeVisible();
     await expect(page.getByText('4', { exact: true })).toBeVisible();
     await expect(page.getByText('5', { exact: true })).toBeVisible();
-    await expect(page.getByText('?', { exact: true })).toBeVisible();
     await expect(page.getByText('13', { exact: true })).not.toBeVisible();
   });
 
   test('Custom scheme shows user-defined cards', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByTestId('scheme-tile-custom').click();
     await page.getByLabel('Custom Values').fill('Easy, Medium, Hard');
     await page.getByRole('button', { name: 'Start Game' }).click();
@@ -279,18 +275,17 @@ test.describe('Estimation Schemes', () => {
     await expect(page.getByText('Easy', { exact: true })).toBeVisible();
     await expect(page.getByText('Medium', { exact: true })).toBeVisible();
     await expect(page.getByText('Hard', { exact: true })).toBeVisible();
-    await expect(page.getByText('?', { exact: true })).toBeVisible();
   });
 
-  test('disabling meta-card toggles hides ? and coffee cards', async ({ page }) => {
+  test('enabling meta-card toggles shows ? and coffee cards', async ({ page }) => {
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
 
-    // Uncheck Include ? (unsure) switch
+    // Enable Include ? (unsure) switch (defaults OFF)
     const unsureSwitch = page.getByText('Include ? (unsure)').locator('..').locator('.MuiSwitch-input');
     await unsureSwitch.click({ force: true });
 
-    // Uncheck Include ☕ (break) switch
+    // Enable Include ☕ (break) switch (defaults OFF)
     const coffeeSwitch = page.getByText(/Include.*break/).locator('..').locator('.MuiSwitch-input');
     await coffeeSwitch.click({ force: true });
 
@@ -298,8 +293,8 @@ test.describe('Estimation Schemes', () => {
 
     await expect(page).toHaveURL('/game');
     await expect(page.getByText('5', { exact: true })).toBeVisible();
-    await expect(page.getByText('?', { exact: true })).not.toBeVisible();
-    await expect(page.getByText('\u2615', { exact: true })).not.toBeVisible();
+    await expect(page.getByText('?', { exact: true })).toBeVisible();
+    await expect(page.getByText('\u2615', { exact: true })).toBeVisible();
   });
 });
 
@@ -308,7 +303,7 @@ test.describe('Copy Session ID', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 
     await page.goto('/host');
-    await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Your Name').fill('Alice');
     await page.getByRole('button', { name: 'Start Game' }).click();
     await expect(page).toHaveURL('/game');
 

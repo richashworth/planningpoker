@@ -34,9 +34,6 @@ export default function Footer() {
         transition: 'border-color 0.3s ease',
       }}
     >
-      <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem' }}>
-        {appVersion ? `v${appVersion}` : ''}
-      </Typography>
       <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
         <IconButton
           onClick={toggleColorMode}
@@ -47,6 +44,9 @@ export default function Footer() {
           {mode === 'dark' ? <LightModeOutlinedIcon fontSize="small" /> : <DarkModeOutlinedIcon fontSize="small" />}
         </IconButton>
       </Tooltip>
+      <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem' }}>
+        {appVersion ? `v${appVersion}` : ''}
+      </Typography>
       <Link
         href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/"
         target="_blank"

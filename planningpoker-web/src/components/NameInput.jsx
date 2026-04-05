@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 export default function NameInput({ playerName, onPlayerNameInputChange }) {
   return (
     <TextField
-      label="Name"
+      label="Your Name"
       value={playerName}
       onChange={onPlayerNameInputChange}
       autoFocus
