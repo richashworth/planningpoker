@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Estimation Schemes
-status: completed
-stopped_at: Milestone v1.0 shipped
-last_updated: "2026-04-04"
-last_activity: 2026-04-04
+milestone: v1.1
+milestone_name: CreateGame Redesign
+status: in_progress
+stopped_at: Roadmap created — Phase 4 not started
+last_updated: "2026-04-05"
+last_activity: 2026-04-05
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 2
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
-**Current focus:** Planning next milestone
+**Current focus:** v1.1 — CreateGame redesign (pure frontend, no backend changes)
 
 ## Current Position
 
-Phase: v1.0 complete
-Plan: N/A
-Status: Milestone shipped
-Last activity: 2026-04-05 - Completed quick task 260405-dhh: Change app title font from Sora to Lobster
+Phase: 4 — Scheme Tile Grid
+Plan: TBD
+Status: Not started
+Last activity: 2026-04-05 - Roadmap created for v1.1
 
-Progress: [██████████] 100%
+Progress: [__________] 0%
 
 ## Accumulated Context
 
@@ -44,7 +44,7 @@ See PROJECT.md Key Decisions table for full log.
 
 ### Blockers/Concerns
 
-None — all v1.0 blockers resolved.
+None.
 
 ### Quick Tasks Completed
 
@@ -60,6 +60,6 @@ None — all v1.0 blockers resolved.
 
 ## Session Continuity
 
-Last session: 2026-04-04
-Stopped at: Completed quick task 260404-rsd
+Last session: 2026-04-05
+Stopped at: Roadmap created for v1.1 CreateGame Redesign
 Resume file: N/A

@@ -45,25 +45,25 @@ Requirements for CreateGame redesign. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEL-01 | TBD | Pending |
-| SEL-02 | TBD | Pending |
-| SEL-03 | TBD | Pending |
-| SEL-04 | TBD | Pending |
-| SEL-05 | TBD | Pending |
-| EXT-01 | TBD | Pending |
-| EXT-02 | TBD | Pending |
-| LAY-01 | TBD | Pending |
-| LAY-02 | TBD | Pending |
-| LAY-03 | TBD | Pending |
-| BWC-01 | TBD | Pending |
-| BWC-02 | TBD | Pending |
-| BWC-03 | TBD | Pending |
+| SEL-01 | Phase 4 | Pending |
+| SEL-02 | Phase 4 | Pending |
+| SEL-03 | Phase 4 | Pending |
+| SEL-04 | Phase 4 | Pending |
+| SEL-05 | Phase 4 | Pending |
+| EXT-01 | Phase 4 | Pending |
+| EXT-02 | Phase 4 | Pending |
+| LAY-01 | Phase 4 | Pending |
+| LAY-02 | Phase 4 | Pending |
+| LAY-03 | Phase 4 | Pending |
+| BWC-01 | Phase 4 | Pending |
+| BWC-02 | Phase 4 | Pending |
+| BWC-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️
+- Mapped to phases: 13
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-05*
-*Last updated: 2026-04-05 after initial definition*
+*Last updated: 2026-04-05 after roadmap creation*
