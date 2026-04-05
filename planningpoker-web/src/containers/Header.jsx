@@ -15,7 +15,9 @@ import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import LogoutIcon from '@mui/icons-material/Logout';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
@@ -117,6 +119,13 @@ export default function Header() {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
+              <MenuItem component="a" href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/" target="_blank" rel="noopener noreferrer" onClick={() => setAnchorEl(null)}>
+                <ListItemIcon sx={{ minWidth: 36 }}>
+                  <InfoOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>About</ListItemText>
+              </MenuItem>
+              <Divider />
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon sx={{ minWidth: 36 }}>
                   <LogoutIcon fontSize="small" />

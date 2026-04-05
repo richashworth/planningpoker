@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import axios from 'axios';
 import { API_ROOT_URL } from '../config/Constants';
 
@@ -20,7 +19,7 @@ export default function Footer() {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         px: 3,
         py: 1.5,
         borderTop: '1px solid',
@@ -29,17 +28,8 @@ export default function Footer() {
       }}
     >
       <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem' }}>
-        {appVersion ? `v${appVersion}` : ''}
+        {appVersion ? `v${appVersion}` : ''} &copy; Rich Ashworth
       </Typography>
-      <Link
-        href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/"
-        target="_blank"
-        rel="noopener noreferrer"
-        underline="none"
-        sx={{ color: 'text.disabled', fontSize: '0.7rem', '&:hover': { color: 'text.secondary' } }}
-      >
-        About
-      </Link>
     </Box>
   );
 }
