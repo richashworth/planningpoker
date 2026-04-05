@@ -237,7 +237,7 @@ test.describe('Estimation Schemes', () => {
   test('T-shirt scheme shows correct cards', async ({ page }) => {
     await page.goto('/host');
     await page.getByLabel('Name').fill('Alice');
-    await page.getByRole('button', { name: 'T-shirt' }).click();
+    await page.getByTestId('scheme-tile-tshirt').click();
     await page.getByRole('button', { name: 'Start Game' }).click();
 
     await expect(page).toHaveURL('/game');
@@ -255,7 +255,7 @@ test.describe('Estimation Schemes', () => {
   test('Simple scheme shows correct cards', async ({ page }) => {
     await page.goto('/host');
     await page.getByLabel('Name').fill('Alice');
-    await page.getByRole('button', { name: 'Simple' }).click();
+    await page.getByTestId('scheme-tile-simple').click();
     await page.getByRole('button', { name: 'Start Game' }).click();
 
     await expect(page).toHaveURL('/game');
@@ -271,7 +271,7 @@ test.describe('Estimation Schemes', () => {
   test('Custom scheme shows user-defined cards', async ({ page }) => {
     await page.goto('/host');
     await page.getByLabel('Name').fill('Alice');
-    await page.getByRole('button', { name: 'Custom' }).click();
+    await page.getByTestId('scheme-tile-custom').click();
     await page.getByLabel('Custom Values').fill('Easy, Medium, Hard');
     await page.getByRole('button', { name: 'Start Game' }).click();
 
