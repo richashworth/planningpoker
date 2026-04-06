@@ -28,6 +28,7 @@ public class SessionManager {
     private final ConcurrentHashMap<String, Instant> lastActivity = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, List<String>> sessionLegalValues = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, SchemeConfig> sessionSchemeConfigs = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> sessionHosts = new ConcurrentHashMap<>();
 
     public boolean isSessionActive(final String sessionId) {
         return activeSessions.contains(sessionId);
@@ -68,6 +69,14 @@ public class SessionManager {
         return sessionSchemeConfigs.get(sessionId);
     }
 
+    public String getHost(String sessionId) {
+        return sessionHosts.get(sessionId);
+    }
+
+    public void setHost(String sessionId, String userName) {
+        sessionHosts.put(sessionId, userName);
+    }
+
     public void registerEstimate(final String sessionId, final Estimate estimate) {
         sessionEstimates.put(sessionId, estimate);
         touchSession(sessionId);
@@ -93,6 +102,7 @@ public class SessionManager {
         lastActivity.clear();
         sessionLegalValues.clear();
         sessionSchemeConfigs.clear();
+        sessionHosts.clear();
     }
 
     public void resetSession(final String sessionId) {
@@ -102,6 +112,7 @@ public class SessionManager {
 
     public void registerUser(final String userName, final String sessionId) {
         sessionUsers.put(sessionId, userName);
+        sessionHosts.putIfAbsent(sessionId, userName);
         touchSession(sessionId);
     }
 
@@ -110,6 +121,15 @@ public class SessionManager {
         sessionEstimates.entries().removeIf(
                 e -> e.getKey().equals(sessionId) && e.getValue().getUserName().equalsIgnoreCase(userName)
         );
+        String currentHost = sessionHosts.get(sessionId);
+        if (currentHost != null && currentHost.equalsIgnoreCase(userName)) {
+            List<String> remainingUsers = sessionUsers.get(sessionId);
+            if (remainingUsers != null && !remainingUsers.isEmpty()) {
+                sessionHosts.put(sessionId, remainingUsers.get(0));
+            } else {
+                sessionHosts.remove(sessionId);
+            }
+        }
         touchSession(sessionId);
     }
 
@@ -133,6 +153,7 @@ public class SessionManager {
             lastActivity.remove(sessionId);
             sessionLegalValues.remove(sessionId);
             sessionSchemeConfigs.remove(sessionId);
+            sessionHosts.remove(sessionId);
         }
         if (!toEvict.isEmpty()) {
             logger.info("Evicted {} idle session(s)", toEvict.size());
