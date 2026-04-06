@@ -77,8 +77,8 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 07-01-PLAN.md — Redux host state wiring + visual host indicator in UsersTable
-- [ ] 07-02-PLAN.md — Host action controls (kick/promote icons, confirmation dialog, kick detection + toast)
+- [x] 07-01-PLAN.md — Redux host state wiring + visual host indicator in UsersTable
+- [x] 07-02-PLAN.md — Host action controls (kick/promote icons, confirmation dialog, kick detection + toast)
 
 ## Backlog
 
