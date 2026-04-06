@@ -188,7 +188,6 @@ class GameControllerTest extends AbstractControllerTest {
     void testKickUserCannotKickSelf() {
         when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich"));
-        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
         assertThrows(IllegalArgumentException.class, () ->
             gameController.kickUser("Rich", "Rich", SESSION_ID));
     }

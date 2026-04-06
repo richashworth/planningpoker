@@ -103,6 +103,30 @@ public class GameController {
         return sessionManager.getSessionUsers(sessionId);
     }
 
+    @PostMapping("kick")
+    public void kickUser(
+            @RequestParam(name = "userName") final String userName,
+            @RequestParam(name = "targetUser") final String targetUser,
+            @RequestParam(name = "sessionId") final String sessionId
+    ) {
+        synchronized (sessionManager) {
+            validateSessionMembership(sessionId, userName);
+            if (userName.equalsIgnoreCase(targetUser)) {
+                throw new IllegalArgumentException("cannot kick yourself");
+            }
+            if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+                throw new HostActionException("only the host can perform this action");
+            }
+            if (!containsIgnoreCase(sessionManager.getSessionUsers(sessionId), targetUser)) {
+                throw new IllegalArgumentException("target user is not a member of this session");
+            }
+            sessionManager.removeUser(targetUser, sessionId);
+            logger.info("{} has kicked {} from session {}", userName, targetUser, sessionId);
+        }
+        messagingUtils.burstUsersMessages(sessionId);
+        messagingUtils.burstResultsMessages(sessionId);
+    }
+
     @PostMapping("reset")
     public void reset(
             @RequestParam(name = "sessionId") final String sessionId,
