@@ -8,23 +8,23 @@ A real-time planning poker web app where distributed teams estimate work collabo
 
 Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
 
-## Current Milestone: v1.1 CreateGame Redesign
+## Current Milestone: v1.2 Host Management
 
-**Goal:** Replace the ToggleButtonGroup scheme selector with a self-documenting tile grid — emoji icons, descriptions, and value chips per scheme.
+**Goal:** Give hosts control over their session — remove participants, transfer host role, and auto-promote on host departure.
 
 **Target features:**
-- Tile grid scheme selector with emoji icons and value previews baked into each tile
-- One-line description per scheme for context
-- No separate Card Preview section (tiles already show values)
-- Pill-style toggles for extra cards (? Unsure, ☕ Break)
-- Responsive: 2-col on desktop with full detail, 3-col icon-only on mobile
-- Custom scheme tile spans full width with inline input
+- Track host identity server-side in SessionManager (creator = initial host)
+- Host can remove a participant (kicked user returns to welcome page with toast notification)
+- Host can promote another participant to host
+- When host leaves, next participant by join order automatically becomes host
+- Inline host controls in the participants list (icons next to each user)
+- WebSocket push to notify all participants of host changes and kicks
 
 ## Current State
 
 Shipped v1.0 (Estimation Schemes) on 2026-04-04, v1.1 (CreateGame Redesign) on 2026-04-05.
 
-- **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets to value lists; SchemeConfig record carries scheme metadata per session.
+- **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets to value lists; SchemeConfig record carries scheme metadata per session. No host concept server-side — session creator is only tracked on the frontend.
 - **Frontend:** React 18 + MUI v5 + Redux 4. CreateGame uses tile grid (SchemeTile component) with MUI rounded icons, names, and value chips. 2-column desktop / 3-column icon-only mobile responsive layout. Stripe-style shadow design. Card Preview section removed.
 - **API:** createSession/joinSession return JSON with scheme metadata. VoteController validates votes per-session (not hardcoded).
 - **Stats:** ~4,355 lines added across 2 milestones (v1.0: 3 phases/5 plans, v1.1: 1 phase/2 plans).
@@ -98,5 +98,22 @@ Shipped v1.0 (Estimation Schemes) on 2026-04-04, v1.1 (CreateGame Redesign) on 2
 - reducer_game.js CREATE_GAME/JOIN_GAME cases lack action.error guard (pre-existing)
 - VERIFICATION.md for Phase 4 is stale after UAT-driven changes (doc accuracy only)
 
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd-transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd-complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
 ---
-*Last updated: 2026-04-05 after v1.1 milestone*
+*Last updated: 2026-04-06 after v1.2 milestone started*

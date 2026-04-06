@@ -1,36 +1,36 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: CreateGame Redesign
-status: completed
-stopped_at: Milestone v1.1 complete
-last_updated: "2026-04-05T22:00:00.000Z"
-last_activity: 2026-04-05
+milestone: v1.2
+milestone_name: Host Management
+status: active
+stopped_at: null
+last_updated: "2026-04-06T00:00:00.000Z"
+last_activity: 2026-04-06
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  total_phases: 3
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-05)
+See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
-**Current focus:** Planning next milestone
+**Current focus:** Phase 5 — Backend Host Model
 
 ## Current Position
 
-Phase: —
-Plan: —
-Status: Milestone v1.1 complete
-Last activity: 2026-04-05
+Phase: 5 — Backend Host Model
+Plan: Not started
+Status: Roadmap defined, ready to plan Phase 5
+Last activity: 2026-04-06 — v1.2 roadmap created (3 phases: 5, 6, 7)
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Accumulated Context
 
@@ -60,6 +60,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-05
-Stopped at: Milestone v1.1 complete
+Last session: 2026-04-06
+Stopped at: v1.2 roadmap defined — ready to plan Phase 5
 Resume file: N/A
