@@ -17,6 +17,12 @@ public class ErrorHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @ExceptionHandler(HostActionException.class)
+    public ResponseEntity<Map<String, String>> handleForbidden(HostActionException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", e.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleBadRequest(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

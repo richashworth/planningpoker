@@ -311,6 +311,41 @@ class SessionManagerTest {
         assertEquals("Bob", sessionManager.getHost(sessionId));
     }
 
+    @Test
+    void testPromoteHost() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("userA", sessionId);
+        sessionManager.registerUser("userB", sessionId);
+        sessionManager.promoteHost(sessionId, "userB");
+        assertEquals("userB", sessionManager.getHost(sessionId));
+        assertTrue(sessionManager.getSessionUsers(sessionId).contains("userA"));
+        assertTrue(sessionManager.getSessionUsers(sessionId).contains("userB"));
+    }
+
+    @Test
+    void testPromoteHostToNonMemberThrows() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("userA", sessionId);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> sessionManager.promoteHost(sessionId, "userB"));
+        assertEquals("target user is not a member of this session", ex.getMessage());
+    }
+
+    @Test
+    void testPromoteHostPreservesAllUsers() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("userA", sessionId);
+        sessionManager.registerUser("userB", sessionId);
+        sessionManager.registerUser("userC", sessionId);
+        sessionManager.promoteHost(sessionId, "userC");
+        List<String> users = sessionManager.getSessionUsers(sessionId);
+        assertEquals(3, users.size());
+        assertTrue(users.contains("userA"));
+        assertTrue(users.contains("userB"));
+        assertTrue(users.contains("userC"));
+        assertEquals("userC", sessionManager.getHost(sessionId));
+    }
+
     private void registerUsers(String sessionId, ArrayList<String> users) {
         for (String user : users) {
             sessionManager.registerUser(user, sessionId);
