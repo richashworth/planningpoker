@@ -2,12 +2,15 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import StarRounded from '@mui/icons-material/StarRounded';
 import startCase from 'lodash/startCase';
 import union from 'lodash/union';
 
 export default function UsersTable({ heading }) {
   const users = useSelector(state => state.users);
   const currentUser = useSelector(state => state.game.playerName);
+  const host = useSelector(state => state.game.host);
 
   const allUsers = union([currentUser], users).map(startCase).sort();
 
@@ -42,6 +45,11 @@ export default function UsersTable({ heading }) {
           <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.85rem' }}>
             {name}
           </Typography>
+          {name.toLowerCase() === host?.toLowerCase() && (
+            <Tooltip title="Host" placement="right" arrow>
+              <StarRounded sx={{ fontSize: 16, color: 'warning.main', ml: 'auto' }} />
+            </Tooltip>
+          )}
         </Box>
       ))}
     </Box>
