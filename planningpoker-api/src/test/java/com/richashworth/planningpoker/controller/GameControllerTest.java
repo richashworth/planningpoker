@@ -191,4 +191,32 @@ class GameControllerTest extends AbstractControllerTest {
         assertThrows(IllegalArgumentException.class, () ->
             gameController.kickUser("Rich", "Rich", SESSION_ID));
     }
+
+    @Test
+    void testPromoteUser() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        gameController.promoteUser("Rich", "Alice", SESSION_ID);
+        verify(sessionManager, times(1)).promoteHost(SESSION_ID, "Alice");
+        verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
+        verify(messagingUtils, never()).burstResultsMessages(SESSION_ID);
+    }
+
+    @Test
+    void testPromoteUserNonHostRejected() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice", "Bob"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        assertThrows(HostActionException.class, () ->
+            gameController.promoteUser("Alice", "Bob", SESSION_ID));
+    }
+
+    @Test
+    void testPromoteUserCannotPromoteSelf() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich"));
+        assertThrows(IllegalArgumentException.class, () ->
+            gameController.promoteUser("Rich", "Rich", SESSION_ID));
+    }
 }
