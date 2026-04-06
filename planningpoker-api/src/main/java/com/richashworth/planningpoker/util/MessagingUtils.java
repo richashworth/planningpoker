@@ -9,6 +9,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
 
 @Component
@@ -39,7 +42,10 @@ public class MessagingUtils {
     }
 
     public void sendUsersMessage(String sessionId) {
-        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(sessionManager.getSessionUsers(sessionId)));
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("users", sessionManager.getSessionUsers(sessionId));
+        payload.put("host", sessionManager.getHost(sessionId));
+        template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(payload));
     }
 
     @Async

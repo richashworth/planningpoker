@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import GamePane from '../containers/GamePane';
 import useStomp from '../hooks/useStomp';
-import { resultsUpdated, usersUpdated } from '../actions';
+import { resultsUpdated, usersUpdated, kicked } from '../actions';
 import { API_ROOT_URL } from '../config/Constants';
 import axios from 'axios';
 
@@ -15,6 +15,8 @@ export default function PlayGame() {
   const sessionId = useSelector(state => state.game.sessionId);
   const isUserRegistered = useSelector(state => state.game.isRegistered);
   const voted = useSelector(state => state.voted);
+  const users = useSelector(state => state.users);
+  const kickedMessage = useSelector(state => state.game.kickedMessage);
   const lastResultsTime = useRef(0);
 
   useEffect(() => {
@@ -22,6 +24,22 @@ export default function PlayGame() {
       navigate('/');
     }
   }, [isUserRegistered, navigate]);
+
+  // Detect kick: if registered user is no longer in the WS users list
+  useEffect(() => {
+    if (!isUserRegistered || !sessionId || users.length === 0) return
+    const inSession = users.some(u => u.toLowerCase() === playerName.toLowerCase())
+    if (!inSession) {
+      dispatch(kicked())
+    }
+  }, [users, isUserRegistered, sessionId, playerName, dispatch]);
+
+  // Pass kicked message to Welcome page via sessionStorage
+  useEffect(() => {
+    if (kickedMessage) {
+      sessionStorage.setItem('pp-kicked-message', kickedMessage)
+    }
+  }, [kickedMessage]);
 
   const { connected } = useStomp({
     url: `${API_ROOT_URL}/stomp`,

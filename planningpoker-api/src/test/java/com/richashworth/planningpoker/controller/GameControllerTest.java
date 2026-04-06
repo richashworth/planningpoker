@@ -29,12 +29,14 @@ class GameControllerTest extends AbstractControllerTest {
         when(sessionManager.getSessionSchemeConfig(SESSION_ID)).thenReturn(config);
         List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
         when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("HostUser");
         SessionResponse response = gameController.joinSession(SESSION_ID, USER_NAME);
         assertEquals("fibonacci", response.schemeType());
         assertTrue(response.values().contains("1"));
         assertTrue(response.values().contains("?"));
         assertTrue(response.includeUnsure());
         assertTrue(response.includeCoffee());
+        assertEquals("HostUser", response.host());
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
         inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
     }
@@ -60,6 +62,7 @@ class GameControllerTest extends AbstractControllerTest {
         when(sessionManager.createSession(any(SchemeConfig.class))).thenReturn(SESSION_ID);
         List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
         when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
         final SessionResponse response = gameController.createSession(request);
         assertEquals(SESSION_ID, response.sessionId());
         assertEquals("fibonacci", response.schemeType());
@@ -67,6 +70,7 @@ class GameControllerTest extends AbstractControllerTest {
         assertTrue(response.values().contains("?"));
         assertTrue(response.includeUnsure());
         assertTrue(response.includeCoffee());
+        assertEquals(USER_NAME, response.host());
         inOrder.verify(sessionManager, times(1)).createSession(any(SchemeConfig.class));
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
         inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
@@ -79,6 +83,7 @@ class GameControllerTest extends AbstractControllerTest {
         when(sessionManager.createSession(any(SchemeConfig.class))).thenReturn(SESSION_ID);
         List<String> tshirtValues = SchemeType.resolveValues("tshirt", null, true, false);
         when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(tshirtValues);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
         final SessionResponse response = gameController.createSession(request);
         assertEquals(SESSION_ID, response.sessionId());
         assertEquals("tshirt", response.schemeType());
@@ -87,6 +92,7 @@ class GameControllerTest extends AbstractControllerTest {
         assertFalse(response.values().contains("\u2615"));
         assertTrue(response.includeUnsure());
         assertFalse(response.includeCoffee());
+        assertEquals(USER_NAME, response.host());
     }
 
     @Test
@@ -147,5 +153,70 @@ class GameControllerTest extends AbstractControllerTest {
         CreateSessionRequest request = new CreateSessionRequest("<script>", null, null, null, null);
         assertThrows(IllegalArgumentException.class, () ->
             gameController.createSession(request));
+    }
+
+    @Test
+    void testKickUser() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        gameController.kickUser("Rich", "Alice", SESSION_ID);
+        verify(sessionManager, times(1)).removeUser("Alice", SESSION_ID);
+        verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
+        verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
+    }
+
+    @Test
+    void testKickUserNonHostRejected() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        assertThrows(HostActionException.class, () ->
+            gameController.kickUser("Alice", "Rich", SESSION_ID));
+    }
+
+    @Test
+    void testKickUserTargetNotInSession() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        assertThrows(IllegalArgumentException.class, () ->
+            gameController.kickUser("Rich", "Bob", SESSION_ID));
+    }
+
+    @Test
+    void testKickUserCannotKickSelf() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich"));
+        assertThrows(IllegalArgumentException.class, () ->
+            gameController.kickUser("Rich", "Rich", SESSION_ID));
+    }
+
+    @Test
+    void testPromoteUser() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        gameController.promoteUser("Rich", "Alice", SESSION_ID);
+        verify(sessionManager, times(1)).promoteHost(SESSION_ID, "Alice");
+        verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
+        verify(messagingUtils, never()).burstResultsMessages(SESSION_ID);
+    }
+
+    @Test
+    void testPromoteUserNonHostRejected() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice", "Bob"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        assertThrows(HostActionException.class, () ->
+            gameController.promoteUser("Alice", "Bob", SESSION_ID));
+    }
+
+    @Test
+    void testPromoteUserCannotPromoteSelf() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich"));
+        assertThrows(IllegalArgumentException.class, () ->
+            gameController.promoteUser("Rich", "Rich", SESSION_ID));
     }
 }

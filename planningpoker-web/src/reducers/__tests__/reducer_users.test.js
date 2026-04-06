@@ -7,9 +7,13 @@ describe('users reducer', () => {
     expect(reducer(undefined, { type: '@@INIT' })).toEqual([]);
   });
 
-  it('replaces state on USERS_UPDATED', () => {
-    const users = ['alice', 'bob'];
-    expect(reducer([], { type: USERS_UPDATED, payload: users })).toEqual(users);
+  it('replaces state on USERS_UPDATED with enriched payload', () => {
+    const payload = { users: ['alice', 'bob'], host: 'alice' };
+    expect(reducer([], { type: USERS_UPDATED, payload })).toEqual(['alice', 'bob']);
+  });
+
+  it('handles legacy array payload', () => {
+    expect(reducer([], { type: USERS_UPDATED, payload: ['alice'] })).toEqual(['alice']);
   });
 
   it('clears on LEAVE_GAME', () => {

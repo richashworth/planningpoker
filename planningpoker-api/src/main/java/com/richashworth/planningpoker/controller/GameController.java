@@ -52,7 +52,8 @@ public class GameController {
         messagingUtils.burstUsersMessages(sessionId);
         SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
         List<String> values = sessionManager.getSessionLegalValues(sessionId);
-        return new SessionResponse(null, config.schemeType(), values,
+        String host = sessionManager.getHost(sessionId);
+        return new SessionResponse(host, null, config.schemeType(), values,
                 config.includeUnsure(), config.includeCoffee());
     }
 
@@ -68,7 +69,8 @@ public class GameController {
         }
         messagingUtils.burstUsersMessages(sessionId);
         List<String> values = sessionManager.getSessionLegalValues(sessionId);
-        return new SessionResponse(sessionId, schemeConfig.schemeType(), values,
+        String host = sessionManager.getHost(sessionId);
+        return new SessionResponse(host, sessionId, schemeConfig.schemeType(), values,
                 schemeConfig.includeUnsure(), schemeConfig.includeCoffee());
     }
 
@@ -99,6 +101,50 @@ public class GameController {
             @RequestParam(name = "sessionId") final String sessionId
     ) {
         return sessionManager.getSessionUsers(sessionId);
+    }
+
+    @PostMapping("kick")
+    public void kickUser(
+            @RequestParam(name = "userName") final String userName,
+            @RequestParam(name = "targetUser") final String targetUser,
+            @RequestParam(name = "sessionId") final String sessionId
+    ) {
+        synchronized (sessionManager) {
+            validateSessionMembership(sessionId, userName);
+            if (userName.equalsIgnoreCase(targetUser)) {
+                throw new IllegalArgumentException("cannot kick yourself");
+            }
+            if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+                throw new HostActionException("only the host can perform this action");
+            }
+            if (!containsIgnoreCase(sessionManager.getSessionUsers(sessionId), targetUser)) {
+                throw new IllegalArgumentException("target user is not a member of this session");
+            }
+            sessionManager.removeUser(targetUser, sessionId);
+            logger.info("{} has kicked {} from session {}", userName, targetUser, sessionId);
+        }
+        messagingUtils.burstUsersMessages(sessionId);
+        messagingUtils.burstResultsMessages(sessionId);
+    }
+
+    @PostMapping("promote")
+    public void promoteUser(
+            @RequestParam(name = "userName") final String userName,
+            @RequestParam(name = "targetUser") final String targetUser,
+            @RequestParam(name = "sessionId") final String sessionId
+    ) {
+        synchronized (sessionManager) {
+            validateSessionMembership(sessionId, userName);
+            if (userName.equalsIgnoreCase(targetUser)) {
+                throw new IllegalArgumentException("cannot promote yourself");
+            }
+            if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+                throw new HostActionException("only the host can perform this action");
+            }
+            sessionManager.promoteHost(sessionId, targetUser);
+            logger.info("{} has promoted {} to host in session {}", userName, targetUser, sessionId);
+        }
+        messagingUtils.burstUsersMessages(sessionId);
     }
 
     @PostMapping("reset")

@@ -224,6 +224,152 @@ class SessionManagerTest {
         assertTrue(sessionManager.getSessionLegalValues(idleSession).isEmpty());
     }
 
+    @Test
+    void testGetHostReturnsCreator() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        assertEquals("Alice", sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testGetHostReturnsNullForUnknownSession() {
+        assertNull(sessionManager.getHost("nonexistent"));
+    }
+
+    @Test
+    void testHostAutoPromotesOnRemoval() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.removeUser("Alice", sessionId);
+        assertEquals("Bob", sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testHostDoesNotChangeWhenNonHostLeaves() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.removeUser("Bob", sessionId);
+        assertEquals("Alice", sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testHostNullWhenLastUserLeaves() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.removeUser("Alice", sessionId);
+        assertNull(sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testSetHostExplicitly() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.setHost(sessionId, "Bob");
+        assertEquals("Bob", sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testClearSessionsCleansHostData() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.clearSessions();
+        assertNull(sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testEvictIdleSessionsCleansHostData() throws Exception {
+        String activeSession = sessionManager.createSession();
+        sessionManager.registerUser("Alice", activeSession);
+
+        String idleSession = sessionManager.createSession();
+        sessionManager.registerUser("Bob", idleSession);
+
+        // Backdate lastActivity for idle session
+        Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+        lastActivityField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ConcurrentHashMap<String, Instant> lastActivity =
+                (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
+        lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+
+        sessionManager.evictIdleSessions();
+
+        assertEquals("Alice", sessionManager.getHost(activeSession));
+        assertNull(sessionManager.getHost(idleSession));
+    }
+
+    @Test
+    void testHostPromotesToNextByJoinOrder() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.registerUser("Charlie", sessionId);
+        sessionManager.removeUser("Alice", sessionId);
+        assertEquals("Bob", sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testPromoteHost() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("userA", sessionId);
+        sessionManager.registerUser("userB", sessionId);
+        sessionManager.promoteHost(sessionId, "userB");
+        assertEquals("userB", sessionManager.getHost(sessionId));
+        assertTrue(sessionManager.getSessionUsers(sessionId).contains("userA"));
+        assertTrue(sessionManager.getSessionUsers(sessionId).contains("userB"));
+    }
+
+    @Test
+    void testPromoteHostToNonMemberThrows() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("userA", sessionId);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> sessionManager.promoteHost(sessionId, "userB"));
+        assertEquals("target user is not a member of this session", ex.getMessage());
+    }
+
+    @Test
+    void testPromoteHostPreservesAllUsers() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("userA", sessionId);
+        sessionManager.registerUser("userB", sessionId);
+        sessionManager.registerUser("userC", sessionId);
+        sessionManager.promoteHost(sessionId, "userC");
+        List<String> users = sessionManager.getSessionUsers(sessionId);
+        assertEquals(3, users.size());
+        assertTrue(users.contains("userA"));
+        assertTrue(users.contains("userB"));
+        assertTrue(users.contains("userC"));
+        assertEquals("userC", sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testRemoveUserCaseInsensitive() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.removeUser("bob", sessionId);
+        assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
+    }
+
+    @Test
+    void testRemoveUserExactCaseStillWorks() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.removeUser("Bob", sessionId);
+        assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
+    }
+
+    @Test
+    void testRemoveUserDoesNotRemoveNonMatchingUser() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.removeUser("bob", sessionId);
+        assertEquals(List.of("Alice"), sessionManager.getSessionUsers(sessionId));
+    }
+
     private void registerUsers(String sessionId, ArrayList<String> users) {
         for (String user : users) {
             sessionManager.registerUser(user, sessionId);

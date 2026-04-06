@@ -5,7 +5,7 @@ const initialUsersState = [];
 export default function (state = initialUsersState, action) {
   switch (action.type) {
     case USERS_UPDATED:
-      return action.payload;
+      return action.payload.users || action.payload;
     case LEAVE_GAME:
       return [];
     default:

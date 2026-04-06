@@ -9,6 +9,10 @@ export const RESET_SESSION = 'reset-session';
 export const RESULTS_UPDATED = 'results-updated';
 export const USERS_UPDATED = 'users-updated';
 export const USER_REGISTERED = 'user-registered';
+export const HOST_UPDATED = 'host-updated';
+export const KICK_USER = 'kick-user';
+export const PROMOTE_USER = 'promote-user';
+export const KICKED = 'kicked';
 export const VOTE = 'vote';
 
 // Events
@@ -23,6 +27,8 @@ export const resultsUpdated = (results, playerName) => (
 export const usersUpdated = (users) => (
   {type: USERS_UPDATED, payload: users}
 );
+
+export const kicked = () => ({type: KICKED});
 
 // User-driven actions
 export function createGame(playerName, schemeOptions, callback) {
@@ -91,4 +97,30 @@ export function resetSession(playerName, sessionId) {
     type: RESET_SESSION,
     payload: request
   };
+}
+
+export function kickUser(userName, targetUser, sessionId) {
+  const request = axios.post(`${API_ROOT_URL}/kick`,
+    new URLSearchParams({ userName, targetUser, sessionId }))
+  request.catch(err => {
+    const msg = err.response?.data?.error || 'Failed to kick user'
+    alert(msg)
+  })
+  return {
+    type: KICK_USER,
+    payload: request,
+  }
+}
+
+export function promoteUser(userName, targetUser, sessionId) {
+  const request = axios.post(`${API_ROOT_URL}/promote`,
+    new URLSearchParams({ userName, targetUser, sessionId }))
+  request.catch(err => {
+    const msg = err.response?.data?.error || 'Failed to promote user'
+    alert(msg)
+  })
+  return {
+    type: PROMOTE_USER,
+    payload: request,
+  }
 }
