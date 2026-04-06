@@ -77,6 +77,14 @@ public class SessionManager {
         sessionHosts.put(sessionId, userName);
     }
 
+    public void promoteHost(String sessionId, String targetUser) {
+        if (!com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase(sessionUsers.get(sessionId), targetUser)) {
+            throw new IllegalArgumentException("target user is not a member of this session");
+        }
+        sessionHosts.put(sessionId, targetUser);
+        touchSession(sessionId);
+    }
+
     public void registerEstimate(final String sessionId, final Estimate estimate) {
         sessionEstimates.put(sessionId, estimate);
         touchSession(sessionId);
