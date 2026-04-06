@@ -125,7 +125,7 @@ public class SessionManager {
     }
 
     public void removeUser(String userName, String sessionId) {
-        sessionUsers.remove(sessionId, userName);
+        sessionUsers.get(sessionId).removeIf(u -> u.equalsIgnoreCase(userName));
         sessionEstimates.entries().removeIf(
                 e -> e.getKey().equals(sessionId) && e.getValue().getUserName().equalsIgnoreCase(userName)
         );
