@@ -41,7 +41,11 @@
   2. The current host identity is returned in joinSession and refresh API responses so clients know who is host
   3. When the host calls logout/leave, the next participant in join order is automatically promoted to host before the response is sent
   4. If the last participant leaves, no host error occurs and the session remains valid (or clears normally)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — SessionManager host tracking with TDD (service layer + tests)
+- [ ] 05-02-PLAN.md — Expose host in API responses (SessionResponse + controller + tests)
 
 ### Phase 6: Host Actions & WebSocket Events
 **Goal**: The host can kick a participant or promote another participant to host, and all participants receive real-time WebSocket push notifications when either event occurs
@@ -89,6 +93,6 @@ Plans:
 | 2. API Contract | v1.0 | 2/2 | Complete | 2026-04-04 |
 | 3. Frontend UI | v1.0 | 2/2 | Complete | 2026-04-04 |
 | 4. CreateGame Tile Grid Redesign | v1.1 | 2/2 | Complete | 2026-04-05 |
-| 5. Backend Host Model | v1.2 | 0/- | Not started | - |
+| 5. Backend Host Model | v1.2 | 0/2 | Not started | - |
 | 6. Host Actions & WebSocket Events | v1.2 | 0/- | Not started | - |
 | 7. Host UI & Notifications | v1.2 | 0/- | Not started | - |
