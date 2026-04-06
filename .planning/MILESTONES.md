@@ -1,5 +1,21 @@
 # Milestones
 
+## v1.2 Host Management (Shipped: 2026-04-06)
+
+**Phases completed:** 3 phases, 7 plans, 10 tasks
+
+**Key accomplishments:**
+
+- One-liner:
+- One-liner:
+- One-liner:
+- One-liner:
+- Redux host state from enriched WS payload with gold star indicator in participants list
+- Inline kick/promote controls for host with confirmation dialog and kicked-user toast redirect
+- Fixed startCase display-transform corruption in UsersTable and case-sensitive user removal in SessionManager, ensuring host indicators, kick, and promote work for all username formats
+
+---
+
 ## v1.1 CreateGame Redesign (Shipped: 2026-04-05)
 
 **Phases completed:** 1 phase, 2 plans, 4 tasks
