@@ -73,8 +73,12 @@ Plans:
   3. When viewing the participants list as a non-host, no kick or promote icons are visible
   4. Clicking the kick icon shows a confirmation dialog; the kick only executes after the host confirms
   5. A participant who has been kicked is redirected to the welcome page and sees a toast message explaining they were removed from the session
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 07-01-PLAN.md — Redux host state wiring + visual host indicator in UsersTable
+- [ ] 07-02-PLAN.md — Host action controls (kick/promote icons, confirmation dialog, kick detection + toast)
 
 ## Backlog
 
@@ -99,4 +103,4 @@ Plans:
 | 4. CreateGame Tile Grid Redesign | v1.1 | 2/2 | Complete | 2026-04-05 |
 | 5. Backend Host Model | v1.2 | 0/2 | Not started | - |
 | 6. Host Actions & WebSocket Events | v1.2 | 0/2 | Not started | - |
-| 7. Host UI & Notifications | v1.2 | 0/- | Not started | - |
+| 7. Host UI & Notifications | v1.2 | 0/2 | Not started | - |
