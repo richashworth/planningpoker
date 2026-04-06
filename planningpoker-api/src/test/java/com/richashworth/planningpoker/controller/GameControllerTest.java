@@ -29,12 +29,14 @@ class GameControllerTest extends AbstractControllerTest {
         when(sessionManager.getSessionSchemeConfig(SESSION_ID)).thenReturn(config);
         List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
         when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("HostUser");
         SessionResponse response = gameController.joinSession(SESSION_ID, USER_NAME);
         assertEquals("fibonacci", response.schemeType());
         assertTrue(response.values().contains("1"));
         assertTrue(response.values().contains("?"));
         assertTrue(response.includeUnsure());
         assertTrue(response.includeCoffee());
+        assertEquals("HostUser", response.host());
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
         inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
     }
@@ -60,6 +62,7 @@ class GameControllerTest extends AbstractControllerTest {
         when(sessionManager.createSession(any(SchemeConfig.class))).thenReturn(SESSION_ID);
         List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true, true);
         when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
         final SessionResponse response = gameController.createSession(request);
         assertEquals(SESSION_ID, response.sessionId());
         assertEquals("fibonacci", response.schemeType());
@@ -67,6 +70,7 @@ class GameControllerTest extends AbstractControllerTest {
         assertTrue(response.values().contains("?"));
         assertTrue(response.includeUnsure());
         assertTrue(response.includeCoffee());
+        assertEquals(USER_NAME, response.host());
         inOrder.verify(sessionManager, times(1)).createSession(any(SchemeConfig.class));
         inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
         inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
@@ -79,6 +83,7 @@ class GameControllerTest extends AbstractControllerTest {
         when(sessionManager.createSession(any(SchemeConfig.class))).thenReturn(SESSION_ID);
         List<String> tshirtValues = SchemeType.resolveValues("tshirt", null, true, false);
         when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(tshirtValues);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
         final SessionResponse response = gameController.createSession(request);
         assertEquals(SESSION_ID, response.sessionId());
         assertEquals("tshirt", response.schemeType());
@@ -87,6 +92,7 @@ class GameControllerTest extends AbstractControllerTest {
         assertFalse(response.values().contains("\u2615"));
         assertTrue(response.includeUnsure());
         assertFalse(response.includeCoffee());
+        assertEquals(USER_NAME, response.host());
     }
 
     @Test

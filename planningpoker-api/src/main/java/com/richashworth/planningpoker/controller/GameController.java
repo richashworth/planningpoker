@@ -52,7 +52,8 @@ public class GameController {
         messagingUtils.burstUsersMessages(sessionId);
         SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
         List<String> values = sessionManager.getSessionLegalValues(sessionId);
-        return new SessionResponse(null, config.schemeType(), values,
+        String host = sessionManager.getHost(sessionId);
+        return new SessionResponse(host, null, config.schemeType(), values,
                 config.includeUnsure(), config.includeCoffee());
     }
 
@@ -68,7 +69,8 @@ public class GameController {
         }
         messagingUtils.burstUsersMessages(sessionId);
         List<String> values = sessionManager.getSessionLegalValues(sessionId);
-        return new SessionResponse(sessionId, schemeConfig.schemeType(), values,
+        String host = sessionManager.getHost(sessionId);
+        return new SessionResponse(host, sessionId, schemeConfig.schemeType(), values,
                 schemeConfig.includeUnsure(), schemeConfig.includeCoffee());
     }
 
