@@ -44,8 +44,8 @@
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — SessionManager host tracking with TDD (service layer + tests)
-- [ ] 05-02-PLAN.md — Expose host in API responses (SessionResponse + controller + tests)
+- [x] 05-01-PLAN.md — SessionManager host tracking with TDD (service layer + tests)
+- [x] 05-02-PLAN.md — Expose host in API responses (SessionResponse + controller + tests)
 
 ### Phase 6: Host Actions & WebSocket Events
 **Goal**: The host can kick a participant or promote another participant to host, and all participants receive real-time WebSocket push notifications when either event occurs
