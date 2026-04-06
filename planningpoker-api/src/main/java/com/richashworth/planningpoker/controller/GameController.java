@@ -127,6 +127,26 @@ public class GameController {
         messagingUtils.burstResultsMessages(sessionId);
     }
 
+    @PostMapping("promote")
+    public void promoteUser(
+            @RequestParam(name = "userName") final String userName,
+            @RequestParam(name = "targetUser") final String targetUser,
+            @RequestParam(name = "sessionId") final String sessionId
+    ) {
+        synchronized (sessionManager) {
+            validateSessionMembership(sessionId, userName);
+            if (userName.equalsIgnoreCase(targetUser)) {
+                throw new IllegalArgumentException("cannot promote yourself");
+            }
+            if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+                throw new HostActionException("only the host can perform this action");
+            }
+            sessionManager.promoteHost(sessionId, targetUser);
+            logger.info("{} has promoted {} to host in session {}", userName, targetUser, sessionId);
+        }
+        messagingUtils.burstUsersMessages(sessionId);
+    }
+
     @PostMapping("reset")
     public void reset(
             @RequestParam(name = "sessionId") final String sessionId,
