@@ -1,4 +1,4 @@
-import {CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED, USERS_UPDATED} from '../actions'
+import {CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED, USERS_UPDATED, KICKED} from '../actions'
 
 const initialGameState = {
   playerName: '',
@@ -9,7 +9,8 @@ const initialGameState = {
   schemeType: 'fibonacci',
   includeUnsure: true,
   includeCoffee: true,
-  host: ''
+  host: '',
+  kickedMessage: ''
 };
 
 export default function (state = initialGameState, action) {
@@ -44,6 +45,8 @@ export default function (state = initialGameState, action) {
       };
     case USERS_UPDATED:
       return { ...state, host: action.payload.host || '' };
+    case KICKED:
+      return { ...initialGameState, kickedMessage: 'You have been removed from the session by the host.' };
     case LEAVE_GAME:
       return initialGameState;
     default:

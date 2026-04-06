@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import reducer from '../reducer_game';
-import { CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED, USERS_UPDATED } from '../../actions';
+import { CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED, USERS_UPDATED, KICKED } from '../../actions';
 
 const initialState = {
   playerName: '', sessionId: '', isAdmin: false, isRegistered: false,
   legalEstimates: [], schemeType: 'fibonacci', includeUnsure: true, includeCoffee: true,
-  host: '',
+  host: '', kickedMessage: '',
 };
 
 describe('game reducer', () => {
@@ -73,6 +73,18 @@ describe('game reducer', () => {
     };
     const state = reducer(initialState, action);
     expect(state.host).toBe('bob');
+  });
+
+  it('resets state and sets kickedMessage on KICKED', () => {
+    const active = {
+      playerName: 'bob', sessionId: 'abc12345', isAdmin: false, isRegistered: true,
+      legalEstimates: ['1','2','3'], schemeType: 'simple', includeUnsure: true, includeCoffee: true,
+      host: 'alice', kickedMessage: '',
+    };
+    const state = reducer(active, { type: KICKED });
+    expect(state.isRegistered).toBe(false);
+    expect(state.playerName).toBe('');
+    expect(state.kickedMessage).toBe('You have been removed from the session by the host.');
   });
 
   it('resets to initial state on LEAVE_GAME', () => {

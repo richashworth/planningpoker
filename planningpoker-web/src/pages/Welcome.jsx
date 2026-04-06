@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 export default function Welcome() {
+  const [toast, setToast] = useState('')
+
+  useEffect(() => {
+    const msg = sessionStorage.getItem('pp-kicked-message')
+    if (msg) {
+      setToast(msg)
+      sessionStorage.removeItem('pp-kicked-message')
+    }
+  }, [])
+
   return (
     <Box
       sx={{
@@ -46,6 +58,16 @@ export default function Welcome() {
           </Button>
         </Box>
       </Box>
+      <Snackbar
+        open={!!toast}
+        autoHideDuration={6000}
+        onClose={() => setToast('')}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setToast('')} severity="info" variant="filled" sx={{ width: '100%' }}>
+          {toast}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
