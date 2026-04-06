@@ -56,12 +56,12 @@ Plans:
   2. A POST to the promote endpoint by the session host transfers host status to the target user
   3. A non-host participant calling kick or promote receives a 403 error
   4. After a kick or promote action, all WebSocket subscribers on `/topic/users/{sessionId}` receive an updated users payload that reflects the change
-  5. The kicked user's session membership is revoked server-side so subsequent API calls from that user return 403
+  5. The kicked user's session membership is revoked server-side so subsequent API calls from that user are rejected (400 — invalid membership, consistent with existing validation pattern)
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — HostActionException + 403 handler + SessionManager.promoteHost()
-- [ ] 06-02-PLAN.md — Kick and promote controller endpoints with WebSocket broadcast
+- [x] 06-01-PLAN.md — HostActionException + 403 handler + SessionManager.promoteHost()
+- [x] 06-02-PLAN.md — Kick and promote controller endpoints with WebSocket broadcast
 
 ### Phase 7: Host UI & Notifications
 **Goal**: Participants can see who the current host is, the host sees inline kick and promote controls next to each participant, and a kicked user lands on the welcome page with a clear explanation
