@@ -346,6 +346,30 @@ class SessionManagerTest {
         assertEquals("userC", sessionManager.getHost(sessionId));
     }
 
+    @Test
+    void testRemoveUserCaseInsensitive() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.removeUser("bob", sessionId);
+        assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
+    }
+
+    @Test
+    void testRemoveUserExactCaseStillWorks() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Bob", sessionId);
+        sessionManager.removeUser("Bob", sessionId);
+        assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
+    }
+
+    @Test
+    void testRemoveUserDoesNotRemoveNonMatchingUser() {
+        String sessionId = sessionManager.createSession();
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.removeUser("bob", sessionId);
+        assertEquals(List.of("Alice"), sessionManager.getSessionUsers(sessionId));
+    }
+
     private void registerUsers(String sessionId, ArrayList<String> users) {
         for (String user : users) {
             sessionManager.registerUser(user, sessionId);
