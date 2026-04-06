@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Host Management
 status: planning
-stopped_at: v1.2 roadmap defined — ready to plan Phase 5
-last_updated: "2026-04-06T16:11:34.594Z"
+stopped_at: Phase 6 context gathered
+last_updated: "2026-04-06T16:42:56.562Z"
 last_activity: 2026-04-06
 progress:
   total_phases: 4
@@ -60,6 +60,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-06
-Stopped at: v1.2 roadmap defined — ready to plan Phase 5
-Resume file: N/A
+Last session: 2026-04-06T16:42:56.558Z
+Stopped at: Phase 6 context gathered
+Resume file: .planning/phases/06-host-actions-websocket-events/06-CONTEXT.md
