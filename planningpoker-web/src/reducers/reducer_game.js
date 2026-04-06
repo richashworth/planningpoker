@@ -1,4 +1,4 @@
-import {CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED} from '../actions'
+import {CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED, USERS_UPDATED} from '../actions'
 
 const initialGameState = {
   playerName: '',
@@ -8,7 +8,8 @@ const initialGameState = {
   legalEstimates: [],
   schemeType: 'fibonacci',
   includeUnsure: true,
-  includeCoffee: true
+  includeCoffee: true,
+  host: ''
 };
 
 export default function (state = initialGameState, action) {
@@ -22,7 +23,8 @@ export default function (state = initialGameState, action) {
         legalEstimates: action.payload.data.values,
         schemeType: action.payload.data.schemeType,
         includeUnsure: action.payload.data.includeUnsure,
-        includeCoffee: action.payload.data.includeCoffee
+        includeCoffee: action.payload.data.includeCoffee,
+        host: action.payload.data.host || ''
       };
     case GAME_CREATED:
       return {...state, isAdmin: true, isRegistered: true};
@@ -37,8 +39,11 @@ export default function (state = initialGameState, action) {
         legalEstimates: action.payload.data.values,
         schemeType: action.payload.data.schemeType,
         includeUnsure: action.payload.data.includeUnsure,
-        includeCoffee: action.payload.data.includeCoffee
+        includeCoffee: action.payload.data.includeCoffee,
+        host: action.payload.data.host || ''
       };
+    case USERS_UPDATED:
+      return { ...state, host: action.payload.host || '' };
     case LEAVE_GAME:
       return initialGameState;
     default:

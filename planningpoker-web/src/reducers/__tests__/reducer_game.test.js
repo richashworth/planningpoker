@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import reducer from '../reducer_game';
-import { CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED } from '../../actions';
+import { CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED, USERS_UPDATED } from '../../actions';
 
 const initialState = {
   playerName: '', sessionId: '', isAdmin: false, isRegistered: false,
   legalEstimates: [], schemeType: 'fibonacci', includeUnsure: true, includeCoffee: true,
+  host: '',
 };
 
 describe('game reducer', () => {
@@ -15,7 +16,7 @@ describe('game reducer', () => {
   it('sets playerName and session fields on CREATE_GAME', () => {
     const action = {
       type: CREATE_GAME,
-      payload: { data: { sessionId: 'abc12345', values: ['1','2','3'], schemeType: 'simple', includeUnsure: false, includeCoffee: true } },
+      payload: { data: { sessionId: 'abc12345', values: ['1','2','3'], schemeType: 'simple', includeUnsure: false, includeCoffee: true, host: 'alice' } },
       meta: { userName: 'alice' },
     };
     const state = reducer(initialState, action);
@@ -25,6 +26,7 @@ describe('game reducer', () => {
     expect(state.schemeType).toBe('simple');
     expect(state.includeUnsure).toBe(false);
     expect(state.includeCoffee).toBe(true);
+    expect(state.host).toBe('alice');
   });
 
   it('returns current state on CREATE_GAME with error', () => {
@@ -46,7 +48,7 @@ describe('game reducer', () => {
   it('sets playerName and session fields on JOIN_GAME', () => {
     const action = {
       type: JOIN_GAME,
-      payload: { data: { values: ['XS','S','M','L','XL','XXL'], schemeType: 'tshirt', includeUnsure: true, includeCoffee: false } },
+      payload: { data: { values: ['XS','S','M','L','XL','XXL'], schemeType: 'tshirt', includeUnsure: true, includeCoffee: false, host: 'HostUser' } },
       meta: { userName: 'bob', sessionId: 'xyz98765' },
     };
     const state = reducer(initialState, action);
@@ -56,11 +58,21 @@ describe('game reducer', () => {
     expect(state.schemeType).toBe('tshirt');
     expect(state.includeUnsure).toBe(true);
     expect(state.includeCoffee).toBe(false);
+    expect(state.host).toBe('HostUser');
   });
 
   it('returns current state on JOIN_GAME with error', () => {
     const action = { type: JOIN_GAME, error: true, payload: new Error('fail') };
     expect(reducer(initialState, action)).toEqual(initialState);
+  });
+
+  it('updates host on USERS_UPDATED', () => {
+    const action = {
+      type: USERS_UPDATED,
+      payload: { users: ['alice', 'bob'], host: 'bob' },
+    };
+    const state = reducer(initialState, action);
+    expect(state.host).toBe('bob');
   });
 
   it('resets to initial state on LEAVE_GAME', () => {
@@ -73,6 +85,7 @@ describe('game reducer', () => {
       schemeType: 'simple',
       includeUnsure: false,
       includeCoffee: false,
+      host: 'alice',
     };
     expect(reducer(active, { type: LEAVE_GAME })).toEqual(initialState);
   });

@@ -9,6 +9,7 @@ export const RESET_SESSION = 'reset-session';
 export const RESULTS_UPDATED = 'results-updated';
 export const USERS_UPDATED = 'users-updated';
 export const USER_REGISTERED = 'user-registered';
+export const HOST_UPDATED = 'host-updated';
 export const VOTE = 'vote';
 
 // Events
