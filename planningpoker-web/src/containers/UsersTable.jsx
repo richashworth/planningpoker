@@ -26,7 +26,8 @@ export default function UsersTable({ heading }) {
   const isHost = currentUser?.toLowerCase() === host?.toLowerCase();
   const [kickTarget, setKickTarget] = useState(null);
 
-  const allUsers = union([currentUser], users).map(startCase).sort();
+  // Keep original usernames for comparisons and API calls; apply startCase only for display
+  const allUsers = union([currentUser], users).sort();
 
   return (
     <Box
@@ -57,7 +58,7 @@ export default function UsersTable({ heading }) {
             }}
           />
           <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.85rem' }}>
-            {name}
+            {startCase(name)}
           </Typography>
           {name.toLowerCase() === host?.toLowerCase() && (
             <Tooltip title="Host" placement="right" arrow>
@@ -69,7 +70,7 @@ export default function UsersTable({ heading }) {
               <Tooltip title="Transfer host" placement="top" arrow>
                 <IconButton
                   size="small"
-                  onClick={() => dispatch(promoteUser(currentUser, name.toLowerCase(), sessionId))}
+                  onClick={() => dispatch(promoteUser(currentUser, name, sessionId))}
                   sx={{ ml: 'auto', p: 0.25, color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
                 >
                   <SwapHorizRounded sx={{ fontSize: 16 }} />
@@ -95,14 +96,14 @@ export default function UsersTable({ heading }) {
         <DialogTitle>Remove participant</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to remove {kickTarget} from the session?
+            Are you sure you want to remove {startCase(kickTarget)} from the session?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setKickTarget(null)}>Cancel</Button>
           <Button
             onClick={() => {
-              dispatch(kickUser(currentUser, kickTarget.toLowerCase(), sessionId))
+              dispatch(kickUser(currentUser, kickTarget, sessionId))
               setKickTarget(null)
             }}
             color="error"
