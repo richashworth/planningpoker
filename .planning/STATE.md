@@ -7,7 +7,7 @@ stopped_at: null
 last_updated: "2026-04-06T00:00:00.000Z"
 last_activity: 2026-04-06
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
-**Current focus:** Defining requirements for v1.2 Host Management
+**Current focus:** Phase 5 — Backend Host Model
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-06 — Milestone v1.2 started
+Phase: 5 — Backend Host Model
+Plan: Not started
+Status: Roadmap defined, ready to plan Phase 5
+Last activity: 2026-04-06 — v1.2 roadmap created (3 phases: 5, 6, 7)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -60,6 +60,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-05
-Stopped at: Milestone v1.1 complete
+Last session: 2026-04-06
+Stopped at: v1.2 roadmap defined — ready to plan Phase 5
 Resume file: N/A
