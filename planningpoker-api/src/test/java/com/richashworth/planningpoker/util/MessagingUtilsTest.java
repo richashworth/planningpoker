@@ -4,16 +4,21 @@ import com.richashworth.planningpoker.service.SessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
 import static com.richashworth.planningpoker.util.MessagingUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,8 +58,42 @@ class MessagingUtilsTest {
     @Test
     void testSendUsersMessage() {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
         messagingUtils.sendUsersMessage(SESSION_ID);
-        verifyMessageSent(1, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage((USERS)));
+        Map<String, Object> expectedPayload = new LinkedHashMap<>();
+        expectedPayload.put("users", USERS);
+        expectedPayload.put("host", USER_NAME);
+        verifyMessageSent(1, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage(expectedPayload));
+    }
+
+    @Test
+    void testSendUsersMessageIncludesHost() {
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("HostUser");
+        messagingUtils.sendUsersMessage(SESSION_ID);
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(template).convertAndSend(eq(getTopic(TOPIC_USERS, SESSION_ID)), captor.capture());
+        Object sent = captor.getValue();
+        // The Message object wraps the payload; extract payload via toString or cast
+        // Since Message is package-private, use usersMessage helper to compare structure
+        Map<String, Object> expectedPayload = new LinkedHashMap<>();
+        expectedPayload.put("users", USERS);
+        expectedPayload.put("host", "HostUser");
+        assertEquals(messagingUtils.usersMessage(expectedPayload), sent);
+    }
+
+    @Test
+    void testSendUsersMessageWithNullHost() {
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn(null);
+        // Should not throw NPE
+        messagingUtils.sendUsersMessage(SESSION_ID);
+        ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+        verify(template).convertAndSend(eq(getTopic(TOPIC_USERS, SESSION_ID)), captor.capture());
+        Map<String, Object> expectedPayload = new LinkedHashMap<>();
+        expectedPayload.put("users", USERS);
+        expectedPayload.put("host", null);
+        assertEquals(messagingUtils.usersMessage(expectedPayload), captor.getValue());
     }
 
     @Test
@@ -70,11 +109,15 @@ class MessagingUtilsTest {
     @Test
     void testBurstUsersMessages() {
         when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
+        when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
         messagingUtils.burstUsersMessages(SESSION_ID);
         for (long latency : LATENCIES) {
             verify(clock, times(1)).pause(latency);
         }
-        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage(USERS));
+        Map<String, Object> expectedPayload = new LinkedHashMap<>();
+        expectedPayload.put("users", USERS);
+        expectedPayload.put("host", USER_NAME);
+        verifyMessageSent(LATENCIES.length, getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage(expectedPayload));
     }
 
     private void verifyMessageSent(int numberInvocations, String destination, Object payload) {
