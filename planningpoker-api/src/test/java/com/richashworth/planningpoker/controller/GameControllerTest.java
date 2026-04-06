@@ -154,4 +154,42 @@ class GameControllerTest extends AbstractControllerTest {
         assertThrows(IllegalArgumentException.class, () ->
             gameController.createSession(request));
     }
+
+    @Test
+    void testKickUser() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        gameController.kickUser("Rich", "Alice", SESSION_ID);
+        verify(sessionManager, times(1)).removeUser("Alice", SESSION_ID);
+        verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
+        verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
+    }
+
+    @Test
+    void testKickUserNonHostRejected() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich", "Alice"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        assertThrows(HostActionException.class, () ->
+            gameController.kickUser("Alice", "Rich", SESSION_ID));
+    }
+
+    @Test
+    void testKickUserTargetNotInSession() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        assertThrows(IllegalArgumentException.class, () ->
+            gameController.kickUser("Rich", "Bob", SESSION_ID));
+    }
+
+    @Test
+    void testKickUserCannotKickSelf() {
+        when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+        when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList("Rich"));
+        when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+        assertThrows(IllegalArgumentException.class, () ->
+            gameController.kickUser("Rich", "Rich", SESSION_ID));
+    }
 }
