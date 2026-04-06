@@ -57,7 +57,11 @@ Plans:
   3. A non-host participant calling kick or promote receives a 403 error
   4. After a kick or promote action, all WebSocket subscribers on `/topic/users/{sessionId}` receive an updated users payload that reflects the change
   5. The kicked user's session membership is revoked server-side so subsequent API calls from that user return 403
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — HostActionException + 403 handler + SessionManager.promoteHost()
+- [ ] 06-02-PLAN.md — Kick and promote controller endpoints with WebSocket broadcast
 
 ### Phase 7: Host UI & Notifications
 **Goal**: Participants can see who the current host is, the host sees inline kick and promote controls next to each participant, and a kicked user lands on the welcome page with a clear explanation
@@ -94,5 +98,5 @@ Plans:
 | 3. Frontend UI | v1.0 | 2/2 | Complete | 2026-04-04 |
 | 4. CreateGame Tile Grid Redesign | v1.1 | 2/2 | Complete | 2026-04-05 |
 | 5. Backend Host Model | v1.2 | 0/2 | Not started | - |
-| 6. Host Actions & WebSocket Events | v1.2 | 0/- | Not started | - |
+| 6. Host Actions & WebSocket Events | v1.2 | 0/2 | Not started | - |
 | 7. Host UI & Notifications | v1.2 | 0/- | Not started | - |
