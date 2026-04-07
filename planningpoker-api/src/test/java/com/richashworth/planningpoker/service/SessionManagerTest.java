@@ -142,6 +142,79 @@ class SessionManagerTest {
     }
 
     @Test
+    void testEvictIdleSessionsClearsAllSevenMaps() throws Exception {
+        String sessionId = sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
+        sessionManager.registerUser("Alice", sessionId);
+        sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
+
+        // Backdate lastActivity to 25 hours ago
+        Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+        lastActivityField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ConcurrentHashMap<String, Instant> lastActivity =
+                (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
+        lastActivity.put(sessionId, Instant.now().minusSeconds(25 * 60 * 60));
+
+        sessionManager.evictIdleSessions();
+
+        // activeSessions
+        assertFalse(sessionManager.isSessionActive(sessionId));
+        // sessionEstimates
+        assertTrue(sessionManager.getResults(sessionId).isEmpty());
+        // sessionUsers
+        assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
+        // lastActivity — entry removed, so touching again would re-add but map should not contain old entry
+        assertFalse(lastActivity.containsKey(sessionId));
+        // sessionLegalValues
+        assertTrue(sessionManager.getSessionLegalValues(sessionId).isEmpty());
+        // sessionSchemeConfigs
+        assertNull(sessionManager.getSessionSchemeConfig(sessionId));
+        // sessionHosts
+        assertNull(sessionManager.getHost(sessionId));
+    }
+
+    @Test
+    void testEvictIdleSessionsDoesNotEvictActiveSession() throws Exception {
+        String activeSession = sessionManager.createSession();
+        sessionManager.registerUser("Alice", activeSession);
+        sessionManager.registerEstimate(activeSession, new Estimate("Alice", "3"));
+
+        // Do NOT backdate — session is active
+        sessionManager.evictIdleSessions();
+
+        assertTrue(sessionManager.isSessionActive(activeSession));
+        assertEquals(List.of("Alice"), sessionManager.getSessionUsers(activeSession));
+        assertEquals(1, sessionManager.getResults(activeSession).size());
+    }
+
+    @Test
+    void testEvictIdleSessionsDoesNotAffectConcurrentActiveSession() throws Exception {
+        String activeSession = sessionManager.createSession();
+        sessionManager.registerUser("Alice", activeSession);
+
+        String idleSession = sessionManager.createSession();
+        sessionManager.registerUser("Bob", idleSession);
+
+        Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+        lastActivityField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        ConcurrentHashMap<String, Instant> lastActivity =
+                (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
+        lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+
+        sessionManager.evictIdleSessions();
+
+        // Idle session is gone
+        assertFalse(sessionManager.isSessionActive(idleSession));
+        assertTrue(sessionManager.getSessionUsers(idleSession).isEmpty());
+
+        // Active session is fully intact
+        assertTrue(sessionManager.isSessionActive(activeSession));
+        assertEquals(List.of("Alice"), sessionManager.getSessionUsers(activeSession));
+        assertEquals("Alice", sessionManager.getHost(activeSession));
+    }
+
+    @Test
     void testMaxSessionsLimit() {
         // We can't easily create 100,000 sessions in a unit test, but we can verify the
         // constant is set correctly
