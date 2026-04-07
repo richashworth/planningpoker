@@ -1,0 +1,9 @@
+cd planningpoker-web && npx lint-staged
+
+cd ..
+# Run spotless on staged Java files
+STAGED_JAVA=$(git diff --cached --name-only --diff-filter=ACM -- '*.java')
+if [ -n "$STAGED_JAVA" ]; then
+  ./gradlew spotlessApply --no-daemon
+  echo "$STAGED_JAVA" | xargs git add
+fi
