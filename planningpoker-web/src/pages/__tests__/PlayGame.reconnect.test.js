@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /**
  * PlayGame — reconnect session validation logic.
  *
