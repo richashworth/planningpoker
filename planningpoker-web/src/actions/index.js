@@ -16,6 +16,9 @@ export const KICKED = 'kicked';
 export const VOTE = 'vote';
 export const VOTE_OPTIMISTIC = 'vote-optimistic';
 
+export const showError = (message) => ({ type: 'show-error', payload: message })
+export const clearError = () => ({ type: 'clear-error' })
+
 export const voteOptimistic = (playerName, estimateValue) => ({
   type: VOTE_OPTIMISTIC,
   payload: { userName: playerName, estimateValue },
