@@ -17,7 +17,7 @@
     "react-redux": "^8.1.0",
     "react-router-dom": "^6.20.0",
     "redux": "^4.2.1",
-    "redux-promise": "^0.6.0",
+    "redux-thunk": "^2.4.2",
     "sockjs-client": "^1.6.1"
   },
   "devDependencies": {
