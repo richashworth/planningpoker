@@ -1,5 +1,5 @@
 ---
-status: awaiting_human_verify
+status: resolved
 trigger: "Player names appearing twice in the votes table after voting. Screenshot shows 'Dffasd' appearing twice with the same vote '2w'."
 created: 2026-04-06T00:00:00Z
 updated: 2026-04-06T00:01:00Z
@@ -84,10 +84,12 @@ started: Unknown — just discovered
 
 root_cause: reducer_results.js VOTE case appended an optimistic entry after the HTTP /vote response resolved. Because redux-promise only dispatches after promise resolution, and the WebSocket burst fires at 10ms (before the HTTP roundtrip completes), RESULTS_UPDATED sets state to the server result first, then the resolved VOTE action appends a second entry for the same player — a duplicate that persists until the next WS burst overwrites it.
 
-fix: Removed the VOTE case from reducer_results.js entirely. Results are driven solely by RESULTS_UPDATED (WebSocket) with the existing 8-second fallback polling path as safety net. Also removed the three now-invalid optimistic-VOTE tests from reducer_results.test.js and updated the import.
-
-verification: All 27 frontend unit tests pass (npx vitest run).
+fix: Added VOTE_OPTIMISTIC synchronous action dispatched on card click. reducer_vote sets voted=true immediately (instant chart transition). reducer_results pre-populates own vote entry; RESULTS_UPDATED replaces state entirely (idempotent). VOTE case in reducer_vote now only reverts to false on HTTP error. All 30 unit tests pass. Shipped in commit 5fa65c7.
 
 files_changed:
+  - planningpoker-web/src/actions/index.js
+  - planningpoker-web/src/containers/Vote.jsx
   - planningpoker-web/src/reducers/reducer_results.js
+  - planningpoker-web/src/reducers/reducer_vote.js
   - planningpoker-web/src/reducers/__tests__/reducer_results.test.js
+  - planningpoker-web/src/reducers/__tests__/reducer_vote.test.js
