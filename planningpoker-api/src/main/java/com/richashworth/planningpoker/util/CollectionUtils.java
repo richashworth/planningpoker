@@ -14,6 +14,6 @@ public class CollectionUtils {
     }
 
     public static boolean containsUserEstimate(final Collection<Estimate> estimates, final String userName) {
-        return estimates.stream().anyMatch(input -> input.getUserName().equalsIgnoreCase(userName));
+        return estimates.stream().anyMatch(input -> input.userName().equalsIgnoreCase(userName));
     }
 }
