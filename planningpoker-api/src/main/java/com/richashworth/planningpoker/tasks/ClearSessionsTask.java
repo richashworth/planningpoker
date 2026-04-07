@@ -7,19 +7,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClearSessionsTask {
 
-    private final SessionManager sessionManager;
+  private final SessionManager sessionManager;
 
-    public ClearSessionsTask(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
-    }
+  public ClearSessionsTask(SessionManager sessionManager) {
+    this.sessionManager = sessionManager;
+  }
 
-    @Scheduled(cron = "0 0 0 * * Sun")
-    public void clearSessions() {
-        sessionManager.clearSessions();
-    }
+  @Scheduled(cron = "0 0 0 * * Sun")
+  public void clearSessions() {
+    sessionManager.clearSessions();
+  }
 
-    @Scheduled(fixedRate = 300000)
-    public void evictIdleSessions() {
-        sessionManager.evictIdleSessions();
-    }
+  @Scheduled(fixedRate = 300000)
+  public void evictIdleSessions() {
+    sessionManager.evictIdleSessions();
+  }
 }
