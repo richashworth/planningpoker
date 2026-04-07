@@ -18,6 +18,7 @@ export default function PlayGame() {
   const users = useSelector((state) => state.users)
   const kickedMessage = useSelector((state) => state.game.kickedMessage)
   const lastResultsTime = useRef(0)
+  const wasConnected = useRef(false)
 
   useEffect(() => {
     if (!isUserRegistered) {
@@ -40,6 +41,23 @@ export default function PlayGame() {
       sessionStorage.setItem('pp-kicked-message', kickedMessage)
     }
   }, [kickedMessage])
+
+  // Detect WebSocket reconnect and validate session still exists on backend
+  useEffect(() => {
+    if (connected === true) {
+      if (wasConnected.current) {
+        // This is a reconnect (not the initial connect) — validate the session
+        axios.get(`${API_ROOT_URL}/sessionUsers?sessionId=${sessionId}`).catch(() => {
+          sessionStorage.setItem(
+            'pp-kicked-message',
+            'The session ended because the server was restarted.',
+          )
+          dispatch(kicked())
+        })
+      }
+      wasConnected.current = true
+    }
+  }, [connected, sessionId, dispatch])
 
   const topics = useMemo(
     () => [`/topic/results/${sessionId}`, `/topic/users/${sessionId}`],
