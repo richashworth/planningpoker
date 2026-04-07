@@ -59,6 +59,7 @@ None.
 | 260407-q9i | Add linting and formatting enforcement for frontend (ESLint + Prettier) and backend (Java via Spotless), with CI gates for both | 2026-04-07 | 03dd69f | [260407-q9i-add-linting-and-formatting-enforcement-f](./quick/260407-q9i-add-linting-and-formatting-enforcement-f/) |
 | 260407-s6r | Add fully automated GitHub releases on every green master push using semantic-release | 2026-04-07 | a2f7834 | [260407-s6r-add-fully-automated-github-releases-on-e](./quick/260407-s6r-add-fully-automated-github-releases-on-e/) |
 | 260407-tk3 | Fix graceful session handling after server restart — detect reconnect and validate session still exists | 2026-04-07 | b77edf2 | [260407-tk3-fix-graceful-session-handling-after-serv](./quick/260407-tk3-fix-graceful-session-handling-after-serv/) |
+| 260407-x1g | Fix todo 002: increase contrast on estimation scheme selector cards | 2026-04-07 | 554346b | [260407-x1g-fix-todo-002-increase-contrast-on-estima](./quick/260407-x1g-fix-todo-002-increase-contrast-on-estima/) |
 
 ## Session Continuity
 
