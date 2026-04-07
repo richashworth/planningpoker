@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ErrorHandlerTest {
 
@@ -26,5 +27,12 @@ class ErrorHandlerTest {
         ResponseEntity<Map<String, String>> response = errorHandler.handleBadRequest(exception);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("invalid input", response.getBody().get("error"));
+    }
+
+    @Test
+    void testHandleGenericExceptionReturns500WithErrorBody() {
+        RuntimeException exception = new RuntimeException("unexpected");
+        Map<String, String> body = errorHandler.handleGenericException(exception);
+        assertNotNull(body.get("error"));
     }
 }
