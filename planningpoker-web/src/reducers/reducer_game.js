@@ -20,12 +20,12 @@ export default function (state = initialGameState, action) {
       return {
         ...state,
         playerName: action.meta.userName,
-        sessionId: action.payload.data.sessionId,
-        legalEstimates: action.payload.data.values,
-        schemeType: action.payload.data.schemeType,
-        includeUnsure: action.payload.data.includeUnsure,
-        includeCoffee: action.payload.data.includeCoffee,
-        host: action.payload.data.host || ''
+        sessionId: action.payload.sessionId,
+        legalEstimates: action.payload.values,
+        schemeType: action.payload.schemeType,
+        includeUnsure: action.payload.includeUnsure,
+        includeCoffee: action.payload.includeCoffee,
+        host: action.payload.host || ''
       };
     case GAME_CREATED:
       return {...state, isAdmin: true, isRegistered: true};
@@ -37,11 +37,11 @@ export default function (state = initialGameState, action) {
         ...state,
         playerName: action.meta.userName,
         sessionId: action.meta.sessionId,
-        legalEstimates: action.payload.data.values,
-        schemeType: action.payload.data.schemeType,
-        includeUnsure: action.payload.data.includeUnsure,
-        includeCoffee: action.payload.data.includeCoffee,
-        host: action.payload.data.host || ''
+        legalEstimates: action.payload.values,
+        schemeType: action.payload.schemeType,
+        includeUnsure: action.payload.includeUnsure,
+        includeCoffee: action.payload.includeCoffee,
+        host: action.payload.host || ''
       };
     case USERS_UPDATED:
       return { ...state, host: action.payload.host || '' };

@@ -39,97 +39,102 @@ export const usersUpdated = (users) => (
 
 export const kicked = () => ({type: KICKED});
 
-// User-driven actions
-export function createGame(playerName, schemeOptions, callback) {
-  const request = axios.post(`${API_ROOT_URL}/createSession`, {
-    userName: playerName,
-    schemeType: schemeOptions.schemeType,
-    customValues: schemeOptions.customValues,
-    includeUnsure: schemeOptions.includeUnsure,
-    includeCoffee: schemeOptions.includeCoffee
-  });
-  request.then(() => callback()).catch(err => {
-    const msg = err.response?.data?.error || 'Failed to create session';
-    alert(msg);
-  });
-
-  return {
-    type: CREATE_GAME,
-    payload: request,
-    meta: {userName: playerName}
-  };
+// User-driven actions (thunks)
+export function createGame(playerName, schemeOptions, onSuccess) {
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.post(`${API_ROOT_URL}/createSession`, {
+        userName: playerName,
+        schemeType: schemeOptions.schemeType,
+        customValues: schemeOptions.customValues,
+        includeUnsure: schemeOptions.includeUnsure,
+        includeCoffee: schemeOptions.includeCoffee
+      })
+      dispatch({ type: CREATE_GAME, payload: data, meta: { userName: playerName } })
+      if (onSuccess) onSuccess()
+    } catch (err) {
+      dispatch({ type: CREATE_GAME, payload: err, error: true, meta: { userName: playerName } })
+      dispatch(showError(err.response?.data?.error || 'Failed to create session'))
+    }
+  }
 }
 
-export function leaveGame(playerName, sessionId, callback) {
-  const request = axios.post(`${API_ROOT_URL}/logout`,
-    new URLSearchParams({ userName: playerName, sessionId }));
-  request.then(() => callback()).catch(err => {
-    console.error('Failed to leave session', err);
-  });
-
-  return {
-    type: LEAVE_GAME,
-    payload: request,
-  };
+export function leaveGame(playerName, sessionId, onSuccess) {
+  return async (dispatch) => {
+    try {
+      await axios.post(`${API_ROOT_URL}/logout`,
+        new URLSearchParams({ userName: playerName, sessionId }))
+      dispatch({ type: LEAVE_GAME })
+      if (onSuccess) onSuccess()
+    } catch (err) {
+      console.error('Failed to leave session', err)
+      dispatch({ type: LEAVE_GAME })
+    }
+  }
 }
 
-export function joinGame(playerName, sessionId, callback) {
-  const request = axios.post(`${API_ROOT_URL}/joinSession`,
-    new URLSearchParams({ userName: playerName, sessionId }));
-  request.then(() => callback()).catch(err => {
-    const msg = err.response?.data?.error || 'Failed to join session';
-    alert(msg);
-  });
-
-  return {
-    type: JOIN_GAME,
-    payload: request,
-    meta: {userName: playerName, sessionId: sessionId}
-  };
+export function joinGame(playerName, sessionId, onSuccess) {
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.post(`${API_ROOT_URL}/joinSession`,
+        new URLSearchParams({ userName: playerName, sessionId }))
+      dispatch({ type: JOIN_GAME, payload: data, meta: { userName: playerName, sessionId } })
+      if (onSuccess) onSuccess()
+    } catch (err) {
+      dispatch({ type: JOIN_GAME, payload: err, error: true, meta: { userName: playerName, sessionId } })
+      dispatch(showError(err.response?.data?.error || 'Failed to join session'))
+    }
+  }
 }
 
 export function vote(playerName, sessionId, estimateValue) {
-  const request = axios.post(`${API_ROOT_URL}/vote`,
-    new URLSearchParams({ userName: playerName, sessionId, estimateValue }));
-
-  return {
-    type: VOTE,
-    payload: request,
-    meta: { userName: playerName, estimateValue }
-  };
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.post(`${API_ROOT_URL}/vote`,
+        new URLSearchParams({ userName: playerName, sessionId, estimateValue }))
+      dispatch({ type: VOTE, payload: data, meta: { userName: playerName, estimateValue } })
+    } catch (err) {
+      dispatch({ type: VOTE, payload: err, error: true, meta: { userName: playerName, estimateValue } })
+      dispatch(showError(err.response?.data?.error || 'Failed to submit vote'))
+    }
+  }
 }
 
 export function resetSession(playerName, sessionId) {
-  const request = axios.post(`${API_ROOT_URL}/reset`, new URLSearchParams({ sessionId, userName: playerName }));
-
-  return {
-    type: RESET_SESSION,
-    payload: request
-  };
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.post(`${API_ROOT_URL}/reset`,
+        new URLSearchParams({ sessionId, userName: playerName }))
+      dispatch({ type: RESET_SESSION, payload: data })
+    } catch (err) {
+      dispatch({ type: RESET_SESSION, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to reset session'))
+    }
+  }
 }
 
 export function kickUser(userName, targetUser, sessionId) {
-  const request = axios.post(`${API_ROOT_URL}/kick`,
-    new URLSearchParams({ userName, targetUser, sessionId }))
-  request.catch(err => {
-    const msg = err.response?.data?.error || 'Failed to kick user'
-    alert(msg)
-  })
-  return {
-    type: KICK_USER,
-    payload: request,
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.post(`${API_ROOT_URL}/kick`,
+        new URLSearchParams({ userName, targetUser, sessionId }))
+      dispatch({ type: KICK_USER, payload: data })
+    } catch (err) {
+      dispatch({ type: KICK_USER, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to kick user'))
+    }
   }
 }
 
 export function promoteUser(userName, targetUser, sessionId) {
-  const request = axios.post(`${API_ROOT_URL}/promote`,
-    new URLSearchParams({ userName, targetUser, sessionId }))
-  request.catch(err => {
-    const msg = err.response?.data?.error || 'Failed to promote user'
-    alert(msg)
-  })
-  return {
-    type: PROMOTE_USER,
-    payload: request,
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.post(`${API_ROOT_URL}/promote`,
+        new URLSearchParams({ userName, targetUser, sessionId }))
+      dispatch({ type: PROMOTE_USER, payload: data })
+    } catch (err) {
+      dispatch({ type: PROMOTE_USER, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to promote user'))
+    }
   }
 }
