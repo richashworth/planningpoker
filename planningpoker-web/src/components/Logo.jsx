@@ -1,4 +1,3 @@
-import React from 'react'
 import Box from '@mui/material/Box'
 
 export default function Logo({ size = 32, sx, ...props }) {

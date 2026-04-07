@@ -14,16 +14,6 @@ import {
   VOTE_OPTIMISTIC,
 } from '../index'
 
-// Minimal thunk runner: collects dispatched actions
-function runThunk(thunk) {
-  const dispatched = []
-  const dispatch = (action) => {
-    dispatched.push(action)
-  }
-  const result = thunk(dispatch)
-  return { dispatched, result }
-}
-
 async function runThunkAsync(thunk) {
   const dispatched = []
   const dispatch = (action) => {

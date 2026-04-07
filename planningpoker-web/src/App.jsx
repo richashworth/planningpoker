@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  createContext,
-  useContext,
-  useCallback,
-  lazy,
-  Suspense,
-} from 'react'
+import { useState, useMemo, createContext, useContext, useCallback, lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { useSelector, useDispatch } from 'react-redux'
