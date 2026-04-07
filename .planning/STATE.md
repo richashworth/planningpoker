@@ -3,14 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Completed quick task 260407-q9i: linting and formatting enforcement"
-last_updated: "2026-04-07T18:01:00.814Z"
-last_activity: "2026-04-07 - Completed quick task 260407-d2v: fix duplicate player names in votes table"
+stopped_at: "Completed quick task 260407-s6r: add fully automated GitHub releases on every master push"
+last_updated: "2026-04-07T19:21:40.092Z"
+last_activity: "2026-04-07 - Completed quick task 260407-q9i: Add linting and formatting enforcement (ESLint + Prettier + Spotless + CI gates + pre-commit hooks)"
 progress:
-  total_phases: 1
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
   percent: 0
 ---
 
@@ -38,6 +34,8 @@ Progress: [░░░░░░░░░░] 0%
 
 See PROJECT.md Key Decisions table for full log.
 
+- [Phase quick]: semantic-release v24 with commit-analyzer + github plugins; no npm publish or git-back commits; tagFormat v${version} matches existing tag convention
+
 ### Pending Todos
 
 4 pending — see `.planning/todos/pending/` for details.
@@ -62,6 +60,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-07T18:01:00.810Z
-Stopped at: Completed quick task 260407-q9i: linting and formatting enforcement
+Last session: 2026-04-07T19:21:36.410Z
+Stopped at: Completed quick task 260407-s6r: add fully automated GitHub releases on every master push
 Resume file: None
