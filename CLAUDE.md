@@ -93,11 +93,13 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 
 - **Backend unit tests:** JUnit 5 + Mockito, run with `./gradlew planningpoker-api:test`
 - **E2E tests:** Playwright (chromium), 15 tests covering welcome, host/join, voting, multi-user flows, dark/light toggle, copy session ID. Run with `cd planningpoker-web && npx playwright test` (requires backend on port 9000)
-- **CI:** GitHub Actions runs both backend tests and e2e tests on every push to master and every PR
+- **CI:** GitHub Actions runs three jobs on every push to master and every PR: `lint` (ESLint + Prettier check + `spotlessCheck`) → `unit-tests` → `e2e-tests`. Both test jobs require lint to pass.
 
 ## Deployment
 
 Deployed to Railway via multi-stage Dockerfile (`node:22-alpine` for frontend build, `eclipse-temurin:21-jdk` for backend build, `eclipse-temurin:21-jre` for runtime). Railway config in `railway.toml`. The app reads `$PORT` env var (defaults to 9000). Health check at `/actuator/health`.
+
+**Automated releases:** semantic-release runs after every green master push. Conventional commit prefixes drive version bumps: `fix:` → patch, `feat:` → minor, `BREAKING CHANGE` footer → major. `chore:`/`docs:`/`test:` commits produce no release. On release, the fat JAR is attached as an asset to the GitHub release and a `v{version}` tag is pushed. Config in `.releaserc.json`.
 
 Live at: https://planning-poker.up.railway.app
 
@@ -202,7 +204,8 @@ A real-time planning poker web app where distributed teams estimate work collabo
 - No TypeScript — project is plain JavaScript (.jsx/.js) for frontend
 - Java uses standard class/interface naming
 ## Code Style
-- No Prettier or ESLint config files detected in the repo
+- ESLint 8 configured in `planningpoker-web/.eslintrc.cjs` (react, react-hooks, prettier extends)
+- Prettier configured in `planningpoker-web/.prettierrc`
 - `eslint-disable-next-line` comments used inline where needed (e.g., `// eslint-disable-next-line no-underscore-dangle` in `src/App.jsx`)
 - Java style follows standard IntelliJ/Google conventions; `.idea/codeStyles` directory present
 - Frontend: 2 spaces (observed throughout all .jsx/.js files)
