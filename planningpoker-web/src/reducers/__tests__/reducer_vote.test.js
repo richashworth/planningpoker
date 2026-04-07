@@ -1,18 +1,22 @@
 import { describe, it, expect } from 'vitest';
 import reducer from '../reducer_vote';
-import { VOTE, LEAVE_GAME, RESET_SESSION, RESULTS_UPDATED } from '../../actions';
+import { VOTE, VOTE_OPTIMISTIC, LEAVE_GAME, RESET_SESSION, RESULTS_UPDATED } from '../../actions';
 
 describe('vote reducer', () => {
   it('returns false as initial state', () => {
     expect(reducer(undefined, { type: '@@INIT' })).toBe(false);
   });
 
-  it('sets true on VOTE', () => {
-    expect(reducer(false, { type: VOTE, meta: { userName: 'alice' } })).toBe(true);
+  it('sets true on VOTE_OPTIMISTIC', () => {
+    expect(reducer(false, { type: VOTE_OPTIMISTIC, payload: { userName: 'alice', estimateValue: '5' } })).toBe(true);
   });
 
-  it('stays false on VOTE with error', () => {
-    expect(reducer(false, { type: VOTE, error: true, payload: new Error('fail') })).toBe(false);
+  it('reverts to false on VOTE error', () => {
+    expect(reducer(true, { type: VOTE, error: true, payload: new Error('fail') })).toBe(false);
+  });
+
+  it('preserves state on successful VOTE resolution', () => {
+    expect(reducer(true, { type: VOTE, meta: { userName: 'alice' } })).toBe(true);
   });
 
   it('resets to false on LEAVE_GAME', () => {

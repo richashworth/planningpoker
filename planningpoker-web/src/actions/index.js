@@ -14,6 +14,12 @@ export const KICK_USER = 'kick-user';
 export const PROMOTE_USER = 'promote-user';
 export const KICKED = 'kicked';
 export const VOTE = 'vote';
+export const VOTE_OPTIMISTIC = 'vote-optimistic';
+
+export const voteOptimistic = (playerName, estimateValue) => ({
+  type: VOTE_OPTIMISTIC,
+  payload: { userName: playerName, estimateValue },
+});
 
 // Events
 export const gameCreated = () => ({type: GAME_CREATED});

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { vote } from '../actions';
+import { vote, voteOptimistic } from '../actions';
 import UsersTable from './UsersTable';
 
 function cardSx(isSelected, isDisabled) {
@@ -53,6 +53,7 @@ export default function Vote() {
   const doVote = (val) => {
     if (selected) return;
     setSelected(val);
+    dispatch(voteOptimistic(playerName, val));
     dispatch(vote(playerName, sessionId, val));
   };
 
