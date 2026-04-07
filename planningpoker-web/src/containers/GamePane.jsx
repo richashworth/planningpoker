@@ -31,7 +31,9 @@ export default function GamePane({ connected }) {
           </Typography>
         </Box>
       )}
-      {voted ? <Results /> : <Vote />}
+      <Box aria-live="polite" aria-atomic="true">
+        {voted ? <Results /> : <Vote />}
+      </Box>
     </>
   );
 }

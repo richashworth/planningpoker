@@ -16,7 +16,7 @@ describe('game reducer', () => {
   it('sets playerName and session fields on CREATE_GAME', () => {
     const action = {
       type: CREATE_GAME,
-      payload: { data: { sessionId: 'abc12345', values: ['1','2','3'], schemeType: 'simple', includeUnsure: false, includeCoffee: true, host: 'alice' } },
+      payload: { sessionId: 'abc12345', values: ['1','2','3'], schemeType: 'simple', includeUnsure: false, includeCoffee: true, host: 'alice' },
       meta: { userName: 'alice' },
     };
     const state = reducer(initialState, action);
@@ -48,7 +48,7 @@ describe('game reducer', () => {
   it('sets playerName and session fields on JOIN_GAME', () => {
     const action = {
       type: JOIN_GAME,
-      payload: { data: { values: ['XS','S','M','L','XL','XXL'], schemeType: 'tshirt', includeUnsure: true, includeCoffee: false, host: 'HostUser' } },
+      payload: { values: ['XS','S','M','L','XL','XXL'], schemeType: 'tshirt', includeUnsure: true, includeCoffee: false, host: 'HostUser' },
       meta: { userName: 'bob', sessionId: 'xyz98765' },
     };
     const state = reducer(initialState, action);

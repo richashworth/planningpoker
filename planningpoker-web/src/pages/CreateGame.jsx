@@ -9,6 +9,7 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import CircularProgress from '@mui/material/CircularProgress'
 import { createGame, gameCreated } from '../actions'
 import NameInput from '../components/NameInput'
 import SchemeTile from '../components/SchemeTile'
@@ -31,6 +32,7 @@ export default function CreateGame() {
   const [customValues, setCustomValues] = useState('')
   const [includeUnsure, setIncludeUnsure] = useState(false)
   const [customError, setCustomError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -53,12 +55,13 @@ export default function CreateGame() {
     return true
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const nameRegex = /^[a-zA-Z0-9 _-]{3,20}$/
     if (!nameRegex.test(playerName)) return
     if (!isCustomValid()) return
-    dispatch(createGame(playerName, {
+    setSubmitting(true)
+    await dispatch(createGame(playerName, {
       schemeType,
       customValues: schemeType === 'custom' ? customValues : null,
       includeUnsure,
@@ -67,6 +70,7 @@ export default function CreateGame() {
       dispatch(gameCreated())
       navigate('/game')
     }))
+    setSubmitting(false)
   }
 
   return (
@@ -140,7 +144,8 @@ export default function CreateGame() {
               sx={{ mb: 2.5 }}
             />
 
-            <Button type="submit" variant="contained" fullWidth size="large" disableElevation disabled={!isCustomValid()}>
+            <Button type="submit" variant="contained" fullWidth size="large" disableElevation disabled={!isCustomValid() || submitting}>
+              {submitting ? <CircularProgress size={20} sx={{ mr: 1 }} /> : null}
               Start Game
             </Button>
           </form>
