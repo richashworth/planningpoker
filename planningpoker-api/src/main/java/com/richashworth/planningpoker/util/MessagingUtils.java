@@ -1,10 +1,7 @@
 package com.richashworth.planningpoker.util;
 
 import com.richashworth.planningpoker.service.SessionManager;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.jetbrains.annotations.Contract;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -19,13 +16,11 @@ public class MessagingUtils {
 
     public static final String TOPIC_RESULTS = "/topic/results/";
     public static final String TOPIC_USERS = "/topic/users/";
-    public static final String TOPIC_ITEM = "/topic/item/";
 
     private final SessionManager sessionManager;
     private final Clock clock;
     private final SimpMessagingTemplate template;
 
-    @Autowired
     public MessagingUtils(SessionManager sessionManager, Clock clock, SimpMessagingTemplate template) {
         this.sessionManager = sessionManager;
         this.clock = clock;
@@ -77,11 +72,6 @@ public class MessagingUtils {
         RESULTS_MESSAGE
     }
 
-    @Data
-    @AllArgsConstructor
-    private static class Message {
-        MessageType type;
-        Object payload;
-    }
+    private record Message(MessageType type, Object payload) {}
 
 }
