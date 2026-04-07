@@ -1,4 +1,12 @@
-import {CREATE_GAME, GAME_CREATED, JOIN_GAME, LEAVE_GAME, USER_REGISTERED, USERS_UPDATED, KICKED} from '../actions'
+import {
+  CREATE_GAME,
+  GAME_CREATED,
+  JOIN_GAME,
+  LEAVE_GAME,
+  USER_REGISTERED,
+  USERS_UPDATED,
+  KICKED,
+} from '../actions'
 
 const initialGameState = {
   playerName: '',
@@ -10,13 +18,13 @@ const initialGameState = {
   includeUnsure: true,
   includeCoffee: true,
   host: '',
-  kickedMessage: ''
-};
+  kickedMessage: '',
+}
 
 export default function (state = initialGameState, action) {
   switch (action.type) {
     case CREATE_GAME:
-      if (action.error) return state;
+      if (action.error) return state
       return {
         ...state,
         playerName: action.meta.userName,
@@ -25,14 +33,14 @@ export default function (state = initialGameState, action) {
         schemeType: action.payload.schemeType,
         includeUnsure: action.payload.includeUnsure,
         includeCoffee: action.payload.includeCoffee,
-        host: action.payload.host || ''
-      };
+        host: action.payload.host || '',
+      }
     case GAME_CREATED:
-      return {...state, isAdmin: true, isRegistered: true};
+      return { ...state, isAdmin: true, isRegistered: true }
     case USER_REGISTERED:
-      return {...state, isRegistered: true};
+      return { ...state, isRegistered: true }
     case JOIN_GAME:
-      if (action.error) return state;
+      if (action.error) return state
       return {
         ...state,
         playerName: action.meta.userName,
@@ -41,14 +49,17 @@ export default function (state = initialGameState, action) {
         schemeType: action.payload.schemeType,
         includeUnsure: action.payload.includeUnsure,
         includeCoffee: action.payload.includeCoffee,
-        host: action.payload.host || ''
-      };
+        host: action.payload.host || '',
+      }
     case USERS_UPDATED:
-      return { ...state, host: action.payload.host || '' };
+      return { ...state, host: action.payload.host || '' }
     case KICKED:
-      return { ...initialGameState, kickedMessage: 'You have been removed from the session by the host.' };
+      return {
+        ...initialGameState,
+        kickedMessage: 'You have been removed from the session by the host.',
+      }
     case LEAVE_GAME:
-      return initialGameState;
+      return initialGameState
     default:
       return state
   }

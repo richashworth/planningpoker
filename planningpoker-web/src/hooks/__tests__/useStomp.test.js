@@ -35,7 +35,9 @@ vi.mock('@stomp/stompjs', () => ({
 }))
 
 vi.mock('sockjs-client', () => ({
-  default: vi.fn(function () { return {} }),
+  default: vi.fn(function () {
+    return {}
+  }),
 }))
 
 import { Client } from '@stomp/stompjs'

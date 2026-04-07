@@ -16,11 +16,14 @@ import SchemeTile from '../components/SchemeTile'
 import { SCHEME_VALUES, SCHEME_METADATA, SCHEME_ORDER } from '../config/Constants'
 
 function validateCustomValues(input) {
-  const values = input.split(',').map(v => v.trim()).filter(v => v.length > 0)
+  const values = input
+    .split(',')
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0)
   const unique = [...new Set(values)]
   if (unique.length < 2) return 'At least 2 values required'
   if (unique.length > 20) return 'At most 20 values allowed'
-  const tooLong = unique.find(v => v.length > 10)
+  const tooLong = unique.find((v) => v.length > 10)
   if (tooLong) return `Value "${tooLong}" exceeds 10 characters`
   if (unique.length < values.length) return 'Duplicate values removed'
   return ''
@@ -48,10 +51,13 @@ export default function CreateGame() {
 
   const isCustomValid = () => {
     if (schemeType !== 'custom') return true
-    const values = customValues.split(',').map(v => v.trim()).filter(v => v.length > 0)
+    const values = customValues
+      .split(',')
+      .map((v) => v.trim())
+      .filter((v) => v.length > 0)
     const unique = [...new Set(values)]
     if (unique.length < 2 || unique.length > 20) return false
-    if (unique.find(v => v.length > 10)) return false
+    if (unique.find((v) => v.length > 10)) return false
     return true
   }
 
@@ -61,15 +67,21 @@ export default function CreateGame() {
     if (!nameRegex.test(playerName)) return
     if (!isCustomValid()) return
     setSubmitting(true)
-    await dispatch(createGame(playerName, {
-      schemeType,
-      customValues: schemeType === 'custom' ? customValues : null,
-      includeUnsure,
-      includeCoffee: false
-    }, () => {
-      dispatch(gameCreated())
-      navigate('/game')
-    }))
+    await dispatch(
+      createGame(
+        playerName,
+        {
+          schemeType,
+          customValues: schemeType === 'custom' ? customValues : null,
+          includeUnsure,
+          includeCoffee: false,
+        },
+        () => {
+          dispatch(gameCreated())
+          navigate('/game')
+        },
+      ),
+    )
     setSubmitting(false)
   }
 
@@ -105,14 +117,18 @@ export default function CreateGame() {
                 },
               }}
             >
-              {SCHEME_ORDER.map(key => {
+              {SCHEME_ORDER.map((key) => {
                 const meta = SCHEME_METADATA[key]
                 const isCustom = key === 'custom'
                 return (
                   <SchemeTile
                     key={key}
                     scheme={meta}
-                    values={SCHEME_VALUES[key] ? [...SCHEME_VALUES[key], ...(includeUnsure ? ['?'] : [])] : undefined}
+                    values={
+                      SCHEME_VALUES[key]
+                        ? [...SCHEME_VALUES[key], ...(includeUnsure ? ['?'] : [])]
+                        : undefined
+                    }
                     selected={schemeType === key}
                     onClick={() => setSchemeType(key)}
                     isCustom={isCustom}
@@ -139,12 +155,25 @@ export default function CreateGame() {
             </Box>
 
             <FormControlLabel
-              control={<Switch checked={includeUnsure} onChange={(e) => setIncludeUnsure(e.target.checked)} size="small" />}
+              control={
+                <Switch
+                  checked={includeUnsure}
+                  onChange={(e) => setIncludeUnsure(e.target.checked)}
+                  size="small"
+                />
+              }
               label="Include ? (unsure)"
               sx={{ mb: 2.5 }}
             />
 
-            <Button type="submit" variant="contained" fullWidth size="large" disableElevation disabled={!isCustomValid() || submitting}>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              size="large"
+              disableElevation
+              disabled={!isCustomValid() || submitting}
+            >
               {submitting ? <CircularProgress size={20} sx={{ mr: 1 }} /> : null}
               Start Game
             </Button>

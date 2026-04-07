@@ -8,7 +8,9 @@ describe('notification reducer', () => {
   })
 
   it('sets message on SHOW_ERROR', () => {
-    expect(reducer(null, { type: SHOW_ERROR, payload: 'Something went wrong' })).toBe('Something went wrong')
+    expect(reducer(null, { type: SHOW_ERROR, payload: 'Something went wrong' })).toBe(
+      'Something went wrong',
+    )
   })
 
   it('resets to null on CLEAR_ERROR', () => {

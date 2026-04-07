@@ -52,7 +52,11 @@ describe('createGame', () => {
     const onSuccess = vi.fn()
 
     const dispatched = await runThunkAsync(
-      createGame('Alice', { schemeType: 'fibonacci', customValues: null, includeUnsure: true, includeCoffee: true }, onSuccess)
+      createGame(
+        'Alice',
+        { schemeType: 'fibonacci', customValues: null, includeUnsure: true, includeCoffee: true },
+        onSuccess,
+      ),
     )
 
     expect(dispatched).toHaveLength(1)
@@ -69,7 +73,11 @@ describe('createGame', () => {
     })
 
     const dispatched = await runThunkAsync(
-      createGame('Alice', { schemeType: 'fibonacci', customValues: null, includeUnsure: true, includeCoffee: true }, null)
+      createGame(
+        'Alice',
+        { schemeType: 'fibonacci', customValues: null, includeUnsure: true, includeCoffee: true },
+        null,
+      ),
     )
 
     expect(dispatched).toHaveLength(2)
@@ -92,9 +100,7 @@ describe('joinGame', () => {
     axios.post = vi.fn().mockResolvedValue({ data: { sessionId: 'abc12345' } })
     const onSuccess = vi.fn()
 
-    const dispatched = await runThunkAsync(
-      joinGame('Bob', 'abc12345', onSuccess)
-    )
+    const dispatched = await runThunkAsync(joinGame('Bob', 'abc12345', onSuccess))
 
     expect(dispatched).toHaveLength(1)
     expect(dispatched[0].type).toBe(JOIN_GAME)
@@ -113,9 +119,7 @@ describe('vote', () => {
   it('dispatches VOTE action on success', async () => {
     axios.post = vi.fn().mockResolvedValue({ data: {} })
 
-    const dispatched = await runThunkAsync(
-      vote('alice', 'abc12345', '5')
-    )
+    const dispatched = await runThunkAsync(vote('alice', 'abc12345', '5'))
 
     expect(dispatched).toHaveLength(1)
     expect(dispatched[0].type).toBe(VOTE)

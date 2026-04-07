@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles'
 
 const shared = {
   typography: {
@@ -38,7 +38,7 @@ const shared = {
       },
     },
   },
-};
+}
 
 export const darkTheme = createTheme({
   ...shared,
@@ -72,7 +72,7 @@ export const darkTheme = createTheme({
       },
     },
   },
-});
+})
 
 export const lightTheme = createTheme({
   ...shared,
@@ -107,4 +107,4 @@ export const lightTheme = createTheme({
       },
     },
   },
-});
+})

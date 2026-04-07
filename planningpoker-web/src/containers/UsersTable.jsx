@@ -1,33 +1,33 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import StarRounded from '@mui/icons-material/StarRounded';
-import PersonRemoveRounded from '@mui/icons-material/PersonRemoveRounded';
-import SwapHorizRounded from '@mui/icons-material/SwapHorizRounded';
-import startCase from 'lodash/startCase';
-import union from 'lodash/union';
-import { kickUser, promoteUser } from '../actions';
+import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Tooltip from '@mui/material/Tooltip'
+import IconButton from '@mui/material/IconButton'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
+import Button from '@mui/material/Button'
+import StarRounded from '@mui/icons-material/StarRounded'
+import PersonRemoveRounded from '@mui/icons-material/PersonRemoveRounded'
+import SwapHorizRounded from '@mui/icons-material/SwapHorizRounded'
+import startCase from 'lodash/startCase'
+import union from 'lodash/union'
+import { kickUser, promoteUser } from '../actions'
 
 export default function UsersTable({ heading }) {
-  const dispatch = useDispatch();
-  const users = useSelector(state => state.users);
-  const currentUser = useSelector(state => state.game.playerName);
-  const host = useSelector(state => state.game.host);
-  const sessionId = useSelector(state => state.game.sessionId);
-  const isHost = currentUser?.toLowerCase() === host?.toLowerCase();
-  const [kickTarget, setKickTarget] = useState(null);
+  const dispatch = useDispatch()
+  const users = useSelector((state) => state.users)
+  const currentUser = useSelector((state) => state.game.playerName)
+  const host = useSelector((state) => state.game.host)
+  const sessionId = useSelector((state) => state.game.sessionId)
+  const isHost = currentUser?.toLowerCase() === host?.toLowerCase()
+  const [kickTarget, setKickTarget] = useState(null)
 
   // Keep original usernames for comparisons and API calls; apply startCase only for display
-  const allUsers = union([currentUser], users).sort();
+  const allUsers = union([currentUser], users).sort()
 
   return (
     <Box
@@ -42,11 +42,17 @@ export default function UsersTable({ heading }) {
     >
       <Typography
         variant="overline"
-        sx={{ color: 'text.secondary', mb: 1.5, display: 'block', fontSize: '0.65rem', letterSpacing: '0.08em' }}
+        sx={{
+          color: 'text.secondary',
+          mb: 1.5,
+          display: 'block',
+          fontSize: '0.65rem',
+          letterSpacing: '0.08em',
+        }}
       >
         {heading}
       </Typography>
-      {allUsers.map(name => (
+      {allUsers.map((name) => (
         <Box key={name} sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.5 }}>
           <Box
             sx={{
@@ -71,7 +77,12 @@ export default function UsersTable({ heading }) {
                 <IconButton
                   size="small"
                   onClick={() => dispatch(promoteUser(currentUser, name, sessionId))}
-                  sx={{ ml: 'auto', p: 0.25, color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+                  sx={{
+                    ml: 'auto',
+                    p: 0.25,
+                    color: 'text.secondary',
+                    '&:hover': { color: 'primary.main' },
+                  }}
                 >
                   <SwapHorizRounded sx={{ fontSize: 16 }} />
                 </IconButton>
@@ -89,10 +100,7 @@ export default function UsersTable({ heading }) {
           )}
         </Box>
       ))}
-      <Dialog
-        open={!!kickTarget}
-        onClose={() => setKickTarget(null)}
-      >
+      <Dialog open={!!kickTarget} onClose={() => setKickTarget(null)}>
         <DialogTitle>Remove participant</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -115,5 +123,5 @@ export default function UsersTable({ heading }) {
         </DialogActions>
       </Dialog>
     </Box>
-  );
+  )
 }

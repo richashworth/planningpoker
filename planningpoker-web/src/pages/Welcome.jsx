@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 
 export default function Welcome() {
   const [toast, setToast] = useState('')
@@ -27,10 +27,7 @@ export default function Welcome() {
       }}
     >
       <Box sx={{ textAlign: 'center', maxWidth: 380, width: '100%', px: 2 }}>
-        <Typography
-          variant="h3"
-          sx={{ mb: 1, fontSize: { xs: '2rem', sm: '2.5rem' } }}
-        >
+        <Typography variant="h3" sx={{ mb: 1, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
           Planning Poker
         </Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 6 }}>
@@ -47,13 +44,7 @@ export default function Welcome() {
           >
             Join Game
           </Button>
-          <Button
-            component={Link}
-            to="/host"
-            variant="outlined"
-            size="large"
-            fullWidth
-          >
+          <Button component={Link} to="/host" variant="outlined" size="large" fullWidth>
             Host New Game
           </Button>
         </Box>
@@ -69,5 +60,5 @@ export default function Welcome() {
         </Alert>
       </Snackbar>
     </Box>
-  );
+  )
 }
