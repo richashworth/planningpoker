@@ -42,7 +42,7 @@ export default function useStomp({ url, topics, onMessage }) {
         client.deactivate();
       }
     };
-  }, [url, JSON.stringify(topics)]);
+  }, [url, topics]);
 
   return { connected };
 }

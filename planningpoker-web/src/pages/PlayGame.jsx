@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -41,13 +41,14 @@ export default function PlayGame() {
     }
   }, [kickedMessage]);
 
+  const topics = useMemo(() => [
+    `/topic/results/${sessionId}`,
+    `/topic/users/${sessionId}`,
+  ], [sessionId])
+
   const { connected } = useStomp({
     url: `${API_ROOT_URL}/stomp`,
-    topics: [
-      `/topic/items/${sessionId}`,
-      `/topic/results/${sessionId}`,
-      `/topic/users/${sessionId}`,
-    ],
+    topics,
     onMessage: (msg) => {
       switch (msg.type) {
         case 'RESULTS_MESSAGE':
