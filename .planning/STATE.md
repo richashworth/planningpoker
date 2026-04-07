@@ -60,6 +60,7 @@ None.
 | 260407-s6r | Add fully automated GitHub releases on every green master push using semantic-release | 2026-04-07 | a2f7834 | [260407-s6r-add-fully-automated-github-releases-on-e](./quick/260407-s6r-add-fully-automated-github-releases-on-e/) |
 | 260407-tk3 | Fix graceful session handling after server restart — detect reconnect and validate session still exists | 2026-04-07 | b77edf2 | [260407-tk3-fix-graceful-session-handling-after-serv](./quick/260407-tk3-fix-graceful-session-handling-after-serv/) |
 | 260407-x1g | Fix todo 002: increase contrast on estimation scheme selector cards | 2026-04-07 | 554346b | [260407-x1g-fix-todo-002-increase-contrast-on-estima](./quick/260407-x1g-fix-todo-002-increase-contrast-on-estima/) |
+| 260407-x87 | Remove unused React imports and unused runThunk variable causing ESLint warnings | 2026-04-07 | f7c86b1 | [260407-x87-remove-unused-react-imports-and-unused-r](./quick/260407-x87-remove-unused-react-imports-and-unused-r/) |
 
 ## Session Continuity
 
