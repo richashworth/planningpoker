@@ -1,6 +1,6 @@
-cd planningpoker-web && npx lint-staged
-
+cd planningpoker-web && npx lint-staged --allow-empty
 cd ..
+
 # Run spotless on staged Java files
 STAGED_JAVA=$(git diff --cached --name-only --diff-filter=ACM -- '*.java')
 if [ -n "$STAGED_JAVA" ]; then
