@@ -38,6 +38,12 @@ public class SessionManager {
         return createSession(new SchemeConfig("fibonacci", null, true, true));
     }
 
+    /**
+     * Must be called while holding the lock on {@code this} (i.e. inside a
+     * {@code synchronized(sessionManager)} block in the caller).
+     *
+     * @GuardedBy("this")
+     */
     public String createSession(SchemeConfig config) {
         if (activeSessions.size() >= MAX_SESSIONS) {
             throw new IllegalStateException("Too many active sessions");
@@ -98,10 +104,6 @@ public class SessionManager {
         return List.copyOf(sessionUsers.get(sessionId));
     }
 
-    public ListMultimap<String, String> getSessions() {
-        return sessionUsers;
-    }
-
     public synchronized void clearSessions() {
         logger.info("Clearing all sessions");
         sessionUsers.clear();
@@ -124,10 +126,16 @@ public class SessionManager {
         touchSession(sessionId);
     }
 
+    /**
+     * Must be called while holding the lock on {@code this} (i.e. inside a
+     * {@code synchronized(sessionManager)} block in the caller).
+     *
+     * @GuardedBy("this")
+     */
     public void removeUser(String userName, String sessionId) {
         sessionUsers.get(sessionId).removeIf(u -> u.equalsIgnoreCase(userName));
         sessionEstimates.entries().removeIf(
-                e -> e.getKey().equals(sessionId) && e.getValue().getUserName().equalsIgnoreCase(userName)
+                e -> e.getKey().equals(sessionId) && e.getValue().userName().equalsIgnoreCase(userName)
         );
         String currentHost = sessionHosts.get(sessionId);
         if (currentHost != null && currentHost.equalsIgnoreCase(userName)) {
@@ -145,7 +153,7 @@ public class SessionManager {
         lastActivity.put(sessionId, Instant.now());
     }
 
-    public void evictIdleSessions() {
+    public synchronized void evictIdleSessions() {
         Instant cutoff = Instant.now().minusSeconds(24 * 60 * 60);
         List<String> toEvict = new ArrayList<>();
         lastActivity.forEach((sessionId, lastActive) -> {
