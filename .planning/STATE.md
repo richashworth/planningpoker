@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 07
-Last activity: 2026-04-06
+Last activity: 2026-04-07 - Completed quick task 260407-d2v: fix duplicate player names in votes table
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -57,6 +57,7 @@ None.
 | 260405-13o | Rename STORY_POINTS back to FIBONACCI and cap at 13 | 2026-04-05 | 1e639be | [260405-13o-rename-story-points-back-to-fibonacci-an](./quick/260405-13o-rename-story-points-back-to-fibonacci-an/) |
 | 260405-cid | Move dark/light toggle from header to footer, merge Session label into chip | 2026-04-05 | 44ed94e | [260405-cid-move-dark-light-toggle-from-header-to-fo](./quick/260405-cid-move-dark-light-toggle-from-header-to-fo/) |
 | 260405-dhh | Change app title font from Sora to Lobster | 2026-04-05 | ed4dc7c | [260405-dhh-change-app-title-font-in-header-jsx-from](./quick/260405-dhh-change-app-title-font-in-header-jsx-from/) |
+| 260407-d2v | fix duplicate player names in votes table | 2026-04-07 | 5fa65c7 | [260407-d2v-fix-duplicate-player-names-in-votes-tabl](./quick/260407-d2v-fix-duplicate-player-names-in-votes-tabl/) |
 
 ## Session Continuity
 
