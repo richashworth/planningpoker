@@ -7,23 +7,27 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { joinGame, userRegistered } from '../actions';
 import NameInput from '../components/NameInput';
 
 export default function JoinGame() {
   const [playerName, setPlayerName] = useState('');
   const [sessionId, setSessionId] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const nameRegex = /^[a-zA-Z0-9 _-]{3,20}$/;
     if (!nameRegex.test(playerName)) return;
-    dispatch(joinGame(playerName, sessionId, () => {
+    setSubmitting(true);
+    await dispatch(joinGame(playerName, sessionId, () => {
       dispatch(userRegistered());
       navigate('/game');
     }));
+    setSubmitting(false);
   };
 
   return (
@@ -45,8 +49,11 @@ export default function JoinGame() {
               required
               fullWidth
               sx={{ mb: 2.5 }}
+              helperText="8-character session ID"
+              inputProps={{ maxLength: 8 }}
             />
-            <Button type="submit" variant="contained" fullWidth size="large" disableElevation>
+            <Button type="submit" variant="contained" fullWidth size="large" disableElevation disabled={submitting}>
+              {submitting ? <CircularProgress size={20} sx={{ mr: 1 }} /> : null}
               Join Game
             </Button>
           </form>
