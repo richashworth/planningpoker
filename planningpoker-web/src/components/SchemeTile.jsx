@@ -61,7 +61,7 @@ export default function SchemeTile({
         <Icon
           sx={{
             fontSize: '1.15rem',
-            color: selected ? 'primary.main' : 'text.disabled',
+            color: selected ? 'primary.main' : 'text.secondary',
             flexShrink: 0,
           }}
         />
@@ -94,8 +94,8 @@ export default function SchemeTile({
             fontFamily: '"SF Mono", "Fira Code", "Consolas", monospace',
             fontSize: '0.7rem',
             color: selected
-              ? 'text.disabled'
-              : (theme) => (theme.palette.mode === 'dark' ? '#3f3f46' : '#a1a1aa'),
+              ? 'text.secondary'
+              : (theme) => (theme.palette.mode === 'dark' ? '#a1a1aa' : '#71717a'),
             letterSpacing: '0.02em',
           }}
         >
