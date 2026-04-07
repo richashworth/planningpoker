@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 Phase: 999.1
 Plan: Not started
 Status: Executing Phase 07
-Last activity: 2026-04-07 - Completed quick task 260407-q9i: Add linting and formatting enforcement (ESLint + Prettier + Spotless + CI gates + pre-commit hooks)
+Last activity: 2026-04-07 - Completed quick task 260407-s6r: Add fully automated GitHub releases via semantic-release
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -57,6 +57,7 @@ None.
 | 260405-dhh | Change app title font from Sora to Lobster | 2026-04-05 | ed4dc7c | [260405-dhh-change-app-title-font-in-header-jsx-from](./quick/260405-dhh-change-app-title-font-in-header-jsx-from/) |
 | 260407-d2v | fix duplicate player names in votes table | 2026-04-07 | 5fa65c7 | [260407-d2v-fix-duplicate-player-names-in-votes-tabl](./quick/260407-d2v-fix-duplicate-player-names-in-votes-tabl/) |
 | 260407-q9i | Add linting and formatting enforcement for frontend (ESLint + Prettier) and backend (Java via Spotless), with CI gates for both | 2026-04-07 | 03dd69f | [260407-q9i-add-linting-and-formatting-enforcement-f](./quick/260407-q9i-add-linting-and-formatting-enforcement-f/) |
+| 260407-s6r | Add fully automated GitHub releases on every green master push using semantic-release | 2026-04-07 | a2f7834 | [260407-s6r-add-fully-automated-github-releases-on-e](./quick/260407-s6r-add-fully-automated-github-releases-on-e/) |
 
 ## Session Continuity
 
