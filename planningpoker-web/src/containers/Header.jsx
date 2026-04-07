@@ -111,7 +111,6 @@ export default function Header() {
                 },
               }}
             />
-            <Box sx={{ width: '1px', height: 20, bgcolor: 'rgba(255,255,255,0.25)', mx: 1 }} />
             <Button
               onClick={(e) => setAnchorEl(e.currentTarget)}
               endIcon={<ArrowDropDownIcon />}
