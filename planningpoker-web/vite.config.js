@@ -16,7 +16,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           mui: ['@mui/material', '@emotion/react', '@emotion/styled'],
-          redux: ['redux', 'react-redux', 'redux-promise'],
+          redux: ['redux', 'react-redux', 'redux-thunk'],
           charts: ['chart.js', 'react-chartjs-2'],
         },
       },
