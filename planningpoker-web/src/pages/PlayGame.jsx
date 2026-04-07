@@ -42,23 +42,6 @@ export default function PlayGame() {
     }
   }, [kickedMessage])
 
-  // Detect WebSocket reconnect and validate session still exists on backend
-  useEffect(() => {
-    if (connected === true) {
-      if (wasConnected.current) {
-        // This is a reconnect (not the initial connect) — validate the session
-        axios.get(`${API_ROOT_URL}/sessionUsers?sessionId=${sessionId}`).catch(() => {
-          sessionStorage.setItem(
-            'pp-kicked-message',
-            'The session ended because the server was restarted.',
-          )
-          dispatch(kicked())
-        })
-      }
-      wasConnected.current = true
-    }
-  }, [connected, sessionId, dispatch])
-
   const topics = useMemo(
     () => [`/topic/results/${sessionId}`, `/topic/users/${sessionId}`],
     [sessionId],
@@ -79,6 +62,23 @@ export default function PlayGame() {
       }
     },
   })
+
+  // Detect WebSocket reconnect and validate session still exists on backend
+  useEffect(() => {
+    if (connected === true) {
+      if (wasConnected.current) {
+        // This is a reconnect (not the initial connect) — validate the session
+        axios.get(`${API_ROOT_URL}/sessionUsers?sessionId=${sessionId}`).catch(() => {
+          sessionStorage.setItem(
+            'pp-kicked-message',
+            'The session ended because the server was restarted.',
+          )
+          dispatch(kicked())
+        })
+      }
+      wasConnected.current = true
+    }
+  }, [connected, sessionId, dispatch])
 
   // Fallback: if we voted but no WS results arrive within 8s, ask backend to re-broadcast
   useEffect(() => {
