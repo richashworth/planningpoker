@@ -215,4 +215,50 @@ class GameControllerTest extends AbstractControllerTest {
         IllegalArgumentException.class,
         () -> gameController.promoteUser("Rich", "Rich", SESSION_ID));
   }
+
+  @Test
+  void testSetLabel() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    gameController.setLabel(SESSION_ID, USER_NAME, "Login page redesign");
+    verify(sessionManager).setLabel(SESSION_ID, "Login page redesign");
+    verify(messagingUtils).burstResultsMessages(SESSION_ID);
+  }
+
+  @Test
+  void testSetLabelNonHostRejected() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID))
+        .thenReturn(Lists.newArrayList(USER_NAME, "Alice"));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn("Alice");
+    assertThrows(
+        HostActionException.class, () -> gameController.setLabel(SESSION_ID, USER_NAME, "label"));
+  }
+
+  @Test
+  void testSetLabelTooLongRejected() {
+    String tooLong = "a".repeat(101);
+    assertThrows(
+        IllegalArgumentException.class, () -> gameController.setLabel(SESSION_ID, USER_NAME, tooLong));
+  }
+
+  @Test
+  void testSetLabelEmptyAllowed() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    gameController.setLabel(SESSION_ID, USER_NAME, "");
+    verify(sessionManager).setLabel(SESSION_ID, "");
+    verify(messagingUtils).burstResultsMessages(SESSION_ID);
+  }
+
+  @Test
+  void testResetClearsLabel() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    gameController.reset(SESSION_ID, USER_NAME);
+    verify(sessionManager).resetSession(SESSION_ID);
+    verify(messagingUtils).burstResultsMessages(SESSION_ID);
+  }
 }
