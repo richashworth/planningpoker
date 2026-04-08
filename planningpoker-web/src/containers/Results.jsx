@@ -1,10 +1,17 @@
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import DownloadIcon from '@mui/icons-material/Download'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
-import { resetSession } from '../actions'
+import { resetSession, roundCompleted } from '../actions'
+import { calcConsensus, calcStats } from '../utils/consensus'
+import { generateCsv, downloadCsv } from '../utils/csvExport'
 
 export default function Results() {
   const dispatch = useDispatch()
@@ -12,6 +19,40 @@ export default function Results() {
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
   const currentLabel = useSelector((state) => state.game.currentLabel)
+  const results = useSelector((state) => state.results)
+  const rounds = useSelector((state) => state.rounds)
+
+  const [consensusOverride, setConsensusOverride] = useState(null)
+  const [overrideOpen, setOverrideOpen] = useState(false)
+
+  const autoConsensus = calcConsensus(results)
+  const displayConsensus = consensusOverride || autoConsensus
+
+  // Unique vote values from current round for override dropdown
+  const uniqueVoteValues = [...new Set(results.map((r) => r.estimateValue))].sort()
+
+  const handleNextItem = () => {
+    const stats = calcStats(results)
+    const round = {
+      label: currentLabel,
+      consensus: consensusOverride || calcConsensus(results),
+      votes: [...results],
+      timestamp: new Date().toISOString(),
+      mode: stats.mode,
+      min: stats.min,
+      max: stats.max,
+      variance: stats.variance,
+    }
+    dispatch(roundCompleted(round))
+    setConsensusOverride(null)
+    dispatch(resetSession(playerName, sessionId))
+  }
+
+  const handleExportCsv = () => {
+    const allPlayers = [...new Set(rounds.flatMap((r) => r.votes.map((v) => v.userName)))].sort()
+    const csv = generateCsv(rounds, allPlayers)
+    downloadCsv(csv, `planning-poker-${sessionId}.csv`)
+  }
 
   return (
     <Box>
@@ -21,22 +62,73 @@ export default function Results() {
           alignItems: 'center',
           justifyContent: 'space-between',
           minHeight: 42,
-          mb: currentLabel ? 1 : 3,
+          mb: currentLabel ? 1 : 2,
+          gap: 2,
+          flexWrap: 'wrap',
         }}
       >
-        <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
-          Results
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
+            Results
+          </Typography>
+          {displayConsensus && (
+            <>
+              {isAdmin && overrideOpen ? (
+                <Select
+                  size="small"
+                  value={consensusOverride || autoConsensus}
+                  autoFocus
+                  onBlur={() => setOverrideOpen(false)}
+                  onChange={(e) => {
+                    setConsensusOverride(e.target.value === autoConsensus ? null : e.target.value)
+                    setOverrideOpen(false)
+                  }}
+                  sx={{ minWidth: 80 }}
+                >
+                  {uniqueVoteValues.map((val) => (
+                    <MenuItem key={val} value={val}>
+                      {val}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <Chip
+                  label={`Consensus: ${displayConsensus}`}
+                  color="primary"
+                  size="medium"
+                  onClick={isAdmin ? () => setOverrideOpen(true) : undefined}
+                  sx={{ cursor: isAdmin ? 'pointer' : 'default' }}
+                />
+              )}
+            </>
+          )}
+        </Box>
         {isAdmin && (
-          <Button
-            variant="contained"
-            size="large"
-            disableElevation
-            onClick={() => dispatch(resetSession(playerName, sessionId))}
-            sx={{ px: 4 }}
-          >
-            Next Item
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            {rounds.length > 0 && (
+              <Typography variant="caption" color="text.secondary">
+                {rounds.length} {rounds.length === 1 ? 'round' : 'rounds'}
+              </Typography>
+            )}
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<DownloadIcon />}
+              onClick={handleExportCsv}
+              disabled={rounds.length === 0}
+            >
+              Export CSV
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              disableElevation
+              onClick={handleNextItem}
+              sx={{ px: 4 }}
+            >
+              Next Item
+            </Button>
+          </Box>
         )}
       </Box>
       {currentLabel && (
