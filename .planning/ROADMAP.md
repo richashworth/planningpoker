@@ -67,5 +67,5 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Round labelling: backend endpoint, WebSocket broadcast, frontend label UI
-- [ ] 08-02-PLAN.md — Consensus inference, round history, host override, CSV export
+- [x] 08-01-PLAN.md — Round labelling: backend endpoint, WebSocket broadcast, frontend label UI
+- [x] 08-02-PLAN.md — Consensus inference, round history, host override, CSV export
