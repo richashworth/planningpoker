@@ -32,7 +32,16 @@ function escapeField(value) {
  * @returns {string} CSV string
  */
 export function generateCsv(rounds, playerNames) {
-  const headers = ['Label', 'Consensus', 'Timestamp', 'Mode', 'Min', 'Max', 'Variance', ...playerNames]
+  const headers = [
+    'Label',
+    'Consensus',
+    'Timestamp',
+    'Mode',
+    'Min',
+    'Max',
+    'Variance',
+    ...playerNames,
+  ]
   const rows = [headers.join(',')]
 
   for (const round of rounds) {

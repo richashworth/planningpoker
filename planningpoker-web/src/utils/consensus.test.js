@@ -39,11 +39,7 @@ describe('calcConsensus', () => {
 
 describe('calcStats', () => {
   it('returns mode, min, max, variance for numeric values', () => {
-    const results = [
-      { estimateValue: '1' },
-      { estimateValue: '3' },
-      { estimateValue: '5' },
-    ]
+    const results = [{ estimateValue: '1' }, { estimateValue: '3' }, { estimateValue: '5' }]
     const stats = calcStats(results)
     expect(stats.mode).toBe('1')
     expect(stats.min).toBe('1')
@@ -52,11 +48,7 @@ describe('calcStats', () => {
   })
 
   it('returns mode only (null for numeric stats) for non-numeric values', () => {
-    const results = [
-      { estimateValue: 'M' },
-      { estimateValue: 'L' },
-      { estimateValue: 'M' },
-    ]
+    const results = [{ estimateValue: 'M' }, { estimateValue: 'L' }, { estimateValue: 'M' }]
     const stats = calcStats(results)
     expect(stats.mode).toBe('M')
     expect(stats.min).toBeNull()
@@ -65,11 +57,7 @@ describe('calcStats', () => {
   })
 
   it('returns all nulls for numeric stats when all same value', () => {
-    const results = [
-      { estimateValue: '5' },
-      { estimateValue: '5' },
-      { estimateValue: '5' },
-    ]
+    const results = [{ estimateValue: '5' }, { estimateValue: '5' }, { estimateValue: '5' }]
     const stats = calcStats(results)
     expect(stats.mode).toBe('5')
     expect(stats.min).toBe('5')

@@ -95,11 +95,7 @@ export default function Vote() {
           />
         ) : (
           currentLabel && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ fontStyle: 'italic' }}
-            >
+            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
               {currentLabel}
             </Typography>
           )

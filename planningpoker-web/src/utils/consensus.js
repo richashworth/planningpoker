@@ -50,7 +50,8 @@ export function calcStats(results) {
   const max = String(Math.max(...numericValues))
 
   const mean = numericValues.reduce((sum, n) => sum + n, 0) / numericValues.length
-  const variance = numericValues.reduce((sum, n) => sum + Math.pow(n - mean, 2), 0) / numericValues.length
+  const variance =
+    numericValues.reduce((sum, n) => sum + Math.pow(n - mean, 2), 0) / numericValues.length
 
   return {
     mode,
