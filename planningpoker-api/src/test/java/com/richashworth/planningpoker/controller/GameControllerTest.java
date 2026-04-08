@@ -240,7 +240,8 @@ class GameControllerTest extends AbstractControllerTest {
   void testSetLabelTooLongRejected() {
     String tooLong = "a".repeat(101);
     assertThrows(
-        IllegalArgumentException.class, () -> gameController.setLabel(SESSION_ID, USER_NAME, tooLong));
+        IllegalArgumentException.class,
+        () -> gameController.setLabel(SESSION_ID, USER_NAME, tooLong));
   }
 
   @Test
