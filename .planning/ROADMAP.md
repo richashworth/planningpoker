@@ -58,3 +58,14 @@ Plans:
 | 5. Backend Host Model | v1.2 | 2/2 | Complete | 2026-04-06 |
 | 6. Host Actions & WebSocket Events | v1.2 | 2/2 | Complete | 2026-04-06 |
 | 7. Host UI & Notifications | v1.2 | 3/3 | Complete | 2026-04-06 |
+
+### Phase 8: Session Labels & CSV Export
+
+**Goal:** Host can optionally label each voting round (before or after voting, visible to all players). Auto-majority consensus is inferred and can be overridden by the host. Round history accumulates in Redux. Host can download a CSV including label, consensus estimate, per-player votes, timestamp, mode, min, max, and variance.
+**Requirements**: [LABEL-01, LABEL-02, LABEL-03, CONS-01, CONS-02, HIST-01, CSV-01]
+**Depends on:** Phase 7
+**Plans:** 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Round labelling: backend endpoint, WebSocket broadcast, frontend label UI
+- [ ] 08-02-PLAN.md — Consensus inference, round history, host override, CSV export
