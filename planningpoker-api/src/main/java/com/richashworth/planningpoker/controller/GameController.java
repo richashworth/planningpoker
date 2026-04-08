@@ -145,8 +145,8 @@ public class GameController {
       validateSessionMembership(sessionId, userName);
       logger.info("{} has reset session {}", userName, sessionId);
       sessionManager.resetSession(sessionId);
-      messagingUtils.burstResultsMessages(sessionId);
     }
+    messagingUtils.burstResultsMessages(sessionId);
   }
 
   @PostMapping("setLabel")
