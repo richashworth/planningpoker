@@ -16,7 +16,6 @@ const initialGameState = {
   legalEstimates: [],
   schemeType: 'fibonacci',
   includeUnsure: true,
-  includeCoffee: true,
   host: '',
   kickedMessage: '',
 }
@@ -32,7 +31,6 @@ export default function (state = initialGameState, action) {
         legalEstimates: action.payload.values,
         schemeType: action.payload.schemeType,
         includeUnsure: action.payload.includeUnsure,
-        includeCoffee: action.payload.includeCoffee,
         host: action.payload.host || '',
       }
     case GAME_CREATED:
@@ -48,7 +46,6 @@ export default function (state = initialGameState, action) {
         legalEstimates: action.payload.values,
         schemeType: action.payload.schemeType,
         includeUnsure: action.payload.includeUnsure,
-        includeCoffee: action.payload.includeCoffee,
         host: action.payload.host || '',
       }
     case USERS_UPDATED:

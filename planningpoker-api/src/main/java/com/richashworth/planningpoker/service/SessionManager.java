@@ -38,7 +38,7 @@ public class SessionManager {
   }
 
   public String createSession() {
-    return createSession(new SchemeConfig("fibonacci", null, true, true));
+    return createSession(new SchemeConfig("fibonacci", null, true));
   }
 
   /**
@@ -63,8 +63,7 @@ public class SessionManager {
     String csvValues =
         config.customValues() != null ? String.join(",", config.customValues()) : null;
     List<String> legal =
-        SchemeType.resolveValues(
-            config.schemeType(), csvValues, config.includeUnsure(), config.includeCoffee());
+        SchemeType.resolveValues(config.schemeType(), csvValues, config.includeUnsure());
     sessionLegalValues.put(sessionId, legal);
     sessionSchemeConfigs.put(sessionId, config);
     touchSession(sessionId);

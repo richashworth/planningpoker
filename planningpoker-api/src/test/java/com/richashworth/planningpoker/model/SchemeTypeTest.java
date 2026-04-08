@@ -70,29 +70,28 @@ class SchemeTypeTest {
   }
 
   @Test
-  void testResolveFibonacciWithBothToggles() {
-    List<String> values = SchemeType.resolveValues("fibonacci", null, true, true);
-    List<String> expected = List.of("1", "2", "3", "5", "8", "13", "?", "\u2615");
+  void testResolveFibonacciWithUnsureToggle() {
+    List<String> values = SchemeType.resolveValues("fibonacci", null, true);
+    List<String> expected = List.of("1", "2", "3", "5", "8", "13", "?");
     assertEquals(expected, values);
   }
 
   @Test
   void testResolveFibonacciNoToggles() {
-    List<String> values = SchemeType.resolveValues("fibonacci", null, false, false);
+    List<String> values = SchemeType.resolveValues("fibonacci", null, false);
     assertEquals(SchemeType.FIBONACCI.getValues(), values);
     assertFalse(values.contains("?"));
-    assertFalse(values.contains("\u2615"));
   }
 
   @Test
   void testResolveCustomValid() {
-    List<String> values = SchemeType.resolveValues("custom", "S,M,L,XL", true, false);
+    List<String> values = SchemeType.resolveValues("custom", "S,M,L,XL", true);
     assertEquals(List.of("S", "M", "L", "XL", "?"), values);
   }
 
   @Test
   void testResolveCustomTrimsWhitespace() {
-    List<String> values = SchemeType.resolveValues("custom", " A , B , C ", false, false);
+    List<String> values = SchemeType.resolveValues("custom", " A , B , C ", false);
     assertEquals(List.of("A", "B", "C"), values);
   }
 
@@ -101,7 +100,7 @@ class SchemeTypeTest {
     IllegalArgumentException ex =
         assertThrows(
             IllegalArgumentException.class,
-            () -> SchemeType.resolveValues("custom", "solo", false, false));
+            () -> SchemeType.resolveValues("custom", "solo", false));
     assertTrue(
         ex.getMessage().contains("at least 2"), "Expected 'at least 2' in: " + ex.getMessage());
   }
@@ -112,8 +111,7 @@ class SchemeTypeTest {
         IntStream.rangeClosed(1, 21).mapToObj(Integer::toString).collect(Collectors.joining(","));
     IllegalArgumentException ex =
         assertThrows(
-            IllegalArgumentException.class,
-            () -> SchemeType.resolveValues("custom", csv, false, false));
+            IllegalArgumentException.class, () -> SchemeType.resolveValues("custom", csv, false));
     assertTrue(
         ex.getMessage().contains("at most 20"), "Expected 'at most 20' in: " + ex.getMessage());
   }
@@ -123,7 +121,7 @@ class SchemeTypeTest {
     IllegalArgumentException ex =
         assertThrows(
             IllegalArgumentException.class,
-            () -> SchemeType.resolveValues("custom", "short,12345678901", false, false));
+            () -> SchemeType.resolveValues("custom", "short,12345678901", false));
     assertTrue(
         ex.getMessage().contains("exceeds max length"),
         "Expected 'exceeds max length' in: " + ex.getMessage());
@@ -131,7 +129,7 @@ class SchemeTypeTest {
 
   @Test
   void testResolveCustomDeduplicates() {
-    List<String> values = SchemeType.resolveValues("custom", "A,B,A,C", false, false);
+    List<String> values = SchemeType.resolveValues("custom", "A,B,A,C", false);
     assertEquals(List.of("A", "B", "C"), values);
     assertEquals(3, values.size());
   }
@@ -139,22 +137,28 @@ class SchemeTypeTest {
   @Test
   void testResolveCustomEmptyThrows() {
     assertThrows(
-        IllegalArgumentException.class, () -> SchemeType.resolveValues("custom", "", false, false));
+        IllegalArgumentException.class, () -> SchemeType.resolveValues("custom", "", false));
   }
 
   @Test
   void testResolveCustomNullThrows() {
     assertThrows(
-        IllegalArgumentException.class,
-        () -> SchemeType.resolveValues("custom", null, false, false));
+        IllegalArgumentException.class, () -> SchemeType.resolveValues("custom", null, false));
+  }
+
+  @Test
+  void testResolveCustomWithUnsureAlreadyIncluded() {
+    // If custom values already contain "?", enabling the toggle must not add a duplicate
+    List<String> values = SchemeType.resolveValues("custom", "S,M,L,?", true);
+    assertEquals(List.of("S", "M", "L", "?"), values);
+    assertEquals(1, values.stream().filter("?"::equals).count());
   }
 
   @Test
   void testSchemeConfigRecordFields() {
-    SchemeConfig config = new SchemeConfig("fibonacci", null, true, true);
+    SchemeConfig config = new SchemeConfig("fibonacci", null, true);
     assertEquals("fibonacci", config.schemeType());
     assertNull(config.customValues());
     assertTrue(config.includeUnsure());
-    assertTrue(config.includeCoffee());
   }
 }

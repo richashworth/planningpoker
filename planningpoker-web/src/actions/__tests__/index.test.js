@@ -44,7 +44,7 @@ describe('createGame', () => {
     const dispatched = await runThunkAsync(
       createGame(
         'Alice',
-        { schemeType: 'fibonacci', customValues: null, includeUnsure: true, includeCoffee: true },
+        { schemeType: 'fibonacci', customValues: null, includeUnsure: true },
         onSuccess,
       ),
     )
@@ -65,7 +65,7 @@ describe('createGame', () => {
     const dispatched = await runThunkAsync(
       createGame(
         'Alice',
-        { schemeType: 'fibonacci', customValues: null, includeUnsure: true, includeCoffee: true },
+        { schemeType: 'fibonacci', customValues: null, includeUnsure: true },
         null,
       ),
     )

@@ -18,7 +18,6 @@ const initialState = {
   legalEstimates: [],
   schemeType: 'fibonacci',
   includeUnsure: true,
-  includeCoffee: true,
   host: '',
   kickedMessage: '',
 }
@@ -36,7 +35,6 @@ describe('game reducer', () => {
         values: ['1', '2', '3'],
         schemeType: 'simple',
         includeUnsure: false,
-        includeCoffee: true,
         host: 'alice',
       },
       meta: { userName: 'alice' },
@@ -47,7 +45,6 @@ describe('game reducer', () => {
     expect(state.legalEstimates).toEqual(['1', '2', '3'])
     expect(state.schemeType).toBe('simple')
     expect(state.includeUnsure).toBe(false)
-    expect(state.includeCoffee).toBe(true)
     expect(state.host).toBe('alice')
   })
 
@@ -74,7 +71,6 @@ describe('game reducer', () => {
         values: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
         schemeType: 'tshirt',
         includeUnsure: true,
-        includeCoffee: false,
         host: 'HostUser',
       },
       meta: { userName: 'bob', sessionId: 'xyz98765' },
@@ -85,7 +81,6 @@ describe('game reducer', () => {
     expect(state.legalEstimates).toEqual(['XS', 'S', 'M', 'L', 'XL', 'XXL'])
     expect(state.schemeType).toBe('tshirt')
     expect(state.includeUnsure).toBe(true)
-    expect(state.includeCoffee).toBe(false)
     expect(state.host).toBe('HostUser')
   })
 
@@ -112,7 +107,6 @@ describe('game reducer', () => {
       legalEstimates: ['1', '2', '3'],
       schemeType: 'simple',
       includeUnsure: true,
-      includeCoffee: true,
       host: 'alice',
       kickedMessage: '',
     }
@@ -131,7 +125,6 @@ describe('game reducer', () => {
       legalEstimates: ['1', '2', '3'],
       schemeType: 'simple',
       includeUnsure: false,
-      includeCoffee: false,
       host: 'alice',
     }
     expect(reducer(active, { type: LEAVE_GAME })).toEqual(initialState)

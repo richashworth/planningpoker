@@ -12,9 +12,8 @@ export default function (state = false, action) {
       // Optimistic: immediately flip back to voting view
       return false
     case RESULTS_UPDATED:
-      return action.payload.length < 1
-        ? false
-        : action.payload.some((res) => res['userName'] === action.meta.playerName)
+      if (action.payload.some((res) => res['userName'] === action.meta.playerName)) return true
+      return state
     default:
       return state
   }

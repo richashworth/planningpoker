@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
@@ -74,7 +74,6 @@ export default function CreateGame() {
           schemeType,
           customValues: schemeType === 'custom' ? customValues : null,
           includeUnsure,
-          includeCoffee: false,
         },
         () => {
           dispatch(gameCreated())
@@ -86,9 +85,17 @@ export default function CreateGame() {
   }
 
   return (
-    <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
+    <Box
+      sx={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: { xs: 1.5, sm: 3 },
+      }}
+    >
       <Card sx={{ maxWidth: 560, width: '100%' }}>
-        <CardContent sx={{ p: 4 }}>
+        <CardContent sx={{ p: { xs: 2.5, sm: 4 } }}>
           <Typography variant="h5" sx={{ mb: 3, textAlign: 'center' }}>
             Host a Game
           </Typography>
@@ -107,12 +114,9 @@ export default function CreateGame() {
               sx={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
-                gridTemplateRows: '1fr 1fr auto',
-                gap: 1.5,
+                gap: { xs: 1, sm: 1.5 },
                 mb: 2.5,
                 '@media (max-width: 479px)': {
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 1,
                   '& .scheme-values': { display: 'none' },
                 },
               }}

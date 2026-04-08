@@ -142,8 +142,7 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessionsClearsAllSevenMaps() throws Exception {
-    String sessionId =
-        sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
+    String sessionId = sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
 
@@ -224,7 +223,7 @@ class SessionManagerTest {
 
   @Test
   void testCreateSessionWithScheme() {
-    SchemeConfig config = new SchemeConfig("fibonacci", null, true, true);
+    SchemeConfig config = new SchemeConfig("fibonacci", null, true);
     String sessionId = sessionManager.createSession(config);
     assertNotNull(sessionId);
     assertEquals(8, sessionId.length());
@@ -233,7 +232,6 @@ class SessionManagerTest {
     assertTrue(legalValues.contains("1"));
     assertTrue(legalValues.contains("13"));
     assertTrue(legalValues.contains("?"));
-    assertTrue(legalValues.contains("\u2615"));
     SchemeConfig retrieved = sessionManager.getSessionSchemeConfig(sessionId);
     assertNotNull(retrieved);
     assertEquals("fibonacci", retrieved.schemeType());
@@ -243,7 +241,7 @@ class SessionManagerTest {
   void testCreateSessionDefaultScheme() {
     String sessionId = sessionManager.createSession();
     List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
-    List<String> expected = SchemeType.resolveValues("fibonacci", null, true, true);
+    List<String> expected = SchemeType.resolveValues("fibonacci", null, true);
     assertEquals(expected, legalValues);
   }
 
@@ -268,8 +266,7 @@ class SessionManagerTest {
 
   @Test
   void testClearSessionsCleansSchemeData() {
-    String sessionId =
-        sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
+    String sessionId = sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
     sessionManager.clearSessions();
     assertNull(sessionManager.getSessionSchemeConfig(sessionId));
     assertTrue(sessionManager.getSessionLegalValues(sessionId).isEmpty());
@@ -277,10 +274,8 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessionsCleansSchemeData() throws Exception {
-    String activeSession =
-        sessionManager.createSession(new SchemeConfig("fibonacci", null, true, true));
-    String idleSession =
-        sessionManager.createSession(new SchemeConfig("tshirt", null, false, false));
+    String activeSession = sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
+    String idleSession = sessionManager.createSession(new SchemeConfig("tshirt", null, false));
 
     // Backdate lastActivity for idle session
     Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");

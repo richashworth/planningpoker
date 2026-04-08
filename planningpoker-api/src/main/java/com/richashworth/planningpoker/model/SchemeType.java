@@ -13,7 +13,6 @@ public enum SchemeType {
   TIME(List.of("1h", "½d", "1d", "2d", "1w", "2w", "1mo", "3mo", "6mo+"));
 
   private static final String UNSURE = "?";
-  private static final String COFFEE = "\u2615";
   private static final int MAX_CUSTOM_VALUES = 20;
   private static final int MIN_CUSTOM_VALUES = 2;
   private static final int MAX_VALUE_LENGTH = 10;
@@ -41,18 +40,15 @@ public enum SchemeType {
   }
 
   public static List<String> resolveValues(
-      String schemeType, String customValuesCsv, boolean includeUnsure, boolean includeCoffee) {
+      String schemeType, String customValuesCsv, boolean includeUnsure) {
     List<String> result;
     if ("custom".equalsIgnoreCase(schemeType)) {
       result = new ArrayList<>(parseAndValidateCustom(customValuesCsv));
     } else {
       result = new ArrayList<>(fromString(schemeType).getValues());
     }
-    if (includeUnsure) {
+    if (includeUnsure && !result.contains(UNSURE)) {
       result.add(UNSURE);
-    }
-    if (includeCoffee) {
-      result.add(COFFEE);
     }
     return Collections.unmodifiableList(result);
   }

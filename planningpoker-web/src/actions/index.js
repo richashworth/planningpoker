@@ -48,7 +48,6 @@ export function createGame(playerName, schemeOptions, onSuccess) {
         schemeType: schemeOptions.schemeType,
         customValues: schemeOptions.customValues,
         includeUnsure: schemeOptions.includeUnsure,
-        includeCoffee: schemeOptions.includeCoffee,
       })
       dispatch({ type: CREATE_GAME, payload: data, meta: { userName: playerName } })
       if (onSuccess) onSuccess()

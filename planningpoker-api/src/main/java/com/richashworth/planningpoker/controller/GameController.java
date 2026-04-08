@@ -51,8 +51,7 @@ public class GameController {
     SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
-    return new SessionResponse(
-        host, null, config.schemeType(), values, config.includeUnsure(), config.includeCoffee());
+    return new SessionResponse(host, null, config.schemeType(), values, config.includeUnsure());
   }
 
   @PostMapping("createSession")
@@ -69,12 +68,7 @@ public class GameController {
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
     return new SessionResponse(
-        host,
-        sessionId,
-        schemeConfig.schemeType(),
-        values,
-        schemeConfig.includeUnsure(),
-        schemeConfig.includeCoffee());
+        host, sessionId, schemeConfig.schemeType(), values, schemeConfig.includeUnsure());
   }
 
   @PostMapping("logout")
@@ -158,12 +152,11 @@ public class GameController {
   private SchemeConfig buildSchemeConfig(CreateSessionRequest request) {
     String schemeType = request.schemeType() != null ? request.schemeType() : "fibonacci";
     boolean includeUnsure = request.includeUnsure() != null ? request.includeUnsure() : true;
-    boolean includeCoffee = request.includeCoffee() != null ? request.includeCoffee() : true;
     List<String> customValues = null;
     if (request.customValues() != null && !request.customValues().isBlank()) {
       customValues = List.of(request.customValues().split(","));
     }
-    return new SchemeConfig(schemeType, customValues, includeUnsure, includeCoffee);
+    return new SchemeConfig(schemeType, customValues, includeUnsure);
   }
 
   private void validateUserName(String userName) {
