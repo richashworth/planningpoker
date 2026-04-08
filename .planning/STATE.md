@@ -38,9 +38,15 @@ Progress: [░░░░░░░░░░] 0%
 
 See PROJECT.md Key Decisions table for full log.
 
+- [Phase quick]: semantic-release v24 with commit-analyzer + github plugins; no npm publish or git-back commits; tagFormat v${version} matches existing tag convention
+
+### Roadmap Evolution
+
+- Phase 8 added: Session Labels & CSV Export
+
 ### Pending Todos
 
-4 pending — see `.planning/todos/pending/` for details.
+1 pending — see `.planning/todos/pending/` for details.
 
 ### Blockers/Concerns
 
