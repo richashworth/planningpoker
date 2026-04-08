@@ -69,6 +69,43 @@
 2. Traceability sync issue persists from v1.0 — need automated or discipline-enforced checkbox updates at plan completion
 3. For UI redesigns, investing more in visual spec upfront (specific shadow values, icon choices) reduces UAT fix rounds
 
+## Milestone: v1.2 — Host Management
+
+**Shipped:** 2026-04-06
+**Phases:** 3 | **Plans:** 7 (incl. 1 gap-closure plan)
+
+### What Was Built
+- `SessionManager` host tracking: creator = host, auto-promotes on departure, `ConcurrentHashMap` with `putIfAbsent`
+- `/kick` and `/promote` endpoints with 403 enforcement (`HostActionException`), TOCTOU-safe `synchronized` block
+- WebSocket users payload enriched to `{users, host}` map — all participants see host identity in real-time
+- Redux host state wired from both REST (`createGame`/`joinGame`) and WebSocket (`USERS_UPDATED`)
+- `StarRounded` host indicator in participants list; `PersonRemoveRounded`/`SwapHorizRounded` host controls
+- Kick confirmation dialog, `sessionStorage`-bridge toast redirect for kicked users
+- Gap closure (07-03): isolated `startCase` to display-only, `equalsIgnoreCase` for `removeUser`
+
+### What Worked
+- 3-phase layered approach (backend model → API + actions → UI) again mirrored v1.0's successful pattern
+- TDD throughout: RED→GREEN→REFACTOR strictly followed in all backend plans
+- Playwright automation for UAT — ran all 5 UAT checks programmatically across two browser tabs, no manual testing needed
+- `sessionStorage`-bridge pattern for cross-page state (kicked toast) is clean and well-tested
+- Gap closure plan (07-03) created and executed cleanly — the UAT-to-gap-closure loop worked as designed
+
+### What Was Inefficient
+- UAT uncovered 3 bugs (startCase transform, case-sensitive removeUser, self-kick display) that could have been caught by unit tests during plan execution — pre-flight test coverage for username edge cases was missing
+- Original Phase 7 plan only had 2 plans; 07-03 was added post-UAT. The startCase bug was foreseeable given the display→API coupling in UsersTable
+- Toast timing made it tricky to screenshot in Playwright — used sessionStorage key consumption as proxy for verification
+
+### Patterns Established
+- `HostActionException` as typed 403 signal, caught by `@ControllerAdvice` — reusable pattern for future authorization gates
+- `sessionStorage` bridge for cross-page one-shot notifications (set→read on mount→clear)
+- Playwright UAT as a first-class verification step replacing manual browser testing
+- Separate `originalName` vs display name pattern for any component using `startCase` or other transforms
+
+### Key Lessons
+1. Username transform bugs are a class of error worth a specific checklist item: "Any display transform applied to a username must be isolated from API calls and comparisons"
+2. Playwright automation makes UAT fast and reproducible — worth setting up from Phase 1 for UI milestones
+3. Gap closure plans work well when the UAT items are specific and actionable; vague UAT items lead to unclear gap plans
+
 ---
 
 ## Cross-Milestone Trends
@@ -79,8 +116,10 @@
 |-----------|--------|-------|------------|
 | v1.0 | 3 | 5 | First milestone; established 3-phase layered delivery pattern |
 | v1.1 | 1 | 2 | UAT-driven iteration loop; milestone audit before archival |
+| v1.2 | 3 | 7 | Playwright UAT automation; gap-closure plan cycle; cross-browser real-time verification |
 
 ### Top Lessons (Verified Across Milestones)
 
-1. Traceability tables (ROADMAP progress + REQUIREMENTS checkboxes) consistently fall out of sync — confirmed in both v1.0 and v1.1. Need enforcement at plan completion.
-2. Zero-deviation plan execution is achievable when scope is well-defined — all 7 plans across both milestones executed as written (UAT refinements are post-plan).
+1. Traceability tables (ROADMAP progress + REQUIREMENTS checkboxes) consistently fall out of sync — confirmed in v1.0, v1.1, and v1.2. Need enforcement at plan completion.
+2. Zero-deviation plan execution is achievable when scope is well-defined — all 14 plans across 3 milestones executed as written (UAT refinements are post-plan).
+3. Display transform bugs (startCase, etc.) that touch API call paths are a recurring risk class — worth a standing checklist item in UI phase plans.

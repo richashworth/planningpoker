@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import axios from 'axios';
-import { API_ROOT_URL } from '../config/Constants';
+import { useState, useEffect } from 'react'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import axios from 'axios'
+import { API_ROOT_URL } from '../config/Constants'
 
 export default function Footer() {
-  const [appVersion, setAppVersion] = useState('');
+  const [appVersion, setAppVersion] = useState('')
 
   useEffect(() => {
-    axios.get(`${API_ROOT_URL}/version`)
-      .then(res => setAppVersion(res.data))
-      .catch(() => {});
-  }, []);
+    axios
+      .get(`${API_ROOT_URL}/version`)
+      .then((res) => setAppVersion(res.data))
+      .catch(() => {})
+  }, [])
 
   return (
     <Box
@@ -31,5 +32,5 @@ export default function Footer() {
         {appVersion ? `v${appVersion}` : ''} &copy; Rich Ashworth
       </Typography>
     </Box>
-  );
+  )
 }

@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Milestone v1.1 complete
-last_updated: "2026-04-08T20:44:29.420Z"
-last_activity: 2026-04-08 -- Phase 08 execution started
+stopped_at: "Completed quick task 260407-s6r: add fully automated GitHub releases on every master push"
+last_updated: "2026-04-07T19:21:40.092Z"
+last_activity: "2026-04-07 - Completed quick task 260407-q9i: Add linting and formatting enforcement (ESLint + Prettier + Spotless + CI gates + pre-commit hooks)"
 progress:
   percent: 0
 ---
@@ -17,14 +17,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
-**Current focus:** Phase 08 — session-labels-csv-export
+**Current focus:** Phase 07 — host-ui-notifications
 
 ## Current Position
 
-Phase: 08 (session-labels-csv-export) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 08
-Last activity: 2026-04-08 -- Phase 08 execution started
+Phase: 999.1
+Plan: Not started
+Status: Executing Phase 07
+Last activity: 2026-04-07 - Completed quick task 260407-s6r: Add fully automated GitHub releases via semantic-release
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -36,13 +36,9 @@ See PROJECT.md Key Decisions table for full log.
 
 - [Phase quick]: semantic-release v24 with commit-analyzer + github plugins; no npm publish or git-back commits; tagFormat v${version} matches existing tag convention
 
-### Roadmap Evolution
-
-- Phase 8 added: Session Labels & CSV Export
-
 ### Pending Todos
 
-1 pending — see `.planning/todos/pending/` for details.
+4 pending — see `.planning/todos/pending/` for details.
 
 ### Blockers/Concerns
 
@@ -59,9 +55,15 @@ None.
 | 260405-13o | Rename STORY_POINTS back to FIBONACCI and cap at 13 | 2026-04-05 | 1e639be | [260405-13o-rename-story-points-back-to-fibonacci-an](./quick/260405-13o-rename-story-points-back-to-fibonacci-an/) |
 | 260405-cid | Move dark/light toggle from header to footer, merge Session label into chip | 2026-04-05 | 44ed94e | [260405-cid-move-dark-light-toggle-from-header-to-fo](./quick/260405-cid-move-dark-light-toggle-from-header-to-fo/) |
 | 260405-dhh | Change app title font from Sora to Lobster | 2026-04-05 | ed4dc7c | [260405-dhh-change-app-title-font-in-header-jsx-from](./quick/260405-dhh-change-app-title-font-in-header-jsx-from/) |
+| 260407-d2v | fix duplicate player names in votes table | 2026-04-07 | 5fa65c7 | [260407-d2v-fix-duplicate-player-names-in-votes-tabl](./quick/260407-d2v-fix-duplicate-player-names-in-votes-tabl/) |
+| 260407-q9i | Add linting and formatting enforcement for frontend (ESLint + Prettier) and backend (Java via Spotless), with CI gates for both | 2026-04-07 | 03dd69f | [260407-q9i-add-linting-and-formatting-enforcement-f](./quick/260407-q9i-add-linting-and-formatting-enforcement-f/) |
+| 260407-s6r | Add fully automated GitHub releases on every green master push using semantic-release | 2026-04-07 | a2f7834 | [260407-s6r-add-fully-automated-github-releases-on-e](./quick/260407-s6r-add-fully-automated-github-releases-on-e/) |
+| 260407-tk3 | Fix graceful session handling after server restart — detect reconnect and validate session still exists | 2026-04-07 | b77edf2 | [260407-tk3-fix-graceful-session-handling-after-serv](./quick/260407-tk3-fix-graceful-session-handling-after-serv/) |
+| 260407-x1g | Fix todo 002: increase contrast on estimation scheme selector cards | 2026-04-07 | 554346b | [260407-x1g-fix-todo-002-increase-contrast-on-estima](./quick/260407-x1g-fix-todo-002-increase-contrast-on-estima/) |
+| 260407-x87 | Remove unused React imports and unused runThunk variable causing ESLint warnings | 2026-04-07 | f7c86b1 | [260407-x87-remove-unused-react-imports-and-unused-r](./quick/260407-x87-remove-unused-react-imports-and-unused-r/) |
 
 ## Session Continuity
 
-Last session: 2026-04-05
-Stopped at: Milestone v1.1 complete
-Resume file: N/A
+Last session: 2026-04-07T19:21:36.410Z
+Stopped at: Completed quick task 260407-s6r: add fully automated GitHub releases on every master push
+Resume file: None

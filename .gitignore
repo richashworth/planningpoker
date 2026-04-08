@@ -14,6 +14,9 @@ node_modules/
 .vscode/
 .project
 .settings/
+.classpath
+.factorypath
+.metals/
 bin/
 
 # Claude / AI tooling
@@ -29,6 +32,12 @@ test-results/
 # Java
 *.class
 hs_err_pid*
+
+# TLA+ generated outputs
+*.aux
+*.log
+*.pdf
+*.tex
 
 # Gradle wrapper jar is tracked
 !gradle-wrapper.jar

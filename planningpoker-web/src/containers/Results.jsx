@@ -1,21 +1,28 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import ResultsTable from './ResultsTable';
-import ResultsChart from './ResultsChart';
-import { resetSession } from '../actions';
+import { useSelector, useDispatch } from 'react-redux'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
+import ResultsTable from './ResultsTable'
+import ResultsChart from './ResultsChart'
+import { resetSession } from '../actions'
 
 export default function Results() {
-  const dispatch = useDispatch();
-  const isAdmin = useSelector(state => state.game.isAdmin);
-  const sessionId = useSelector(state => state.game.sessionId);
-  const playerName = useSelector(state => state.game.playerName);
+  const dispatch = useDispatch()
+  const isAdmin = useSelector((state) => state.game.isAdmin)
+  const sessionId = useSelector((state) => state.game.sessionId)
+  const playerName = useSelector((state) => state.game.playerName)
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 42, mb: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          minHeight: 42,
+          mb: 3,
+        }}
+      >
         <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
           Results
         </Typography>
@@ -31,7 +38,15 @@ export default function Results() {
           </Button>
         )}
       </Box>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start', minHeight: 300 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
+          gap: 3,
+          alignItems: 'start',
+          minHeight: 300,
+        }}
+      >
         <Box>
           <Box
             sx={{
@@ -49,5 +64,5 @@ export default function Results() {
         <ResultsTable />
       </Box>
     </Box>
-  );
+  )
 }

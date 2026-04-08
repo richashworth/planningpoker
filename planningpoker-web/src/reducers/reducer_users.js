@@ -1,13 +1,13 @@
-import {LEAVE_GAME, USERS_UPDATED} from '../actions'
+import { LEAVE_GAME, USERS_UPDATED } from '../actions'
 
-const initialUsersState = [];
+const initialUsersState = []
 
 export default function (state = initialUsersState, action) {
   switch (action.type) {
     case USERS_UPDATED:
-      return action.payload;
+      return action.payload.users || action.payload
     case LEAVE_GAME:
-      return [];
+      return []
     default:
       return state
   }

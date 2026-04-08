@@ -22,11 +22,11 @@ Hosts can pick an estimation scheme when creating a game, and all participants s
 
 ## Current State
 
-Shipped v1.0 (Estimation Schemes) on 2026-04-04, v1.1 (CreateGame Redesign) on 2026-04-05.
+Shipped v1.0 (Estimation Schemes) on 2026-04-04, v1.1 (CreateGame Redesign) on 2026-04-05. v1.2 Phases 5, 6, and 7 complete on 2026-04-06.
 
-- **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets to value lists; SchemeConfig record carries scheme metadata per session. No host concept server-side — session creator is only tracked on the frontend.
-- **Frontend:** React 18 + MUI v5 + Redux 4. CreateGame uses tile grid (SchemeTile component) with MUI rounded icons, names, and value chips. 2-column desktop / 3-column icon-only mobile responsive layout. Stripe-style shadow design. Card Preview section removed.
-- **API:** createSession/joinSession return JSON with scheme metadata. VoteController validates votes per-session (not hardcoded).
+- **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets to value lists; SchemeConfig record carries scheme metadata per session. Host identity tracked server-side in SessionManager via `sessionHosts` ConcurrentHashMap — first registered user is host, auto-promotes on departure. Host can kick participants (POST /kick) and transfer host (POST /promote) with 403 enforcement for non-hosts via HostActionException. `removeUser` is now case-insensitive (equalsIgnoreCase) matching `removeEstimate`.
+- **Frontend:** React 18 + MUI v5 + Redux 4. CreateGame uses tile grid (SchemeTile component) with MUI rounded icons, names, and value chips. 2-column desktop / 3-column icon-only mobile responsive layout. Stripe-style shadow design. Card Preview section removed. UsersTable shows gold star (StarRounded) on host row, kick/promote icons on non-host rows (host only). Original usernames preserved for all API calls; startCase applied only in display JSX. Kicked users redirected to Welcome with sessionStorage-bridge toast notification.
+- **API:** createSession/joinSession return JSON with scheme metadata and `host` field. Users WebSocket payload enriched to `{users, host}` map. VoteController validates votes per-session (not hardcoded). POST /kick and /promote endpoints with host authorization and WebSocket broadcast.
 - **Stats:** ~4,355 lines added across 2 milestones (v1.0: 3 phases/5 plans, v1.1: 1 phase/2 plans).
 
 ## Requirements
@@ -48,6 +48,10 @@ Shipped v1.0 (Estimation Schemes) on 2026-04-04, v1.1 (CreateGame Redesign) on 2
 - ✓ Unsure toggle switch (Coffee toggle removed by design) — v1.1
 - ✓ Card Preview section removed — v1.1
 - ✓ Backwards compatibility: default Fibonacci, all e2e tests pass, API unchanged — v1.1
+- ✓ Host star indicator visible to all participants — v1.2 Phase 7
+- ✓ Host kick/promote controls on non-host rows only — v1.2 Phase 7
+- ✓ Kicked user redirected to Welcome with toast notification — v1.2 Phase 7
+- ✓ Promote transfers host in real-time across all participant views — v1.2 Phase 7
 
 ### Active
 
@@ -116,4 +120,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-06 after v1.2 milestone started*
+*Last updated: 2026-04-06 after Phase 7 (Host UI & Notifications) complete — all 5 UAT items verified via automated Playwright session*

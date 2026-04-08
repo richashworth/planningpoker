@@ -16,7 +16,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           mui: ['@mui/material', '@emotion/react', '@emotion/styled'],
-          redux: ['redux', 'react-redux', 'redux-promise'],
+          redux: ['redux', 'react-redux', 'redux-thunk'],
           charts: ['chart.js', 'react-chartjs-2'],
         },
       },
@@ -34,6 +34,8 @@ export default defineConfig({
       '/sessions': 'http://localhost:9000',
       '/sessionUsers': 'http://localhost:9000',
       '/version': 'http://localhost:9000',
+      '/kick': 'http://localhost:9000',
+      '/promote': 'http://localhost:9000',
       '/stomp': {
         target: 'http://localhost:9000',
         ws: true,

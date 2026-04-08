@@ -1,16 +1,15 @@
 package com.richashworth.planningpoker.util;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+import org.junit.jupiter.api.Test;
 
 class ClockTest {
 
-    private final Clock clock = new Clock();
+  private final Clock clock = new Clock();
 
-    @Test
-    void testPause() {
-        assertDoesNotThrow(() -> clock.pause(1L));
-    }
-
+  @Test
+  void testPause() {
+    assertDoesNotThrow(() -> clock.pause(1L));
+  }
 }

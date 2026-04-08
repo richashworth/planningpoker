@@ -7,13 +7,13 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = PlanningPokerApplication.class)
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-    "spring.main.allow-bean-definition-overriding=true",
-    "spring.main.banner-mode=off"
-})
+@TestPropertySource(
+    properties = {
+      "spring.main.allow-bean-definition-overriding=true",
+      "spring.main.banner-mode=off"
+    })
 class PlanningPokerApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+  @Test
+  void contextLoads() {}
 }

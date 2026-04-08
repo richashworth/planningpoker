@@ -1,50 +1,50 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Tooltip from '@mui/material/Tooltip';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import CheckIcon from '@mui/icons-material/Check';
-import LogoutIcon from '@mui/icons-material/Logout';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
-import startCase from 'lodash/startCase';
-import { leaveGame } from '../actions';
-import { useColorMode } from '../App';
-import Logo from '../components/Logo';
+import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import Tooltip from '@mui/material/Tooltip'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import CheckIcon from '@mui/icons-material/Check'
+import LogoutIcon from '@mui/icons-material/Logout'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
+import startCase from 'lodash/startCase'
+import { leaveGame } from '../actions'
+import { useColorMode } from '../App'
+import Logo from '../components/Logo'
 
 export default function Header() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const sessionId = useSelector(state => state.game.sessionId);
-  const playerName = useSelector(state => state.game.playerName);
-  const { toggleColorMode, mode } = useColorMode();
-  const [copied, setCopied] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const sessionId = useSelector((state) => state.game.sessionId)
+  const playerName = useSelector((state) => state.game.playerName)
+  const { toggleColorMode, mode } = useColorMode()
+  const [copied, setCopied] = useState(false)
+  const [anchorEl, setAnchorEl] = useState(null)
 
   const handleLogout = () => {
-    setAnchorEl(null);
-    dispatch(leaveGame(playerName, sessionId, () => navigate('/')));
-  };
+    setAnchorEl(null)
+    dispatch(leaveGame(playerName, sessionId, () => navigate('/')))
+  }
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(sessionId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    navigator.clipboard.writeText(sessionId)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <AppBar
@@ -57,7 +57,18 @@ export default function Header() {
     >
       <Toolbar>
         <Logo size={48} sx={{ mr: 2 }} />
-        <Typography variant="h5" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 500, fontFamily: '"Lobster", cursive', letterSpacing: 'normal', color: '#fff' }}>
+        <Typography
+          variant="h5"
+          noWrap
+          component="div"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            fontWeight: 500,
+            fontFamily: '"Lobster", cursive',
+            letterSpacing: 'normal',
+            color: '#fff',
+          }}
+        >
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
@@ -77,10 +88,11 @@ export default function Header() {
               size="small"
               deleteIcon={
                 <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
-                  {copied
-                    ? <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />
-                    : <ContentCopyIcon sx={{ fontSize: 14 }} />
-                  }
+                  {copied ? (
+                    <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />
+                  ) : (
+                    <ContentCopyIcon sx={{ fontSize: 14 }} />
+                  )}
                 </Tooltip>
               }
               onDelete={handleCopy}
@@ -99,7 +111,6 @@ export default function Header() {
                 },
               }}
             />
-            <Box sx={{ width: '1px', height: 20, bgcolor: 'rgba(255,255,255,0.25)', mx: 1 }} />
             <Button
               onClick={(e) => setAnchorEl(e.currentTarget)}
               endIcon={<ArrowDropDownIcon />}
@@ -120,7 +131,13 @@ export default function Header() {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <MenuItem component="a" href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/" target="_blank" rel="noopener noreferrer" onClick={() => setAnchorEl(null)}>
+              <MenuItem
+                component="a"
+                href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setAnchorEl(null)}
+              >
                 <ListItemIcon sx={{ minWidth: 36 }}>
                   <InfoOutlinedIcon fontSize="small" />
                 </ListItemIcon>
@@ -138,5 +155,5 @@ export default function Header() {
         ) : null}
       </Toolbar>
     </AppBar>
-  );
+  )
 }

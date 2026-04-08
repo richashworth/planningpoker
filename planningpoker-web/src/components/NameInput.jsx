@@ -1,5 +1,4 @@
-import React from 'react';
-import TextField from '@mui/material/TextField';
+import TextField from '@mui/material/TextField'
 
 export default function NameInput({ playerName, onPlayerNameInputChange }) {
   return (
@@ -16,5 +15,5 @@ export default function NameInput({ playerName, onPlayerNameInputChange }) {
       }}
       sx={{ mb: 2.5 }}
     />
-  );
+  )
 }

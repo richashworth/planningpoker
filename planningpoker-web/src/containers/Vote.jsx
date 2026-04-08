@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { vote } from '../actions';
-import UsersTable from './UsersTable';
+import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { vote, voteOptimistic } from '../actions'
+import UsersTable from './UsersTable'
 
 function cardSx(isSelected, isDisabled) {
   return {
@@ -27,36 +27,39 @@ function cardSx(isSelected, isDisabled) {
       transform: 'scale(1.04)',
       boxShadow: (t) => `0 4px 16px ${t.palette.primary.main}40`,
     }),
-    ...(!isDisabled && !isSelected && {
-      '&:hover': {
-        borderColor: 'primary.main',
-        transform: 'translateY(-3px)',
-        boxShadow: (t) => t.palette.mode === 'dark'
-          ? '0 8px 24px rgba(102,126,234,0.15)'
-          : '0 8px 24px rgba(102,126,234,0.12)',
-      },
-      '&:active': {
-        transform: 'translateY(0) scale(0.98)',
-        transition: 'all 0.1s ease',
-      },
-    }),
-  };
+    ...(!isDisabled &&
+      !isSelected && {
+        '&:hover': {
+          borderColor: 'primary.main',
+          transform: 'translateY(-3px)',
+          boxShadow: (t) =>
+            t.palette.mode === 'dark'
+              ? '0 8px 24px rgba(102,126,234,0.15)'
+              : '0 8px 24px rgba(102,126,234,0.12)',
+        },
+        '&:active': {
+          transform: 'translateY(0) scale(0.98)',
+          transition: 'all 0.1s ease',
+        },
+      }),
+  }
 }
 
 export default function Vote() {
-  const dispatch = useDispatch();
-  const sessionId = useSelector(state => state.game.sessionId);
-  const playerName = useSelector(state => state.game.playerName);
-  const legalEstimates = useSelector(state => state.game.legalEstimates);
-  const [selected, setSelected] = useState(null);
+  const dispatch = useDispatch()
+  const sessionId = useSelector((state) => state.game.sessionId)
+  const playerName = useSelector((state) => state.game.playerName)
+  const legalEstimates = useSelector((state) => state.game.legalEstimates)
+  const [selected, setSelected] = useState(null)
 
   const doVote = (val) => {
-    if (selected) return;
-    setSelected(val);
-    dispatch(vote(playerName, sessionId, val));
-  };
+    if (selected) return
+    setSelected(val)
+    dispatch(voteOptimistic(playerName, val))
+    dispatch(vote(playerName, sessionId, val))
+  }
 
-  const allValues = legalEstimates;
+  const allValues = legalEstimates
 
   return (
     <Box>
@@ -65,7 +68,15 @@ export default function Vote() {
           Cast your estimate
         </Typography>
       </Box>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 240px' }, gap: 3, alignItems: 'start', minHeight: 300 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
+          gap: 3,
+          alignItems: 'start',
+          minHeight: 300,
+        }}
+      >
         <Box
           sx={{
             display: 'grid',
@@ -73,7 +84,7 @@ export default function Vote() {
             gap: 0.75,
           }}
         >
-          {allValues.map(val => (
+          {allValues.map((val) => (
             <Box
               key={val}
               role="button"
@@ -84,7 +95,12 @@ export default function Vote() {
                 ...(val === '\u2615' && { fontSize: '1.5rem' }),
               }}
               onClick={() => doVote(val)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doVote(val); } }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  doVote(val)
+                }
+              }}
             >
               {val}
             </Box>
@@ -93,5 +109,5 @@ export default function Vote() {
         <UsersTable heading="Players" />
       </Box>
     </Box>
-  );
+  )
 }
