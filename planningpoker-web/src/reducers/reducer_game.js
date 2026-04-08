@@ -2,7 +2,9 @@ import {
   CREATE_GAME,
   GAME_CREATED,
   JOIN_GAME,
+  LABEL_UPDATED,
   LEAVE_GAME,
+  RESET_SESSION,
   USER_REGISTERED,
   USERS_UPDATED,
   KICKED,
@@ -18,6 +20,7 @@ const initialGameState = {
   includeUnsure: true,
   host: '',
   kickedMessage: '',
+  currentLabel: '',
 }
 
 export default function (state = initialGameState, action) {
@@ -50,6 +53,10 @@ export default function (state = initialGameState, action) {
       }
     case USERS_UPDATED:
       return { ...state, host: action.payload.host || '' }
+    case LABEL_UPDATED:
+      return { ...state, currentLabel: action.payload || '' }
+    case RESET_SESSION:
+      return { ...state, currentLabel: '' }
     case KICKED:
       return {
         ...initialGameState,

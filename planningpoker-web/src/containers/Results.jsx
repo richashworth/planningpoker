@@ -11,6 +11,7 @@ export default function Results() {
   const isAdmin = useSelector((state) => state.game.isAdmin)
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
+  const currentLabel = useSelector((state) => state.game.currentLabel)
 
   return (
     <Box>
@@ -20,7 +21,7 @@ export default function Results() {
           alignItems: 'center',
           justifyContent: 'space-between',
           minHeight: 42,
-          mb: 3,
+          mb: currentLabel ? 1 : 3,
         }}
       >
         <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
@@ -38,6 +39,11 @@ export default function Results() {
           </Button>
         )}
       </Box>
+      {currentLabel && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          {currentLabel}
+        </Typography>
+      )}
       <Box
         sx={{
           display: 'grid',
