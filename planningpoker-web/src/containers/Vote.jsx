@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -56,6 +56,10 @@ export default function Vote() {
   const [selected, setSelected] = useState(null)
   const [labelInput, setLabelInput] = useState(currentLabel)
   const debounceRef = useRef(null)
+
+  useEffect(() => {
+    setLabelInput(currentLabel)
+  }, [currentLabel])
 
   const handleLabelChange = (e) => {
     const value = e.target.value

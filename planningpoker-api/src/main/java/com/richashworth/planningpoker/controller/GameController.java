@@ -145,8 +145,28 @@ public class GameController {
       validateSessionMembership(sessionId, userName);
       logger.info("{} has reset session {}", userName, sessionId);
       sessionManager.resetSession(sessionId);
-      messagingUtils.burstResultsMessages(sessionId);
     }
+    messagingUtils.burstResultsMessages(sessionId);
+  }
+
+  @PostMapping("setLabel")
+  public void setLabel(
+      @RequestParam(name = "sessionId") final String sessionId,
+      @RequestParam(name = "userName") final String userName,
+      @RequestParam(name = "label") final String label) {
+    if (label != null && label.length() > 100) {
+      throw new IllegalArgumentException("label must not exceed 100 characters");
+    }
+    String sanitized = label == null ? "" : label.replaceAll("[\\p{Cntrl}]", "");
+    synchronized (sessionManager) {
+      validateSessionMembership(sessionId, userName);
+      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+        throw new HostActionException("only the host can perform this action");
+      }
+      sessionManager.setLabel(sessionId, sanitized);
+      logger.info("{} has set label for session {}", userName, sessionId);
+    }
+    messagingUtils.burstResultsMessages(sessionId);
   }
 
   @PostMapping("setLabel")

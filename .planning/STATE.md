@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Completed quick task 260407-s6r: add fully automated GitHub releases on every master push"
-last_updated: "2026-04-08T21:27:44.809Z"
+last_updated: "2026-04-08T22:05:04.082Z"
 last_activity: 2026-04-08
 progress:
   total_phases: 2
@@ -18,19 +18,16 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-06)
+See: .planning/PROJECT.md (updated 2026-04-08)
 
-**Core value:** Hosts can pick an estimation scheme when creating a game, and all participants see the correct cards for that session.
-**Current focus:** Phase 07 — host-ui-notifications
+**Core value:** Teams can run a complete estimation session — pick a scheme, vote on multiple items with labels, review consensus, and export results — all in real time with no signup.
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
-Status: Executing Phase 07
+Milestone: v1.3 complete (shipped 2026-04-08)
+Status: Between milestones
 Last activity: 2026-04-08
-
-Progress: [░░░░░░░░░░] 0%
 
 ## Accumulated Context
 

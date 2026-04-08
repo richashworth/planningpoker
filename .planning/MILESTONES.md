@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.3 Session Labels & CSV Export (Shipped: 2026-04-08)
+
+**Phases completed:** 1 phase, 2 plans
+**Stats:** 27 files changed, +1,507 / -31 lines
+
+**Key accomplishments:**
+
+- Round labelling: host sets label via debounced TextField, broadcast to all via enriched WebSocket payload
+- Auto-majority consensus with host override dropdown on Results screen
+- Round history accumulates across resets in Redux (reducer_rounds.js)
+- Client-side CSV export with per-player votes, stats, timestamps, and formula injection protection
+- Tech debt cleanup: Vote.jsx stale state sync, burstResultsMessages moved outside synchronized block
+
+---
+
 ## v1.2 Host Management (Shipped: 2026-04-06)
 
 **Phases completed:** 3 phases, 7 plans, 10 tasks
