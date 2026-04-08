@@ -49,8 +49,20 @@ export default function Results() {
   }
 
   const handleExportCsv = () => {
-    const allPlayers = [...new Set(rounds.flatMap((r) => r.votes.map((v) => v.userName)))].sort()
-    const csv = generateCsv(rounds, allPlayers)
+    const stats = calcStats(results)
+    const currentRound = {
+      label: currentLabel,
+      consensus: consensusOverride || calcConsensus(results),
+      votes: [...results],
+      timestamp: new Date().toISOString(),
+      mode: stats.mode,
+      min: stats.min,
+      max: stats.max,
+      variance: stats.variance,
+    }
+    const allRounds = [...rounds, currentRound]
+    const allPlayers = [...new Set(allRounds.flatMap((r) => r.votes.map((v) => v.userName)))].sort()
+    const csv = generateCsv(allRounds, allPlayers)
     downloadCsv(csv, `planning-poker-${sessionId}.csv`)
   }
 
