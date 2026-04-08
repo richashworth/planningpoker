@@ -33,8 +33,10 @@ public class MessagingUtils {
   }
 
   public void sendResultsMessage(String sessionId) {
-    template.convertAndSend(
-        getTopic(TOPIC_RESULTS, sessionId), resultsMessage(sessionManager.getResults(sessionId)));
+    Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("results", sessionManager.getResults(sessionId));
+    payload.put("label", sessionManager.getLabel(sessionId));
+    template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), resultsMessage(payload));
   }
 
   public void sendUsersMessage(String sessionId) {

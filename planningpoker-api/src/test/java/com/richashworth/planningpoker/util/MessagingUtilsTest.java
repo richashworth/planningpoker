@@ -45,9 +45,13 @@ class MessagingUtilsTest {
   @Test
   void testSendResultsMessage() {
     when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("");
     messagingUtils.sendResultsMessage(SESSION_ID);
+    Map<String, Object> expectedPayload = new LinkedHashMap<>();
+    expectedPayload.put("results", RESULTS);
+    expectedPayload.put("label", "");
     verifyMessageSent(
-        1, getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(RESULTS));
+        1, getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(expectedPayload));
   }
 
   @Test
@@ -95,14 +99,18 @@ class MessagingUtilsTest {
   @Test
   void testBurstResultsMessages() {
     when(sessionManager.getResults(SESSION_ID)).thenReturn(RESULTS);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("");
     messagingUtils.burstResultsMessages(SESSION_ID);
     for (long latency : LATENCIES) {
       verify(clock, times(1)).pause(latency);
     }
+    Map<String, Object> expectedPayload = new LinkedHashMap<>();
+    expectedPayload.put("results", RESULTS);
+    expectedPayload.put("label", "");
     verifyMessageSent(
         LATENCIES.length,
         getTopic(TOPIC_RESULTS, SESSION_ID),
-        messagingUtils.resultsMessage(RESULTS));
+        messagingUtils.resultsMessage(expectedPayload));
   }
 
   @Test

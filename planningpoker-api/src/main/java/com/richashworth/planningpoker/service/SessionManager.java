@@ -32,6 +32,7 @@ public class SessionManager {
   private final ConcurrentHashMap<String, SchemeConfig> sessionSchemeConfigs =
       new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, String> sessionHosts = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, String> sessionLabels = new ConcurrentHashMap<>();
 
   public boolean isSessionActive(final String sessionId) {
     return activeSessions.contains(sessionId);
@@ -87,6 +88,16 @@ public class SessionManager {
     sessionHosts.put(sessionId, userName);
   }
 
+  public void setLabel(String sessionId, String label) {
+    String trimmed = label == null ? "" : label.substring(0, Math.min(label.length(), 100));
+    sessionLabels.put(sessionId, trimmed);
+    touchSession(sessionId);
+  }
+
+  public String getLabel(String sessionId) {
+    return sessionLabels.getOrDefault(sessionId, "");
+  }
+
   public void promoteHost(String sessionId, String targetUser) {
     if (!com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase(
         sessionUsers.get(sessionId), targetUser)) {
@@ -118,10 +129,12 @@ public class SessionManager {
     sessionLegalValues.clear();
     sessionSchemeConfigs.clear();
     sessionHosts.clear();
+    sessionLabels.clear();
   }
 
   public void resetSession(final String sessionId) {
     sessionEstimates.removeAll(sessionId);
+    sessionLabels.remove(sessionId);
     touchSession(sessionId);
   }
 
@@ -176,6 +189,7 @@ public class SessionManager {
       sessionLegalValues.remove(sessionId);
       sessionSchemeConfigs.remove(sessionId);
       sessionHosts.remove(sessionId);
+      sessionLabels.remove(sessionId);
     }
     if (!toEvict.isEmpty()) {
       logger.info("Evicted {} idle session(s)", toEvict.size());

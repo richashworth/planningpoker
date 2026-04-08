@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { vote, voteOptimistic } from '../actions'
+import TextField from '@mui/material/TextField'
+import { vote, voteOptimistic, setLabel } from '../actions'
 import UsersTable from './UsersTable'
 
 function cardSx(isSelected, isDisabled) {
@@ -49,8 +50,21 @@ export default function Vote() {
   const dispatch = useDispatch()
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
+  const isAdmin = useSelector((state) => state.game.isAdmin)
+  const currentLabel = useSelector((state) => state.game.currentLabel)
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
   const [selected, setSelected] = useState(null)
+  const [labelInput, setLabelInput] = useState(currentLabel)
+  const debounceRef = useRef(null)
+
+  const handleLabelChange = (e) => {
+    const value = e.target.value
+    setLabelInput(value)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      dispatch(setLabel(playerName, sessionId, value))
+    }, 300)
+  }
 
   const doVote = (val) => {
     if (selected) return
@@ -63,10 +77,33 @@ export default function Vote() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 42, mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 42, mb: 1 }}>
         <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
           Cast your estimate
         </Typography>
+      </Box>
+      <Box sx={{ mb: 3, minHeight: 32 }}>
+        {isAdmin ? (
+          <TextField
+            variant="standard"
+            placeholder="Round label (optional)"
+            fullWidth
+            size="small"
+            value={labelInput}
+            onChange={handleLabelChange}
+            inputProps={{ maxLength: 100 }}
+          />
+        ) : (
+          currentLabel && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontStyle: 'italic' }}
+            >
+              {currentLabel}
+            </Typography>
+          )
+        )}
       </Box>
       <Box
         sx={{
