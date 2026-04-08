@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import GamePane from '../containers/GamePane'
 import useStomp from '../hooks/useStomp'
-import { resultsUpdated, usersUpdated, kicked } from '../actions'
+import { resultsUpdated, usersUpdated, kicked, labelUpdated } from '../actions'
 import { API_ROOT_URL } from '../config/Constants'
 import axios from 'axios'
 
@@ -52,9 +52,15 @@ export default function PlayGame() {
     topics,
     onMessage: (msg) => {
       switch (msg.type) {
-        case 'RESULTS_MESSAGE':
+        case 'RESULTS_MESSAGE': {
           lastResultsTime.current = Date.now()
-          return dispatch(resultsUpdated(msg.payload, playerName))
+          // Backwards compat: old backend sends bare array; new backend sends { results, label }
+          const results = Array.isArray(msg.payload) ? msg.payload : msg.payload.results
+          const label = Array.isArray(msg.payload) ? undefined : msg.payload.label
+          dispatch(resultsUpdated(results, playerName))
+          if (label !== undefined) dispatch(labelUpdated(label))
+          return
+        }
         case 'USERS_MESSAGE':
           return dispatch(usersUpdated(msg.payload))
         default:

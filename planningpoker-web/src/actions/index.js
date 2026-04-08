@@ -15,6 +15,10 @@ export const PROMOTE_USER = 'promote-user'
 export const KICKED = 'kicked'
 export const VOTE = 'vote'
 export const VOTE_OPTIMISTIC = 'vote-optimistic'
+export const SET_LABEL = 'set-label'
+export const LABEL_UPDATED = 'label-updated'
+export const ROUND_COMPLETED = 'round-completed'
+export const SET_CONSENSUS_OVERRIDE = 'set-consensus-override'
 
 export const showError = (message) => ({ type: 'show-error', payload: message })
 export const clearError = () => ({ type: 'clear-error' })
@@ -34,6 +38,12 @@ export const resultsUpdated = (results, playerName) => ({
   payload: results,
   meta: { playerName: playerName },
 })
+
+export const labelUpdated = (label) => ({ type: LABEL_UPDATED, payload: label })
+
+export const roundCompleted = (round) => ({ type: ROUND_COMPLETED, payload: round })
+
+export const setConsensusOverride = (value) => ({ type: SET_CONSENSUS_OVERRIDE, payload: value })
 
 export const usersUpdated = (users) => ({ type: USERS_UPDATED, payload: users })
 
@@ -156,6 +166,21 @@ export function promoteUser(userName, targetUser, sessionId) {
     } catch (err) {
       dispatch({ type: PROMOTE_USER, payload: err, error: true })
       dispatch(showError(err.response?.data?.error || 'Failed to promote user'))
+    }
+  }
+}
+
+export function setLabel(userName, sessionId, label) {
+  return async (dispatch) => {
+    try {
+      await axios.post(
+        `${API_ROOT_URL}/setLabel`,
+        new URLSearchParams({ userName, sessionId, label }),
+      )
+      dispatch({ type: SET_LABEL })
+    } catch (err) {
+      dispatch({ type: SET_LABEL, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to set label'))
     }
   }
 }

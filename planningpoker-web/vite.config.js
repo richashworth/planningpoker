@@ -36,6 +36,7 @@ export default defineConfig({
       '/version': 'http://localhost:9000',
       '/kick': 'http://localhost:9000',
       '/promote': 'http://localhost:9000',
+      '/setLabel': 'http://localhost:9000',
       '/stomp': {
         target: 'http://localhost:9000',
         ws: true,

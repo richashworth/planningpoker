@@ -20,6 +20,7 @@ const initialState = {
   includeUnsure: true,
   host: '',
   kickedMessage: '',
+  currentLabel: '',
 }
 
 describe('game reducer', () => {
