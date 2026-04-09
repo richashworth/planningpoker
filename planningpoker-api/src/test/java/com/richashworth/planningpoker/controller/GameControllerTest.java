@@ -123,8 +123,8 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
     gameController.reset(SESSION_ID, USER_NAME);
     verify(sessionManager).resetSession(SESSION_ID);
+    verify(messagingUtils).sendResetNotification(SESSION_ID);
     verify(messagingUtils).burstResultsMessages(SESSION_ID);
-    verifyNoMoreInteractions(sessionManager);
   }
 
   @Test
@@ -260,6 +260,7 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
     gameController.reset(SESSION_ID, USER_NAME);
     verify(sessionManager).resetSession(SESSION_ID);
+    verify(messagingUtils).sendResetNotification(SESSION_ID);
     verify(messagingUtils).burstResultsMessages(SESSION_ID);
   }
 }

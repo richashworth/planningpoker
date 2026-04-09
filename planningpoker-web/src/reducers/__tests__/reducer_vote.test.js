@@ -86,6 +86,27 @@ describe('vote reducer', () => {
     })
   })
 
+  describe('non-host reset via WebSocket RESET_MESSAGE', () => {
+    it('returns to voting screen when RESET_SESSION arrives via WebSocket', () => {
+      let state = false
+
+      // Non-host votes
+      state = reducer(state, {
+        type: VOTE_OPTIMISTIC,
+        payload: { userName: 'alice', estimateValue: '5' },
+      })
+      expect(state).toBe(true)
+
+      // Results confirm
+      state = reducer(state, resultsAction([{ userName: 'alice', estimateValue: '5' }]))
+      expect(state).toBe(true)
+
+      // Host clicks "Next Item" — backend sends RESET_MESSAGE, frontend dispatches RESET_SESSION
+      state = reducer(state, { type: RESET_SESSION })
+      expect(state).toBe(false) // non-host should see voting screen
+    })
+  })
+
   describe('stale empty burst from prior reset', () => {
     it('does not flash back to vote screen after new round vote', () => {
       let state = false
