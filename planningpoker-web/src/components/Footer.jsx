@@ -29,7 +29,7 @@ export default function Footer() {
       }}
     >
       <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem' }}>
-        {appVersion ? `v${appVersion}` : ''} &copy; Rich Ashworth
+        {appVersion ? `v${appVersion}` : ''} &copy; {new Date().getFullYear()} Rich Ashworth
       </Typography>
     </Box>
   )
