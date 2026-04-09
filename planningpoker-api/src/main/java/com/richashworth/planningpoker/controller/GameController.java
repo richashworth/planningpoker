@@ -146,6 +146,7 @@ public class GameController {
       logger.info("{} has reset session {}", userName, sessionId);
       sessionManager.resetSession(sessionId);
     }
+    messagingUtils.sendResetNotification(sessionId);
     messagingUtils.burstResultsMessages(sessionId);
   }
 

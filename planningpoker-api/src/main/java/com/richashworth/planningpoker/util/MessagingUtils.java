@@ -62,6 +62,11 @@ public class MessagingUtils {
     }
   }
 
+  public void sendResetNotification(String sessionId) {
+    template.convertAndSend(
+        getTopic(TOPIC_RESULTS, sessionId), new Message(MessageType.RESET_MESSAGE, Map.of()));
+  }
+
   Message resultsMessage(Object payload) {
     return new Message(MessageType.RESULTS_MESSAGE, payload);
   }
@@ -72,7 +77,8 @@ public class MessagingUtils {
 
   private enum MessageType {
     USERS_MESSAGE,
-    RESULTS_MESSAGE
+    RESULTS_MESSAGE,
+    RESET_MESSAGE
   }
 
   private record Message(MessageType type, Object payload) {}

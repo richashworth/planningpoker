@@ -114,6 +114,12 @@ class MessagingUtilsTest {
   }
 
   @Test
+  void testSendResetNotification() {
+    messagingUtils.sendResetNotification(SESSION_ID);
+    verify(template).convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), any());
+  }
+
+  @Test
   void testBurstUsersMessages() {
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
     when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import GamePane from '../containers/GamePane'
 import useStomp from '../hooks/useStomp'
-import { resultsUpdated, usersUpdated, kicked, labelUpdated } from '../actions'
+import { resultsUpdated, usersUpdated, kicked, labelUpdated, RESET_SESSION } from '../actions'
 import { API_ROOT_URL } from '../config/Constants'
 import axios from 'axios'
 
@@ -61,6 +61,8 @@ export default function PlayGame() {
           if (label !== undefined) dispatch(labelUpdated(label))
           return
         }
+        case 'RESET_MESSAGE':
+          return dispatch({ type: RESET_SESSION })
         case 'USERS_MESSAGE':
           return dispatch(usersUpdated(msg.payload))
         default:
