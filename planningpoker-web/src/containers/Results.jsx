@@ -127,7 +127,7 @@ export default function Results() {
               size="small"
               startIcon={<DownloadIcon />}
               onClick={handleExportCsv}
-              disabled={rounds.length === 0}
+              disabled={rounds.length === 0 && results.length === 0}
             >
               Export CSV
             </Button>
