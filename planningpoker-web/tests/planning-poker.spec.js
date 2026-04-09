@@ -203,6 +203,34 @@ test.describe('Multi-User Flows', () => {
     await playerCtx.close();
   });
 
+  test('host clicking Next Item returns non-host to voting screen', async ({ browser }) => {
+    const hostCtx = await browser.newContext();
+    const hostPage = await hostCtx.newPage();
+    const sessionId = await hostGame(hostPage, 'Alice');
+
+    const playerCtx = await browser.newContext();
+    const playerPage = await playerCtx.newPage();
+    await joinGame(playerPage, 'Bob', sessionId);
+
+    // Both vote
+    await hostPage.getByText('5', { exact: true }).click();
+    await playerPage.getByText('8', { exact: true }).click();
+
+    // Both see results
+    await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 });
+    await expect(playerPage.getByText('Results')).toBeVisible({ timeout: 15000 });
+
+    // Host clicks Next Item
+    await hostPage.getByRole('button', { name: 'Next Item' }).click();
+
+    // Both should return to voting screen
+    await expect(hostPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 });
+    await expect(playerPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 });
+
+    await hostCtx.close();
+    await playerCtx.close();
+  });
+
   test('three users vote and all see results', async ({ browser }) => {
     const hostCtx = await browser.newContext();
     const hostPage = await hostCtx.newPage();
