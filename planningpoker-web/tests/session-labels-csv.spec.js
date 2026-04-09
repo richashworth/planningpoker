@@ -177,7 +177,7 @@ test.describe('Consensus', () => {
 })
 
 test.describe('CSV Export', () => {
-  test('export CSV button disabled until round completed', async ({
+  test('export CSV button enabled on first round with results', async ({
     browser,
   }) => {
     const hostCtx = await browser.newContext()
@@ -194,25 +194,10 @@ test.describe('CSV Export', () => {
 
     await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
-    // Export CSV button should be disabled (no completed rounds yet)
+    // Export CSV button should be enabled even on first round
     const exportBtn = hostPage.getByRole('button', { name: 'Export CSV' })
     await expect(exportBtn).toBeVisible()
-    await expect(exportBtn).toBeDisabled()
-
-    // Complete a round
-    await hostPage.getByRole('button', { name: 'Next Item' }).click()
-    await expect(hostPage.getByText('Cast your estimate')).toBeVisible({
-      timeout: 10000,
-    })
-
-    // Vote again to get back to results
-    await hostPage.getByText('3', { exact: true }).click()
-    await playerPage.getByText('3', { exact: true }).click()
-    await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-
-    // Now export should be enabled (1 completed round)
-    const exportBtn2 = hostPage.getByRole('button', { name: 'Export CSV' })
-    await expect(exportBtn2).toBeEnabled()
+    await expect(exportBtn).toBeEnabled()
 
     await hostCtx.close()
     await playerCtx.close()
