@@ -116,7 +116,7 @@ class MessagingUtilsTest {
   @Test
   void testSendResetNotification() {
     messagingUtils.sendResetNotification(SESSION_ID);
-    verify(template).convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), any());
+    verify(template).convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), (Object) any());
   }
 
   @Test
