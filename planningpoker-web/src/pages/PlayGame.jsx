@@ -19,6 +19,10 @@ export default function PlayGame() {
   const kickedMessage = useSelector((state) => state.game.kickedMessage)
   const lastResultsTime = useRef(0)
   const wasConnected = useRef(false)
+  // Tracks when the player was first confirmed in the session via a USERS_MESSAGE.
+  // Kicks are only honoured after a short grace period to ignore stale burst
+  // messages sent before the player joined (which may still arrive afterward).
+  const sessionConfirmedAt = useRef(0)
 
   useEffect(() => {
     if (!isUserRegistered) {
@@ -26,11 +30,21 @@ export default function PlayGame() {
     }
   }, [isUserRegistered, navigate])
 
-  // Detect kick: if registered user is no longer in the WS users list
+  // Detect kick: if registered user is no longer in the WS users list.
+  // Guards:
+  //   1. Only act after we have seen ourselves in the list at least once.
+  //   2. Allow a 4s grace window after that first confirmation to let any
+  //      stale burst messages (sent before we joined) finish arriving. Stale
+  //      bursts from the host's session-creation fire for up to ~2.7 s and
+  //      may contain only the host's name.
   useEffect(() => {
     if (!isUserRegistered || !sessionId || users.length === 0) return
     const inSession = users.some((u) => u.toLowerCase() === playerName.toLowerCase())
-    if (!inSession) {
+    if (inSession) {
+      if (!sessionConfirmedAt.current) {
+        sessionConfirmedAt.current = Date.now()
+      }
+    } else if (sessionConfirmedAt.current && Date.now() - sessionConfirmedAt.current > 4000) {
       dispatch(kicked())
     }
   }, [users, isUserRegistered, sessionId, playerName, dispatch])
