@@ -12,7 +12,7 @@ Improve session UX with deliberate label broadcast, accessible state transitions
 
 ### UX
 
-- [ ] **UX-01** — Host types round label locally in the TextField without broadcasting on every keystroke. Label broadcasts to all participants only when the host clicks a **Set** button or presses **Enter**. Replaces the current 300ms debounced live-typing dispatch at `planningpoker-web/src/containers/Vote.jsx:64-71`.
+- [x] **UX-01** — Host types round label locally in the TextField without broadcasting on every keystroke. Label broadcasts to all participants only when the host clicks a **Set** button or presses **Enter**. Replaces the current 300ms debounced live-typing dispatch at `planningpoker-web/src/containers/Vote.jsx:64-71`. *(completed 2026-04-10, plan 12-01)*
   - Empty submissions are allowed (clears the label)
   - Set button is disabled while input matches the last broadcast value (no-op prevention)
   - Non-host participants see the read-only label exactly as before
