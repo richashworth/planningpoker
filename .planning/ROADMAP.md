@@ -88,8 +88,8 @@
   4. Running a full session end-to-end against the fat JAR produces INFO-level output that contains zero session IDs, usernames, or vote values.
   5. All backend unit tests continue to pass; no test relies on scrubbed log content.
 **Plans**: 2 plans
-- [ ] 13-01-PLAN.md — LogSafeIds helper + scrub all logger calls + downgrade hot-path logs (LOG-01, LOG-02)
-- [ ] 13-02-PLAN.md — application.properties log level defaults with env overrides + regression guard test (LOG-03)
+- [x] 13-01-PLAN.md — LogSafeIds helper + scrub all logger calls + downgrade hot-path logs (LOG-01, LOG-02)
+- [x] 13-02-PLAN.md — application.properties log level defaults with env overrides + regression guard test (LOG-03)
 
 ## Backlog
 
@@ -120,4 +120,4 @@ Plans:
 | 10. Frontend Modernization | v1.4 | 1/1 | Complete    | 2026-04-09 |
 | 11. UI Hardening & Test Coverage | v1.4 | 1/1 | Complete    | 2026-04-09 |
 | 12. Frontend UX & Accessibility | v1.5 | 2/2 | Complete    | 2026-04-10 |
-| 13. Backend Logging Hygiene | v1.5 | 0/0 | Not started | - |
+| 13. Backend Logging Hygiene | v1.5 | 2/2 | Complete    | 2026-04-10 |
