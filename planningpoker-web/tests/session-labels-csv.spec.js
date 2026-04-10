@@ -486,6 +486,86 @@ test.describe('Accessibility announcements', () => {
     }
   })
 
+  test('no /setLabel network request fires while typing — only on Set', async ({
+    browser,
+  }) => {
+    const hostCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      await hostGame(hostPage, 'Alice')
+
+      // Record every POST to /setLabel
+      const setLabelRequests = []
+      hostPage.on('request', (req) => {
+        if (req.method() === 'POST' && req.url().includes('/setLabel')) {
+          setLabelRequests.push(req.url())
+        }
+      })
+
+      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
+      await expect(labelInput).toBeVisible()
+
+      // Type 20 characters one at a time — if legacy debounce logic were still
+      // around, it would fire /setLabel after each 300ms quiet window.
+      await labelInput.pressSequentially('Login page redesign!', { delay: 80 })
+
+      // Wait well past any plausible debounce window
+      await hostPage.waitForTimeout(2000)
+
+      // STRICT: zero broadcasts during pure typing
+      expect(
+        setLabelRequests.length,
+        `Expected 0 /setLabel POSTs during typing, got ${setLabelRequests.length}`,
+      ).toBe(0)
+
+      // Now explicitly click Set — exactly one POST should fire
+      await hostPage.getByRole('button', { name: 'Set round label' }).click()
+      await hostPage.waitForTimeout(500)
+      expect(setLabelRequests.length).toBe(1)
+    } finally {
+      await hostCtx.close()
+    }
+  })
+
+  test('live region appears in accessibility tree with correct role and live-ness', async ({
+    browser,
+  }) => {
+    const hostCtx = await browser.newContext()
+    const playerCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      const sessionId = await hostGame(hostPage, 'Alice')
+
+      const playerPage = await playerCtx.newPage()
+      await joinGame(playerPage, 'Bob', sessionId)
+      await waitForWsReady(playerPage, sessionId, 'Alice')
+
+      // Trigger reveal + consensus
+      await hostPage.getByText('5', { exact: true }).click()
+      await playerPage.getByText('5', { exact: true }).click()
+
+      // Wait for announcement text to populate
+      const liveRegion = hostPage.locator('[role="status"][aria-live="polite"]')
+      await expect(liveRegion).toContainText(/Votes revealed/, { timeout: 15000 })
+
+      // Snapshot the accessibility tree via getByRole — the ARIA contract is
+      // what screen readers actually consume. If role="status" isn't exposed
+      // on a node carrying the announcement text, VoiceOver/NVDA won't fire.
+      const statusByRole = hostPage.getByRole('status')
+      await expect(statusByRole).toHaveCount(1)
+      await expect(statusByRole).toContainText(/Votes revealed/)
+
+      // Belt-and-braces: aria-snapshot yaml should include the status role
+      // with the reveal text attached, matching what an AT would traverse.
+      const ariaSnapshot = await statusByRole.ariaSnapshot()
+      expect(ariaSnapshot).toMatch(/status/)
+      expect(ariaSnapshot).toMatch(/Votes revealed/)
+    } finally {
+      await hostCtx.close()
+      await playerCtx.close()
+    }
+  })
+
   test('consensus announcement appears in live region after reveal', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const playerCtx = await browser.newContext()
