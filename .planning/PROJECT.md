@@ -55,12 +55,12 @@ Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04
 - ✓ Dead `/topic/items/` WebSocket subscription removed — v1.4 Phase 10
 - ✓ Redux migrated to `configureStore` (Redux Toolkit); `redux-promise`/`createStore` removed — v1.4 Phase 10
 - ✓ `useStomp` hook unit tests cover connect, subscribe, reconnect, disconnect — v1.4 Phase 11
+- ✓ Label broadcast via Set button + Enter key (replaces 300ms-debounced live typing) — v1.5 Phase 12
+- ✓ `aria-live` announcements for vote reveal and consensus result — v1.5 Phase 12
 
 ### Active
 
 #### v1.5 UX & Polish
-- [ ] Label broadcast via Set button + Enter key (replaces 300ms-debounced live typing)
-- [ ] `aria-live` announcements for vote reveal and consensus result
 - [ ] Production logging audit — downgrade chatty hot-path logs, scrub session IDs/usernames/vote values, set appropriate prod log level
 
 ## Current Milestone: v1.5 UX & Polish
@@ -139,4 +139,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-10 after starting v1.5 milestone (UX & Polish)*
+*Last updated: 2026-04-10 after completing Phase 12 (Frontend UX & Accessibility)*
