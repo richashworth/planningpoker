@@ -73,8 +73,8 @@
   4. A screen reader user hears the consensus value announced (e.g., "Consensus: 5") on auto-majority detection and again on host override, debounced against rapid changes.
   5. All existing Playwright e2e tests still pass, plus new coverage for Set-button and Enter-key label submission.
 **Plans**: 2 plans
-- [ ] 12-01-PLAN.md — Explicit label submit (UX-01): Set button InputAdornment + Enter key, remove 300ms debounce
-- [ ] 12-02-PLAN.md — Screen reader announcements (A11Y-01, A11Y-02): LiveAnnouncer + reveal/consensus effects
+- [x] 12-01-PLAN.md — Explicit label submit (UX-01): Set button InputAdornment + Enter key, remove 300ms debounce
+- [x] 12-02-PLAN.md — Screen reader announcements (A11Y-01, A11Y-02): LiveAnnouncer + reveal/consensus effects
 **UI hint**: yes
 
 ### Phase 13: Backend Logging Hygiene
@@ -97,7 +97,7 @@
 
 **Requirements:** TBD
 
-**Plans:** 1/1 plans complete
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
@@ -117,5 +117,5 @@ Plans:
 | 9. Backend Concurrency & Cleanup | v1.4 | 2/2 | Complete | 2026-04-09 |
 | 10. Frontend Modernization | v1.4 | 1/1 | Complete    | 2026-04-09 |
 | 11. UI Hardening & Test Coverage | v1.4 | 1/1 | Complete    | 2026-04-09 |
-| 12. Frontend UX & Accessibility | v1.5 | 0/0 | Not started | - |
+| 12. Frontend UX & Accessibility | v1.5 | 2/2 | Complete    | 2026-04-10 |
 | 13. Backend Logging Hygiene | v1.5 | 0/0 | Not started | - |
