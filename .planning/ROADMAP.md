@@ -87,7 +87,9 @@
   3. `application.properties` sets a deliberate production log level (root INFO, application package INFO, hot-path classes WARN or env-configurable) and the setting is honored when running the packaged fat JAR.
   4. Running a full session end-to-end against the fat JAR produces INFO-level output that contains zero session IDs, usernames, or vote values.
   5. All backend unit tests continue to pass; no test relies on scrubbed log content.
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 13-01-PLAN.md — LogSafeIds helper + scrub all logger calls + downgrade hot-path logs (LOG-01, LOG-02)
+- [ ] 13-02-PLAN.md — application.properties log level defaults with env overrides + regression guard test (LOG-03)
 
 ## Backlog
 
