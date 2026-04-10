@@ -7,6 +7,7 @@
 - ✅ **v1.2 Host Management** — Phases 5-7 (shipped 2026-04-06) — [archive](milestones/v1.2-ROADMAP.md)
 - ✅ **v1.3 Session Labels & CSV Export** — Phase 8 (shipped 2026-04-08) — [archive](milestones/v1.3-ROADMAP.md)
 - ✅ **v1.4 Code Quality & Tech Debt** — Phases 9-11 (shipped 2026-04-10) — [archive](milestones/v1.4-ROADMAP.md)
+- ✅ **v1.5 UX & Polish** — Phases 12-13 (shipped 2026-04-10) — [archive](milestones/v1.5-ROADMAP.md)
 
 ## Phases
 
@@ -51,6 +52,14 @@
 
 </details>
 
+<details>
+<summary>✅ v1.5 UX & Polish (Phases 12-13) — SHIPPED 2026-04-10</summary>
+
+- [x] Phase 12: Frontend UX & Accessibility (2/2 plans) — completed 2026-04-10
+- [x] Phase 13: Backend Logging Hygiene (2/2 plans) — completed 2026-04-10
+
+</details>
+
 ## Backlog
 
 ### Phase 999.1: Chat drawer with host moderation (BACKLOG)
@@ -59,7 +68,7 @@
 
 **Requirements:** TBD
 
-**Plans:** 1/1 plans complete
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
@@ -79,3 +88,5 @@ Plans:
 | 9. Backend Concurrency & Cleanup | v1.4 | 2/2 | Complete | 2026-04-09 |
 | 10. Frontend Modernization | v1.4 | 1/1 | Complete    | 2026-04-09 |
 | 11. UI Hardening & Test Coverage | v1.4 | 1/1 | Complete    | 2026-04-09 |
+| 12. Frontend UX & Accessibility | v1.5 | 2/2 | Complete    | 2026-04-10 |
+| 13. Backend Logging Hygiene | v1.5 | 2/2 | Complete    | 2026-04-10 |

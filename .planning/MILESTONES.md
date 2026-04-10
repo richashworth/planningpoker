@@ -1,5 +1,21 @@
 # Milestones
 
+## v1.5 UX & Polish (Shipped: 2026-04-10)
+
+**Phases completed:** 2 phases, 4 plans
+**Stats:** 25 files changed, +2,193 / -217 lines | Git range: `774c090..323eda5`
+
+**Key accomplishments:**
+
+- Explicit label submit (UX-01): `Vote.jsx` Set button + Enter handler replaces 300ms debounced live-broadcast; empty submissions clear the label, Set disabled when input matches last broadcast
+- Screen-reader announcements (A11Y-01, A11Y-02): visually-hidden `LiveAnnouncer.jsx` aria-live region announces vote reveal ("Votes revealed: N of M") and consensus, deduped via `useRef` latches
+- PII scrubbing (LOG-01, LOG-02): `LogSafeIds` helper with unit tests; `GameController`, `VoteController`, `SessionManager` log statements scrubbed — no raw session IDs, usernames, or vote values at any level
+- Hot-path log downgrade: `MessagingUtils` burst messaging, `VoteController` dispatch, and per-message WebSocket activity moved from INFO to DEBUG; only lifecycle events remain at INFO
+- Production log config (LOG-03): deliberate default levels in `application.properties` with env-var overrides (`LOG_LEVEL_ROOT`, `LOG_LEVEL_SPRING`, `LOG_LEVEL_APP`, `LOG_LEVEL_HOTPATH`), honored by fat JAR
+- `LoggingHygieneTest` regression guard: AST-aware scanner prevents raw PII from re-entering logger calls
+
+---
+
 ## v1.4 Code Quality & Tech Debt (Shipped: 2026-04-10)
 
 **Phases completed:** 3 phases, 4 plans

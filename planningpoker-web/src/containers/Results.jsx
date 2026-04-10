@@ -13,7 +13,7 @@ import { resetSession, roundCompleted } from '../actions'
 import { calcConsensus, calcStats } from '../utils/consensus'
 import { generateCsv, downloadCsv } from '../utils/csvExport'
 
-export default function Results() {
+export default function Results({ consensusOverride, setConsensusOverride }) {
   const dispatch = useDispatch()
   const isAdmin = useSelector((state) => state.game.isAdmin)
   const sessionId = useSelector((state) => state.game.sessionId)
@@ -22,7 +22,6 @@ export default function Results() {
   const results = useSelector((state) => state.results)
   const rounds = useSelector((state) => state.rounds)
 
-  const [consensusOverride, setConsensusOverride] = useState(null)
   const [overrideOpen, setOverrideOpen] = useState(false)
 
   const autoConsensus = calcConsensus(results)

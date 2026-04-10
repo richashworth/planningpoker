@@ -10,7 +10,7 @@ Teams can run a complete estimation session — pick a scheme, vote on multiple 
 
 ## Current State
 
-Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04-05, v1.2 (Host Management) 2026-04-06, v1.3 (Session Labels & CSV Export) 2026-04-08, v1.4 (Code Quality & Tech Debt) 2026-04-10. Between milestones — planning next.
+Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04-05, v1.2 (Host Management) 2026-04-06, v1.3 (Session Labels & CSV Export) 2026-04-08, v1.4 (Code Quality & Tech Debt) 2026-04-10. v1.5 (UX & Polish) all phases complete 2026-04-10 — Phase 13 added LogSafeIds SHA-256 masking, downgraded hot-path logs, and a source-scan regression guard preventing raw PII in INFO/WARN/ERROR.
 
 - **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets; SchemeConfig record per session. Host identity in SessionManager via `sessionHosts` ConcurrentHashMap. POST /kick, /promote, /setLabel endpoints with HostActionException 403 enforcement. Session labels in `sessionLabels` ConcurrentHashMap, broadcast via enriched `{results, label}` WebSocket payload.
 - **Frontend:** React 18 + MUI v5 + Redux 4. Tile grid scheme selector. Host controls (kick/promote/label). Round labelling with debounced TextField. Auto-consensus Chip with host override. Round history in reducer_rounds.js. Client-side CSV export with formula injection protection.
@@ -55,10 +55,13 @@ Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04
 - ✓ Dead `/topic/items/` WebSocket subscription removed — v1.4 Phase 10
 - ✓ Redux migrated to `configureStore` (Redux Toolkit); `redux-promise`/`createStore` removed — v1.4 Phase 10
 - ✓ `useStomp` hook unit tests cover connect, subscribe, reconnect, disconnect — v1.4 Phase 11
+- ✓ Label broadcast via Set button + Enter key (replaces 300ms-debounced live typing) — v1.5 Phase 12
+- ✓ `aria-live` announcements for vote reveal and consensus result — v1.5 Phase 12
+- ✓ Production logging hygiene: LogSafeIds masking, hot-path downgrade, deliberate prod levels, regression guard test — v1.5 Phase 13
 
 ### Active
 
-(None — between milestones, planning next)
+_Between milestones — run `/gsd-new-milestone` to scope the next cycle._
 
 ### Out of Scope
 
@@ -95,6 +98,9 @@ Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04
 | Burst messaging snapshots into a pre-built Message once before async loop | Immune to post-read mutations; all 6 bursts send identical payload | ✓ Good |
 | Redux Toolkit `configureStore` (not full slice/RTK Query migration) | Scoped cleanup — kills `redux-promise` + `createStore` without destabilizing reducers | ✓ Good |
 | `useStomp` tests extend existing `simulateMount` helper (no jsdom) | Tests exercise hook logic directly via callback invocation; faster, simpler | ✓ Good |
+| SHA-256 first-8-hex masking via `LogSafeIds.hash()` for all logged IDs | Deterministic for trace correlation, non-reversible, no dependencies | ✓ Good |
+| Multi-line-aware source scanner (paren-depth walker) for LoggingHygieneTest | Plan's single-line regex would have missed 5 multi-line logger.info calls in GameController | ✓ Good |
+| Env-var overrides (`${LOG_LEVEL_*:default}`) on every logging.level key | Ops can bump verbosity per-class at runtime without rebuilding | ✓ Good |
 
 ## Context
 
@@ -127,4 +133,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-10 after shipping v1.4 milestone (Code Quality & Tech Debt)*
+*Last updated: 2026-04-10 after v1.5 UX & Polish milestone*

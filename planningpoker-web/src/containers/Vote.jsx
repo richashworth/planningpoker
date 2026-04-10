@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import Button from '@mui/material/Button'
 import { vote, voteOptimistic, setLabel } from '../actions'
 import UsersTable from './UsersTable'
 
@@ -55,19 +57,17 @@ export default function Vote() {
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
   const [selected, setSelected] = useState(null)
   const [labelInput, setLabelInput] = useState(currentLabel)
-  const debounceRef = useRef(null)
+  const [lastBroadcastLabel, setLastBroadcastLabel] = useState(currentLabel)
 
   useEffect(() => {
     setLabelInput(currentLabel)
+    setLastBroadcastLabel(currentLabel)
   }, [currentLabel])
 
-  const handleLabelChange = (e) => {
-    const value = e.target.value
-    setLabelInput(value)
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      dispatch(setLabel(playerName, sessionId, value))
-    }, 300)
+  const handleSubmit = () => {
+    if (labelInput === lastBroadcastLabel) return
+    dispatch(setLabel(playerName, sessionId, labelInput))
+    setLastBroadcastLabel(labelInput)
   }
 
   const doVote = (val) => {
@@ -94,8 +94,29 @@ export default function Vote() {
             fullWidth
             size="small"
             value={labelInput}
-            onChange={handleLabelChange}
+            onChange={(e) => setLabelInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleSubmit()
+              }
+            }}
             inputProps={{ maxLength: 100 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={handleSubmit}
+                    disabled={labelInput === lastBroadcastLabel}
+                    aria-label="Set round label"
+                  >
+                    Set
+                  </Button>
+                </InputAdornment>
+              ),
+            }}
           />
         ) : (
           currentLabel && (

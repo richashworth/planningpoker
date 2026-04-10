@@ -6,6 +6,7 @@ import com.google.common.collect.Multimaps;
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
+import com.richashworth.planningpoker.util.LogSafeIds;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -117,7 +118,7 @@ public class SessionManager {
   }
 
   public synchronized void clearSessions() {
-    logger.info("Clearing all sessions");
+    logger.info("Clearing all sessions (count={})", activeSessions.size());
     sessionUsers.clear();
     sessionEstimates.clear();
     activeSessions.clear();
@@ -173,7 +174,7 @@ public class SessionManager {
           }
         });
     for (String sessionId : toEvict) {
-      logger.info("Evicting idle session {}", sessionId);
+      logger.info("Evicting idle session {}", LogSafeIds.hash(sessionId));
       activeSessions.remove(sessionId);
       sessionEstimates.removeAll(sessionId);
       sessionUsers.removeAll(sessionId);

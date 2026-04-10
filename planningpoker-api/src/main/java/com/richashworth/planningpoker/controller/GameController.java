@@ -6,6 +6,7 @@ import com.richashworth.planningpoker.model.CreateSessionRequest;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SessionResponse;
 import com.richashworth.planningpoker.service.SessionManager;
+import com.richashworth.planningpoker.util.LogSafeIds;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import java.util.List;
 import org.slf4j.Logger;
@@ -44,7 +45,8 @@ public class GameController {
         throw new IllegalArgumentException("user exists");
       } else {
         sessionManager.registerUser(userName, sessionId);
-        logger.info("{} has joined session {}", userName, sessionId);
+        logger.info(
+            "user {} joined session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
       }
     }
     messagingUtils.burstUsersMessages(sessionId);
@@ -62,7 +64,10 @@ public class GameController {
     synchronized (sessionManager) {
       sessionId = sessionManager.createSession(schemeConfig);
       sessionManager.registerUser(request.userName(), sessionId);
-      logger.info("{} has created session {}", request.userName(), sessionId);
+      logger.info(
+          "user {} created session {}",
+          LogSafeIds.hash(request.userName()),
+          LogSafeIds.hash(sessionId));
     }
     messagingUtils.burstUsersMessages(sessionId);
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
@@ -78,7 +83,7 @@ public class GameController {
     synchronized (sessionManager) {
       validateSessionMembership(sessionId, userName);
       sessionManager.removeUser(userName, sessionId);
-      logger.info("{} has left session {}", userName, sessionId);
+      logger.info("user {} left session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
     }
     messagingUtils.burstUsersMessages(sessionId);
     messagingUtils.burstResultsMessages(sessionId);
@@ -112,7 +117,11 @@ public class GameController {
         throw new IllegalArgumentException("target user is not a member of this session");
       }
       sessionManager.removeUser(targetUser, sessionId);
-      logger.info("{} has kicked {} from session {}", userName, targetUser, sessionId);
+      logger.info(
+          "host {} kicked user {} from session {}",
+          LogSafeIds.hash(userName),
+          LogSafeIds.hash(targetUser),
+          LogSafeIds.hash(sessionId));
     }
     messagingUtils.burstUsersMessages(sessionId);
     messagingUtils.burstResultsMessages(sessionId);
@@ -132,7 +141,11 @@ public class GameController {
         throw new HostActionException("only the host can perform this action");
       }
       sessionManager.promoteHost(sessionId, targetUser);
-      logger.info("{} has promoted {} to host in session {}", userName, targetUser, sessionId);
+      logger.info(
+          "host {} promoted user {} in session {}",
+          LogSafeIds.hash(userName),
+          LogSafeIds.hash(targetUser),
+          LogSafeIds.hash(sessionId));
     }
     messagingUtils.burstUsersMessages(sessionId);
   }
@@ -143,7 +156,8 @@ public class GameController {
       @RequestParam(name = "userName") final String userName) {
     synchronized (sessionManager) {
       validateSessionMembership(sessionId, userName);
-      logger.info("{} has reset session {}", userName, sessionId);
+      logger.info(
+          "host {} reset session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
       sessionManager.resetSession(sessionId);
     }
     messagingUtils.sendResetNotification(sessionId);
@@ -165,7 +179,8 @@ public class GameController {
         throw new HostActionException("only the host can perform this action");
       }
       sessionManager.setLabel(sessionId, sanitized);
-      logger.info("{} has set label for session {}", userName, sessionId);
+      logger.debug(
+          "host {} set label in session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
     }
     messagingUtils.burstResultsMessages(sessionId);
   }
