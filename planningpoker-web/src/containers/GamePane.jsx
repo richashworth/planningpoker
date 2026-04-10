@@ -1,11 +1,63 @@
+import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Vote from './Vote'
 import Results from './Results'
+import LiveAnnouncer from '../components/LiveAnnouncer'
+import { calcConsensus } from '../utils/consensus'
 
 export default function GamePane({ connected }) {
   const voted = useSelector((state) => state.voted)
+  const results = useSelector((state) => state.results)
+  const users = useSelector((state) => state.users)
+
+  const [consensusOverride, setConsensusOverride] = useState(null)
+  const [announcement, setAnnouncement] = useState('')
+  const announcedForRevealRef = useRef(false)
+  const consensusDebounceRef = useRef(null)
+  const lastAnnouncedConsensusRef = useRef(null)
+
+  const autoConsensus = calcConsensus(results)
+  const displayConsensus = consensusOverride || autoConsensus
+
+  // Reveal announcement: fire once per voted false→true transition.
+  // Dedup is driven by the voted state transition, not raw WS message arrival,
+  // so MessagingUtils burst (10ms/50ms/150ms/500ms/2s/5s) is naturally handled.
+  useEffect(() => {
+    if (voted && !announcedForRevealRef.current) {
+      setAnnouncement(`Votes revealed: ${results.length} of ${users.length} players voted`)
+      announcedForRevealRef.current = true
+    }
+    if (!voted && announcedForRevealRef.current) {
+      announcedForRevealRef.current = false
+      lastAnnouncedConsensusRef.current = null
+    }
+  }, [voted, results.length, users.length])
+
+  // Consensus announcement: first value deferred 1500ms (to avoid overwriting reveal
+  // announcement in screen readers), subsequent changes debounced 750ms trailing edge.
+  useEffect(() => {
+    if (!voted) return
+    if (!displayConsensus) return
+    if (displayConsensus === lastAnnouncedConsensusRef.current) return
+
+    // Both first and subsequent announcements go through debounce to avoid
+    // overwriting the reveal announcement that fires on the same render cycle.
+    // First: 1500ms (lets screen readers announce reveal first).
+    // Subsequent: 750ms trailing edge.
+    const delay = lastAnnouncedConsensusRef.current === null ? 1500 : 750
+
+    if (consensusDebounceRef.current) clearTimeout(consensusDebounceRef.current)
+    consensusDebounceRef.current = setTimeout(() => {
+      setAnnouncement(`Consensus: ${displayConsensus}`)
+      lastAnnouncedConsensusRef.current = displayConsensus
+    }, delay)
+
+    return () => {
+      if (consensusDebounceRef.current) clearTimeout(consensusDebounceRef.current)
+    }
+  }, [voted, displayConsensus])
 
   return (
     <>
@@ -33,8 +85,16 @@ export default function GamePane({ connected }) {
           </Typography>
         </Box>
       )}
-      <Box aria-live="polite" aria-atomic="true">
-        {voted ? <Results /> : <Vote />}
+      <LiveAnnouncer message={announcement} />
+      <Box>
+        {voted ? (
+          <Results
+            consensusOverride={consensusOverride}
+            setConsensusOverride={setConsensusOverride}
+          />
+        ) : (
+          <Vote />
+        )}
       </Box>
     </>
   )

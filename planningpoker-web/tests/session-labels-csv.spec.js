@@ -307,8 +307,8 @@ test.describe('Consensus', () => {
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
       // Consensus chip should show "Consensus: 5"
-      await expect(hostPage.getByText('Consensus: 5')).toBeVisible()
-      await expect(playerPage.getByText('Consensus: 5')).toBeVisible({
+      await expect(hostPage.locator('.MuiChip-root', { hasText: 'Consensus: 5' })).toBeVisible()
+      await expect(playerPage.locator('.MuiChip-root', { hasText: 'Consensus: 5' })).toBeVisible({
         timeout: 15000,
       })
     } finally {
@@ -435,6 +435,81 @@ test.describe('CSV Export', () => {
       expect(content).toContain('Label')
       expect(content).toContain('Consensus')
       expect(content).toContain('Story 1')
+    } finally {
+      await hostCtx.close()
+      await playerCtx.close()
+    }
+  })
+})
+
+test.describe('Accessibility announcements', () => {
+  test('aria-live polite region is mounted on game pane', async ({ browser }) => {
+    const hostCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      await hostGame(hostPage, 'Alice')
+
+      const liveRegion = hostPage.locator('[role="status"][aria-live="polite"]')
+      await expect(liveRegion).toHaveCount(1)
+      await expect(liveRegion).toHaveAttribute('aria-atomic', 'true')
+    } finally {
+      await hostCtx.close()
+    }
+  })
+
+  test('reveal announcement appears in live region after voting', async ({ browser }) => {
+    const hostCtx = await browser.newContext()
+    const playerCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      const sessionId = await hostGame(hostPage, 'Alice')
+
+      const playerPage = await playerCtx.newPage()
+      await joinGame(playerPage, 'Bob', sessionId)
+
+      await waitForWsReady(playerPage, sessionId, 'Alice')
+
+      // Both vote — triggers reveal
+      await hostPage.getByText('5', { exact: true }).click()
+      await playerPage.getByText('8', { exact: true }).click()
+
+      // Live region should contain reveal announcement before the 1500ms consensus debounce fires
+      const liveRegion = hostPage.locator('[role="status"][aria-live="polite"]')
+      await expect(liveRegion).toContainText(/Votes revealed: \d+ of \d+ players voted/, {
+        timeout: 15000,
+      })
+
+      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+    } finally {
+      await hostCtx.close()
+      await playerCtx.close()
+    }
+  })
+
+  test('consensus announcement appears in live region after reveal', async ({ browser }) => {
+    const hostCtx = await browser.newContext()
+    const playerCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      const sessionId = await hostGame(hostPage, 'Alice')
+
+      const playerPage = await playerCtx.newPage()
+      await joinGame(playerPage, 'Bob', sessionId)
+
+      await waitForWsReady(playerPage, sessionId, 'Alice')
+
+      // Both vote the same value to trigger consensus
+      await hostPage.getByText('5', { exact: true }).click()
+      await playerPage.getByText('5', { exact: true }).click()
+
+      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(
+        hostPage.locator('.MuiChip-root', { hasText: 'Consensus: 5' }),
+      ).toBeVisible({ timeout: 10000 })
+
+      // Live region should contain consensus announcement (fires after 1500ms debounce)
+      const liveRegion = hostPage.locator('[role="status"][aria-live="polite"]')
+      await expect(liveRegion).toContainText(/Consensus: /, { timeout: 15000 })
     } finally {
       await hostCtx.close()
       await playerCtx.close()
