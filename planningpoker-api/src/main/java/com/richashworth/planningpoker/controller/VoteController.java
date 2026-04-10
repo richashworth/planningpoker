@@ -3,6 +3,7 @@ package com.richashworth.planningpoker.controller;
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.CollectionUtils;
+import com.richashworth.planningpoker.util.LogSafeIds;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import java.util.List;
 import org.slf4j.Logger;
@@ -40,7 +41,11 @@ public class VoteController {
           sessionManager.getSessionUsers(sessionId), userName)) {
         throw new IllegalArgumentException("User is not a member of this session");
       }
-      logger.info("{} has voted {} in session {}", userName, estimateValue, sessionId);
+      logger.debug(
+          "user {} voted in session {} (estimate hash {})",
+          LogSafeIds.hash(userName),
+          LogSafeIds.hash(sessionId),
+          LogSafeIds.hash(estimateValue));
       if (!CollectionUtils.containsUserEstimate(sessionManager.getResults(sessionId), userName)) {
         final Estimate estimate = new Estimate(userName, estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
