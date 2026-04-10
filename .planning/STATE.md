@@ -1,33 +1,36 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: executing
-stopped_at: "Completed quick task 260407-s6r: add fully automated GitHub releases on every master push"
-last_updated: "2026-04-08T22:05:04.082Z"
-last_activity: 2026-04-08
+milestone: null
+milestone_name: null
+status: between_milestones
+stopped_at: v1.4 shipped
+last_updated: "2026-04-10T09:00:00.000Z"
+last_activity: 2026-04-10
 progress:
-  total_phases: 2
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-08)
+See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Teams can run a complete estimation session — pick a scheme, vote on multiple items with labels, review consensus, and export results — all in real time with no signup.
-**Current focus:** Planning next milestone
+**Current focus:** Between milestones — v1.4 shipped, planning next
 
 ## Current Position
 
-Milestone: v1.3 complete (shipped 2026-04-08)
-Status: Between milestones
-Last activity: 2026-04-08
+Phase: none
+Plan: none
+Status: Between milestones (v1.4 shipped 2026-04-10)
+Last activity: 2026-04-10
+
+Progress: [██████████] v1.4 complete
 
 ## Accumulated Context
 
@@ -65,6 +68,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-07T19:21:36.410Z
-Stopped at: Completed quick task 260407-s6r: add fully automated GitHub releases on every master push
-Resume file: None
+Last session: 2026-04-10
+Stopped at: v1.4 shipped and archived
+Resume: Run `/gsd-new-milestone` to start next milestone

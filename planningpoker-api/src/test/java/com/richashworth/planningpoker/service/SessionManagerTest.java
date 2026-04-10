@@ -9,8 +9,14 @@ import com.richashworth.planningpoker.model.SchemeType;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -441,6 +447,138 @@ class SessionManagerTest {
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.removeUser("bob", sessionId);
     assertEquals(List.of("Alice"), sessionManager.getSessionUsers(sessionId));
+  }
+
+  @Test
+  void testConcurrentCreateSession() throws InterruptedException {
+    int threadCount = 50;
+    ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+    CountDownLatch startLatch = new CountDownLatch(1);
+    Set<String> sessionIds = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    for (int i = 0; i < threadCount; i++) {
+      executor.submit(
+          () -> {
+            try {
+              startLatch.await();
+              String sessionId = sessionManager.createSession();
+              sessionIds.add(sessionId);
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+          });
+    }
+
+    startLatch.countDown();
+    executor.shutdown();
+    assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+    assertEquals(
+        threadCount,
+        sessionIds.size(),
+        "All 50 concurrent createSession calls must produce unique IDs");
+  }
+
+  @Test
+  void testEvictionAtomicity() throws Exception {
+    int sessionCount = 10;
+    List<String> allSessions = new ArrayList<>();
+    List<String> idleSessions = new ArrayList<>();
+
+    // Create 10 sessions each with one user
+    for (int i = 0; i < sessionCount; i++) {
+      String sessionId = sessionManager.createSession();
+      sessionManager.registerUser("User" + i, sessionId);
+      allSessions.add(sessionId);
+    }
+
+    // Backdate the first 5 sessions to be idle (25 hours ago)
+    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+    lastActivityField.setAccessible(true);
+    @SuppressWarnings("unchecked")
+    ConcurrentHashMap<String, Instant> lastActivity =
+        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
+
+    for (int i = 0; i < 5; i++) {
+      String idleSessionId = allSessions.get(i);
+      lastActivity.put(idleSessionId, Instant.now().minusSeconds(25 * 60 * 60));
+      idleSessions.add(idleSessionId);
+    }
+
+    List<String> activeSessions = allSessions.subList(5, sessionCount);
+
+    // Launch eviction thread
+    CountDownLatch evictionStart = new CountDownLatch(1);
+    CountDownLatch evictionDone = new CountDownLatch(1);
+    Thread evictionThread =
+        new Thread(
+            () -> {
+              try {
+                evictionStart.await();
+                sessionManager.evictIdleSessions();
+              } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+              } finally {
+                evictionDone.countDown();
+              }
+            });
+    evictionThread.start();
+
+    // Launch 20 reader threads that check consistency while eviction may be running
+    int readerCount = 20;
+    ExecutorService readers = Executors.newFixedThreadPool(readerCount);
+    List<String> violations = Collections.synchronizedList(new ArrayList<>());
+
+    for (int r = 0; r < readerCount; r++) {
+      readers.submit(
+          () -> {
+            evictionStart.countDown(); // signal eviction to start (idempotent after first)
+            for (int loop = 0; loop < 100; loop++) {
+              for (String idleId : idleSessions) {
+                boolean active = sessionManager.isSessionActive(idleId);
+                if (active) {
+                  // If still active, data maps must be consistent (session existed with a user)
+                  List<String> users = sessionManager.getSessionUsers(idleId);
+                  // If the session is reported active but has no users, that's a partial-eviction
+                  // violation (the session was created with one user above, so users list
+                  // should not be empty while active is still true)
+                  // Note: users could legitimately become empty only after full eviction,
+                  // at which point isSessionActive would return false.
+                  if (users.isEmpty() && sessionManager.isSessionActive(idleId)) {
+                    violations.add("Partial eviction detected for session " + idleId);
+                  }
+                }
+              }
+            }
+          });
+    }
+
+    evictionStart.countDown(); // ensure eviction starts
+    readers.shutdown();
+    assertTrue(readers.awaitTermination(15, TimeUnit.SECONDS));
+    evictionDone.await(10, TimeUnit.SECONDS);
+    evictionThread.join(5000);
+
+    assertTrue(violations.isEmpty(), "No partial eviction states should be visible: " + violations);
+
+    // After eviction completes, idle sessions must be fully gone
+    for (String idleId : idleSessions) {
+      assertFalse(
+          sessionManager.isSessionActive(idleId), "Idle session should be evicted: " + idleId);
+      assertTrue(
+          sessionManager.getSessionUsers(idleId).isEmpty(),
+          "Users should be cleared for evicted session: " + idleId);
+    }
+
+    // Active sessions must still be intact
+    for (int i = 0; i < activeSessions.size(); i++) {
+      String activeId = activeSessions.get(i);
+      assertTrue(
+          sessionManager.isSessionActive(activeId),
+          "Active session should still be active: " + activeId);
+      assertFalse(
+          sessionManager.getSessionUsers(activeId).isEmpty(),
+          "Active session should still have users: " + activeId);
+    }
   }
 
   private void registerUsers(String sessionId, ArrayList<String> users) {

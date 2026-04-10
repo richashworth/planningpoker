@@ -6,8 +6,10 @@ import static com.richashworth.planningpoker.util.MessagingUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.service.SessionManager;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,6 +106,9 @@ class MessagingUtilsTest {
     for (long latency : LATENCIES) {
       verify(clock, times(1)).pause(latency);
     }
+    // State is read exactly once (snapshot), not once per burst iteration
+    verify(sessionManager, times(1)).getResults(SESSION_ID);
+    verify(sessionManager, times(1)).getLabel(SESSION_ID);
     Map<String, Object> expectedPayload = new LinkedHashMap<>();
     expectedPayload.put("results", RESULTS);
     expectedPayload.put("label", "");
@@ -127,6 +132,9 @@ class MessagingUtilsTest {
     for (long latency : LATENCIES) {
       verify(clock, times(1)).pause(latency);
     }
+    // State is read exactly once (snapshot), not once per burst iteration
+    verify(sessionManager, times(1)).getSessionUsers(SESSION_ID);
+    verify(sessionManager, times(1)).getHost(SESSION_ID);
     Map<String, Object> expectedPayload = new LinkedHashMap<>();
     expectedPayload.put("users", USERS);
     expectedPayload.put("host", USER_NAME);
@@ -134,6 +142,66 @@ class MessagingUtilsTest {
         LATENCIES.length,
         getTopic(TOPIC_USERS, SESSION_ID),
         messagingUtils.usersMessage(expectedPayload));
+  }
+
+  @Test
+  void testBurstResultsMessagesSendsConsistentSnapshot() {
+    // Mock getResults to return different values on successive calls
+    List<Estimate> firstSnapshot = List.of(new Estimate(USER_NAME, "3"));
+    List<Estimate> secondSnapshot = List.of(new Estimate(USER_NAME, "5"));
+    when(sessionManager.getResults(SESSION_ID))
+        .thenReturn(firstSnapshot)
+        .thenReturn(secondSnapshot);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("Sprint 1").thenReturn("Sprint 2");
+
+    messagingUtils.burstResultsMessages(SESSION_ID);
+
+    // All burst sends should use the first snapshot only
+    Map<String, Object> firstPayload = new LinkedHashMap<>();
+    firstPayload.put("results", firstSnapshot);
+    firstPayload.put("label", "Sprint 1");
+    verifyMessageSent(
+        LATENCIES.length,
+        getTopic(TOPIC_RESULTS, SESSION_ID),
+        messagingUtils.resultsMessage(firstPayload));
+
+    // The second snapshot values should never be sent
+    Map<String, Object> secondPayload = new LinkedHashMap<>();
+    secondPayload.put("results", secondSnapshot);
+    secondPayload.put("label", "Sprint 2");
+    verify(template, never())
+        .convertAndSend(
+            getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(secondPayload));
+  }
+
+  @Test
+  void testBurstUsersMessagesSendsConsistentSnapshot() {
+    // Mock getSessionUsers to return different values on successive calls
+    List<String> firstSnapshot = List.of("Alice");
+    List<String> secondSnapshot = List.of("Alice", "Bob");
+    when(sessionManager.getSessionUsers(SESSION_ID))
+        .thenReturn(firstSnapshot)
+        .thenReturn(secondSnapshot);
+    when(sessionManager.getHost(SESSION_ID)).thenReturn("Alice").thenReturn("Bob");
+
+    messagingUtils.burstUsersMessages(SESSION_ID);
+
+    // All burst sends should use the first snapshot only
+    Map<String, Object> firstPayload = new LinkedHashMap<>();
+    firstPayload.put("users", firstSnapshot);
+    firstPayload.put("host", "Alice");
+    verifyMessageSent(
+        LATENCIES.length,
+        getTopic(TOPIC_USERS, SESSION_ID),
+        messagingUtils.usersMessage(firstPayload));
+
+    // The second snapshot values should never be sent
+    Map<String, Object> secondPayload = new LinkedHashMap<>();
+    secondPayload.put("users", secondSnapshot);
+    secondPayload.put("host", "Bob");
+    verify(template, never())
+        .convertAndSend(
+            getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage(secondPayload));
   }
 
   private void verifyMessageSent(int numberInvocations, String destination, Object payload) {

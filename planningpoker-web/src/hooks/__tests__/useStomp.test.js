@@ -48,22 +48,34 @@ import SockJS from 'sockjs-client'
 // ---------------------------------------------------------------------------
 function simulateMount({ url, topics, onMessage }) {
   if (!url || !topics || topics.length === 0) {
-    return { client: null, cleanup: () => {} }
+    return { client: null, cleanup: () => {}, connectedStates: [] }
   }
+
+  const connectedStates = []
+  const setConnected = (val) => connectedStates.push(val)
+  const hasConnected = { current: false }
 
   const client = new Client({
     webSocketFactory: () => new SockJS(url),
     reconnectDelay: 3000,
     onConnect: () => {
+      hasConnected.current = true
+      setConnected(true)
       topics.forEach((topic) => {
         client.subscribe(topic, (message) => {
           onMessage(JSON.parse(message.body))
         })
       })
     },
-    onDisconnect: vi.fn(),
-    onStompError: vi.fn(),
-    onWebSocketClose: vi.fn(),
+    onDisconnect: () => {
+      if (hasConnected.current) setConnected(false)
+    },
+    onStompError: () => {
+      if (hasConnected.current) setConnected(false)
+    },
+    onWebSocketClose: () => {
+      if (hasConnected.current) setConnected(false)
+    },
   })
 
   client.activate()
@@ -72,12 +84,101 @@ function simulateMount({ url, topics, onMessage }) {
     if (client.active) client.deactivate()
   }
 
-  return { client, cleanup }
+  return { client, cleanup, connectedStates }
 }
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Tests — reconnect lifecycle and connected state
+// ---------------------------------------------------------------------------
+describe('useStomp — reconnect lifecycle and connected state', () => {
+  beforeEach(() => {
+    lastClientConfig = null
+    lastClientInstance = null
+    vi.clearAllMocks()
+  })
+
+  it('onConnect sets connected to true', () => {
+    const { connectedStates } = simulateMount({
+      url: 'http://localhost:9000/stomp',
+      topics: ['/topic/results/abc'],
+      onMessage: vi.fn(),
+    })
+    lastClientConfig.onConnect()
+    expect(connectedStates).toEqual([true])
+  })
+
+  it('onDisconnect sets connected to false after prior connect', () => {
+    const { connectedStates } = simulateMount({
+      url: 'http://localhost:9000/stomp',
+      topics: ['/topic/results/abc'],
+      onMessage: vi.fn(),
+    })
+    lastClientConfig.onConnect()
+    lastClientConfig.onDisconnect()
+    expect(connectedStates).toEqual([true, false])
+  })
+
+  it('onStompError sets connected to false after prior connect', () => {
+    const { connectedStates } = simulateMount({
+      url: 'http://localhost:9000/stomp',
+      topics: ['/topic/results/abc'],
+      onMessage: vi.fn(),
+    })
+    lastClientConfig.onConnect()
+    lastClientConfig.onStompError()
+    expect(connectedStates).toEqual([true, false])
+  })
+
+  it('onWebSocketClose sets connected to false after prior connect', () => {
+    const { connectedStates } = simulateMount({
+      url: 'http://localhost:9000/stomp',
+      topics: ['/topic/results/abc'],
+      onMessage: vi.fn(),
+    })
+    lastClientConfig.onConnect()
+    lastClientConfig.onWebSocketClose()
+    expect(connectedStates).toEqual([true, false])
+  })
+
+  it('onDisconnect is ignored before initial connect', () => {
+    const { connectedStates } = simulateMount({
+      url: 'http://localhost:9000/stomp',
+      topics: ['/topic/results/abc'],
+      onMessage: vi.fn(),
+    })
+    lastClientConfig.onDisconnect()
+    expect(connectedStates).toEqual([])
+  })
+
+  it('onStompError is ignored before initial connect', () => {
+    const { connectedStates } = simulateMount({
+      url: 'http://localhost:9000/stomp',
+      topics: ['/topic/results/abc'],
+      onMessage: vi.fn(),
+    })
+    lastClientConfig.onStompError()
+    expect(connectedStates).toEqual([])
+  })
+
+  it('reconnect resubscribes to all topics', () => {
+    const topics = ['/topic/results/abc', '/topic/users/abc']
+    simulateMount({
+      url: 'http://localhost:9000/stomp',
+      topics,
+      onMessage: vi.fn(),
+    })
+    lastClientConfig.onConnect()
+    lastClientInstance.subscribe.mockClear()
+    lastClientConfig.onConnect()
+    expect(lastClientInstance.subscribe).toHaveBeenCalledTimes(2)
+    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(topics[0], expect.any(Function))
+    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(topics[1], expect.any(Function))
+  })
+})
+
 describe('useStomp — STOMP client wiring', () => {
   beforeEach(() => {
     lastClientConfig = null

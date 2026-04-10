@@ -10,7 +10,7 @@ Teams can run a complete estimation session — pick a scheme, vote on multiple 
 
 ## Current State
 
-Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04-05, v1.2 (Host Management) 2026-04-06, v1.3 (Session Labels & CSV Export) 2026-04-08.
+Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04-05, v1.2 (Host Management) 2026-04-06, v1.3 (Session Labels & CSV Export) 2026-04-08, v1.4 (Code Quality & Tech Debt) 2026-04-10. Between milestones — planning next.
 
 - **Backend:** Spring Boot 3.4 / Java 21, all state in-memory (Guava maps). SchemeType enum resolves presets; SchemeConfig record per session. Host identity in SessionManager via `sessionHosts` ConcurrentHashMap. POST /kick, /promote, /setLabel endpoints with HostActionException 403 enforcement. Session labels in `sessionLabels` ConcurrentHashMap, broadcast via enriched `{results, label}` WebSocket payload.
 - **Frontend:** React 18 + MUI v5 + Redux 4. Tile grid scheme selector. Host controls (kick/promote/label). Round labelling with debounced TextField. Auto-consensus Chip with host override. Round history in reducer_rounds.js. Client-side CSV export with formula injection protection.
@@ -45,9 +45,20 @@ Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04
 - ✓ Round history accumulates across resets — v1.3 Phase 8
 - ✓ Client-side CSV export with per-player votes and stats — v1.3 Phase 8
 
+- ✓ `createSession` + `removeUser` atomic via synchronized methods (TOCTOU closed) — v1.4 Phase 9
+- ✓ Burst messaging reads single consistent snapshot before async loop — v1.4 Phase 9
+- ✓ Dead `getSessions()` removed from SessionManager — v1.4 Phase 9
+- ✓ JoinGame/CreateGame forms show loading state + disable on submit — v1.4 Phase 11 (already met)
+- ✓ HTTP errors display as MUI Snackbar (no `alert()`) — v1.4 Phase 11 (already met)
+- ✓ Vote revert clears both `voted` flag and optimistic result entry — v1.4 Phase 11 (already met)
+- ✓ Lazy routes have visible `<Suspense>` fallback — v1.4 Phase 10
+- ✓ Dead `/topic/items/` WebSocket subscription removed — v1.4 Phase 10
+- ✓ Redux migrated to `configureStore` (Redux Toolkit); `redux-promise`/`createStore` removed — v1.4 Phase 10
+- ✓ `useStomp` hook unit tests cover connect, subscribe, reconnect, disconnect — v1.4 Phase 11
+
 ### Active
 
-(None — define with `/gsd-new-milestone`)
+(None — between milestones, planning next)
 
 ### Out of Scope
 
@@ -80,6 +91,10 @@ Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04
 | Debounced label dispatch (300ms) via useRef | Avoids lodash dependency for single use case | ✓ Good |
 | Consensus tie-breaking via alphabetical sort | Deterministic across sessions | ✓ Good |
 | CSV injection protection (prefix formula chars with ') | OWASP recommendation for user-generated CSV content | ✓ Good |
+| Synchronized methods (not block-level) for SessionManager.createSession/removeUser | Matches existing `synchronized(sessionManager)` controller pattern; reentrant, no deadlock | ✓ Good |
+| Burst messaging snapshots into a pre-built Message once before async loop | Immune to post-read mutations; all 6 bursts send identical payload | ✓ Good |
+| Redux Toolkit `configureStore` (not full slice/RTK Query migration) | Scoped cleanup — kills `redux-promise` + `createStore` without destabilizing reducers | ✓ Good |
+| `useStomp` tests extend existing `simulateMount` helper (no jsdom) | Tests exercise hook logic directly via callback invocation; faster, simpler | ✓ Good |
 
 ## Context
 
@@ -112,4 +127,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-08 after v1.3 milestone (Session Labels & CSV Export)*
+*Last updated: 2026-04-10 after shipping v1.4 milestone (Code Quality & Tech Debt)*

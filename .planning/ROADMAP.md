@@ -6,7 +6,7 @@
 - ✅ **v1.1 CreateGame Redesign** — Phase 4 (shipped 2026-04-05) — [archive](milestones/v1.1-ROADMAP.md)
 - ✅ **v1.2 Host Management** — Phases 5-7 (shipped 2026-04-06) — [archive](milestones/v1.2-ROADMAP.md)
 - ✅ **v1.3 Session Labels & CSV Export** — Phase 8 (shipped 2026-04-08) — [archive](milestones/v1.3-ROADMAP.md)
-- 📋 **v1.4 TBD** — (planned)
+- ✅ **v1.4 Code Quality & Tech Debt** — Phases 9-11 (shipped 2026-04-10) — [archive](milestones/v1.4-ROADMAP.md)
 
 ## Phases
 
@@ -35,6 +35,22 @@
 
 </details>
 
+<details>
+<summary>✅ v1.3 Session Labels & CSV Export (Phase 8) — SHIPPED 2026-04-08</summary>
+
+- [x] Phase 8: Session Labels & CSV Export (2/2 plans) — completed 2026-04-08
+
+</details>
+
+<details>
+<summary>✅ v1.4 Code Quality & Tech Debt (Phases 9-11) — SHIPPED 2026-04-10</summary>
+
+- [x] Phase 9: Backend Concurrency & Cleanup (2/2 plans) — completed 2026-04-09
+- [x] Phase 10: Frontend Modernization (1/1 plans) — completed 2026-04-09
+- [x] Phase 11: UI Hardening & Test Coverage (1/1 plans) — completed 2026-04-09
+
+</details>
+
 ## Backlog
 
 ### Phase 999.1: Chat drawer with host moderation (BACKLOG)
@@ -43,7 +59,7 @@
 
 **Requirements:** TBD
 
-**Plans:** 0 plans
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
@@ -60,10 +76,6 @@ Plans:
 | 6. Host Actions & WebSocket Events | v1.2 | 2/2 | Complete | 2026-04-06 |
 | 7. Host UI & Notifications | v1.2 | 3/3 | Complete | 2026-04-06 |
 | 8. Session Labels & CSV Export | v1.3 | 2/2 | Complete | 2026-04-08 |
-
-<details>
-<summary>✅ v1.3 Session Labels & CSV Export (Phase 8) — SHIPPED 2026-04-08</summary>
-
-- [x] Phase 8: Session Labels & CSV Export (2/2 plans) — completed 2026-04-08
-
-</details>
+| 9. Backend Concurrency & Cleanup | v1.4 | 2/2 | Complete | 2026-04-09 |
+| 10. Frontend Modernization | v1.4 | 1/1 | Complete    | 2026-04-09 |
+| 11. UI Hardening & Test Coverage | v1.4 | 1/1 | Complete    | 2026-04-09 |

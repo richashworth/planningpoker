@@ -38,15 +38,11 @@ public class SessionManager {
     return activeSessions.contains(sessionId);
   }
 
-  public String createSession() {
+  public synchronized String createSession() {
     return createSession(new SchemeConfig("fibonacci", null, true));
   }
 
-  /**
-   * Must be called while holding the lock on {@code this} (i.e. inside a {@code
-   * synchronized(sessionManager)} block in the caller). @GuardedBy("this")
-   */
-  public String createSession(SchemeConfig config) {
+  public synchronized String createSession(SchemeConfig config) {
     if (activeSessions.size() >= MAX_SESSIONS) {
       throw new IllegalStateException("Too many active sessions");
     }
@@ -144,11 +140,7 @@ public class SessionManager {
     touchSession(sessionId);
   }
 
-  /**
-   * Must be called while holding the lock on {@code this} (i.e. inside a {@code
-   * synchronized(sessionManager)} block in the caller). @GuardedBy("this")
-   */
-  public void removeUser(String userName, String sessionId) {
+  public synchronized void removeUser(String userName, String sessionId) {
     sessionUsers.get(sessionId).removeIf(u -> u.equalsIgnoreCase(userName));
     sessionEstimates
         .entries()

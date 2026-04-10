@@ -1,5 +1,19 @@
 # Milestones
 
+## v1.4 Code Quality & Tech Debt (Shipped: 2026-04-10)
+
+**Phases completed:** 3 phases, 4 plans
+
+**Key accomplishments:**
+
+- SessionManager thread-safety: `createSession` and `removeUser` made synchronized, closing TOCTOU races and ensuring atomic eviction; dead `getSessions()` removed
+- Burst messaging snapshot consistency: `burstResultsMessages` captures a single `Message` before the async loop so all 6 bursts send an immutable payload
+- Redux Toolkit migration: replaced `createStore` + `redux-promise` with `configureStore` from `@reduxjs/toolkit`; removed dead `/topic/items/` subscription; added Suspense fallback
+- `useStomp` hook test coverage extended from 7 to 14 tests — covers reconnect lifecycle, `onConnect`/`onDisconnect`/`onStompError`/`onWebSocketClose` state transitions, and pre-connect guards
+- UI hardening verified already-met: JoinGame/CreateGame loading states, Snackbar-based error notifications, and full vote revert (flag + optimistic result) all confirmed in codebase
+
+---
+
 ## v1.3 Session Labels & CSV Export (Shipped: 2026-04-08)
 
 **Phases completed:** 1 phase, 2 plans

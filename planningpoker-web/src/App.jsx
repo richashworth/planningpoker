@@ -2,8 +2,7 @@ import { useState, useMemo, createContext, useContext, useCallback, lazy, Suspen
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { useSelector, useDispatch } from 'react-redux'
-import { applyMiddleware, compose, createStore } from 'redux'
-import thunk from 'redux-thunk'
+import { configureStore } from '@reduxjs/toolkit'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box'
@@ -23,12 +22,7 @@ const JoinGame = lazy(() => import('./pages/JoinGame'))
 const CreateGame = lazy(() => import('./pages/CreateGame'))
 const PlayGame = lazy(() => import('./pages/PlayGame'))
 
-const middleware = [thunk]
-
-// eslint-disable-next-line no-underscore-dangle
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-
-const store = createStore(reducer, composeEnhancers(applyMiddleware(...middleware)))
+const store = configureStore({ reducer })
 
 const ColorModeContext = createContext({ toggleColorMode: () => {}, mode: 'light' })
 

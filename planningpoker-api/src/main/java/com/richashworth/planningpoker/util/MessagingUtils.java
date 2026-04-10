@@ -48,16 +48,26 @@ public class MessagingUtils {
 
   @Async
   public void burstResultsMessages(String sessionId) {
+    // Capture snapshot once before burst loop so all iterations send identical data
+    Map<String, Object> snapshot = new LinkedHashMap<>();
+    snapshot.put("results", sessionManager.getResults(sessionId));
+    snapshot.put("label", sessionManager.getLabel(sessionId));
+    Object message = resultsMessage(snapshot);
     for (final long LATENCY_DURATION : LATENCIES) {
-      sendResultsMessage(sessionId);
+      template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), message);
       clock.pause(LATENCY_DURATION);
     }
   }
 
   @Async
   public void burstUsersMessages(String sessionId) {
+    // Capture snapshot once before burst loop so all iterations send identical data
+    Map<String, Object> snapshot = new LinkedHashMap<>();
+    snapshot.put("users", sessionManager.getSessionUsers(sessionId));
+    snapshot.put("host", sessionManager.getHost(sessionId));
+    Object message = usersMessage(snapshot);
     for (final long LATENCY_DURATION : LATENCIES) {
-      sendUsersMessage(sessionId);
+      template.convertAndSend(getTopic(TOPIC_USERS, sessionId), message);
       clock.pause(LATENCY_DURATION);
     }
   }
