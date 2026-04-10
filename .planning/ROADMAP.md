@@ -72,7 +72,9 @@
   3. A screen reader user hears a single announcement when votes are revealed (e.g., "Votes revealed: 5 of 5 players voted"), delivered via a visually-hidden `aria-live="polite"` region — not repeated per WebSocket burst.
   4. A screen reader user hears the consensus value announced (e.g., "Consensus: 5") on auto-majority detection and again on host override, debounced against rapid changes.
   5. All existing Playwright e2e tests still pass, plus new coverage for Set-button and Enter-key label submission.
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 12-01-PLAN.md — Explicit label submit (UX-01): Set button InputAdornment + Enter key, remove 300ms debounce
+- [ ] 12-02-PLAN.md — Screen reader announcements (A11Y-01, A11Y-02): LiveAnnouncer + reveal/consensus effects
 **UI hint**: yes
 
 ### Phase 13: Backend Logging Hygiene
