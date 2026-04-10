@@ -61,17 +61,7 @@ Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04
 
 ### Active
 
-#### v1.5 UX & Polish
-_All planned work validated._
-
-## Current Milestone: v1.5 UX & Polish
-
-**Goal:** Improve session UX with deliberate label broadcast, accessible state transitions, and production-grade logging hygiene.
-
-**Target features:**
-- Label broadcast on submit (button + Enter) instead of live keystroke broadcast
-- `aria-live="polite"` regions for vote reveal and consensus announcements
-- Production logging hygiene: audit, downgrade chatty logs, scrub PII
+_Between milestones — run `/gsd-new-milestone` to scope the next cycle._
 
 ### Out of Scope
 
@@ -143,4 +133,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-10 after completing Phase 13 (Backend Logging Hygiene)*
+*Last updated: 2026-04-10 after v1.5 UX & Polish milestone*

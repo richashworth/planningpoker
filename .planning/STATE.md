@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: UX & Polish
-status: executing
-stopped_at: Completed 12-frontend-ux-accessibility-01-PLAN.md
-last_updated: "2026-04-10T17:40:30.765Z"
+status: milestone_complete
+stopped_at: v1.5 UX & Polish shipped 2026-04-10
+last_updated: "2026-04-10T18:00:45.363Z"
 last_activity: 2026-04-10
 progress:
   total_phases: 3
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Teams can run a complete estimation session — pick a scheme, vote on multiple items with labels, review consensus, and export results — all in real time with no signup.
-**Current focus:** Phase 13 — backend-logging-hygiene
+**Current focus:** Between milestones — v1.5 shipped, run `/gsd-new-milestone` to scope next cycle
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
-Status: Executing Phase 13
+Phase: —
+Plan: —
+Status: v1.5 milestone complete
 Last activity: 2026-04-10
 
 Progress: [█████░░░░░] 50% (v1.5) — 1/2 plans complete
