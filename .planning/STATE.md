@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
-milestone: null
-milestone_name: null
-status: between_milestones
-stopped_at: v1.4 shipped
-last_updated: "2026-04-10T09:00:00.000Z"
+milestone: v1.5
+milestone_name: UX & Polish
+status: defining_requirements
+stopped_at: v1.5 milestone started
+last_updated: "2026-04-10T10:00:00.000Z"
 last_activity: 2026-04-10
 progress:
   total_phases: 0
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Teams can run a complete estimation session — pick a scheme, vote on multiple items with labels, review consensus, and export results — all in real time with no signup.
-**Current focus:** Between milestones — v1.4 shipped, planning next
+**Current focus:** v1.5 UX & Polish — defining requirements
 
 ## Current Position
 
-Phase: none
-Plan: none
-Status: Between milestones (v1.4 shipped 2026-04-10)
-Last activity: 2026-04-10
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-10 — Milestone v1.5 started
 
-Progress: [██████████] v1.4 complete
+Progress: [░░░░░░░░░░] 0% (v1.5)
 
 ## Accumulated Context
 

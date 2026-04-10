@@ -58,7 +58,19 @@ Shipped v1.0 (Estimation Schemes) 2026-04-04, v1.1 (CreateGame Redesign) 2026-04
 
 ### Active
 
-(None — between milestones, planning next)
+#### v1.5 UX & Polish
+- [ ] Label broadcast via Set button + Enter key (replaces 300ms-debounced live typing)
+- [ ] `aria-live` announcements for vote reveal and consensus result
+- [ ] Production logging audit — downgrade chatty hot-path logs, scrub session IDs/usernames/vote values, set appropriate prod log level
+
+## Current Milestone: v1.5 UX & Polish
+
+**Goal:** Improve session UX with deliberate label broadcast, accessible state transitions, and production-grade logging hygiene.
+
+**Target features:**
+- Label broadcast on submit (button + Enter) instead of live keystroke broadcast
+- `aria-live="polite"` regions for vote reveal and consensus announcements
+- Production logging hygiene: audit, downgrade chatty logs, scrub PII
 
 ### Out of Scope
 
@@ -127,4 +139,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-10 after shipping v1.4 milestone (Code Quality & Tech Debt)*
+*Last updated: 2026-04-10 after starting v1.5 milestone (UX & Polish)*
