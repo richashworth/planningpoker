@@ -47,9 +47,7 @@ async function waitForWsReady(page, sessionId, hostName) {
 }
 
 test.describe('Session Labels', () => {
-  test('host sees label input, non-host sees label via WebSocket', async ({
-    browser,
-  }) => {
+  test('host sees label input, non-host sees label via WebSocket', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const playerCtx = await browser.newContext()
     try {
@@ -59,21 +57,21 @@ test.describe('Session Labels', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Host has a label text field
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
-      await expect(labelInput).toBeVisible()
+      // Host has an edit-current-item banner
+      const banner = hostPage.getByRole('button', { name: 'Edit current item' }).first()
+      await expect(banner).toBeVisible()
 
-      // Non-host should NOT have a label input
-      await expect(
-        playerPage.getByPlaceholder('Round label (optional)'),
-      ).not.toBeVisible()
+      // Non-host should NOT have a label input or edit banner
+      await expect(playerPage.getByPlaceholder('Round label (optional)')).not.toBeVisible()
 
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      // Host types a label and clicks Set to broadcast
+      // Host clicks banner, types a label and presses Enter to commit
+      await banner.click()
+      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
       await labelInput.fill('Login page redesign')
-      await hostPage.getByRole('button', { name: 'Set round label' }).click()
+      await labelInput.press('Enter')
 
       // Non-host should see the label appear via WebSocket (italic text)
       await expect(playerPage.getByText('Login page redesign')).toBeVisible({
@@ -98,9 +96,11 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      // Host sets a label then both vote
-      await hostPage.getByPlaceholder('Round label (optional)').fill('Sprint 42')
-      await hostPage.getByRole('button', { name: 'Set round label' }).click()
+      // Host opens the banner, sets a label and commits with Enter
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
+      const sprintInput = hostPage.getByPlaceholder('Round label (optional)')
+      await sprintInput.fill('Sprint 42')
+      await sprintInput.press('Enter')
 
       // Wait for label to broadcast before voting
       await expect(playerPage.getByText('Sprint 42')).toBeVisible({
@@ -135,9 +135,11 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      // Host sets label and both vote
-      await hostPage.getByPlaceholder('Round label (optional)').fill('Item A')
-      await hostPage.getByRole('button', { name: 'Set round label' }).click()
+      // Host opens banner, sets label and commits with Enter
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
+      const itemAInput = hostPage.getByPlaceholder('Round label (optional)')
+      await itemAInput.fill('Item A')
+      await itemAInput.press('Enter')
       await expect(playerPage.getByText('Item A')).toBeVisible({ timeout: 15000 })
 
       await hostPage.getByText('3', { exact: true }).click()
@@ -148,21 +150,18 @@ test.describe('Session Labels', () => {
       // Host clicks Next Item
       await hostPage.getByRole('button', { name: 'Next Item' }).click()
 
-      // Should be back to voting, label input should be empty
+      // Should be back to voting, banner should be empty (placeholder visible)
       await expect(hostPage.getByText('Cast your estimate')).toBeVisible({
         timeout: 15000,
       })
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
-      await expect(labelInput).toHaveValue('')
+      await expect(hostPage.getByText('Add item description...')).toBeVisible()
     } finally {
       await hostCtx.close()
       await playerCtx.close()
     }
   })
 
-  test('Set button explicitly broadcasts label to non-host', async ({
-    browser,
-  }) => {
+  test('label broadcasts to non-host on Enter key', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const playerCtx = await browser.newContext()
     try {
@@ -175,18 +174,14 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
-      const setBtn = hostPage.getByRole('button', { name: 'Set round label' })
 
-      // Host types without clicking Set — non-host should NOT see it yet
+      // Host types — do not yet commit. Non-host should NOT see it within debounce window.
       await labelInput.fill('Deliberate')
 
-      // Short wait to confirm it hasn't broadcast
-      await playerPage.waitForTimeout(1000)
-      await expect(playerPage.getByText('Deliberate')).not.toBeVisible()
-
-      // Host clicks Set — non-host should now see the label
-      await setBtn.click()
+      // Commit explicitly with Enter (deterministic, faster than debounce)
+      await labelInput.press('Enter')
       await expect(playerPage.getByText('Deliberate')).toBeVisible({
         timeout: 15000,
       })
@@ -209,6 +204,7 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
 
       // Host types and presses Enter to submit
@@ -225,9 +221,7 @@ test.describe('Session Labels', () => {
     }
   })
 
-  test('Empty Set submission clears the broadcast label', async ({
-    browser,
-  }) => {
+  test('empty label on Enter clears broadcast', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const playerCtx = await browser.newContext()
     try {
@@ -240,51 +234,27 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
-      const setBtn = hostPage.getByRole('button', { name: 'Set round label' })
 
       // Host sets a label
       await labelInput.fill('Something')
-      await setBtn.click()
+      await labelInput.press('Enter')
       await expect(playerPage.getByText('Something')).toBeVisible({
         timeout: 15000,
       })
 
-      // Host clears input and clicks Set — non-host should no longer see label
-      await labelInput.fill('')
-      await setBtn.click()
+      // Re-enter edit mode, clear input, press Enter — non-host should no longer see label
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
+      const labelInput2 = hostPage.getByPlaceholder('Round label (optional)')
+      await labelInput2.fill('')
+      await labelInput2.press('Enter')
       await expect(playerPage.getByText('Something')).not.toBeVisible({
         timeout: 10000,
       })
     } finally {
       await hostCtx.close()
       await playerCtx.close()
-    }
-  })
-
-  test('Set button is disabled when input matches last broadcast', async ({
-    browser,
-  }) => {
-    const hostCtx = await browser.newContext()
-    try {
-      const hostPage = await hostCtx.newPage()
-      await hostGame(hostPage, 'Alice')
-
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
-      const setBtn = hostPage.getByRole('button', { name: 'Set round label' })
-
-      // Set button starts disabled (input matches empty initial value)
-      await expect(setBtn).toBeDisabled()
-
-      // Host types 'A' — button should enable
-      await labelInput.fill('A')
-      await expect(setBtn).toBeEnabled()
-
-      // Click Set — button should disable again (input matches last broadcast)
-      await setBtn.click()
-      await expect(setBtn).toBeDisabled()
-    } finally {
-      await hostCtx.close()
     }
   })
 })
@@ -348,9 +318,7 @@ test.describe('Consensus', () => {
 })
 
 test.describe('CSV Export', () => {
-  test('export CSV button enabled on first round with results', async ({
-    browser,
-  }) => {
+  test('export CSV button enabled on first round with results', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const playerCtx = await browser.newContext()
     try {
@@ -389,9 +357,11 @@ test.describe('CSV Export', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      // Set label, vote, complete round
-      await hostPage.getByPlaceholder('Round label (optional)').fill('Story 1')
-      await hostPage.getByRole('button', { name: 'Set round label' }).click()
+      // Set label via banner → Enter commit
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
+      const story1Input = hostPage.getByPlaceholder('Round label (optional)')
+      await story1Input.fill('Story 1')
+      await story1Input.press('Enter')
       await expect(playerPage.getByText('Story 1')).toBeVisible({
         timeout: 15000,
       })
@@ -410,15 +380,12 @@ test.describe('CSV Export', () => {
       await playerPage.getByText('3', { exact: true }).click()
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
-      // Intercept download
-      const [download] = await Promise.all([
-        hostPage.waitForEvent('download'),
-        hostPage.getByRole('button', { name: 'Export CSV' }).click(),
-      ])
+      // Intercept download (button is below the chart now — scroll it in)
+      const exportBtn = hostPage.getByRole('button', { name: 'Export CSV' })
+      await exportBtn.scrollIntoViewIfNeeded()
+      const [download] = await Promise.all([hostPage.waitForEvent('download'), exportBtn.click()])
 
-      expect(download.suggestedFilename()).toMatch(
-        /^planning-poker-[a-f0-9]+\.csv$/,
-      )
+      expect(download.suggestedFilename()).toMatch(/^planning-poker-[a-f0-9]+\.csv$/)
 
       // Verify CSV content
       const content = await download.path().then((p) => {
@@ -480,7 +447,7 @@ test.describe('Accessibility announcements', () => {
     }
   })
 
-  test('no /setLabel network request fires while typing — only on Set', async ({
+  test('no /setLabel fires while typing; exactly one fires after debounce settles', async ({
     browser,
   }) => {
     const hostCtx = await browser.newContext()
@@ -496,26 +463,28 @@ test.describe('Accessibility announcements', () => {
         }
       })
 
+      // Enter edit mode via banner
+      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
       await expect(labelInput).toBeVisible()
 
-      // Type 20 characters one at a time — if legacy debounce logic were still
-      // around, it would fire /setLabel after each 300ms quiet window.
-      await labelInput.pressSequentially('Login page redesign!', { delay: 80 })
+      // Type 'Hello' character-by-character well under the 1000ms debounce window
+      await labelInput.pressSequentially('Hello', { delay: 80 })
 
-      // Wait well past any plausible debounce window
-      await hostPage.waitForTimeout(2000)
-
-      // STRICT: zero broadcasts during pure typing
+      // Immediately after typing, no request should have fired yet
       expect(
         setLabelRequests.length,
-        `Expected 0 /setLabel POSTs during typing, got ${setLabelRequests.length}`,
+        `Expected 0 /setLabel POSTs during active typing, got ${setLabelRequests.length}`,
       ).toBe(0)
 
-      // Now explicitly click Set — exactly one POST should fire
-      await hostPage.getByRole('button', { name: 'Set round label' }).click()
-      await hostPage.waitForTimeout(500)
-      expect(setLabelRequests.length).toBe(1)
+      // Wait past the 1000ms debounce window
+      await hostPage.waitForTimeout(1200)
+
+      // Exactly one debounced broadcast should have fired
+      expect(
+        setLabelRequests.length,
+        `Expected 1 /setLabel POST after debounce settled, got ${setLabelRequests.length}`,
+      ).toBe(1)
     } finally {
       await hostCtx.close()
     }
