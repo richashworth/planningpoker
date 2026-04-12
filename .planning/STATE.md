@@ -4,8 +4,8 @@ milestone: v1.5
 milestone_name: UX & Polish
 status: milestone_complete
 stopped_at: v1.5 UX & Polish shipped 2026-04-10
-last_updated: "2026-04-10T18:00:45.363Z"
-last_activity: 2026-04-10
+last_updated: "2026-04-12T20:10:00.000Z"
+last_activity: 2026-04-12 - Completed quick task 260412-tb3: Option F layout (auto-save label + session-history export row)
 progress:
   total_phases: 3
   completed_phases: 2
@@ -65,6 +65,7 @@ None.
 | 260407-tk3 | Fix graceful session handling after server restart — detect reconnect and validate session still exists | 2026-04-07 | b77edf2 | [260407-tk3-fix-graceful-session-handling-after-serv](./quick/260407-tk3-fix-graceful-session-handling-after-serv/) |
 | 260407-x1g | Fix todo 002: increase contrast on estimation scheme selector cards | 2026-04-07 | 554346b | [260407-x1g-fix-todo-002-increase-contrast-on-estima](./quick/260407-x1g-fix-todo-002-increase-contrast-on-estima/) |
 | 260407-x87 | Remove unused React imports and unused runThunk variable causing ESLint warnings | 2026-04-07 | f7c86b1 | [260407-x87-remove-unused-react-imports-and-unused-r](./quick/260407-x87-remove-unused-react-imports-and-unused-r/) |
+| 260412-tb3 | Option F: auto-save round label, CURRENT ITEM banner, Export CSV to session-history row | 2026-04-12 | 070406c | [260412-tb3-implement-option-f-auto-save-round-label](./quick/260412-tb3-implement-option-f-auto-save-round-label/) |
 
 ## Session Continuity
 
