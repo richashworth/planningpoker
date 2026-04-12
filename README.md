@@ -6,6 +6,8 @@ A web-based planning poker tool for agile estimation. See [this blog post](https
 
 **Live:** https://planning-poker.up.railway.app
 
+![Planning Poker demo — host creating a session, 10 users voting over two rounds](docs/demo.gif)
+
 ## Tech Stack
 
 | Layer | Technology |

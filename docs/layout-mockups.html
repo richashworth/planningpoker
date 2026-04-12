@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Planning Poker — Layout Options</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #161922;
+        --panel-2: #1c2030;
+        --border: #272b3a;
+        --text: #e6e8ef;
+        --muted: #8a91a3;
+        --primary: #667eea;
+        --primary-contrast: #ffffff;
+        --success: #10b981;
+        --danger: #ef4444;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        padding: 32px 24px 80px;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 48px 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+      .intro {
+        max-width: 880px;
+        color: var(--muted);
+      }
+      .intro code {
+        color: #c8d1ff;
+        background: #20243a;
+        padding: 1px 6px;
+        border-radius: 3px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1280px;
+      }
+      @media (max-width: 980px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 18px;
+      }
+      .card .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--primary);
+        margin-bottom: 4px;
+      }
+      .card h3 {
+        margin: 0 0 4px;
+        font-size: 16px;
+      }
+      .card .why {
+        color: var(--muted);
+        font-size: 12.5px;
+        margin: 0 0 14px;
+      }
+      .card .refs {
+        color: var(--muted);
+        font-size: 11.5px;
+        margin-top: 10px;
+        font-style: italic;
+      }
+
+      /* ---- mock MUI primitives ---- */
+      .mock {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 16px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .spread {
+        justify-content: space-between;
+      }
+      .h6 {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .caption {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        cursor: default;
+      }
+      .btn.primary {
+        background: var(--primary);
+        color: var(--primary-contrast);
+        padding: 9px 24px;
+        font-size: 13px;
+      }
+      .btn.outlined {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .btn.text {
+        color: var(--primary);
+        padding: 4px 8px;
+      }
+      .btn.icon {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        justify-content: center;
+        color: var(--muted);
+      }
+      .btn.icon:hover,
+      .btn.icon.active {
+        color: var(--primary);
+        border-color: var(--border);
+      }
+      .icon-svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+      }
+
+      .field {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+        padding: 6px 0;
+        gap: 8px;
+      }
+      .field input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font: inherit;
+        outline: none;
+      }
+      .field .placeholder {
+        color: var(--muted);
+        flex: 1;
+      }
+      .field.focused {
+        border-bottom-color: var(--primary);
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #232a40;
+        color: var(--text);
+        font-size: 12px;
+      }
+      .chip.success {
+        background: rgba(16, 185, 129, 0.14);
+        color: var(--success);
+      }
+      .chip.subtle {
+        background: transparent;
+        color: var(--muted);
+        padding: 0;
+      }
+
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+        margin-top: 14px;
+      }
+      .pcard {
+        aspect-ratio: 3 / 4;
+        border: 1.5px solid var(--border);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--text);
+        background: var(--panel);
+        font-size: 13px;
+      }
+      .pcard.sel {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+      }
+
+      .chart {
+        margin-top: 14px;
+        height: 110px;
+        background:
+          linear-gradient(var(--border), var(--border)) left bottom / 100% 1px no-repeat,
+          linear-gradient(var(--border), var(--border)) left bottom / 1px 100% no-repeat;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        padding: 0 8px 0 24px;
+      }
+      .bar {
+        flex: 1;
+        background: linear-gradient(180deg, #7b8ff0, #667eea);
+        border-radius: 3px 3px 0 0;
+      }
+
+      .kebab-menu {
+        position: absolute;
+        top: 42px;
+        right: 0;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 0;
+        min-width: 180px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        z-index: 1;
+      }
+      .kebab-menu .item {
+        padding: 8px 14px;
+        font-size: 13px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .kebab-menu .item:hover {
+        background: var(--panel-2);
+      }
+      .rel {
+        position: relative;
+      }
+
+      .label-heading {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .label-heading .edit-pencil {
+        opacity: 0.5;
+        font-size: 13px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 10px 14px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 6px 6px;
+        margin-top: -1px;
+      }
+      .toolbar .spacer {
+        flex: 1;
+      }
+
+      .summary {
+        max-width: 1280px;
+        margin-top: 48px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px 24px;
+      }
+      .summary table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .summary th,
+      .summary td {
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .summary th {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .summary tr:last-child td {
+        border-bottom: none;
+      }
+      .pill {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .pill.good {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+      }
+      .pill.mid {
+        background: rgba(234, 179, 8, 0.15);
+        color: #facc15;
+      }
+      .pill.bad {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Planning Poker — Layout Options</h1>
+    <p class="intro">
+      Two placement problems to solve. <strong>(1)</strong> The round-label
+      <code>Set</code> button currently sits as an inline endAdornment inside the TextField — a
+      textbox-with-trailing-action pattern that feels cramped and duplicates what
+      <kbd>Enter</kbd> already does. <strong>(2)</strong> <code>Export CSV</code> competes with
+      <code>Next Item</code> in the Results header, even though it's a low-frequency session-level
+      action, not a round-level one. Below are 5 options grounded in common UX patterns (Material
+      Design action hierarchy, NN/g "Save Buttons" guidance, Linear/Notion/GitHub inline editing).
+      Each mockup shows the Vote screen on the left and the Results screen on the right.
+    </p>
+
+    <div class="grid">
+      <!-- ============ OPTION A ============ -->
+      <div class="card" style="grid-column: 1 / -1">
+        <span class="tag">Option A</span>
+        <h3>Inline-edit heading + kebab overflow menu</h3>
+        <p class="why">
+          Treat the round label as a <em>title</em>, not a form field. Click-to-edit heading, saves
+          on Enter/blur — no button needed. Export CSV moves into a 3-dot overflow menu next to
+          "Next Item", matching the Material "more actions" pattern. Primary action stays visually
+          dominant.
+        </p>
+        <div class="grid" style="gap: 14px">
+          <!-- Vote -->
+          <div class="mock">
+            <div class="row spread">
+              <div class="h6">Cast your estimate</div>
+            </div>
+            <div style="margin-top: 10px">
+              <span class="label-heading"
+                >AUTH-142 — OAuth login with Google
+                <span class="edit-pencil">✎</span>
+              </span>
+            </div>
+            <div class="cards-grid">
+              <div class="pcard">1</div>
+              <div class="pcard">2</div>
+              <div class="pcard">3</div>
+              <div class="pcard sel">5</div>
+              <div class="pcard">8</div>
+              <div class="pcard">13</div>
+            </div>
+          </div>
+          <!-- Results -->
+          <div class="mock">
+            <div class="row spread">
+              <div class="row" style="gap: 12px">
+                <div class="h6">Results</div>
+                <div class="chip">Consensus: 5 ▾</div>
+              </div>
+              <div class="row rel" style="gap: 4px">
+                <div class="btn icon active" title="More">
+                  <svg class="icon-svg" viewBox="0 0 24 24">
+                    <circle cx="5" cy="12" r="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <circle cx="19" cy="12" r="2" />
+                  </svg>
+                </div>
+                <div class="btn primary">Next Item</div>
+                <div class="kebab-menu">
+                  <div class="item">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                      <path
+                        d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"
+                      />
+                    </svg>
+                    Export CSV
+                  </div>
+                  <div class="item">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                      <path
+                        d="M7 5h10v2h2V3H5v4h2V5zm10 14H7v-2H5v4h14v-4h-2v2zM6 12h12v-2H6v2z"
+                      />
+                    </svg>
+                    Copy results
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
+              AUTH-142 — OAuth login with Google
+            </div>
+            <div class="chart">
+              <div class="bar" style="height: 30%"></div>
+              <div class="bar" style="height: 15%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 20%"></div>
+              <div class="bar" style="height: 10%"></div>
+              <div class="bar" style="height: 0"></div>
+            </div>
+          </div>
+        </div>
+        <p class="refs">
+          Pattern refs: Linear issue titles, Notion page titles, GitHub issue kebab menu. Material
+          Design 3 — "Contained button + icon button" for primary/secondary action hierarchy.
+        </p>
+      </div>
+
+      <!-- ============ OPTION B ============ -->
+      <div class="card" style="grid-column: 1 / -1">
+        <span class="tag">Option B</span>
+        <h3>Auto-save label + footer toolbar for secondary actions</h3>
+        <p class="why">
+          Label saves automatically on blur or 1s after typing stops — "Set" button disappears
+          entirely, replaced by a subtle "Saved" indicator. Export CSV (plus future exports) moves
+          to a footer toolbar below the results chart, separated from the primary "Next Item" CTA.
+          Common in Google Docs, Figma, Notion.
+        </p>
+        <div class="grid" style="gap: 14px">
+          <div class="mock">
+            <div class="row spread">
+              <div class="h6">Cast your estimate</div>
+            </div>
+            <div class="field focused" style="margin-top: 10px">
+              <input value="AUTH-142 — OAuth login with Google" />
+              <span class="chip success">✓ Saved</span>
+            </div>
+            <div class="cards-grid">
+              <div class="pcard">1</div>
+              <div class="pcard">2</div>
+              <div class="pcard">3</div>
+              <div class="pcard sel">5</div>
+              <div class="pcard">8</div>
+              <div class="pcard">13</div>
+            </div>
+          </div>
+          <div class="mock">
+            <div class="row spread">
+              <div class="row" style="gap: 12px">
+                <div class="h6">Results</div>
+                <div class="chip">Consensus: 5 ▾</div>
+              </div>
+              <div class="btn primary">Next Item</div>
+            </div>
+            <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
+              AUTH-142 — OAuth login with Google
+            </div>
+            <div class="chart">
+              <div class="bar" style="height: 30%"></div>
+              <div class="bar" style="height: 15%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 20%"></div>
+              <div class="bar" style="height: 10%"></div>
+            </div>
+            <div class="toolbar">
+              <span class="caption">Session · 3 rounds</span>
+              <div class="spacer"></div>
+              <div class="btn text">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" />
+                </svg>
+                Export CSV
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="refs">
+          Pattern refs: Google Docs auto-save, Figma, Notion. NN/g — "Save Button or Auto-Save?"
+          (auto-save preferred for single-field, low-risk edits).
+        </p>
+      </div>
+
+      <!-- ============ OPTION C ============ -->
+      <div class="card" style="grid-column: 1 / -1">
+        <span class="tag">Option C</span>
+        <h3>Icon-only buttons (compact toolbar)</h3>
+        <p class="why">
+          Both secondary actions collapse to icon buttons with tooltips. Label TextField gets a
+          small checkmark icon on the right; Results header gets a download-icon button instead of
+          a labelled outlined button. Primary "Next Item" retains full label to remain dominant.
+          Reduces visual weight by ~60% but costs discoverability.
+        </p>
+        <div class="grid" style="gap: 14px">
+          <div class="mock">
+            <div class="row spread">
+              <div class="h6">Cast your estimate</div>
+            </div>
+            <div class="field focused" style="margin-top: 10px">
+              <input value="AUTH-142 — OAuth login with Google" />
+              <div class="btn icon active" title="Set label (Enter)">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
+                </svg>
+              </div>
+            </div>
+            <div class="cards-grid">
+              <div class="pcard">1</div>
+              <div class="pcard">2</div>
+              <div class="pcard">3</div>
+              <div class="pcard sel">5</div>
+              <div class="pcard">8</div>
+              <div class="pcard">13</div>
+            </div>
+          </div>
+          <div class="mock">
+            <div class="row spread">
+              <div class="row" style="gap: 12px">
+                <div class="h6">Results</div>
+                <div class="chip">Consensus: 5 ▾</div>
+              </div>
+              <div class="row" style="gap: 8px">
+                <div class="btn icon active" title="Export CSV">
+                  <svg class="icon-svg" viewBox="0 0 24 24">
+                    <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" />
+                  </svg>
+                </div>
+                <div class="btn primary">Next Item</div>
+              </div>
+            </div>
+            <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
+              AUTH-142 — OAuth login with Google
+            </div>
+            <div class="chart">
+              <div class="bar" style="height: 30%"></div>
+              <div class="bar" style="height: 15%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 20%"></div>
+              <div class="bar" style="height: 10%"></div>
+            </div>
+          </div>
+        </div>
+        <p class="refs">
+          Pattern refs: Gmail toolbar, Slack message actions, JIRA inline toolbar. Trade-off: icons
+          without labels reduce recognition (Bruno Figueiredo, "Icon usability", NN/g 2015) —
+          mitigate with tooltips + aria-labels.
+        </p>
+      </div>
+
+      <!-- ============ OPTION D ============ -->
+      <div class="card" style="grid-column: 1 / -1">
+        <span class="tag">Option D</span>
+        <h3>Session toolbar above GamePane (actions move up one level)</h3>
+        <p class="why">
+          Export CSV is a <em>session-level</em> action — it exports <em>all</em> rounds including
+          ones you can't see on the current Vote/Results view. Moving it to a persistent toolbar
+          above the game pane makes that scope explicit and keeps round-level UI focused on the
+          active item. Label keeps auto-save (no button). "Next Item" remains the only action in
+          the Results header.
+        </p>
+        <div class="mock" style="margin-top: 10px">
+          <div class="row spread" style="margin-bottom: 12px">
+            <div class="row" style="gap: 12px">
+              <span class="chip">Session · 3XYZ9A</span>
+              <span class="caption">Round 3 of session</span>
+            </div>
+            <div class="row" style="gap: 8px">
+              <div class="btn outlined">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" />
+                </svg>
+                Export CSV
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid" style="gap: 14px; margin-top: 14px">
+          <div class="mock">
+            <div class="row spread">
+              <div class="h6">Cast your estimate</div>
+            </div>
+            <div class="field focused" style="margin-top: 10px">
+              <input value="AUTH-142 — OAuth login with Google" />
+              <span class="chip success">✓ Saved</span>
+            </div>
+            <div class="cards-grid">
+              <div class="pcard">1</div>
+              <div class="pcard">2</div>
+              <div class="pcard">3</div>
+              <div class="pcard sel">5</div>
+              <div class="pcard">8</div>
+              <div class="pcard">13</div>
+            </div>
+          </div>
+          <div class="mock">
+            <div class="row spread">
+              <div class="row" style="gap: 12px">
+                <div class="h6">Results</div>
+                <div class="chip">Consensus: 5 ▾</div>
+              </div>
+              <div class="btn primary">Next Item</div>
+            </div>
+            <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
+              AUTH-142 — OAuth login with Google
+            </div>
+            <div class="chart">
+              <div class="bar" style="height: 30%"></div>
+              <div class="bar" style="height: 15%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 20%"></div>
+              <div class="bar" style="height: 10%"></div>
+            </div>
+          </div>
+        </div>
+        <p class="refs">
+          Pattern refs: Linear project toolbar, Trello board actions row, Google Sheets File menu.
+          "Action scope should match UI scope" (Material Design — Navigation & containment).
+        </p>
+      </div>
+
+      <!-- ============ OPTION E ============ -->
+      <div class="card" style="grid-column: 1 / -1">
+        <span class="tag">Option E</span>
+        <h3>Split-button primary + editable title with pencil</h3>
+        <p class="why">
+          Keep actions in the Results header but merge them into a <em>split button</em>: the main
+          surface advances to the next item; the chevron opens a menu with "Next Item + Export
+          CSV", "Export only", etc. Label becomes a large editable title with a pencil affordance
+          (click or hover to reveal). Progressive disclosure for secondary actions, single
+          dominant CTA.
+        </p>
+        <div class="grid" style="gap: 14px">
+          <div class="mock">
+            <div class="row spread">
+              <div class="h6">Cast your estimate</div>
+            </div>
+            <div style="margin-top: 10px">
+              <span class="label-heading"
+                >AUTH-142 — OAuth login with Google
+                <span class="edit-pencil">✎ edit</span>
+              </span>
+            </div>
+            <div class="cards-grid">
+              <div class="pcard">1</div>
+              <div class="pcard">2</div>
+              <div class="pcard">3</div>
+              <div class="pcard sel">5</div>
+              <div class="pcard">8</div>
+              <div class="pcard">13</div>
+            </div>
+          </div>
+          <div class="mock">
+            <div class="row spread">
+              <div class="row" style="gap: 12px">
+                <div class="h6">Results</div>
+                <div class="chip">Consensus: 5 ▾</div>
+              </div>
+              <div class="row" style="gap: 0">
+                <div class="btn primary" style="border-radius: 4px 0 0 4px; padding-right: 16px">
+                  Next Item
+                </div>
+                <div
+                  class="btn primary"
+                  style="
+                    border-radius: 0 4px 4px 0;
+                    padding: 9px 10px;
+                    border-left: 1px solid rgba(255, 255, 255, 0.25);
+                  "
+                  title="More actions"
+                >
+                  ▾
+                </div>
+              </div>
+            </div>
+            <div style="margin-top: 6px; color: var(--muted); font-size: 13px">
+              AUTH-142 — OAuth login with Google
+            </div>
+            <div class="chart">
+              <div class="bar" style="height: 30%"></div>
+              <div class="bar" style="height: 15%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 20%"></div>
+              <div class="bar" style="height: 10%"></div>
+            </div>
+          </div>
+        </div>
+        <p class="refs">
+          Pattern refs: GitHub "Merge pull request" split button, Asana task primary action. NN/g
+          — "Split Buttons: Definition" (2021). Editable title: Trello card, Linear issue.
+        </p>
+      </div>
+
+      <!-- ============ OPTION F ============ -->
+      <div class="card" style="grid-column: 1 / -1">
+        <span class="tag">Option F (bonus)</span>
+        <h3>Prominent label card + export in rounds-history section</h3>
+        <p class="why">
+          Current item gets its own card/banner above the voting grid — more prominent, reduces
+          the "where is the description?" question. Auto-save. Export CSV moves out of the primary
+          flow entirely, into a small "Session history" panel below Results (which is where users
+          go when they want to review past rounds — the same place they'd want to export them).
+        </p>
+        <div class="grid" style="gap: 14px">
+          <div class="mock">
+            <div class="row spread">
+              <div class="h6">Cast your estimate</div>
+            </div>
+            <div
+              style="
+                margin-top: 10px;
+                padding: 12px 14px;
+                background: rgba(102, 126, 234, 0.08);
+                border: 1px solid rgba(102, 126, 234, 0.35);
+                border-radius: 6px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div>
+                <div class="caption">CURRENT ITEM</div>
+                <div style="font-weight: 600; font-size: 14px">
+                  AUTH-142 — OAuth login with Google
+                </div>
+              </div>
+              <span class="btn icon" title="Edit">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75z"
+                  />
+                </svg>
+              </span>
+            </div>
+            <div class="cards-grid">
+              <div class="pcard">1</div>
+              <div class="pcard">2</div>
+              <div class="pcard">3</div>
+              <div class="pcard sel">5</div>
+              <div class="pcard">8</div>
+              <div class="pcard">13</div>
+            </div>
+          </div>
+          <div class="mock">
+            <div class="row spread">
+              <div class="row" style="gap: 12px">
+                <div class="h6">Results</div>
+                <div class="chip">Consensus: 5 ▾</div>
+              </div>
+              <div class="btn primary">Next Item</div>
+            </div>
+            <div class="chart">
+              <div class="bar" style="height: 30%"></div>
+              <div class="bar" style="height: 15%"></div>
+              <div class="bar" style="height: 80%"></div>
+              <div class="bar" style="height: 20%"></div>
+              <div class="bar" style="height: 10%"></div>
+            </div>
+            <div
+              style="
+                margin-top: 14px;
+                padding-top: 12px;
+                border-top: 1px solid var(--border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <div class="caption">SESSION HISTORY · 3 rounds</div>
+              <div class="btn text">
+                <svg class="icon-svg" viewBox="0 0 24 24">
+                  <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" />
+                </svg>
+                Export CSV
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="refs">
+          Pattern refs: Jira sprint "current issue" banner, Linear "active cycle" card. Action
+          co-location — put export next to the data it exports.
+        </p>
+      </div>
+    </div>
+
+    <!-- Summary comparison -->
+    <div class="summary">
+      <h2 style="margin-top: 0">Trade-off summary</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Label UX</th>
+            <th>Export visibility</th>
+            <th>Implementation effort</th>
+            <th>Best for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>A</strong> — Inline heading + kebab</td>
+            <td><span class="pill good">click-to-edit</span></td>
+            <td><span class="pill mid">1 click hidden</span></td>
+            <td><span class="pill mid">medium</span></td>
+            <td>Polished look, room for future secondary actions (copy, share, reset)</td>
+          </tr>
+          <tr>
+            <td><strong>B</strong> — Auto-save + footer toolbar</td>
+            <td><span class="pill good">invisible</span></td>
+            <td><span class="pill good">visible, separated</span></td>
+            <td><span class="pill good">low</span></td>
+            <td>Minimum change, cleanest action hierarchy</td>
+          </tr>
+          <tr>
+            <td><strong>C</strong> — Icon-only buttons</td>
+            <td><span class="pill mid">checkmark icon</span></td>
+            <td><span class="pill mid">icon, no label</span></td>
+            <td><span class="pill good">low</span></td>
+            <td>Compact; costs discoverability — tooltips mandatory</td>
+          </tr>
+          <tr>
+            <td><strong>D</strong> — Session toolbar above pane</td>
+            <td><span class="pill good">invisible</span></td>
+            <td><span class="pill good">persistent, scoped</span></td>
+            <td><span class="pill mid">medium</span></td>
+            <td>Correct semantic scope; adds vertical space cost</td>
+          </tr>
+          <tr>
+            <td><strong>E</strong> — Split button + title</td>
+            <td><span class="pill good">click-to-edit</span></td>
+            <td><span class="pill bad">2 clicks hidden</span></td>
+            <td><span class="pill bad">higher</span></td>
+            <td>Strong single CTA; split buttons have lower discoverability</td>
+          </tr>
+          <tr>
+            <td><strong>F</strong> — Prominent card + history section</td>
+            <td><span class="pill good">invisible</span></td>
+            <td><span class="pill good">co-located w/ data</span></td>
+            <td><span class="pill mid">medium</span></td>
+            <td>Best information scent; largest visual change</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="color: var(--muted); font-size: 12.5px; margin: 14px 0 0">
+        My pick: <strong>B</strong> for minimum-diff shipping today, <strong>D</strong> if you're
+        willing to touch layout above the pane. Both eliminate the Set button, both give Export
+        CSV room to breathe without competing with Next Item. A is the nicest-looking but requires
+        writing a new inline-edit component.
+      </p>
+    </div>
+  </body>
+</html>
