@@ -23,6 +23,7 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
 
   const autoConsensus = calcConsensus(results)
   const displayConsensus = consensusOverride || autoConsensus
+  const totalRounds = rounds.length + (results.length > 0 ? 1 : 0)
 
   const handleNextItem = () => {
     const stats = calcStats(results)
@@ -180,7 +181,7 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
               fontSize: '0.7rem',
             }}
           >
-            Session history · {rounds.length} {rounds.length === 1 ? 'round' : 'rounds'}
+            Session history · {totalRounds} {totalRounds === 1 ? 'round' : 'rounds'}
           </Typography>
           <Button
             variant="outlined"
