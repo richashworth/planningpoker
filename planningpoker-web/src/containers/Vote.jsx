@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
-import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import EditIcon from '@mui/icons-material/Edit'
 import { vote, voteOptimistic, setLabel } from '../actions'
 import UsersTable from './UsersTable'
 
@@ -58,16 +58,79 @@ export default function Vote() {
   const [selected, setSelected] = useState(null)
   const [labelInput, setLabelInput] = useState(currentLabel)
   const [lastBroadcastLabel, setLastBroadcastLabel] = useState(currentLabel)
+  const [isEditing, setIsEditing] = useState(false)
+  const [justSaved, setJustSaved] = useState(false)
+  const debounceTimer = useRef(null)
+  const savedTimer = useRef(null)
 
   useEffect(() => {
     setLabelInput(currentLabel)
     setLastBroadcastLabel(currentLabel)
   }, [currentLabel])
 
-  const handleSubmit = () => {
-    if (labelInput === lastBroadcastLabel) return
-    dispatch(setLabel(playerName, sessionId, labelInput))
-    setLastBroadcastLabel(labelInput)
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current)
+      if (savedTimer.current) clearTimeout(savedTimer.current)
+    }
+  }, [])
+
+  const commitLabel = (nextValue) => {
+    const value = nextValue !== undefined ? nextValue : labelInput
+    if (value === lastBroadcastLabel) return
+    dispatch(setLabel(playerName, sessionId, value))
+    setLastBroadcastLabel(value)
+    setJustSaved(true)
+    if (savedTimer.current) clearTimeout(savedTimer.current)
+    savedTimer.current = setTimeout(() => setJustSaved(false), 1500)
+  }
+
+  const handleLabelChange = (e) => {
+    const next = e.target.value
+    setLabelInput(next)
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    debounceTimer.current = setTimeout(() => {
+      commitLabel(next)
+    }, 1000)
+  }
+
+  const handleBlur = () => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current)
+      debounceTimer.current = null
+    }
+    commitLabel()
+    setIsEditing(false)
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
+        debounceTimer.current = null
+      }
+      commitLabel()
+      setIsEditing(false)
+    } else if (e.key === 'Escape') {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
+        debounceTimer.current = null
+      }
+      setLabelInput(lastBroadcastLabel)
+      setIsEditing(false)
+    }
+  }
+
+  const enterEdit = () => {
+    setIsEditing(true)
+  }
+
+  const handleBannerKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      enterEdit()
+    }
   }
 
   const doVote = (val) => {
@@ -79,6 +142,19 @@ export default function Vote() {
 
   const allValues = legalEstimates
 
+  const bannerBaseSx = {
+    mb: 3,
+    px: 1.75,
+    py: 1.5,
+    bgcolor: 'rgba(102,126,234,0.08)',
+    border: '1px solid rgba(102,126,234,0.35)',
+    borderRadius: 0.75,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 1,
+  }
+
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 42, mb: 1 }}>
@@ -86,46 +162,131 @@ export default function Vote() {
           Cast your estimate
         </Typography>
       </Box>
-      <Box sx={{ mb: 3, minHeight: 32 }}>
-        {isAdmin ? (
-          <TextField
-            variant="standard"
-            placeholder="Round label (optional)"
-            fullWidth
-            size="small"
-            value={labelInput}
-            onChange={(e) => setLabelInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                handleSubmit()
-              }
-            }}
-            inputProps={{ maxLength: 100 }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Button
-                    variant="text"
-                    size="small"
-                    onClick={handleSubmit}
-                    disabled={labelInput === lastBroadcastLabel}
-                    aria-label="Set round label"
-                  >
-                    Set
-                  </Button>
-                </InputAdornment>
-              ),
-            }}
-          />
+      {isAdmin ? (
+        isEditing ? (
+          <Box sx={{ ...bannerBaseSx, py: 1 }}>
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  letterSpacing: '0.08em',
+                  color: 'text.secondary',
+                  display: 'block',
+                  fontSize: '0.7rem',
+                }}
+              >
+                CURRENT ITEM
+              </Typography>
+              <TextField
+                variant="standard"
+                fullWidth
+                size="small"
+                autoFocus
+                placeholder="Round label (optional)"
+                value={labelInput}
+                onChange={handleLabelChange}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                inputProps={{ maxLength: 100 }}
+              />
+            </Box>
+            {justSaved && (
+              <Typography
+                variant="caption"
+                sx={{ color: 'success.main', ml: 1, whiteSpace: 'nowrap' }}
+              >
+                ✓ Saved
+              </Typography>
+            )}
+          </Box>
         ) : (
-          currentLabel && (
-            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-              {currentLabel}
-            </Typography>
-          )
-        )}
-      </Box>
+          <Box
+            role="button"
+            tabIndex={0}
+            aria-label="Edit current item"
+            onClick={enterEdit}
+            onKeyDown={handleBannerKeyDown}
+            sx={{
+              ...bannerBaseSx,
+              cursor: 'pointer',
+              '&:hover': { borderColor: 'primary.main' },
+            }}
+          >
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  letterSpacing: '0.08em',
+                  color: 'text.secondary',
+                  display: 'block',
+                  fontSize: '0.7rem',
+                }}
+              >
+                CURRENT ITEM
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 600,
+                  color: currentLabel ? 'text.primary' : 'text.secondary',
+                  fontStyle: currentLabel ? 'normal' : 'italic',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {currentLabel || 'Add item description...'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {justSaved && (
+                <Typography variant="caption" sx={{ color: 'success.main', whiteSpace: 'nowrap' }}>
+                  ✓ Saved
+                </Typography>
+              )}
+              <IconButton
+                size="small"
+                aria-label="Edit current item"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  enterEdit()
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+        )
+      ) : (
+        currentLabel && (
+          <Box sx={bannerBaseSx}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  letterSpacing: '0.08em',
+                  color: 'text.secondary',
+                  display: 'block',
+                  fontSize: '0.7rem',
+                }}
+              >
+                CURRENT ITEM
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 600,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {currentLabel}
+              </Typography>
+            </Box>
+          </Box>
+        )
+      )}
       <Box
         sx={{
           display: 'grid',
