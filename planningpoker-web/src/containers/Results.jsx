@@ -99,15 +99,17 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
             ))}
         </Box>
         {isAdmin && (
-          <Button
-            variant="contained"
-            size="large"
-            disableElevation
-            onClick={handleNextItem}
-            sx={{ px: 4 }}
-          >
-            Next Item
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Button
+              variant="contained"
+              size="large"
+              disableElevation
+              onClick={handleNextItem}
+              sx={{ px: 4 }}
+            >
+              Next Item
+            </Button>
+          </Box>
         )}
       </Box>
       {currentLabel && (
@@ -125,31 +127,19 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
         }}
       >
         <Box>
-          {isAdmin && (
+          {isAdmin && rounds.length > 0 && (
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'flex-end',
-                gap: 1.5,
                 mb: 1,
-                minHeight: 32,
+                minHeight: 20,
               }}
             >
-              {rounds.length > 0 && (
-                <Typography variant="caption" color="text.secondary">
-                  Round {rounds.length + 1}
-                </Typography>
-              )}
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<DownloadIcon />}
-                onClick={handleExportCsv}
-                disabled={rounds.length === 0 && results.length === 0}
-              >
-                Export CSV
-              </Button>
+              <Typography variant="caption" color="text.secondary">
+                Round {rounds.length + 1}
+              </Typography>
             </Box>
           )}
           <Box
@@ -167,6 +157,42 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
         </Box>
         <ResultsTable />
       </Box>
+      {isAdmin && (rounds.length > 0 || results.length > 0) && (
+        <Box
+          sx={{
+            mt: 2,
+            pt: 2,
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              fontSize: '0.7rem',
+            }}
+          >
+            Session history · {rounds.length} {rounds.length === 1 ? 'round' : 'rounds'}
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<DownloadIcon />}
+            onClick={handleExportCsv}
+            disabled={rounds.length === 0 && results.length === 0}
+          >
+            Export CSV
+          </Button>
+        </Box>
+      )}
     </Box>
   )
 }
