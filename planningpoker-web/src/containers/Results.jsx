@@ -77,27 +77,27 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
             Results
           </Typography>
-          {displayConsensus &&
-            (isAdmin ? (
+          {isAdmin && displayConsensus && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Typography variant="body2" color="text.secondary">
+                Consensus:
+              </Typography>
               <Select
                 size="small"
                 value={displayConsensus}
                 onChange={(e) => {
                   setConsensusOverride(e.target.value === autoConsensus ? null : e.target.value)
                 }}
-                sx={{ minWidth: 110 }}
+                sx={{ minWidth: 72 }}
               >
                 {legalEstimates.map((val) => (
                   <MenuItem key={val} value={val}>
-                    Consensus: {val}
+                    {val}
                   </MenuItem>
                 ))}
               </Select>
-            ) : (
-              <Typography variant="body1" color="primary" sx={{ fontWeight: 600 }}>
-                Consensus: {displayConsensus}
-              </Typography>
-            ))}
+            </Box>
+          )}
         </Box>
         {isAdmin && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
