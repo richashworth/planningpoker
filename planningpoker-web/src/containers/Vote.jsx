@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import IconButton from '@mui/material/IconButton'
-import EditIcon from '@mui/icons-material/Edit'
+import InputAdornment from '@mui/material/InputAdornment'
+import Button from '@mui/material/Button'
 import { vote, voteOptimistic, setLabel } from '../actions'
 import UsersTable from './UsersTable'
 
@@ -58,7 +58,6 @@ export default function Vote() {
   const [selected, setSelected] = useState(null)
   const [labelInput, setLabelInput] = useState(currentLabel)
   const [lastBroadcastLabel, setLastBroadcastLabel] = useState(currentLabel)
-  const [isEditing, setIsEditing] = useState(false)
   const [justSaved, setJustSaved] = useState(false)
   const debounceTimer = useRef(null)
   const savedTimer = useRef(null)
@@ -100,7 +99,6 @@ export default function Vote() {
       debounceTimer.current = null
     }
     commitLabel()
-    setIsEditing(false)
   }
 
   const handleKeyDown = (e) => {
@@ -111,26 +109,15 @@ export default function Vote() {
         debounceTimer.current = null
       }
       commitLabel()
-      setIsEditing(false)
-    } else if (e.key === 'Escape') {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current)
-        debounceTimer.current = null
-      }
-      setLabelInput(lastBroadcastLabel)
-      setIsEditing(false)
     }
   }
 
-  const enterEdit = () => {
-    setIsEditing(true)
-  }
-
-  const handleBannerKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      enterEdit()
+  const handleSetClick = () => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current)
+      debounceTimer.current = null
     }
+    commitLabel()
   }
 
   const doVote = (val) => {
@@ -142,19 +129,6 @@ export default function Vote() {
 
   const allValues = legalEstimates
 
-  const bannerBaseSx = {
-    mb: 3,
-    px: 1.75,
-    py: 1.5,
-    bgcolor: 'rgba(102,126,234,0.08)',
-    border: '1px solid rgba(102,126,234,0.35)',
-    borderRadius: 0.75,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 1,
-  }
-
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 42, mb: 1 }}>
@@ -162,131 +136,6 @@ export default function Vote() {
           Cast your estimate
         </Typography>
       </Box>
-      {isAdmin ? (
-        isEditing ? (
-          <Box sx={{ ...bannerBaseSx, py: 1 }}>
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  letterSpacing: '0.08em',
-                  color: 'text.secondary',
-                  display: 'block',
-                  fontSize: '0.7rem',
-                }}
-              >
-                CURRENT ITEM
-              </Typography>
-              <TextField
-                variant="standard"
-                fullWidth
-                size="small"
-                autoFocus
-                placeholder="Round label (optional)"
-                value={labelInput}
-                onChange={handleLabelChange}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-                inputProps={{ maxLength: 100 }}
-              />
-            </Box>
-            {justSaved && (
-              <Typography
-                variant="caption"
-                sx={{ color: 'success.main', ml: 1, whiteSpace: 'nowrap' }}
-              >
-                ✓ Saved
-              </Typography>
-            )}
-          </Box>
-        ) : (
-          <Box
-            role="button"
-            tabIndex={0}
-            aria-label="Edit current item"
-            onClick={enterEdit}
-            onKeyDown={handleBannerKeyDown}
-            sx={{
-              ...bannerBaseSx,
-              cursor: 'pointer',
-              '&:hover': { borderColor: 'primary.main' },
-            }}
-          >
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  letterSpacing: '0.08em',
-                  color: 'text.secondary',
-                  display: 'block',
-                  fontSize: '0.7rem',
-                }}
-              >
-                CURRENT ITEM
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  fontWeight: 600,
-                  color: currentLabel ? 'text.primary' : 'text.secondary',
-                  fontStyle: currentLabel ? 'normal' : 'italic',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {currentLabel || 'Add item description...'}
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {justSaved && (
-                <Typography variant="caption" sx={{ color: 'success.main', whiteSpace: 'nowrap' }}>
-                  ✓ Saved
-                </Typography>
-              )}
-              <IconButton
-                size="small"
-                aria-label="Edit current item"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  enterEdit()
-                }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          </Box>
-        )
-      ) : (
-        currentLabel && (
-          <Box sx={bannerBaseSx}>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  letterSpacing: '0.08em',
-                  color: 'text.secondary',
-                  display: 'block',
-                  fontSize: '0.7rem',
-                }}
-              >
-                CURRENT ITEM
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  fontWeight: 600,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {currentLabel}
-              </Typography>
-            </Box>
-          </Box>
-        )
-      )}
       <Box
         sx={{
           display: 'grid',
@@ -296,34 +145,80 @@ export default function Vote() {
           minHeight: 300,
         }}
       >
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
-            gap: 0.75,
-          }}
-        >
-          {allValues.map((val) => (
-            <Box
-              key={val}
-              role="button"
-              tabIndex={0}
-              aria-label={`Vote ${val}`}
-              sx={{
-                ...cardSx(selected === val, selected !== null && selected !== val),
-                ...(val === '\u2615' && { fontSize: '1.5rem' }),
-              }}
-              onClick={() => doVote(val)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  doVote(val)
-                }
-              }}
-            >
-              {val}
-            </Box>
-          ))}
+        <Box>
+          <Box sx={{ mb: 2, minHeight: 40 }}>
+            {isAdmin ? (
+              <TextField
+                variant="standard"
+                placeholder="Round label (optional)"
+                fullWidth
+                size="small"
+                value={labelInput}
+                onChange={handleLabelChange}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                inputProps={{ maxLength: 100 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {justSaved && (
+                        <Typography
+                          variant="caption"
+                          sx={{ color: 'success.main', mr: 1, whiteSpace: 'nowrap' }}
+                        >
+                          ✓ Saved
+                        </Typography>
+                      )}
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={handleSetClick}
+                        disabled={labelInput === lastBroadcastLabel}
+                        aria-label="Set round label"
+                      >
+                        Set
+                      </Button>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            ) : (
+              currentLabel && (
+                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                  {currentLabel}
+                </Typography>
+              )
+            )}
+          </Box>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+              gap: 0.75,
+            }}
+          >
+            {allValues.map((val) => (
+              <Box
+                key={val}
+                role="button"
+                tabIndex={0}
+                aria-label={`Vote ${val}`}
+                sx={{
+                  ...cardSx(selected === val, selected !== null && selected !== val),
+                  ...(val === '\u2615' && { fontSize: '1.5rem' }),
+                }}
+                onClick={() => doVote(val)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    doVote(val)
+                  }
+                }}
+              >
+                {val}
+              </Box>
+            ))}
+          </Box>
         </Box>
         <UsersTable heading="Players" />
       </Box>

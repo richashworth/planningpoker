@@ -127,34 +127,17 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           minHeight: 300,
         }}
       >
-        <Box>
-          {isAdmin && rounds.length > 0 && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                mb: 1,
-                minHeight: 20,
-              }}
-            >
-              <Typography variant="caption" color="text.secondary">
-                Round {rounds.length + 1}
-              </Typography>
-            </Box>
-          )}
-          <Box
-            sx={{
-              bgcolor: 'background.paper',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 1,
-              p: 2.5,
-              transition: 'border-color 0.3s ease, background-color 0.3s ease',
-            }}
-          >
-            <ResultsChart />
-          </Box>
+        <Box
+          sx={{
+            bgcolor: 'background.paper',
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 1,
+            p: 2.5,
+            transition: 'border-color 0.3s ease, background-color 0.3s ease',
+          }}
+        >
+          <ResultsChart />
         </Box>
         <ResultsTable />
       </Box>

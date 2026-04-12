@@ -57,18 +57,16 @@ test.describe('Session Labels', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Host has an edit-current-item banner
-      const banner = hostPage.getByRole('button', { name: 'Edit current item' }).first()
-      await expect(banner).toBeVisible()
+      // Host sees the inline label input
+      await expect(hostPage.getByPlaceholder('Round label (optional)')).toBeVisible()
 
-      // Non-host should NOT have a label input or edit banner
+      // Non-host should NOT have a label input
       await expect(playerPage.getByPlaceholder('Round label (optional)')).not.toBeVisible()
 
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      // Host clicks banner, types a label and presses Enter to commit
-      await banner.click()
+      // Host types a label and presses Enter to commit
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
       await labelInput.fill('Login page redesign')
       await labelInput.press('Enter')
@@ -97,7 +95,6 @@ test.describe('Session Labels', () => {
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host opens the banner, sets a label and commits with Enter
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const sprintInput = hostPage.getByPlaceholder('Round label (optional)')
       await sprintInput.fill('Sprint 42')
       await sprintInput.press('Enter')
@@ -136,7 +133,6 @@ test.describe('Session Labels', () => {
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host opens banner, sets label and commits with Enter
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const itemAInput = hostPage.getByPlaceholder('Round label (optional)')
       await itemAInput.fill('Item A')
       await itemAInput.press('Enter')
@@ -150,11 +146,11 @@ test.describe('Session Labels', () => {
       // Host clicks Next Item
       await hostPage.getByRole('button', { name: 'Next Item' }).click()
 
-      // Should be back to voting, banner should be empty (placeholder visible)
+      // Should be back to voting, label field should be empty
       await expect(hostPage.getByText('Cast your estimate')).toBeVisible({
         timeout: 15000,
       })
-      await expect(hostPage.getByText('Add item description...')).toBeVisible()
+      await expect(hostPage.getByPlaceholder('Round label (optional)')).toHaveValue('')
     } finally {
       await hostCtx.close()
       await playerCtx.close()
@@ -174,7 +170,6 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
 
       // Host types — do not yet commit. Non-host should NOT see it within debounce window.
@@ -204,7 +199,6 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
 
       // Host types and presses Enter to submit
@@ -234,7 +228,6 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
 
       // Host sets a label
@@ -245,7 +238,6 @@ test.describe('Session Labels', () => {
       })
 
       // Re-enter edit mode, clear input, press Enter — non-host should no longer see label
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput2 = hostPage.getByPlaceholder('Round label (optional)')
       await labelInput2.fill('')
       await labelInput2.press('Enter')
@@ -358,7 +350,6 @@ test.describe('CSV Export', () => {
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Set label via banner → Enter commit
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const story1Input = hostPage.getByPlaceholder('Round label (optional)')
       await story1Input.fill('Story 1')
       await story1Input.press('Enter')
@@ -464,7 +455,6 @@ test.describe('Accessibility announcements', () => {
       })
 
       // Enter edit mode via banner
-      await hostPage.getByRole('button', { name: 'Edit current item' }).first().click()
       const labelInput = hostPage.getByPlaceholder('Round label (optional)')
       await expect(labelInput).toBeVisible()
 

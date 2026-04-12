@@ -79,8 +79,6 @@ async function castVote(page, value) {
 // In Option F the banner is click-to-edit: we first click the banner to reveal
 // the TextField, then pressSequentially so viewers see the text appear.
 async function setRoundLabel(hostPage, label) {
-  await hostPage.getByRole('button', { name: 'Edit current item' }).first().click();
-  await sleep(250);
   const field = hostPage.getByPlaceholder('Round label (optional)');
   await field.waitFor({ timeout: 5000 });
   await field.fill('');
