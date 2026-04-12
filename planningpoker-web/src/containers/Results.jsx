@@ -1,9 +1,7 @@
-import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import DownloadIcon from '@mui/icons-material/Download'
@@ -21,14 +19,10 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
   const currentLabel = useSelector((state) => state.game.currentLabel)
   const results = useSelector((state) => state.results)
   const rounds = useSelector((state) => state.rounds)
-
-  const [overrideOpen, setOverrideOpen] = useState(false)
+  const legalEstimates = useSelector((state) => state.game.legalEstimates)
 
   const autoConsensus = calcConsensus(results)
   const displayConsensus = consensusOverride || autoConsensus
-
-  // Unique vote values from current round for override dropdown
-  const uniqueVoteValues = [...new Set(results.map((r) => r.estimateValue))].sort()
 
   const handleNextItem = () => {
     const stats = calcStats(results)
@@ -82,64 +76,38 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
             Results
           </Typography>
-          {displayConsensus && (
-            <>
-              {isAdmin && overrideOpen ? (
-                <Select
-                  size="small"
-                  value={consensusOverride || autoConsensus}
-                  autoFocus
-                  onBlur={() => setOverrideOpen(false)}
-                  onChange={(e) => {
-                    setConsensusOverride(e.target.value === autoConsensus ? null : e.target.value)
-                    setOverrideOpen(false)
-                  }}
-                  sx={{ minWidth: 80 }}
-                >
-                  {uniqueVoteValues.map((val) => (
-                    <MenuItem key={val} value={val}>
-                      {val}
-                    </MenuItem>
-                  ))}
-                </Select>
-              ) : (
-                <Chip
-                  label={`Consensus: ${displayConsensus}`}
-                  color="primary"
-                  size="medium"
-                  onClick={isAdmin ? () => setOverrideOpen(true) : undefined}
-                  sx={{ cursor: isAdmin ? 'pointer' : 'default' }}
-                />
-              )}
-            </>
-          )}
+          {displayConsensus &&
+            (isAdmin ? (
+              <Select
+                size="small"
+                value={displayConsensus}
+                onChange={(e) => {
+                  setConsensusOverride(e.target.value === autoConsensus ? null : e.target.value)
+                }}
+                sx={{ minWidth: 110 }}
+              >
+                {legalEstimates.map((val) => (
+                  <MenuItem key={val} value={val}>
+                    Consensus: {val}
+                  </MenuItem>
+                ))}
+              </Select>
+            ) : (
+              <Typography variant="body1" color="primary" sx={{ fontWeight: 600 }}>
+                Consensus: {displayConsensus}
+              </Typography>
+            ))}
         </Box>
         {isAdmin && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            {rounds.length > 0 && (
-              <Typography variant="caption" color="text.secondary">
-                {rounds.length} {rounds.length === 1 ? 'round' : 'rounds'}
-              </Typography>
-            )}
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<DownloadIcon />}
-              onClick={handleExportCsv}
-              disabled={rounds.length === 0 && results.length === 0}
-            >
-              Export CSV
-            </Button>
-            <Button
-              variant="contained"
-              size="large"
-              disableElevation
-              onClick={handleNextItem}
-              sx={{ px: 4 }}
-            >
-              Next Item
-            </Button>
-          </Box>
+          <Button
+            variant="contained"
+            size="large"
+            disableElevation
+            onClick={handleNextItem}
+            sx={{ px: 4 }}
+          >
+            Next Item
+          </Button>
         )}
       </Box>
       {currentLabel && (
@@ -157,6 +125,33 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
         }}
       >
         <Box>
+          {isAdmin && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: 1.5,
+                mb: 1,
+                minHeight: 32,
+              }}
+            >
+              {rounds.length > 0 && (
+                <Typography variant="caption" color="text.secondary">
+                  Round {rounds.length + 1}
+                </Typography>
+              )}
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<DownloadIcon />}
+                onClick={handleExportCsv}
+                disabled={rounds.length === 0 && results.length === 0}
+              >
+                Export CSV
+              </Button>
+            </Box>
+          )}
           <Box
             sx={{
               bgcolor: 'background.paper',

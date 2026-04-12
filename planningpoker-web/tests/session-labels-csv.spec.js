@@ -306,9 +306,9 @@ test.describe('Consensus', () => {
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
-      // Consensus chip should show "Consensus: 5"
-      await expect(hostPage.locator('.MuiChip-root', { hasText: 'Consensus: 5' })).toBeVisible()
-      await expect(playerPage.locator('.MuiChip-root', { hasText: 'Consensus: 5' })).toBeVisible({
+      // Consensus should show "Consensus: 5" — host sees Select, player sees text
+      await expect(hostPage.getByText('Consensus: 5')).toBeVisible()
+      await expect(playerPage.getByText('Consensus: 5')).toBeVisible({
         timeout: 15000,
       })
     } finally {
@@ -333,19 +333,13 @@ test.describe('Consensus', () => {
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
-      // Host clicks the consensus chip to open override dropdown
-      const chip = hostPage.locator('.MuiChip-root', { hasText: 'Consensus:' })
-      await chip.click()
-
-      // Override dropdown should appear — select a different value
+      // Host opens consensus dropdown and picks a different value
       const select = hostPage.locator('.MuiSelect-select')
       await select.click()
-      await hostPage.getByRole('option', { name: '8' }).click()
+      await hostPage.getByRole('option', { name: 'Consensus: 8' }).click()
 
-      // Chip should now show overridden value
-      await expect(
-        hostPage.locator('.MuiChip-root', { hasText: 'Consensus: 8' }),
-      ).toBeVisible()
+      // Combobox should display the overridden value
+      await expect(hostPage.getByRole('combobox')).toHaveText('Consensus: 8')
     } finally {
       await hostCtx.close()
       await playerCtx.close()
@@ -583,9 +577,7 @@ test.describe('Accessibility announcements', () => {
       await playerPage.getByText('5', { exact: true }).click()
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-      await expect(
-        hostPage.locator('.MuiChip-root', { hasText: 'Consensus: 5' }),
-      ).toBeVisible({ timeout: 10000 })
+      await expect(hostPage.getByText('Consensus: 5')).toBeVisible({ timeout: 10000 })
 
       // Live region should contain consensus announcement (fires after 1500ms debounce)
       const liveRegion = hostPage.locator('[role="status"][aria-live="polite"]')
