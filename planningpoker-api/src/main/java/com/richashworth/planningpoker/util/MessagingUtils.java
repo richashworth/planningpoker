@@ -74,12 +74,17 @@ public class MessagingUtils {
     }
   }
 
+  @Async
   public void sendResetNotification(String sessionId) {
-    template.convertAndSend(
-        getTopic(TOPIC_RESULTS, sessionId), new Message(MessageType.RESET_MESSAGE, Map.of()));
+    Object message = new Message(MessageType.RESET_MESSAGE, Map.of());
+    for (final long LATENCY_DURATION : LATENCIES) {
+      template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), message);
+      clock.pause(LATENCY_DURATION);
+    }
   }
 
-  // Timer state is authoritative and idempotent — a single send suffices (no burst needed).
+  // Timer state is authoritative and idempotent; burst to ensure delivery over WebSocket lag.
+  @Async
   public void sendTimerMessage(String sessionId) {
     TimerState timerState = sessionManager.getTimerState(sessionId);
     // Refresh serverNow to reflect the current time at send
@@ -91,8 +96,11 @@ public class MessagingUtils {
             timerState.pausedAt(),
             timerState.accumulatedPausedMs(),
             System.currentTimeMillis());
-    template.convertAndSend(
-        getTopic(TOPIC_TIMER, sessionId), new Message(MessageType.TIMER_MESSAGE, withFreshNow));
+    Object message = new Message(MessageType.TIMER_MESSAGE, withFreshNow);
+    for (final long LATENCY_DURATION : LATENCIES) {
+      template.convertAndSend(getTopic(TOPIC_TIMER, sessionId), message);
+      clock.pause(LATENCY_DURATION);
+    }
   }
 
   Message resultsMessage(Object payload) {

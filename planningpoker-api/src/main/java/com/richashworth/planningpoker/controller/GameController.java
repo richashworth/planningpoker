@@ -176,6 +176,7 @@ public class GameController {
     }
     messagingUtils.sendResetNotification(sessionId);
     messagingUtils.burstResultsMessages(sessionId);
+    messagingUtils.sendTimerMessage(sessionId);
   }
 
   @PostMapping("setLabel")

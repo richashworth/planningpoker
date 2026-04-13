@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.Lists;
-import com.richashworth.planningpoker.model.TimerState;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
@@ -21,7 +20,6 @@ class TimerControllerTest extends AbstractControllerTest {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
     when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
-    when(sessionManager.getTimerState(SESSION_ID)).thenReturn(TimerState.idle(true, 60));
 
     timerController.configure(SESSION_ID, USER_NAME, true, 60);
 

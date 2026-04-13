@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
@@ -37,6 +37,7 @@ export default defineConfig({
       '/kick': 'http://localhost:9000',
       '/promote': 'http://localhost:9000',
       '/setLabel': 'http://localhost:9000',
+      '/timer': 'http://localhost:9000',
       '/stomp': {
         target: 'http://localhost:9000',
         ws: true,
@@ -44,4 +45,4 @@ export default defineConfig({
       '/actuator': 'http://localhost:9000',
     },
   },
-});
+})

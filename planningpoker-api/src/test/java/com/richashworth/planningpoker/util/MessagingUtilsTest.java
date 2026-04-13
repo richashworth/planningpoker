@@ -121,7 +121,11 @@ class MessagingUtilsTest {
   @Test
   void testSendResetNotification() {
     messagingUtils.sendResetNotification(SESSION_ID);
-    verify(template).convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), (Object) any());
+    verify(template, times(LATENCIES.length))
+        .convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), (Object) any());
+    for (long latency : LATENCIES) {
+      verify(clock, times(1)).pause(latency);
+    }
   }
 
   @Test
