@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 Phase: —
 Plan: —
 Status: v1.5 milestone complete
-Last activity: 2026-04-10
+Last activity: 2026-04-13 - Completed quick task 260413-dqq: round timer feature
 
 Progress: [█████░░░░░] 50% (v1.5) — 1/2 plans complete
 
@@ -66,6 +66,7 @@ None.
 | 260407-x1g | Fix todo 002: increase contrast on estimation scheme selector cards | 2026-04-07 | 554346b | [260407-x1g-fix-todo-002-increase-contrast-on-estima](./quick/260407-x1g-fix-todo-002-increase-contrast-on-estima/) |
 | 260407-x87 | Remove unused React imports and unused runThunk variable causing ESLint warnings | 2026-04-07 | f7c86b1 | [260407-x87-remove-unused-react-imports-and-unused-r](./quick/260407-x87-remove-unused-react-imports-and-unused-r/) |
 | 260412-tb3 | Option F: auto-save round label, CURRENT ITEM banner, Export CSV to session-history row | 2026-04-12 | 070406c | [260412-tb3-implement-option-f-auto-save-round-label](./quick/260412-tb3-implement-option-f-auto-save-round-label/) |
+| 260413-dqq | Round timer feature with host controls and game-setup toggle (Option B inline chip) — Verified | 2026-04-13 | ba1d0c2 | [260413-dqq-add-round-timer-feature-with-host-control](./quick/260413-dqq-add-round-timer-feature-with-host-control/) |
 
 ## Session Continuity
 

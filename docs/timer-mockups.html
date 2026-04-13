@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Planning Poker — Round Timer Mockups</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #161922;
+        --panel-2: #1c2030;
+        --border: #272b3a;
+        --text: #e6e8ef;
+        --muted: #8a91a3;
+        --primary: #667eea;
+        --primary-contrast: #ffffff;
+        --success: #10b981;
+        --warn: #f59e0b;
+        --danger: #ef4444;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        padding: 32px 24px 80px;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: 18px;
+        margin: 48px 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+      .intro {
+        max-width: 880px;
+        color: var(--muted);
+      }
+      .intro code {
+        color: #c8d1ff;
+        background: #20243a;
+        padding: 1px 6px;
+        border-radius: 3px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1280px;
+      }
+      @media (max-width: 980px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 18px;
+      }
+      .card .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--primary);
+        margin-bottom: 4px;
+      }
+      .card h3 {
+        margin: 0 0 4px;
+        font-size: 16px;
+      }
+      .card .why {
+        color: var(--muted);
+        font-size: 12.5px;
+        margin: 0 0 14px;
+      }
+      .card .refs {
+        color: var(--muted);
+        font-size: 11.5px;
+        margin-top: 10px;
+        font-style: italic;
+      }
+      .pros-cons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+        font-size: 12px;
+      }
+      .pros-cons div {
+        border-radius: 4px;
+        padding: 8px 10px;
+      }
+      .pros {
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+      }
+      .cons {
+        background: rgba(239, 68, 68, 0.07);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+      }
+      .pros b,
+      .cons b {
+        display: block;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        color: var(--muted);
+      }
+      .pros ul,
+      .cons ul {
+        margin: 0;
+        padding-left: 14px;
+      }
+
+      /* ---- mock frame ---- */
+      .mock {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 16px;
+        position: relative;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .spread {
+        justify-content: space-between;
+      }
+      .h6 {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .caption {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        cursor: default;
+      }
+      .btn.primary {
+        background: var(--primary);
+        color: var(--primary-contrast);
+        padding: 9px 24px;
+      }
+      .btn.outlined {
+        border-color: var(--border);
+        color: var(--text);
+        background: transparent;
+      }
+      .btn.text {
+        color: var(--primary);
+        padding: 4px 8px;
+      }
+      .btn.icon {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        justify-content: center;
+        color: var(--muted);
+        border-color: var(--border);
+        background: transparent;
+      }
+      .btn.icon.active {
+        color: var(--primary);
+      }
+      .icon-svg {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+      }
+
+      /* ---- simulated app header ---- */
+      .appbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--panel);
+        margin: -16px -16px 14px;
+        border-radius: 6px 6px 0 0;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .chips {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .chip.primary {
+        color: var(--primary);
+        border-color: rgba(102, 126, 234, 0.5);
+        background: rgba(102, 126, 234, 0.08);
+      }
+      .chip.warn {
+        color: var(--warn);
+        border-color: rgba(245, 158, 11, 0.5);
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .chip.danger {
+        color: var(--danger);
+        border-color: rgba(239, 68, 68, 0.5);
+        background: rgba(239, 68, 68, 0.12);
+        animation: pulse 1.1s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.04);
+          opacity: 0.85;
+        }
+      }
+
+      /* ---- voting card grid ---- */
+      .vote-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+        margin-top: 12px;
+      }
+      .vote-card {
+        aspect-ratio: 3 / 4;
+        border: 2px solid var(--border);
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        background: var(--panel);
+        font-size: 16px;
+      }
+      .vote-card.sel {
+        background: var(--primary);
+        color: var(--primary-contrast);
+        border-color: var(--primary);
+      }
+
+      /* ---- players column ---- */
+      .players {
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 12px;
+        background: var(--panel);
+      }
+      .players .ph {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .players .pl {
+        display: flex;
+        justify-content: space-between;
+        padding: 3px 0;
+        border-top: 1px solid var(--border);
+      }
+      .players .pl:first-of-type {
+        border-top: 0;
+      }
+      .players .pl .check {
+        color: var(--success);
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 180px;
+        gap: 14px;
+        margin-top: 12px;
+      }
+
+      /* ---- timer visuals ---- */
+      .timer-big {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+      }
+      .timer-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        background: var(--panel);
+      }
+      .timer-inline.running {
+        color: var(--primary);
+        border-color: rgba(102, 126, 234, 0.5);
+      }
+      .timer-inline.warn {
+        color: var(--warn);
+        border-color: rgba(245, 158, 11, 0.5);
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .timer-inline.danger {
+        color: var(--danger);
+        border-color: rgba(239, 68, 68, 0.5);
+        background: rgba(239, 68, 68, 0.12);
+        animation: pulse 1.1s ease-in-out infinite;
+      }
+
+      /* Option A: header pill */
+      .header-timer {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-variant-numeric: tabular-nums;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .header-timer .dot {
+        width: 6px;
+        height: 6px;
+        background: var(--muted);
+        border-radius: 50%;
+      }
+      .header-timer.running {
+        color: var(--primary);
+        border-color: rgba(102, 126, 234, 0.5);
+      }
+      .header-timer.running .dot {
+        background: var(--primary);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+      }
+      .header-timer.warn {
+        color: var(--warn);
+        border-color: rgba(245, 158, 11, 0.5);
+      }
+      .header-timer.warn .dot {
+        background: var(--warn);
+      }
+
+      /* Option B: inline beside label */
+      .label-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .label-row .field {
+        flex: 1;
+      }
+      .field {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+        padding: 6px 0;
+        gap: 8px;
+      }
+      .field .placeholder {
+        color: var(--muted);
+        flex: 1;
+        font-size: 13px;
+      }
+
+      /* Option C: banner */
+      .banner-timer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 14px 18px;
+        margin: 8px 0 14px;
+        border-radius: 6px;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.12),
+          rgba(102, 126, 234, 0.04)
+        );
+        border: 1px solid rgba(102, 126, 234, 0.3);
+      }
+      .banner-timer.urgent {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(239, 68, 68, 0.04));
+        border-color: rgba(239, 68, 68, 0.45);
+      }
+      .banner-timer .num {
+        font-size: 32px;
+      }
+      .banner-timer .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+      .banner-timer .controls {
+        display: flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      /* Option D: ring */
+      .ring-wrap {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--panel);
+        margin-bottom: 14px;
+      }
+      .ring {
+        position: relative;
+        width: 56px;
+        height: 56px;
+      }
+      .ring svg {
+        transform: rotate(-90deg);
+      }
+      .ring .bg {
+        fill: none;
+        stroke: var(--border);
+        stroke-width: 5;
+      }
+      .ring .fg {
+        fill: none;
+        stroke: var(--primary);
+        stroke-width: 5;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1s linear;
+      }
+      .ring.warn .fg {
+        stroke: var(--warn);
+      }
+      .ring.danger .fg {
+        stroke: var(--danger);
+      }
+      .ring .num {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .ring-wrap .meta {
+        flex: 1;
+      }
+      .ring-wrap .meta .t {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .ring-wrap .meta .d {
+        font-size: 13px;
+      }
+
+      /* Option E: progress bar under cards */
+      .progress-wrap {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .progress {
+        flex: 1;
+        height: 6px;
+        background: var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .progress .fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 3px;
+      }
+      .progress .fill.warn {
+        background: var(--warn);
+      }
+      .progress .fill.danger {
+        background: var(--danger);
+      }
+      .progress-wrap .t {
+        font-variant-numeric: tabular-nums;
+        font-size: 13px;
+        min-width: 42px;
+        text-align: right;
+      }
+
+      /* Option F: floating dock */
+      .floating {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+      }
+      .floating .ring {
+        width: 44px;
+        height: 44px;
+      }
+      .floating .ring .num {
+        font-size: 12px;
+      }
+      .floating .actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      /* Option G: action-bar embedded */
+      .action-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .action-bar .left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .action-bar .right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .state-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .state-row .mock {
+        padding: 12px;
+      }
+      .state-row .state-label {
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Round Timer — Placement &amp; Interaction Mockups</h1>
+    <p class="intro">
+      Seven options for adding a <b>round timer</b> feature (inspired by Miro, Teams, Parabol,
+      Scrum Poker Online). Core interactions across all options:
+      <code>host chooses duration → start → countdown ticks → warn at 10s → expire</code>. Host-only
+      controls (start / pause / reset / extend); non-host sees read-only countdown. Ordered roughly
+      from <b>most subtle</b> to <b>most prominent</b>. Pick one (or a hybrid).
+    </p>
+
+    <h2>A — Header chip</h2>
+    <p class="sub">Tiny pill lives in the top app bar, next to the session ID chip.</p>
+    <div class="card">
+      <span class="tag">SUBTLE · AMBIENT</span>
+      <h3>Always-visible pill in the header</h3>
+      <p class="why">
+        Highest screen-real-estate efficiency. The timer is present without ever occupying space
+        inside the voting area. Host clicks the pill to open a menu (start/pause/duration). Feels
+        like a "status bar" element.
+      </p>
+
+      <div class="mock">
+        <div class="appbar">
+          <div class="brand">Planning Poker</div>
+          <div class="chips">
+            <span class="chip">Session: ABCD1234</span>
+            <span class="header-timer"><span class="dot"></span> Start timer</span>
+            <span class="chip">Alice ▾</span>
+          </div>
+        </div>
+        <div class="state-row">
+          <div class="mock">
+            <div class="state-label">Running</div>
+            <div class="row" style="justify-content: center">
+              <span class="header-timer running"><span class="dot"></span> 01:24</span>
+            </div>
+          </div>
+          <div class="mock">
+            <div class="state-label">Final 10s</div>
+            <div class="row" style="justify-content: center">
+              <span class="header-timer warn"><span class="dot"></span> 00:08</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <b>Pros</b>
+          <ul>
+            <li>Zero layout impact on voting area</li>
+            <li>Always visible, never covers cards</li>
+            <li>Consistent with existing header chip pattern</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <b>Cons</b>
+          <ul>
+            <li>Easy to miss — not in the user's focal area</li>
+            <li>Hard to read from across the room on a TV</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>B — Inline next to round label</h2>
+    <p class="sub">Timer chip sits on the same row as the round label input — right side.</p>
+    <div class="card">
+      <span class="tag">CONTEXTUAL · MINIMAL</span>
+      <h3>Co-located with the round label input</h3>
+      <p class="why">
+        Lives with the "current round" state. The host sets the label, then the timer on the same
+        row — both are round-scoped controls. Click the chip to open duration picker; arrow menu
+        for pause/reset. Non-hosts see only the running countdown.
+      </p>
+
+      <div class="mock">
+        <div class="label-row">
+          <div class="field"><span class="placeholder">AUTH-142 — OAuth login with Google</span></div>
+          <span class="timer-inline running">
+            <svg class="icon-svg" viewBox="0 0 24 24">
+              <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 11H7v-2h4V5h2Z" />
+            </svg>
+            01:47
+          </span>
+          <button class="btn icon">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
+          </button>
+        </div>
+        <div class="vote-grid">
+          <div class="vote-card">1</div>
+          <div class="vote-card">2</div>
+          <div class="vote-card">3</div>
+          <div class="vote-card sel">5</div>
+          <div class="vote-card">8</div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <b>Pros</b>
+          <ul>
+            <li>Natural grouping with round-scoped state</li>
+            <li>No extra vertical space used</li>
+            <li>Survives consistent with current layout</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <b>Cons</b>
+          <ul>
+            <li>Competes with label for attention on narrow screens</li>
+            <li>Needs a click to access duration picker</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>C — Prominent banner above the cards</h2>
+    <p class="sub">Big tinted banner with a large countdown; controls on the right.</p>
+    <div class="card">
+      <span class="tag">PROMINENT · DRAMATIC</span>
+      <h3>Countdown banner dominates the round</h3>
+      <p class="why">
+        Miro's approach — the timer is the star of the round. Large tabular-numeral countdown
+        center-aligned, with start/pause/extend/reset controls. Background turns red and pulses in
+        the final 10s. Highest visibility and "urgency theater" but costs vertical space.
+      </p>
+
+      <div class="mock">
+        <div class="state-row">
+          <div class="mock">
+            <div class="state-label">Running</div>
+            <div class="banner-timer">
+              <div>
+                <div class="label">Time remaining</div>
+                <div class="timer-big num">01:24</div>
+              </div>
+              <div class="controls">
+                <button class="btn icon">
+                  <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
+                </button>
+                <button class="btn icon">
+                  <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z" /></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="mock">
+            <div class="state-label">Final 8s — urgent</div>
+            <div class="banner-timer urgent">
+              <div>
+                <div class="label">Hurry!</div>
+                <div class="timer-big num">00:08</div>
+              </div>
+              <div class="controls">
+                <button class="btn icon">
+                  <svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <b>Pros</b>
+          <ul>
+            <li>Impossible to miss — creates helpful urgency</li>
+            <li>Readable from across a room on shared screen</li>
+            <li>Plenty of space for controls and presets</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <b>Cons</b>
+          <ul>
+            <li>Costs significant vertical space even when idle</li>
+            <li>Can feel pushy / stressful for async teams</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>D — Progress ring beside the cards area</h2>
+    <p class="sub">SVG circular progress + numeric readout, sits above the vote grid.</p>
+    <div class="card">
+      <span class="tag">VISUAL · GLANCEABLE</span>
+      <h3>Circular progress makes time remaining visual</h3>
+      <p class="why">
+        A small ring fills/empties as time elapses, giving an ambient "how much time left" without
+        needing to parse digits. Compact (about 60px tall), still has room for a duration label and
+        controls beside it. Plays well with both cards and results screens.
+      </p>
+
+      <div class="mock">
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg width="56" height="56">
+              <circle class="bg" cx="28" cy="28" r="22"></circle>
+              <circle
+                class="fg"
+                cx="28"
+                cy="28"
+                r="22"
+                stroke-dasharray="138.2"
+                stroke-dashoffset="55"
+              ></circle>
+            </svg>
+            <div class="num">01:24</div>
+          </div>
+          <div class="meta">
+            <div class="t">Round timer</div>
+            <div class="d">2:00 · auto-reveal on expiry</div>
+          </div>
+          <button class="btn icon">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
+          </button>
+          <button class="btn icon">
+            <svg class="icon-svg" viewBox="0 0 24 24">
+              <path
+                d="M17.65 6.35A7.958 7.958 0 0012 4a8 8 0 108 8h-2a6 6 0 11-6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="vote-grid">
+          <div class="vote-card">1</div>
+          <div class="vote-card">2</div>
+          <div class="vote-card">3</div>
+          <div class="vote-card sel">5</div>
+          <div class="vote-card">8</div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <b>Pros</b>
+          <ul>
+            <li>Ambient visual progress — no math required</li>
+            <li>Modest vertical footprint (~60px)</li>
+            <li>Room for meta info (duration, auto-reveal setting)</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <b>Cons</b>
+          <ul>
+            <li>More complex to implement (SVG animation)</li>
+            <li>Still takes dedicated row above cards</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>E — Slim progress bar under the cards</h2>
+    <p class="sub">Thin linear progress bar below the voting grid, numeric at the end.</p>
+    <div class="card">
+      <span class="tag">UNOBTRUSIVE · LINEAR</span>
+      <h3>Progress bar under the voting grid</h3>
+      <p class="why">
+        The least visually disruptive option. A 6px linear bar depletes left-to-right with a small
+        numeric readout at the end. Doesn't take space above the cards at all. Bar color shifts
+        warn → danger as time runs low. Good "just exists" feel — won't annoy async teams.
+      </p>
+
+      <div class="mock">
+        <div class="label-row">
+          <div class="field"><span class="placeholder">AUTH-142 — OAuth login with Google</span></div>
+        </div>
+        <div class="vote-grid">
+          <div class="vote-card">1</div>
+          <div class="vote-card">2</div>
+          <div class="vote-card">3</div>
+          <div class="vote-card sel">5</div>
+          <div class="vote-card">8</div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress"><div class="fill" style="width: 62%"></div></div>
+          <div class="t">01:24</div>
+          <button class="btn icon">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
+          </button>
+        </div>
+        <div class="progress-wrap" style="margin-top: 6px">
+          <div class="progress"><div class="fill danger" style="width: 11%"></div></div>
+          <div class="t" style="color: var(--danger)">00:08</div>
+          <button class="btn icon">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <b>Pros</b>
+          <ul>
+            <li>Smallest vertical cost (≤14px for the bar)</li>
+            <li>Simple to implement with MUI LinearProgress</li>
+            <li>Ambient but still numeric</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <b>Cons</b>
+          <ul>
+            <li>Below the fold on short windows</li>
+            <li>Less "urgent" feel — easy to tune out</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>F — Floating corner dock</h2>
+    <p class="sub">Compact fixed-position widget bottom-right, like a chat dock.</p>
+    <div class="card">
+      <span class="tag">FLOATING · PERSISTENT</span>
+      <h3>Fixed mini-widget in the corner</h3>
+      <p class="why">
+        Timer lives in a floating card pinned to the corner — think Miro's voting widget or Teams'
+        live reactions bar. Doesn't participate in document flow, so it never displaces other
+        content. Host controls live inline. Can be collapsed to just the ring.
+      </p>
+
+      <div class="mock" style="min-height: 220px">
+        <div class="row spread">
+          <div class="h6">Cast your estimate</div>
+        </div>
+        <div class="vote-grid">
+          <div class="vote-card">1</div>
+          <div class="vote-card">2</div>
+          <div class="vote-card">3</div>
+          <div class="vote-card sel">5</div>
+          <div class="vote-card">8</div>
+        </div>
+        <div class="floating">
+          <div class="ring">
+            <svg width="44" height="44">
+              <circle class="bg" cx="22" cy="22" r="18"></circle>
+              <circle
+                class="fg"
+                cx="22"
+                cy="22"
+                r="18"
+                stroke-dasharray="113.1"
+                stroke-dashoffset="45"
+              ></circle>
+            </svg>
+            <div class="num">01:24</div>
+          </div>
+          <div class="actions">
+            <button class="btn icon">
+              <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
+            </button>
+            <button class="btn icon">
+              <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <b>Pros</b>
+          <ul>
+            <li>Zero flow impact — stays put on scroll</li>
+            <li>Glanceable ring + numeric</li>
+            <li>Feels premium / modern</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <b>Cons</b>
+          <ul>
+            <li>Can overlap content on small screens</li>
+            <li>Floating UI is a new pattern for this app</li>
+            <li>Risk of being ignored like a banner ad</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>G — Integrated into the action bar</h2>
+    <p class="sub">Timer sits in the host action bar next to "Reveal" / "Next Item".</p>
+    <div class="card">
+      <span class="tag">INTEGRATED · LOW-CEREMONY</span>
+      <h3>Part of the host controls bar</h3>
+      <p class="why">
+        Treat the timer as another host control. It lives alongside the existing "Next Item"
+        button, so there's no new dedicated row. Players see a read-only pill in the same spot.
+        Duration picker opens from a small dropdown next to the pill.
+      </p>
+
+      <div class="mock">
+        <div class="action-bar">
+          <div class="left">
+            <div class="h6">Cast your estimate</div>
+            <span class="caption">Round 4 of ∞</span>
+          </div>
+          <div class="right">
+            <span class="timer-inline running">
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 11H7v-2h4V5h2Z" />
+              </svg>
+              01:24
+            </span>
+            <button class="btn icon">
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6zm8-14v14h4V5z" />
+              </svg>
+            </button>
+            <button class="btn icon">
+              <svg class="icon-svg" viewBox="0 0 24 24">
+                <path d="M7 10l5 5 5-5z" />
+              </svg>
+            </button>
+            <button class="btn primary">Reveal</button>
+          </div>
+        </div>
+        <div class="vote-grid">
+          <div class="vote-card">1</div>
+          <div class="vote-card">2</div>
+          <div class="vote-card">3</div>
+          <div class="vote-card sel">5</div>
+          <div class="vote-card">8</div>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <b>Pros</b>
+          <ul>
+            <li>No new dedicated row</li>
+            <li>Timer controls live with other host controls (discoverable)</li>
+            <li>Easy extension of the existing header bar</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <b>Cons</b>
+          <ul>
+            <li>Can get crowded on narrow screens</li>
+            <li>Non-hosts still need the pill visible — asymmetric layout</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h2>Cross-cutting decisions (apply to any option)</h2>
+    <div class="card">
+      <ul>
+        <li>
+          <b>Presets</b> — 30s / 1m / 2m / 5m / custom. Remember last used in localStorage. Default
+          probably 2m.
+        </li>
+        <li>
+          <b>Auto-reveal on expiry?</b> Setting per session (checkbox in duration picker). Some
+          teams want strict "no more voting", some want a soft nudge.
+        </li>
+        <li>
+          <b>State sync</b> — needs backend support. Store <code>startedAt</code> + <code>durationSeconds</code>
+          per session; broadcast on start/pause/reset over STOMP. Clients tick locally between
+          updates (don't flood the wire).
+        </li>
+        <li>
+          <b>Host-only controls</b> — players see read-only countdown. Respect the existing
+          admin/player split.
+        </li>
+        <li>
+          <b>Audio cue</b> — optional soft "ding" at 10s and 0s. Off by default, toggle in header
+          menu.
+        </li>
+        <li>
+          <b>Visual urgency</b> — final 10 seconds should warn (amber), final 3 should pulse
+          (red). Consistent across all options.
+        </li>
+        <li>
+          <b>Pause vs. hard-stop</b> — pause should exist (interruptions happen). Reset clears and
+          returns to idle.
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
