@@ -19,6 +19,12 @@ export const SET_LABEL = 'set-label'
 export const LABEL_UPDATED = 'label-updated'
 export const ROUND_COMPLETED = 'round-completed'
 export const SET_CONSENSUS_OVERRIDE = 'set-consensus-override'
+export const TIMER_UPDATED = 'timer-updated'
+export const CONFIGURE_TIMER = 'configure-timer'
+export const START_TIMER = 'start-timer'
+export const PAUSE_TIMER = 'pause-timer'
+export const RESUME_TIMER = 'resume-timer'
+export const RESET_TIMER = 'reset-timer'
 
 export const showError = (message) => ({ type: 'show-error', payload: message })
 export const clearError = () => ({ type: 'clear-error' })
@@ -49,16 +55,23 @@ export const usersUpdated = (users) => ({ type: USERS_UPDATED, payload: users })
 
 export const kicked = () => ({ type: KICKED })
 
+export const timerUpdated = (timer) => ({ type: TIMER_UPDATED, payload: timer })
+
 // User-driven actions (thunks)
 export function createGame(playerName, schemeOptions, onSuccess) {
   return async (dispatch) => {
     try {
-      const { data } = await axios.post(`${API_ROOT_URL}/createSession`, {
+      const body = {
         userName: playerName,
         schemeType: schemeOptions.schemeType,
         customValues: schemeOptions.customValues,
         includeUnsure: schemeOptions.includeUnsure,
-      })
+      }
+      if (schemeOptions.timerEnabled !== undefined) {
+        body.timerEnabled = schemeOptions.timerEnabled
+        body.timerDefaultSeconds = schemeOptions.timerDefaultSeconds
+      }
+      const { data } = await axios.post(`${API_ROOT_URL}/createSession`, body)
       dispatch({ type: CREATE_GAME, payload: data, meta: { userName: playerName } })
       if (onSuccess) onSuccess()
     } catch (err) {
@@ -181,6 +194,69 @@ export function setLabel(userName, sessionId, label) {
     } catch (err) {
       dispatch({ type: SET_LABEL, payload: err, error: true })
       dispatch(showError(err.response?.data?.error || 'Failed to set label'))
+    }
+  }
+}
+
+export function configureTimer(userName, sessionId, enabled, durationSeconds) {
+  return async (dispatch) => {
+    try {
+      await axios.post(
+        `${API_ROOT_URL}/timer/configure`,
+        new URLSearchParams({ userName, sessionId, enabled, durationSeconds }),
+      )
+      dispatch({ type: CONFIGURE_TIMER })
+    } catch (err) {
+      dispatch({ type: CONFIGURE_TIMER, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to configure timer'))
+    }
+  }
+}
+
+export function startTimer(userName, sessionId) {
+  return async (dispatch) => {
+    try {
+      await axios.post(`${API_ROOT_URL}/timer/start`, new URLSearchParams({ userName, sessionId }))
+      dispatch({ type: START_TIMER })
+    } catch (err) {
+      dispatch({ type: START_TIMER, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to start timer'))
+    }
+  }
+}
+
+export function pauseTimer(userName, sessionId) {
+  return async (dispatch) => {
+    try {
+      await axios.post(`${API_ROOT_URL}/timer/pause`, new URLSearchParams({ userName, sessionId }))
+      dispatch({ type: PAUSE_TIMER })
+    } catch (err) {
+      dispatch({ type: PAUSE_TIMER, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to pause timer'))
+    }
+  }
+}
+
+export function resumeTimer(userName, sessionId) {
+  return async (dispatch) => {
+    try {
+      await axios.post(`${API_ROOT_URL}/timer/resume`, new URLSearchParams({ userName, sessionId }))
+      dispatch({ type: RESUME_TIMER })
+    } catch (err) {
+      dispatch({ type: RESUME_TIMER, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to resume timer'))
+    }
+  }
+}
+
+export function resetTimer(userName, sessionId) {
+  return async (dispatch) => {
+    try {
+      await axios.post(`${API_ROOT_URL}/timer/reset`, new URLSearchParams({ userName, sessionId }))
+      dispatch({ type: RESET_TIMER })
+    } catch (err) {
+      dispatch({ type: RESET_TIMER, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to reset timer'))
     }
   }
 }

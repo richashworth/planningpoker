@@ -10,6 +10,10 @@ import TextField from '@mui/material/TextField'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import CircularProgress from '@mui/material/CircularProgress'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl'
 import { createGame, gameCreated } from '../actions'
 import NameInput from '../components/NameInput'
 import SchemeTile from '../components/SchemeTile'
@@ -29,6 +33,14 @@ function validateCustomValues(input) {
   return ''
 }
 
+const TIMER_PRESETS = [
+  { value: 30, label: '30 seconds' },
+  { value: 60, label: '1 minute' },
+  { value: 120, label: '2 minutes' },
+  { value: 300, label: '5 minutes' },
+  { value: 'custom', label: 'Custom…' },
+]
+
 export default function CreateGame() {
   const [playerName, setPlayerName] = useState('')
   const [schemeType, setSchemeType] = useState('fibonacci')
@@ -36,8 +48,13 @@ export default function CreateGame() {
   const [includeUnsure, setIncludeUnsure] = useState(false)
   const [customError, setCustomError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [timerEnabled, setTimerEnabled] = useState(false)
+  const [timerPreset, setTimerPreset] = useState(60)
+  const [timerCustomSeconds, setTimerCustomSeconds] = useState(60)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const timerDefaultSeconds = timerPreset === 'custom' ? timerCustomSeconds : timerPreset
 
   const handleCustomChange = (e) => {
     const val = e.target.value
@@ -74,6 +91,8 @@ export default function CreateGame() {
           schemeType,
           customValues: schemeType === 'custom' ? customValues : null,
           includeUnsure,
+          timerEnabled,
+          timerDefaultSeconds,
         },
         () => {
           dispatch(gameCreated())
@@ -169,6 +188,52 @@ export default function CreateGame() {
               label="Include ? (unsure)"
               sx={{ mb: 2.5 }}
             />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={timerEnabled}
+                  onChange={(e) => setTimerEnabled(e.target.checked)}
+                  size="small"
+                />
+              }
+              label="Enable round timer"
+              sx={{ mb: timerEnabled ? 1.5 : 2.5 }}
+            />
+
+            {timerEnabled && (
+              <Box sx={{ mb: 2.5 }}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="timer-duration-label">Default duration</InputLabel>
+                  <Select
+                    labelId="timer-duration-label"
+                    value={timerPreset}
+                    label="Default duration"
+                    onChange={(e) => setTimerPreset(e.target.value)}
+                  >
+                    {TIMER_PRESETS.map((p) => (
+                      <MenuItem key={p.value} value={p.value}>
+                        {p.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {timerPreset === 'custom' && (
+                  <TextField
+                    label="Duration (seconds)"
+                    type="number"
+                    value={timerCustomSeconds}
+                    onChange={(e) =>
+                      setTimerCustomSeconds(Math.max(5, Math.min(3600, Number(e.target.value))))
+                    }
+                    inputProps={{ min: 5, max: 3600 }}
+                    fullWidth
+                    size="small"
+                    sx={{ mt: 1.5 }}
+                  />
+                )}
+              </Box>
+            )}
 
             <Button
               type="submit"
