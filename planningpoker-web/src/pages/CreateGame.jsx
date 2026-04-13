@@ -10,10 +10,8 @@ import TextField from '@mui/material/TextField'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import CircularProgress from '@mui/material/CircularProgress'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { createGame, gameCreated } from '../actions'
 import NameInput from '../components/NameInput'
 import SchemeTile from '../components/SchemeTile'
@@ -34,11 +32,12 @@ function validateCustomValues(input) {
 }
 
 const TIMER_PRESETS = [
-  { value: 30, label: '30 seconds' },
-  { value: 60, label: '1 minute' },
-  { value: 120, label: '2 minutes' },
-  { value: 300, label: '5 minutes' },
-  { value: 'custom', label: 'Custom…' },
+  { value: 'off', label: 'Off' },
+  { value: 30, label: '30s' },
+  { value: 60, label: '1m' },
+  { value: 120, label: '2m' },
+  { value: 300, label: '5m' },
+  { value: 'custom', label: 'Custom' },
 ]
 
 export default function CreateGame() {
@@ -48,13 +47,14 @@ export default function CreateGame() {
   const [includeUnsure, setIncludeUnsure] = useState(false)
   const [customError, setCustomError] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [timerEnabled, setTimerEnabled] = useState(false)
-  const [timerPreset, setTimerPreset] = useState(60)
+  const [timerPreset, setTimerPreset] = useState('off')
   const [timerCustomSeconds, setTimerCustomSeconds] = useState(60)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const timerDefaultSeconds = timerPreset === 'custom' ? timerCustomSeconds : timerPreset
+  const timerEnabled = timerPreset !== 'off'
+  const timerDefaultSeconds =
+    timerPreset === 'custom' ? timerCustomSeconds : timerEnabled ? timerPreset : 60
 
   const handleCustomChange = (e) => {
     const val = e.target.value
@@ -189,51 +189,48 @@ export default function CreateGame() {
               sx={{ mb: 2.5 }}
             />
 
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={timerEnabled}
-                  onChange={(e) => setTimerEnabled(e.target.checked)}
+            <Box sx={{ mb: 2.5 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block', mb: 0.75 }}
+              >
+                Round timer
+              </Typography>
+              <ToggleButtonGroup
+                value={timerPreset}
+                exclusive
+                size="small"
+                onChange={(_, val) => {
+                  if (val !== null) setTimerPreset(val)
+                }}
+                aria-label="Round timer"
+                sx={{
+                  display: 'flex',
+                  '& .MuiToggleButton-root': { flex: 1, textTransform: 'none' },
+                }}
+              >
+                {TIMER_PRESETS.map((p) => (
+                  <ToggleButton key={p.value} value={p.value} aria-label={p.label}>
+                    {p.label}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+              {timerPreset === 'custom' && (
+                <TextField
+                  label="Duration (seconds)"
+                  type="number"
+                  value={timerCustomSeconds}
+                  onChange={(e) =>
+                    setTimerCustomSeconds(Math.max(5, Math.min(3600, Number(e.target.value))))
+                  }
+                  inputProps={{ min: 5, max: 3600 }}
+                  fullWidth
                   size="small"
+                  sx={{ mt: 1.5 }}
                 />
-              }
-              label="Enable round timer"
-              sx={{ mb: timerEnabled ? 1.5 : 2.5 }}
-            />
-
-            {timerEnabled && (
-              <Box sx={{ mb: 2.5 }}>
-                <FormControl fullWidth size="small">
-                  <InputLabel id="timer-duration-label">Default duration</InputLabel>
-                  <Select
-                    labelId="timer-duration-label"
-                    value={timerPreset}
-                    label="Default duration"
-                    onChange={(e) => setTimerPreset(e.target.value)}
-                  >
-                    {TIMER_PRESETS.map((p) => (
-                      <MenuItem key={p.value} value={p.value}>
-                        {p.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                {timerPreset === 'custom' && (
-                  <TextField
-                    label="Duration (seconds)"
-                    type="number"
-                    value={timerCustomSeconds}
-                    onChange={(e) =>
-                      setTimerCustomSeconds(Math.max(5, Math.min(3600, Number(e.target.value))))
-                    }
-                    inputProps={{ min: 5, max: 3600 }}
-                    fullWidth
-                    size="small"
-                    sx={{ mt: 1.5 }}
-                  />
-                )}
-              </Box>
-            )}
+              )}
+            </Box>
 
             <Button
               type="submit"

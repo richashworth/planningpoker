@@ -14,8 +14,8 @@ async function hostGame(page, name) {
 async function hostGameWithTimer(page, name) {
   await page.goto('/host')
   await page.getByLabel('Your Name').fill(name)
-  // Toggle the "Enable round timer" MUI Switch
-  await page.getByText('Enable round timer').click()
+  // Pick 1m preset from the Round timer segmented control
+  await page.getByRole('button', { name: '1m', exact: true }).click()
   await page.getByRole('button', { name: 'Start Game' }).click()
   await expect(page).toHaveURL('/game')
   // Wait for game page to fully load
@@ -67,14 +67,12 @@ test.describe('Timer Feature', () => {
     await page.goto('/host')
     await page.getByLabel('Your Name').fill('Alice')
 
-    // Timer FormControlLabel text should be visible
-    await expect(page.getByText('Enable round timer')).toBeVisible()
+    // Round timer segmented control should be visible with an "Off" option
+    await expect(page.getByText('Round timer')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Off', exact: true })).toBeVisible()
 
-    // Enable timer by clicking the label text
-    await page.getByText('Enable round timer').click()
-
-    // Duration selector should appear (label element)
-    await expect(page.locator('#timer-duration-label')).toBeVisible()
+    // Pick the 1m preset
+    await page.getByRole('button', { name: '1m', exact: true }).click()
 
     await page.getByRole('button', { name: 'Start Game' }).click()
     await expect(page).toHaveURL('/game')
@@ -82,7 +80,10 @@ test.describe('Timer Feature', () => {
 
     // Timer chip should be visible with "Timer 01:00"
     await expect(
-      page.locator('.MuiChip-root').filter({ hasText: /Timer 01:00/ }).first(),
+      page
+        .locator('.MuiChip-root')
+        .filter({ hasText: /Timer 01:00/ })
+        .first(),
     ).toBeVisible({ timeout: 5000 })
 
     // Start button should be visible for the host
@@ -102,7 +103,10 @@ test.describe('Timer Feature', () => {
 
       // Confirm timer chip is visible before starting
       await expect(
-        hostPage.locator('.MuiChip-root').filter({ hasText: /Timer 01:00/ }).first(),
+        hostPage
+          .locator('.MuiChip-root')
+          .filter({ hasText: /Timer 01:00/ })
+          .first(),
       ).toBeVisible({ timeout: 5000 })
 
       // Host clicks Start timer
