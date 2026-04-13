@@ -53,7 +53,13 @@ public class GameController {
     SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
-    return new SessionResponse(host, null, config.schemeType(), values, config.includeUnsure());
+    return new SessionResponse(
+        host,
+        null,
+        config.schemeType(),
+        values,
+        config.includeUnsure(),
+        sessionManager.getTimerState(sessionId));
   }
 
   @PostMapping("createSession")
@@ -61,8 +67,11 @@ public class GameController {
     validateUserName(request.userName());
     final String sessionId;
     final SchemeConfig schemeConfig = buildSchemeConfig(request);
+    boolean timerEnabled = request.timerEnabled() != null && request.timerEnabled();
+    int timerDefaultSeconds =
+        request.timerDefaultSeconds() != null ? request.timerDefaultSeconds() : 60;
     synchronized (sessionManager) {
-      sessionId = sessionManager.createSession(schemeConfig);
+      sessionId = sessionManager.createSession(schemeConfig, timerEnabled, timerDefaultSeconds);
       sessionManager.registerUser(request.userName(), sessionId);
       logger.info(
           "user {} created session {}",
@@ -73,7 +82,12 @@ public class GameController {
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
     return new SessionResponse(
-        host, sessionId, schemeConfig.schemeType(), values, schemeConfig.includeUnsure());
+        host,
+        sessionId,
+        schemeConfig.schemeType(),
+        values,
+        schemeConfig.includeUnsure(),
+        sessionManager.getTimerState(sessionId));
   }
 
   @PostMapping("logout")

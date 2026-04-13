@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
+import Button from '@mui/material/Button'
 import { vote, voteOptimistic, setLabel } from '../actions'
 import UsersTable from './UsersTable'
 
@@ -111,6 +112,14 @@ export default function Vote() {
     }
   }
 
+  const handleSetClick = () => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current)
+      debounceTimer.current = null
+    }
+    commitLabel()
+  }
+
   const doVote = (val) => {
     if (selected) return
     setSelected(val)
@@ -150,16 +159,27 @@ export default function Vote() {
                 onKeyDown={handleKeyDown}
                 inputProps={{ maxLength: 100 }}
                 InputProps={{
-                  endAdornment: justSaved ? (
+                  endAdornment: (
                     <InputAdornment position="end">
-                      <Typography
-                        variant="caption"
-                        sx={{ color: 'success.main', whiteSpace: 'nowrap' }}
+                      {justSaved && (
+                        <Typography
+                          variant="caption"
+                          sx={{ color: 'success.main', mr: 1, whiteSpace: 'nowrap' }}
+                        >
+                          ✓ Saved
+                        </Typography>
+                      )}
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={handleSetClick}
+                        disabled={labelInput === lastBroadcastLabel}
+                        aria-label="Set round label"
                       >
-                        ✓ Saved
-                      </Typography>
+                        Set
+                      </Button>
                     </InputAdornment>
-                  ) : null,
+                  ),
                 }}
               />
             ) : (

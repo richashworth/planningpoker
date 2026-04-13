@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
+import com.richashworth.planningpoker.model.TimerState;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -579,6 +580,178 @@ class SessionManagerTest {
           sessionManager.getSessionUsers(activeId).isEmpty(),
           "Active session should still have users: " + activeId);
     }
+  }
+
+  // --- Timer tests ---
+
+  @Test
+  void testGetTimerStateDefaultsToIdleDisabled() {
+    String sessionId = sessionManager.createSession();
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertNotNull(timer);
+    assertFalse(timer.enabled());
+    assertEquals(60, timer.durationSeconds());
+    assertNull(timer.startedAt());
+    assertNull(timer.pausedAt());
+    assertEquals(0L, timer.accumulatedPausedMs());
+  }
+
+  @Test
+  void testGetTimerStateUnknownSessionReturnsIdleDisabled() {
+    TimerState timer = sessionManager.getTimerState("nonexistent");
+    assertFalse(timer.enabled());
+    assertEquals(60, timer.durationSeconds());
+  }
+
+  @Test
+  void testConfigureTimerSetsEnabledAndDuration() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 120);
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertTrue(timer.enabled());
+    assertEquals(120, timer.durationSeconds());
+    assertNull(timer.startedAt());
+  }
+
+  @Test
+  void testConfigureTimerRejectsTooShortDuration() {
+    String sessionId = sessionManager.createSession();
+    assertThrows(
+        IllegalArgumentException.class, () -> sessionManager.configureTimer(sessionId, true, 4));
+  }
+
+  @Test
+  void testConfigureTimerRejectsTooLongDuration() {
+    String sessionId = sessionManager.createSession();
+    assertThrows(
+        IllegalArgumentException.class, () -> sessionManager.configureTimer(sessionId, true, 3601));
+  }
+
+  @Test
+  void testStartTimerSetsStartedAt() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 60);
+    long before = System.currentTimeMillis();
+    sessionManager.startTimer(sessionId);
+    long after = System.currentTimeMillis();
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertNotNull(timer.startedAt());
+    assertTrue(timer.startedAt() >= before && timer.startedAt() <= after);
+    assertNull(timer.pausedAt());
+    assertEquals(0L, timer.accumulatedPausedMs());
+  }
+
+  @Test
+  void testPauseTimerSetsPausedAt() throws InterruptedException {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 60);
+    sessionManager.startTimer(sessionId);
+    Thread.sleep(10);
+    sessionManager.pauseTimer(sessionId);
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertNotNull(timer.pausedAt());
+    assertNotNull(timer.startedAt());
+  }
+
+  @Test
+  void testPauseTimerNoOpWhenNotStarted() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 60);
+    sessionManager.pauseTimer(sessionId); // should not throw
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertNull(timer.startedAt());
+    assertNull(timer.pausedAt());
+  }
+
+  @Test
+  void testPauseTimerNoOpWhenAlreadyPaused() throws InterruptedException {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 60);
+    sessionManager.startTimer(sessionId);
+    Thread.sleep(10);
+    sessionManager.pauseTimer(sessionId);
+    TimerState firstPause = sessionManager.getTimerState(sessionId);
+    Thread.sleep(10);
+    sessionManager.pauseTimer(sessionId); // second pause — no-op
+    TimerState secondPause = sessionManager.getTimerState(sessionId);
+    assertEquals(firstPause.pausedAt(), secondPause.pausedAt());
+  }
+
+  @Test
+  void testResumeTimerClearsPausedAtAndAccumulates() throws InterruptedException {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 60);
+    sessionManager.startTimer(sessionId);
+    Thread.sleep(20);
+    sessionManager.pauseTimer(sessionId);
+    TimerState paused = sessionManager.getTimerState(sessionId);
+    Thread.sleep(30);
+    sessionManager.resumeTimer(sessionId);
+    TimerState resumed = sessionManager.getTimerState(sessionId);
+    assertNull(resumed.pausedAt());
+    assertTrue(resumed.accumulatedPausedMs() >= 30);
+    assertTrue(resumed.accumulatedPausedMs() >= paused.pausedAt() - paused.startedAt());
+  }
+
+  @Test
+  void testResumeTimerNoOpWhenNotPaused() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 60);
+    sessionManager.startTimer(sessionId);
+    TimerState before = sessionManager.getTimerState(sessionId);
+    sessionManager.resumeTimer(sessionId); // no-op
+    TimerState after = sessionManager.getTimerState(sessionId);
+    assertEquals(before.accumulatedPausedMs(), after.accumulatedPausedMs());
+  }
+
+  @Test
+  void testResetTimerRuntimePreservesConfigClearsRuntime() throws InterruptedException {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 120);
+    sessionManager.startTimer(sessionId);
+    Thread.sleep(10);
+    sessionManager.pauseTimer(sessionId);
+    sessionManager.resetTimerRuntime(sessionId);
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertTrue(timer.enabled());
+    assertEquals(120, timer.durationSeconds());
+    assertNull(timer.startedAt());
+    assertNull(timer.pausedAt());
+    assertEquals(0L, timer.accumulatedPausedMs());
+  }
+
+  @Test
+  void testResetSessionPreservesTimerConfigClearsRuntime() throws InterruptedException {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 90);
+    sessionManager.startTimer(sessionId);
+    Thread.sleep(10);
+    sessionManager.resetSession(sessionId);
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertTrue(timer.enabled());
+    assertEquals(90, timer.durationSeconds());
+    assertNull(timer.startedAt());
+  }
+
+  @Test
+  void testClearSessionsWipesTimers() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.configureTimer(sessionId, true, 60);
+    sessionManager.clearSessions();
+    // After clear, getTimerState returns the default idle disabled (key no longer in map)
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertFalse(timer.enabled());
+    assertEquals(60, timer.durationSeconds());
+  }
+
+  @Test
+  void testCreateSessionWithTimerEnabled() {
+    String sessionId =
+        sessionManager.createSession(new SchemeConfig("fibonacci", null, true), true, 120);
+    TimerState timer = sessionManager.getTimerState(sessionId);
+    assertTrue(timer.enabled());
+    assertEquals(120, timer.durationSeconds());
+    assertNull(timer.startedAt());
   }
 
   private void registerUsers(String sessionId, ArrayList<String> users) {

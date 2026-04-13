@@ -2,6 +2,7 @@ package com.richashworth.planningpoker.util;
 
 import static com.richashworth.planningpoker.util.Clock.LATENCIES;
 
+import com.richashworth.planningpoker.model.TimerState;
 import com.richashworth.planningpoker.service.SessionManager;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class MessagingUtils {
 
   public static final String TOPIC_RESULTS = "/topic/results/";
   public static final String TOPIC_USERS = "/topic/users/";
+  public static final String TOPIC_TIMER = "/topic/timer/";
 
   private final SessionManager sessionManager;
   private final Clock clock;
@@ -77,6 +79,22 @@ public class MessagingUtils {
         getTopic(TOPIC_RESULTS, sessionId), new Message(MessageType.RESET_MESSAGE, Map.of()));
   }
 
+  // Timer state is authoritative and idempotent — a single send suffices (no burst needed).
+  public void sendTimerMessage(String sessionId) {
+    TimerState timerState = sessionManager.getTimerState(sessionId);
+    // Refresh serverNow to reflect the current time at send
+    TimerState withFreshNow =
+        new TimerState(
+            timerState.enabled(),
+            timerState.durationSeconds(),
+            timerState.startedAt(),
+            timerState.pausedAt(),
+            timerState.accumulatedPausedMs(),
+            System.currentTimeMillis());
+    template.convertAndSend(
+        getTopic(TOPIC_TIMER, sessionId), new Message(MessageType.TIMER_MESSAGE, withFreshNow));
+  }
+
   Message resultsMessage(Object payload) {
     return new Message(MessageType.RESULTS_MESSAGE, payload);
   }
@@ -88,7 +106,8 @@ public class MessagingUtils {
   private enum MessageType {
     USERS_MESSAGE,
     RESULTS_MESSAGE,
-    RESET_MESSAGE
+    RESET_MESSAGE,
+    TIMER_MESSAGE
   }
 
   private record Message(MessageType type, Object payload) {}

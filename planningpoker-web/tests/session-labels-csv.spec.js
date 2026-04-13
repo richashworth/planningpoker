@@ -268,10 +268,11 @@ test.describe('Consensus', () => {
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
-      // Host sees Consensus label + Select showing the value; non-host sees nothing
-      await expect(hostPage.getByText('Consensus:', { exact: true })).toBeVisible()
-      await expect(hostPage.getByRole('combobox')).toHaveText('5')
-      await expect(playerPage.getByText('Consensus:', { exact: true })).toHaveCount(0)
+      // Consensus should show "Consensus: 5" — host sees Select, player sees text
+      await expect(hostPage.getByText('Consensus: 5')).toBeVisible()
+      await expect(playerPage.getByText('Consensus: 5')).toBeVisible({
+        timeout: 15000,
+      })
     } finally {
       await hostCtx.close()
       await playerCtx.close()
@@ -297,10 +298,10 @@ test.describe('Consensus', () => {
       // Host opens consensus dropdown and picks a different value
       const select = hostPage.locator('.MuiSelect-select')
       await select.click()
-      await hostPage.getByRole('option', { name: '8', exact: true }).click()
+      await hostPage.getByRole('option', { name: 'Consensus: 8' }).click()
 
       // Combobox should display the overridden value
-      await expect(hostPage.getByRole('combobox')).toHaveText('8')
+      await expect(hostPage.getByRole('combobox')).toHaveText('Consensus: 8')
     } finally {
       await hostCtx.close()
       await playerCtx.close()
@@ -535,7 +536,7 @@ test.describe('Accessibility announcements', () => {
       await playerPage.getByText('5', { exact: true }).click()
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-      await expect(hostPage.getByRole('combobox')).toHaveText('5', { timeout: 10000 })
+      await expect(hostPage.getByText('Consensus: 5')).toBeVisible({ timeout: 10000 })
 
       // Live region should contain consensus announcement (fires after 1500ms debounce)
       const liveRegion = hostPage.locator('[role="status"][aria-live="polite"]')
