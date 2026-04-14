@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem'
 import DownloadIcon from '@mui/icons-material/Download'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
-import { resetSession, roundCompleted, resetTimer } from '../actions'
+import { resetSession, roundCompleted } from '../actions'
 import { calcConsensus, calcStats } from '../utils/consensus'
 import { generateCsv, downloadCsv } from '../utils/csvExport'
 
@@ -20,8 +20,6 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
   const results = useSelector((state) => state.results)
   const rounds = useSelector((state) => state.rounds)
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
-
-  const timerEnabled = useSelector((state) => state.timer.enabled)
 
   const autoConsensus = calcConsensus(results)
   const displayConsensus = consensusOverride || autoConsensus
@@ -42,9 +40,6 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
     dispatch(roundCompleted(round))
     setConsensusOverride(null)
     dispatch(resetSession(playerName, sessionId))
-    if (timerEnabled) {
-      dispatch(resetTimer(playerName, sessionId))
-    }
   }
 
   const handleExportCsv = () => {

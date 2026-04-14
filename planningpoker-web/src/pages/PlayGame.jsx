@@ -4,14 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import GamePane from '../containers/GamePane'
 import useStomp from '../hooks/useStomp'
-import {
-  resultsUpdated,
-  usersUpdated,
-  kicked,
-  labelUpdated,
-  timerUpdated,
-  RESET_SESSION,
-} from '../actions'
+import { resultsUpdated, usersUpdated, kicked, labelUpdated, RESET_SESSION } from '../actions'
 import { API_ROOT_URL } from '../config/Constants'
 import axios from 'axios'
 
@@ -64,7 +57,7 @@ export default function PlayGame() {
   }, [kickedMessage])
 
   const topics = useMemo(
-    () => [`/topic/results/${sessionId}`, `/topic/users/${sessionId}`, `/topic/timer/${sessionId}`],
+    () => [`/topic/results/${sessionId}`, `/topic/users/${sessionId}`],
     [sessionId],
   )
 
@@ -86,8 +79,6 @@ export default function PlayGame() {
           return dispatch({ type: RESET_SESSION })
         case 'USERS_MESSAGE':
           return dispatch(usersUpdated(msg.payload))
-        case 'TIMER_MESSAGE':
-          return dispatch(timerUpdated(msg.payload))
         default:
           return
       }

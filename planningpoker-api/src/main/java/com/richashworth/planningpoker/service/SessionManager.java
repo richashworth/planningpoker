@@ -6,7 +6,6 @@ import com.google.common.collect.Multimaps;
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
-import com.richashworth.planningpoker.model.TimerState;
 import com.richashworth.planningpoker.util.LogSafeIds;
 import java.time.Instant;
 import java.util.*;
@@ -35,7 +34,6 @@ public class SessionManager {
       new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, String> sessionHosts = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, String> sessionLabels = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<String, TimerState> sessionTimers = new ConcurrentHashMap<>();
 
   public boolean isSessionActive(final String sessionId) {
     return activeSessions.contains(sessionId);
@@ -46,11 +44,6 @@ public class SessionManager {
   }
 
   public synchronized String createSession(SchemeConfig config) {
-    return createSession(config, false, 60);
-  }
-
-  public synchronized String createSession(
-      SchemeConfig config, boolean timerEnabled, int timerDefaultSeconds) {
     if (activeSessions.size() >= MAX_SESSIONS) {
       throw new IllegalStateException("Too many active sessions");
     }
@@ -71,7 +64,6 @@ public class SessionManager {
         SchemeType.resolveValues(config.schemeType(), csvValues, config.includeUnsure());
     sessionLegalValues.put(sessionId, legal);
     sessionSchemeConfigs.put(sessionId, config);
-    sessionTimers.put(sessionId, TimerState.idle(timerEnabled, timerDefaultSeconds));
     touchSession(sessionId);
     return sessionId;
   }
@@ -101,66 +93,6 @@ public class SessionManager {
 
   public String getLabel(String sessionId) {
     return sessionLabels.getOrDefault(sessionId, "");
-  }
-
-  public TimerState getTimerState(String sessionId) {
-    return sessionTimers.getOrDefault(sessionId, TimerState.idle(false, 60));
-  }
-
-  public void configureTimer(String sessionId, boolean enabled, int durationSeconds) {
-    if (durationSeconds < 5 || durationSeconds > 3600) {
-      throw new IllegalArgumentException("durationSeconds must be between 5 and 3600");
-    }
-    sessionTimers.put(sessionId, TimerState.idle(enabled, durationSeconds));
-    touchSession(sessionId);
-  }
-
-  public void startTimer(String sessionId) {
-    TimerState current = getTimerState(sessionId);
-    long now = System.currentTimeMillis();
-    sessionTimers.put(
-        sessionId,
-        new TimerState(current.enabled(), current.durationSeconds(), now, null, 0L, now));
-    touchSession(sessionId);
-  }
-
-  public void pauseTimer(String sessionId) {
-    TimerState current = getTimerState(sessionId);
-    if (current.startedAt() == null || current.pausedAt() != null) return;
-    long now = System.currentTimeMillis();
-    sessionTimers.put(
-        sessionId,
-        new TimerState(
-            current.enabled(),
-            current.durationSeconds(),
-            current.startedAt(),
-            now,
-            current.accumulatedPausedMs(),
-            now));
-    touchSession(sessionId);
-  }
-
-  public void resumeTimer(String sessionId) {
-    TimerState current = getTimerState(sessionId);
-    if (current.pausedAt() == null) return;
-    long now = System.currentTimeMillis();
-    long additionalPausedMs = now - current.pausedAt();
-    sessionTimers.put(
-        sessionId,
-        new TimerState(
-            current.enabled(),
-            current.durationSeconds(),
-            current.startedAt(),
-            null,
-            current.accumulatedPausedMs() + additionalPausedMs,
-            now));
-    touchSession(sessionId);
-  }
-
-  public void resetTimerRuntime(String sessionId) {
-    TimerState current = getTimerState(sessionId);
-    sessionTimers.put(sessionId, TimerState.idle(current.enabled(), current.durationSeconds()));
-    touchSession(sessionId);
   }
 
   public void promoteHost(String sessionId, String targetUser) {
@@ -195,13 +127,11 @@ public class SessionManager {
     sessionSchemeConfigs.clear();
     sessionHosts.clear();
     sessionLabels.clear();
-    sessionTimers.clear();
   }
 
   public void resetSession(final String sessionId) {
     sessionEstimates.removeAll(sessionId);
     sessionLabels.remove(sessionId);
-    resetTimerRuntime(sessionId);
     touchSession(sessionId);
   }
 
@@ -253,7 +183,6 @@ public class SessionManager {
       sessionSchemeConfigs.remove(sessionId);
       sessionHosts.remove(sessionId);
       sessionLabels.remove(sessionId);
-      sessionTimers.remove(sessionId);
     }
     if (!toEvict.isEmpty()) {
       logger.info("Evicted {} idle session(s)", toEvict.size());

@@ -53,13 +53,7 @@ public class GameController {
     SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
-    return new SessionResponse(
-        host,
-        null,
-        config.schemeType(),
-        values,
-        config.includeUnsure(),
-        sessionManager.getTimerState(sessionId));
+    return new SessionResponse(host, null, config.schemeType(), values, config.includeUnsure());
   }
 
   @PostMapping("createSession")
@@ -67,11 +61,8 @@ public class GameController {
     validateUserName(request.userName());
     final String sessionId;
     final SchemeConfig schemeConfig = buildSchemeConfig(request);
-    boolean timerEnabled = request.timerEnabled() != null && request.timerEnabled();
-    int timerDefaultSeconds =
-        request.timerDefaultSeconds() != null ? request.timerDefaultSeconds() : 60;
     synchronized (sessionManager) {
-      sessionId = sessionManager.createSession(schemeConfig, timerEnabled, timerDefaultSeconds);
+      sessionId = sessionManager.createSession(schemeConfig);
       sessionManager.registerUser(request.userName(), sessionId);
       logger.info(
           "user {} created session {}",
@@ -82,12 +73,7 @@ public class GameController {
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
     return new SessionResponse(
-        host,
-        sessionId,
-        schemeConfig.schemeType(),
-        values,
-        schemeConfig.includeUnsure(),
-        sessionManager.getTimerState(sessionId));
+        host, sessionId, schemeConfig.schemeType(), values, schemeConfig.includeUnsure());
   }
 
   @PostMapping("logout")
@@ -176,7 +162,6 @@ public class GameController {
     }
     messagingUtils.sendResetNotification(sessionId);
     messagingUtils.burstResultsMessages(sessionId);
-    messagingUtils.sendTimerMessage(sessionId);
   }
 
   @PostMapping("setLabel")

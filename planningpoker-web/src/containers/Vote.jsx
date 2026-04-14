@@ -4,35 +4,8 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
-import Chip from '@mui/material/Chip'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Tooltip from '@mui/material/Tooltip'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import PauseIcon from '@mui/icons-material/Pause'
-import ReplayIcon from '@mui/icons-material/Replay'
-import TimerIcon from '@mui/icons-material/Timer'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import {
-  vote,
-  voteOptimistic,
-  setLabel,
-  startTimer,
-  pauseTimer,
-  resumeTimer,
-  resetTimer,
-  configureTimer,
-} from '../actions'
-import { useTimer } from '../hooks/useTimer'
+import { vote, voteOptimistic, setLabel } from '../actions'
 import UsersTable from './UsersTable'
-
-const TIMER_PRESETS = [
-  { value: 30, label: '30 seconds' },
-  { value: 60, label: '1 minute' },
-  { value: 120, label: '2 minutes' },
-  { value: 300, label: '5 minutes' },
-]
 
 function cardSx(isSelected, isDisabled) {
   return {
@@ -74,12 +47,6 @@ function cardSx(isSelected, isDisabled) {
   }
 }
 
-function formatMMSS(seconds) {
-  return `${Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`
-}
-
 export default function Vote() {
   const dispatch = useDispatch()
   const sessionId = useSelector((state) => state.game.sessionId)
@@ -91,11 +58,8 @@ export default function Vote() {
   const [labelInput, setLabelInput] = useState(currentLabel)
   const [lastBroadcastLabel, setLastBroadcastLabel] = useState(currentLabel)
   const [justSaved, setJustSaved] = useState(false)
-  const [menuAnchor, setMenuAnchor] = useState(null)
   const debounceTimerRef = useRef(null)
   const savedTimerRef = useRef(null)
-
-  const { timer, remainingSeconds, running, paused, expired } = useTimer()
 
   useEffect(() => {
     setLabelInput(currentLabel)
@@ -154,35 +118,6 @@ export default function Vote() {
     dispatch(vote(playerName, sessionId, val))
   }
 
-  // Determine chip visual state
-  const idle = timer.enabled && !timer.startedAt
-  const warn = running && remainingSeconds <= 10 && remainingSeconds > 3
-  const danger = running && remainingSeconds <= 3
-
-  let chipColor = 'default'
-  if (running && !warn && !danger) chipColor = 'success'
-  if (warn) chipColor = 'warning'
-  if (danger || expired) chipColor = 'error'
-
-  let chipLabel
-  if (expired) {
-    chipLabel = "Time's up"
-  } else if (paused) {
-    chipLabel = `${formatMMSS(remainingSeconds)} paused`
-  } else if (idle) {
-    chipLabel = `Timer ${formatMMSS(timer.durationSeconds)}`
-  } else {
-    chipLabel = formatMMSS(remainingSeconds)
-  }
-
-  const handleMenuOpen = (e) => setMenuAnchor(e.currentTarget)
-  const handleMenuClose = () => setMenuAnchor(null)
-  const handlePresetSelect = (seconds) => {
-    dispatch(configureTimer(playerName, sessionId, true, seconds))
-    dispatch(resetTimer(playerName, sessionId))
-    handleMenuClose()
-  }
-
   const allValues = legalEstimates
 
   return (
@@ -236,114 +171,6 @@ export default function Vote() {
                 )
               )}
             </Box>
-
-            {timer.enabled && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
-                <Chip
-                  icon={<TimerIcon />}
-                  label={chipLabel}
-                  color={chipColor}
-                  size="small"
-                  sx={
-                    danger
-                      ? {
-                          '@keyframes pp-timer-pulse': {
-                            '0%, 100%': { opacity: 1 },
-                            '50%': { opacity: 0.55 },
-                          },
-                          animation: 'pp-timer-pulse 1s ease-in-out infinite',
-                        }
-                      : undefined
-                  }
-                />
-                {isAdmin && (
-                  <>
-                    {idle && (
-                      <Tooltip title="Start timer">
-                        <IconButton
-                          size="small"
-                          aria-label="Start timer"
-                          onClick={() => dispatch(startTimer(playerName, sessionId))}
-                        >
-                          <PlayArrowIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    {running && (
-                      <>
-                        <Tooltip title="Pause timer">
-                          <IconButton
-                            size="small"
-                            aria-label="Pause timer"
-                            onClick={() => dispatch(pauseTimer(playerName, sessionId))}
-                          >
-                            <PauseIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Reset timer">
-                          <IconButton
-                            size="small"
-                            aria-label="Reset timer"
-                            onClick={() => dispatch(resetTimer(playerName, sessionId))}
-                          >
-                            <ReplayIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </>
-                    )}
-                    {paused && (
-                      <>
-                        <Tooltip title="Resume timer">
-                          <IconButton
-                            size="small"
-                            aria-label="Resume timer"
-                            onClick={() => dispatch(resumeTimer(playerName, sessionId))}
-                          >
-                            <PlayArrowIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Reset timer">
-                          <IconButton
-                            size="small"
-                            aria-label="Reset timer"
-                            onClick={() => dispatch(resetTimer(playerName, sessionId))}
-                          >
-                            <ReplayIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </>
-                    )}
-                    {expired && (
-                      <Tooltip title="Reset timer">
-                        <IconButton
-                          size="small"
-                          aria-label="Reset timer"
-                          onClick={() => dispatch(resetTimer(playerName, sessionId))}
-                        >
-                          <ReplayIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    <Tooltip title="Timer options">
-                      <IconButton size="small" aria-label="Timer options" onClick={handleMenuOpen}>
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Menu
-                      anchorEl={menuAnchor}
-                      open={Boolean(menuAnchor)}
-                      onClose={handleMenuClose}
-                    >
-                      {TIMER_PRESETS.map((p) => (
-                        <MenuItem key={p.value} onClick={() => handlePresetSelect(p.value)}>
-                          {p.label}
-                        </MenuItem>
-                      ))}
-                    </Menu>
-                  </>
-                )}
-              </Box>
-            )}
           </Box>
           <Box
             sx={{
