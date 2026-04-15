@@ -48,13 +48,14 @@ public class MessagingUtils {
 
   @Async
   public void burstResultsMessages(String sessionId) {
-    // Capture snapshot once before burst loop so all iterations send identical data
-    Map<String, Object> snapshot = new LinkedHashMap<>();
-    snapshot.put("results", sessionManager.getResults(sessionId));
-    snapshot.put("label", sessionManager.getLabel(sessionId));
-    Object message = resultsMessage(snapshot);
+    // Re-read server state on every iteration so a late message from an
+    // earlier burst can never deliver a stale snapshot that overwrites a
+    // fresher vote on the client. See specs/BurstRace.tla.
     for (final long LATENCY_DURATION : LATENCIES) {
-      template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), message);
+      Map<String, Object> payload = new LinkedHashMap<>();
+      payload.put("results", sessionManager.getResults(sessionId));
+      payload.put("label", sessionManager.getLabel(sessionId));
+      template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), resultsMessage(payload));
       clock.pause(LATENCY_DURATION);
     }
   }
