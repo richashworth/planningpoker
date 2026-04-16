@@ -44,4 +44,22 @@ describe('results reducer', () => {
     const existing = [{ userName: 'alice', estimateValue: '5' }]
     expect(reducer(existing, { type: LEAVE_GAME })).toEqual([])
   })
+
+  it('preserves reference when RESULTS_UPDATED payload is content-equal', () => {
+    const existing = [
+      { userName: 'alice', estimateValue: '5' },
+      { userName: 'bob', estimateValue: '3' },
+    ]
+    const dup = [
+      { userName: 'bob', estimateValue: '3' },
+      { userName: 'alice', estimateValue: '5' },
+    ]
+    expect(reducer(existing, { type: RESULTS_UPDATED, payload: dup })).toBe(existing)
+  })
+
+  it('returns new reference when content differs', () => {
+    const existing = [{ userName: 'alice', estimateValue: '5' }]
+    const updated = [{ userName: 'alice', estimateValue: '8' }]
+    expect(reducer(existing, { type: RESULTS_UPDATED, payload: updated })).toBe(updated)
+  })
 })

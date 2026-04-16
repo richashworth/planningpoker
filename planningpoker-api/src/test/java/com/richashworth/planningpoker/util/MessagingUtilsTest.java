@@ -106,9 +106,11 @@ class MessagingUtilsTest {
     for (long latency : LATENCIES) {
       verify(clock, times(1)).pause(latency);
     }
-    // State is read exactly once (snapshot), not once per burst iteration
-    verify(sessionManager, times(1)).getResults(SESSION_ID);
-    verify(sessionManager, times(1)).getLabel(SESSION_ID);
+    // Results are re-read every iteration so late burst messages carry fresh
+    // state, preventing a stale snapshot from overwriting a newer vote on
+    // the client (see specs/BurstRace.tla).
+    verify(sessionManager, times(LATENCIES.length)).getResults(SESSION_ID);
+    verify(sessionManager, times(LATENCIES.length)).getLabel(SESSION_ID);
     Map<String, Object> expectedPayload = new LinkedHashMap<>();
     expectedPayload.put("results", RESULTS);
     expectedPayload.put("label", "");
@@ -149,33 +151,36 @@ class MessagingUtilsTest {
   }
 
   @Test
-  void testBurstResultsMessagesSendsConsistentSnapshot() {
-    // Mock getResults to return different values on successive calls
+  void testBurstResultsMessagesPicksUpFreshState() {
+    // When server state changes mid-burst (e.g. a second vote lands), later
+    // burst iterations must send the newer snapshot so that an older
+    // pending burst's tail can never overwrite the client with stale data.
+    // This is the fix for the "results chart bars bouncing" race — see
+    // specs/BurstRace.tla for the TLA+ model that exposed this.
     List<Estimate> firstSnapshot = List.of(new Estimate(USER_NAME, "3"));
-    List<Estimate> secondSnapshot = List.of(new Estimate(USER_NAME, "5"));
+    List<Estimate> secondSnapshot = List.of(new Estimate(USER_NAME, "3"), new Estimate("Bob", "5"));
     when(sessionManager.getResults(SESSION_ID))
         .thenReturn(firstSnapshot)
         .thenReturn(secondSnapshot);
-    when(sessionManager.getLabel(SESSION_ID)).thenReturn("Sprint 1").thenReturn("Sprint 2");
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("Sprint 1");
 
     messagingUtils.burstResultsMessages(SESSION_ID);
 
-    // All burst sends should use the first snapshot only
+    // First iteration carries the first snapshot exactly once.
     Map<String, Object> firstPayload = new LinkedHashMap<>();
     firstPayload.put("results", firstSnapshot);
     firstPayload.put("label", "Sprint 1");
     verifyMessageSent(
-        LATENCIES.length,
-        getTopic(TOPIC_RESULTS, SESSION_ID),
-        messagingUtils.resultsMessage(firstPayload));
+        1, getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(firstPayload));
 
-    // The second snapshot values should never be sent
+    // Remaining iterations carry the fresh snapshot.
     Map<String, Object> secondPayload = new LinkedHashMap<>();
     secondPayload.put("results", secondSnapshot);
-    secondPayload.put("label", "Sprint 2");
-    verify(template, never())
-        .convertAndSend(
-            getTopic(TOPIC_RESULTS, SESSION_ID), messagingUtils.resultsMessage(secondPayload));
+    secondPayload.put("label", "Sprint 1");
+    verifyMessageSent(
+        LATENCIES.length - 1,
+        getTopic(TOPIC_RESULTS, SESSION_ID),
+        messagingUtils.resultsMessage(secondPayload));
   }
 
   @Test
