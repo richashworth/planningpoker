@@ -8,7 +8,7 @@ import DownloadIcon from '@mui/icons-material/Download'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
 import { resetSession, roundCompleted } from '../actions'
-import { calcConsensus, calcStats } from '../utils/consensus'
+import { calcConsensus } from '../utils/consensus'
 import { generateCsv, downloadCsv } from '../utils/csvExport'
 
 export default function Results({ consensusOverride, setConsensusOverride }) {
@@ -19,6 +19,7 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
   const currentLabel = useSelector((state) => state.game.currentLabel)
   const results = useSelector((state) => state.results)
   const rounds = useSelector((state) => state.rounds)
+  const users = useSelector((state) => state.users)
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
 
   const autoConsensus = calcConsensus(results)
@@ -26,16 +27,11 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
   const totalRounds = rounds.length + (results.length > 0 ? 1 : 0)
 
   const handleNextItem = () => {
-    const stats = calcStats(results)
     const round = {
       label: currentLabel,
       consensus: consensusOverride || calcConsensus(results),
       votes: [...results],
       timestamp: new Date().toISOString(),
-      mode: stats.mode,
-      min: stats.min,
-      max: stats.max,
-      variance: stats.variance,
     }
     dispatch(roundCompleted(round))
     setConsensusOverride(null)
@@ -43,19 +39,16 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
   }
 
   const handleExportCsv = () => {
-    const stats = calcStats(results)
     const currentRound = {
       label: currentLabel,
       consensus: consensusOverride || calcConsensus(results),
       votes: [...results],
       timestamp: new Date().toISOString(),
-      mode: stats.mode,
-      min: stats.min,
-      max: stats.max,
-      variance: stats.variance,
     }
     const allRounds = [...rounds, currentRound]
-    const allPlayers = [...new Set(allRounds.flatMap((r) => r.votes.map((v) => v.userName)))].sort()
+    // Include all current session users plus any historical voters (who may have since left)
+    const historicalVoters = allRounds.flatMap((r) => r.votes.map((v) => v.userName))
+    const allPlayers = [...new Set([...users, ...historicalVoters])].sort()
     const csv = generateCsv(allRounds, allPlayers)
     downloadCsv(csv, `planning-poker-${sessionId}.csv`)
   }

@@ -27,21 +27,12 @@ function escapeField(value) {
 /**
  * Generate a CSV string from round history.
  *
- * @param {Array<{label: string, consensus: string, timestamp: string, mode: string, min: string|null, max: string|null, variance: string|null, votes: Array<{userName: string, estimateValue: string}>}>} rounds
+ * @param {Array<{label: string, consensus: string, timestamp: string, votes: Array<{userName: string, estimateValue: string}>}>} rounds
  * @param {string[]} playerNames - Sorted array of all unique player names across rounds
  * @returns {string} CSV string
  */
 export function generateCsv(rounds, playerNames) {
-  const headers = [
-    'Label',
-    'Consensus',
-    'Timestamp',
-    'Mode',
-    'Min',
-    'Max',
-    'Variance',
-    ...playerNames,
-  ]
+  const headers = ['Label', 'Consensus', 'Timestamp', ...playerNames]
   const rows = [headers.join(',')]
 
   for (const round of rounds) {
@@ -56,10 +47,6 @@ export function generateCsv(rounds, playerNames) {
       escapeField(round.label || ''),
       escapeField(round.consensus || ''),
       escapeField(round.timestamp || ''),
-      escapeField(round.mode || ''),
-      escapeField(round.min || ''),
-      escapeField(round.max || ''),
-      escapeField(round.variance || ''),
       ...playerVotes,
     ]
 
