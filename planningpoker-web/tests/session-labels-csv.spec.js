@@ -391,6 +391,63 @@ test.describe('CSV Export', () => {
       await playerCtx.close()
     }
   })
+
+  test('CSV has no stats columns and includes non-voting players', async ({ browser }) => {
+    const hostCtx = await browser.newContext()
+    const voterCtx = await browser.newContext()
+    const lurkerCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      const sessionId = await hostGame(hostPage, 'Alice')
+
+      const voterPage = await voterCtx.newPage()
+      await joinGame(voterPage, 'Bob', sessionId)
+
+      const lurkerPage = await lurkerCtx.newPage()
+      await joinGame(lurkerPage, 'Carol', sessionId)
+
+      await waitForWsReady(hostPage, sessionId, 'Carol')
+
+      // Only Alice and Bob vote; Carol does not
+      await hostPage.getByText('5', { exact: true }).click()
+      await voterPage.getByText('5', { exact: true }).click()
+      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+
+      const exportBtn = hostPage.getByRole('button', { name: 'Export CSV' })
+      await exportBtn.scrollIntoViewIfNeeded()
+      const [download] = await Promise.all([hostPage.waitForEvent('download'), exportBtn.click()])
+
+      const content = await download.path().then((p) => {
+        // eslint-disable-next-line no-undef
+        const fs = require('fs')
+        return fs.readFileSync(p, 'utf-8')
+      })
+
+      const [header, dataRow] = content.split('\n')
+
+      // Stats columns removed
+      expect(header).not.toMatch(/\bMode\b/)
+      expect(header).not.toMatch(/\bMin\b/)
+      expect(header).not.toMatch(/\bMax\b/)
+      expect(header).not.toMatch(/\bVariance\b/)
+
+      // Header is exactly: Label,Consensus,Timestamp, then sorted players
+      expect(header).toBe('Label,Consensus,Timestamp,Alice,Bob,Carol')
+
+      // Data row: empty label, consensus 5, iso timestamp, Alice=5, Bob=5, Carol=(empty)
+      // Columns 0..2 = Label/Consensus/Timestamp; 3/4/5 = Alice/Bob/Carol
+      const cols = dataRow.split(',')
+      expect(cols[0]).toBe('') // no label set
+      expect(cols[1]).toBe('5')
+      expect(cols[3]).toBe('5') // Alice
+      expect(cols[4]).toBe('5') // Bob
+      expect(cols[5]).toBe('') // Carol — non-voter, blank
+    } finally {
+      await hostCtx.close()
+      await voterCtx.close()
+      await lurkerCtx.close()
+    }
+  })
 })
 
 test.describe('Accessibility announcements', () => {
