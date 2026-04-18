@@ -20,7 +20,7 @@ export default function Footer() {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         px: 3,
         py: 1.5,
         borderTop: '1px solid',
@@ -29,7 +29,10 @@ export default function Footer() {
       }}
     >
       <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem' }}>
-        {appVersion ? `v${appVersion}` : ''} &copy; {new Date().getFullYear()} Rich Ashworth
+        &copy; {new Date().getFullYear()} Rich Ashworth
+      </Typography>
+      <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.7rem' }}>
+        {appVersion ? `v${appVersion}` : ''}
       </Typography>
     </Box>
   )
