@@ -77,6 +77,13 @@ public class MessagingUtils {
   public void sendResetNotification(String sessionId) {
     Object message = new Message(MessageType.RESET_MESSAGE, Map.of());
     for (final long LATENCY_DURATION : LATENCIES) {
+      // Skip if a new vote arrived after this reset was scheduled. A late RESET
+      // would clobber the fresh vote on the client, flickering voted TRUE→FALSE.
+      // Subsequent burstResultsMessages iterations will push the new state.
+      // See specs/ResetBurstRace.tla.
+      if (!sessionManager.getResults(sessionId).isEmpty()) {
+        return;
+      }
       template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), message);
       clock.pause(LATENCY_DURATION);
     }
