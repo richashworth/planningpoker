@@ -2,6 +2,7 @@
 states/
 *.bin
 *_TTrace_*.tla
+*.out
 
 # LaTeX build artifacts
 *.aux

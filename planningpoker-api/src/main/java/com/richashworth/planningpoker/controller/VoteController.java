@@ -1,6 +1,7 @@
 package com.richashworth.planningpoker.controller;
 
 import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.VoteResponse;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.CollectionUtils;
 import com.richashworth.planningpoker.util.LogSafeIds;
@@ -25,7 +26,7 @@ public class VoteController {
   }
 
   @PostMapping("vote")
-  public void vote(
+  public VoteResponse vote(
       @RequestParam(name = "sessionId") final String sessionId,
       @RequestParam(name = "userName") final String userName,
       @RequestParam(name = "estimateValue") final String estimateValue) {
@@ -33,6 +34,8 @@ public class VoteController {
     if (!legalValues.contains(estimateValue)) {
       throw new IllegalArgumentException("Invalid estimate value");
     }
+    int round;
+    List<Estimate> results;
     synchronized (sessionManager) {
       if (!sessionManager.isSessionActive(sessionId)) {
         throw new IllegalArgumentException("Session not active");
@@ -50,7 +53,10 @@ public class VoteController {
         final Estimate estimate = new Estimate(userName, estimateValue);
         sessionManager.registerEstimate(sessionId, estimate);
       }
+      round = sessionManager.getRound(sessionId);
+      results = sessionManager.getResults(sessionId);
     }
-    messagingUtils.burstResultsMessages(sessionId);
+    messagingUtils.sendResultsMessage(sessionId);
+    return new VoteResponse(round, results);
   }
 }

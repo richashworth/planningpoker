@@ -1,13 +1,10 @@
 package com.richashworth.planningpoker.util;
 
-import static com.richashworth.planningpoker.util.Clock.LATENCIES;
-
 import com.richashworth.planningpoker.service.SessionManager;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,13 +14,10 @@ public class MessagingUtils {
   public static final String TOPIC_USERS = "/topic/users/";
 
   private final SessionManager sessionManager;
-  private final Clock clock;
   private final SimpMessagingTemplate template;
 
-  public MessagingUtils(
-      SessionManager sessionManager, Clock clock, SimpMessagingTemplate template) {
+  public MessagingUtils(SessionManager sessionManager, SimpMessagingTemplate template) {
     this.sessionManager = sessionManager;
-    this.clock = clock;
     this.template = template;
   }
 
@@ -34,6 +28,7 @@ public class MessagingUtils {
 
   public void sendResultsMessage(String sessionId) {
     Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("round", sessionManager.getRound(sessionId));
     payload.put("results", sessionManager.getResults(sessionId));
     payload.put("label", sessionManager.getLabel(sessionId));
     template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), resultsMessage(payload));
@@ -46,47 +41,18 @@ public class MessagingUtils {
     template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(payload));
   }
 
-  @Async
-  public void burstResultsMessages(String sessionId) {
-    // Re-read server state on every iteration so a late message from an
-    // earlier burst can never deliver a stale snapshot that overwrites a
-    // fresher vote on the client. See specs/BurstRace.tla.
-    for (final long LATENCY_DURATION : LATENCIES) {
-      Map<String, Object> payload = new LinkedHashMap<>();
-      payload.put("results", sessionManager.getResults(sessionId));
-      payload.put("label", sessionManager.getLabel(sessionId));
-      template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), resultsMessage(payload));
-      clock.pause(LATENCY_DURATION);
-    }
+  public void sendResetMessage(String sessionId, int round) {
+    template.convertAndSend(
+        getTopic(TOPIC_RESULTS, sessionId),
+        new Message(MessageType.RESET_MESSAGE, Map.of("round", round)));
   }
 
-  @Async
-  public void burstUsersMessages(String sessionId) {
-    // Capture snapshot once before burst loop so all iterations send identical data
-    Map<String, Object> snapshot = new LinkedHashMap<>();
-    snapshot.put("users", sessionManager.getSessionUsers(sessionId));
-    snapshot.put("host", sessionManager.getHost(sessionId));
-    Object message = usersMessage(snapshot);
-    for (final long LATENCY_DURATION : LATENCIES) {
-      template.convertAndSend(getTopic(TOPIC_USERS, sessionId), message);
-      clock.pause(LATENCY_DURATION);
-    }
-  }
-
-  @Async
-  public void sendResetNotification(String sessionId) {
-    Object message = new Message(MessageType.RESET_MESSAGE, Map.of());
-    for (final long LATENCY_DURATION : LATENCIES) {
-      // Skip if a new vote arrived after this reset was scheduled. A late RESET
-      // would clobber the fresh vote on the client, flickering voted TRUE→FALSE.
-      // Subsequent burstResultsMessages iterations will push the new state.
-      // See specs/ResetBurstRace.tla.
-      if (!sessionManager.getResults(sessionId).isEmpty()) {
-        return;
-      }
-      template.convertAndSend(getTopic(TOPIC_RESULTS, sessionId), message);
-      clock.pause(LATENCY_DURATION);
-    }
+  public void sendUserLeftMessage(String sessionId, String leaver) {
+    Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("round", sessionManager.getRound(sessionId));
+    payload.put("leaver", leaver);
+    template.convertAndSend(
+        getTopic(TOPIC_RESULTS, sessionId), new Message(MessageType.USER_LEFT_MESSAGE, payload));
   }
 
   Message resultsMessage(Object payload) {
@@ -100,7 +66,8 @@ public class MessagingUtils {
   private enum MessageType {
     USERS_MESSAGE,
     RESULTS_MESSAGE,
-    RESET_MESSAGE
+    RESET_MESSAGE,
+    USER_LEFT_MESSAGE
   }
 
   private record Message(MessageType type, Object payload) {}

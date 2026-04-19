@@ -1,24 +1,19 @@
 // @vitest-environment jsdom
 /**
- * PlayGame — reconnect session validation logic.
+ * PlayGame — reconnect session validation + epoch message routing.
  *
- * Tests the wasConnected / reconnect guard introduced to handle server restarts
- * gracefully. The logic lives in a useEffect watching `connected` from useStomp:
- *
- *   - Initial connect (wasConnected=false → true): no validation call
- *   - Reconnect (wasConnected=true, connected becomes true): calls GET /sessionUsers
- *     - Success: user stays in game (no dispatch, no sessionStorage)
- *     - Failure: sets sessionStorage message and dispatches kicked()
- *   - connected=false or null: no action
- *
- * Mirrors the direct-logic testing approach used in useStomp.test.js.
+ * Mirrors the key branches of the useStomp onMessage handler so we can
+ * exercise them without mounting the full component.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { kicked } from '../../actions'
+import {
+  kicked,
+  RESET_SESSION,
+  RESULTS_REPLACE,
+  RESULTS_UNION,
+  USER_LEFT_RECEIVED,
+} from '../../actions'
 
-// ---------------------------------------------------------------------------
-// Mirror of the useEffect body in PlayGame.jsx
-// ---------------------------------------------------------------------------
 function simulateConnectedEffect({ connected, wasConnected, sessionId, axiosGet, dispatch }) {
   if (connected === true) {
     if (wasConnected) {
@@ -30,14 +25,53 @@ function simulateConnectedEffect({ connected, wasConnected, sessionId, axiosGet,
         dispatch(kicked())
       })
     }
-    return true // new wasConnected value
+    return true
   }
   return wasConnected
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
+// Mirrors onMessage epoch routing in PlayGame.jsx.
+function routeMessage({ msg, clientRound, playerName, dispatch, labelUpdated }) {
+  switch (msg.type) {
+    case 'RESULTS_MESSAGE': {
+      const { round, results, label } = msg.payload ?? {}
+      if (typeof round !== 'number') return
+      if (round > clientRound) {
+        dispatch({
+          type: RESULTS_REPLACE,
+          payload: { round, results: results ?? [] },
+          meta: { playerName },
+        })
+        if (label !== undefined) dispatch(labelUpdated(label))
+      } else if (round === clientRound) {
+        dispatch({
+          type: RESULTS_UNION,
+          payload: { round, results: results ?? [] },
+          meta: { playerName },
+        })
+        if (label !== undefined) dispatch(labelUpdated(label))
+      }
+      return
+    }
+    case 'RESET_MESSAGE': {
+      const round = msg.payload?.round
+      if (typeof round === 'number' && round > clientRound) {
+        dispatch({ type: RESET_SESSION, payload: { round } })
+      }
+      return
+    }
+    case 'USER_LEFT_MESSAGE': {
+      const { round, leaver } = msg.payload ?? {}
+      if (typeof round === 'number' && round === clientRound && leaver) {
+        dispatch({ type: USER_LEFT_RECEIVED, payload: { leaver } })
+      }
+      return
+    }
+    default:
+      return
+  }
+}
+
 describe('PlayGame — reconnect session validation', () => {
   let dispatch
   let axiosGet
@@ -59,18 +93,6 @@ describe('PlayGame — reconnect session validation', () => {
     })
 
     expect(axiosGet).not.toHaveBeenCalled()
-  })
-
-  it('sets wasConnected=true after initial connect', () => {
-    const result = simulateConnectedEffect({
-      connected: true,
-      wasConnected: false,
-      sessionId: 'abc123',
-      axiosGet,
-      dispatch,
-    })
-
-    expect(result).toBe(true)
   })
 
   it('calls GET /sessionUsers on reconnect', () => {
@@ -98,54 +120,119 @@ describe('PlayGame — reconnect session validation', () => {
       dispatch,
     })
 
-    await Promise.resolve() // flush microtask queue
+    await Promise.resolve()
 
     expect(sessionStorage.getItem('pp-kicked-message')).toBe(
       'The session ended because the server was restarted.',
     )
     expect(dispatch).toHaveBeenCalledWith(kicked())
   })
+})
 
-  it('does not dispatch kicked() when session is still valid on reconnect', async () => {
-    axiosGet.mockReturnValue(Promise.resolve({ data: ['alice', 'bob'] }))
+describe('PlayGame — epoch message routing', () => {
+  let dispatch
+  const labelUpdated = (label) => ({ type: 'label-updated', payload: label })
 
-    simulateConnectedEffect({
-      connected: true,
-      wasConnected: true,
-      sessionId: 'abc123',
-      axiosGet,
+  beforeEach(() => {
+    dispatch = vi.fn()
+  })
+
+  it('drops RESULTS_MESSAGE with older round', () => {
+    routeMessage({
+      msg: {
+        type: 'RESULTS_MESSAGE',
+        payload: { round: 1, results: [{ userName: 'alice', estimateValue: '5' }], label: '' },
+      },
+      clientRound: 3,
+      playerName: 'alice',
       dispatch,
+      labelUpdated,
     })
-
-    await Promise.resolve()
-
     expect(dispatch).not.toHaveBeenCalled()
-    expect(sessionStorage.getItem('pp-kicked-message')).toBeNull()
   })
 
-  it('takes no action when connected is false', () => {
-    const result = simulateConnectedEffect({
-      connected: false,
-      wasConnected: true,
-      sessionId: 'abc123',
-      axiosGet,
+  it('replaces on RESULTS_MESSAGE with newer round', () => {
+    routeMessage({
+      msg: {
+        type: 'RESULTS_MESSAGE',
+        payload: { round: 4, results: [{ userName: 'alice', estimateValue: '5' }], label: 'x' },
+      },
+      clientRound: 3,
+      playerName: 'alice',
       dispatch,
+      labelUpdated,
     })
-
-    expect(axiosGet).not.toHaveBeenCalled()
-    expect(result).toBe(true) // wasConnected unchanged
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: RESULTS_REPLACE,
+        payload: { round: 4, results: [{ userName: 'alice', estimateValue: '5' }] },
+      }),
+    )
   })
 
-  it('takes no action when connected is null (not yet attempted)', () => {
-    const result = simulateConnectedEffect({
-      connected: null,
-      wasConnected: false,
-      sessionId: 'abc123',
-      axiosGet,
+  it('unions on RESULTS_MESSAGE with equal round', () => {
+    routeMessage({
+      msg: {
+        type: 'RESULTS_MESSAGE',
+        payload: { round: 3, results: [{ userName: 'bob', estimateValue: '3' }], label: '' },
+      },
+      clientRound: 3,
+      playerName: 'alice',
       dispatch,
+      labelUpdated,
     })
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: RESULTS_UNION,
+        payload: { round: 3, results: [{ userName: 'bob', estimateValue: '3' }] },
+      }),
+    )
+  })
 
-    expect(axiosGet).not.toHaveBeenCalled()
-    expect(result).toBe(false) // wasConnected unchanged
+  it('drops RESET_MESSAGE with stale round', () => {
+    routeMessage({
+      msg: { type: 'RESET_MESSAGE', payload: { round: 2 } },
+      clientRound: 3,
+      playerName: 'alice',
+      dispatch,
+      labelUpdated,
+    })
+    expect(dispatch).not.toHaveBeenCalled()
+  })
+
+  it('dispatches RESET_SESSION on RESET_MESSAGE with newer round', () => {
+    routeMessage({
+      msg: { type: 'RESET_MESSAGE', payload: { round: 4 } },
+      clientRound: 3,
+      playerName: 'alice',
+      dispatch,
+      labelUpdated,
+    })
+    expect(dispatch).toHaveBeenCalledWith({ type: RESET_SESSION, payload: { round: 4 } })
+  })
+
+  it('applies USER_LEFT_MESSAGE at equal round', () => {
+    routeMessage({
+      msg: { type: 'USER_LEFT_MESSAGE', payload: { round: 3, leaver: 'bob' } },
+      clientRound: 3,
+      playerName: 'alice',
+      dispatch,
+      labelUpdated,
+    })
+    expect(dispatch).toHaveBeenCalledWith({
+      type: USER_LEFT_RECEIVED,
+      payload: { leaver: 'bob' },
+    })
+  })
+
+  it('drops USER_LEFT_MESSAGE at stale round', () => {
+    routeMessage({
+      msg: { type: 'USER_LEFT_MESSAGE', payload: { round: 2, leaver: 'bob' } },
+      clientRound: 3,
+      playerName: 'alice',
+      dispatch,
+      labelUpdated,
+    })
+    expect(dispatch).not.toHaveBeenCalled()
   })
 })

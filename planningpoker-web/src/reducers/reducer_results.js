@@ -1,17 +1,21 @@
-import { LEAVE_GAME, RESET_SESSION, RESULTS_UPDATED, VOTE, VOTE_OPTIMISTIC } from '../actions'
+import {
+  LEAVE_GAME,
+  RESET_SESSION,
+  RESULTS_REPLACE,
+  RESULTS_UNION,
+  USER_LEFT_RECEIVED,
+  VOTE,
+  VOTE_OPTIMISTIC,
+} from '../actions'
 
 const initialResultsState = []
 
-// Preserve reference when the server burst resends identical content, so
-// downstream components (notably the chart) don't re-animate on every burst.
-function sameResults(a, b) {
-  if (a === b) return true
-  if (a.length !== b.length) return false
-  const index = new Map(a.map((r) => [r.userName, r.estimateValue]))
-  for (const r of b) {
-    if (index.get(r.userName) !== r.estimateValue) return false
+function mergeByUser(base, incoming) {
+  const byName = new Map(base.map((r) => [r.userName, r]))
+  for (const r of incoming) {
+    byName.set(r.userName, r)
   }
-  return true
+  return Array.from(byName.values())
 }
 
 export default function (state = initialResultsState, action) {
@@ -21,9 +25,14 @@ export default function (state = initialResultsState, action) {
       return [...state.filter((r) => r.userName !== userName), { userName, estimateValue }]
     }
     case VOTE:
-      return action.error ? state.filter((r) => r.userName !== action.meta.userName) : state
-    case RESULTS_UPDATED:
-      return sameResults(state, action.payload) ? state : action.payload
+      if (action.error) return state.filter((r) => r.userName !== action.meta.userName)
+      return action.payload?.results ?? state
+    case RESULTS_REPLACE:
+      return action.payload.results ?? state
+    case RESULTS_UNION:
+      return mergeByUser(state, action.payload.results ?? [])
+    case USER_LEFT_RECEIVED:
+      return state.filter((r) => r.userName.toLowerCase() !== action.payload.leaver.toLowerCase())
     case RESET_SESSION:
       if (action.error) return state
       return []

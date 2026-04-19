@@ -586,4 +586,48 @@ class SessionManagerTest {
       sessionManager.registerUser(user, sessionId);
     }
   }
+
+  @Test
+  void testGetRoundStartsAtZero() {
+    String sessionId = sessionManager.createSession();
+    assertEquals(0, sessionManager.getRound(sessionId));
+  }
+
+  @Test
+  void testGetRoundForUnknownSessionReturnsZero() {
+    assertEquals(0, sessionManager.getRound("nonexistent"));
+  }
+
+  @Test
+  void testIncrementAndGetRound() {
+    String sessionId = sessionManager.createSession();
+    assertEquals(1, sessionManager.incrementAndGetRound(sessionId));
+    assertEquals(2, sessionManager.incrementAndGetRound(sessionId));
+    assertEquals(2, sessionManager.getRound(sessionId));
+  }
+
+  @Test
+  void testClearSessionsWipesRounds() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.incrementAndGetRound(sessionId);
+    sessionManager.clearSessions();
+    assertEquals(0, sessionManager.getRound(sessionId));
+  }
+
+  @Test
+  void testEvictIdleSessionsWipesRounds() throws Exception {
+    String idleSession = sessionManager.createSession();
+    sessionManager.incrementAndGetRound(idleSession);
+    sessionManager.incrementAndGetRound(idleSession);
+
+    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+    lastActivityField.setAccessible(true);
+    @SuppressWarnings("unchecked")
+    ConcurrentHashMap<String, Instant> lastActivity =
+        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
+    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+
+    sessionManager.evictIdleSessions();
+    assertEquals(0, sessionManager.getRound(idleSession));
+  }
 }

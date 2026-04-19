@@ -1,24 +1,51 @@
 import { describe, it, expect } from 'vitest'
 import reducer from '../reducer_results'
-import { LEAVE_GAME, RESET_SESSION, RESULTS_UPDATED, VOTE_OPTIMISTIC } from '../../actions'
+import {
+  LEAVE_GAME,
+  RESET_SESSION,
+  RESULTS_REPLACE,
+  RESULTS_UNION,
+  USER_LEFT_RECEIVED,
+  VOTE,
+  VOTE_OPTIMISTIC,
+} from '../../actions'
+
+const replace = (round, results) => ({
+  type: RESULTS_REPLACE,
+  payload: { round, results },
+  meta: { playerName: 'alice' },
+})
+
+const union = (round, results) => ({
+  type: RESULTS_UNION,
+  payload: { round, results },
+  meta: { playerName: 'alice' },
+})
 
 describe('results reducer', () => {
   it('returns [] as initial state', () => {
     expect(reducer(undefined, { type: '@@INIT' })).toEqual([])
   })
 
-  it('replaces state on RESULTS_UPDATED', () => {
+  it('replaces state on RESULTS_REPLACE', () => {
     const results = [{ userName: 'alice', estimateValue: '5' }]
-    expect(reducer([], { type: RESULTS_UPDATED, payload: results })).toEqual(results)
+    expect(reducer([], replace(1, results))).toEqual(results)
   })
 
-  it('overwrites existing results on RESULTS_UPDATED', () => {
-    const old = [{ userName: 'alice', estimateValue: '3' }]
-    const updated = [
-      { userName: 'alice', estimateValue: '3' },
-      { userName: 'bob', estimateValue: '8' },
-    ]
-    expect(reducer(old, { type: RESULTS_UPDATED, payload: updated })).toEqual(updated)
+  it('unions with existing state on RESULTS_UNION', () => {
+    const existing = [{ userName: 'alice', estimateValue: '5' }]
+    const incoming = [{ userName: 'bob', estimateValue: '3' }]
+    const merged = reducer(existing, union(1, incoming))
+    expect(merged).toEqual([
+      { userName: 'alice', estimateValue: '5' },
+      { userName: 'bob', estimateValue: '3' },
+    ])
+  })
+
+  it('overwrites conflicting entry on RESULTS_UNION', () => {
+    const existing = [{ userName: 'alice', estimateValue: '5' }]
+    const incoming = [{ userName: 'alice', estimateValue: '8' }]
+    expect(reducer(existing, union(1, incoming))).toEqual(incoming)
   })
 
   it('pre-populates own vote on VOTE_OPTIMISTIC', () => {
@@ -26,16 +53,31 @@ describe('results reducer', () => {
     expect(reducer([], action)).toEqual([{ userName: 'alice', estimateValue: '5' }])
   })
 
-  it('replaces own entry idempotently on RESULTS_UPDATED after VOTE_OPTIMISTIC', () => {
+  it('syncs from VOTE success payload', () => {
     const optimistic = [{ userName: 'alice', estimateValue: '5' }]
-    const ws = [
+    const serverState = [
       { userName: 'alice', estimateValue: '5' },
       { userName: 'bob', estimateValue: '3' },
     ]
-    expect(reducer(optimistic, { type: RESULTS_UPDATED, payload: ws })).toEqual(ws)
+    const action = {
+      type: VOTE,
+      payload: { round: 2, results: serverState },
+      meta: { userName: 'alice', estimateValue: '5' },
+    }
+    expect(reducer(optimistic, action)).toEqual(serverState)
   })
 
-  it('clears on RESET_SESSION (optimistic)', () => {
+  it('removes leaver on USER_LEFT_RECEIVED', () => {
+    const existing = [
+      { userName: 'alice', estimateValue: '5' },
+      { userName: 'bob', estimateValue: '3' },
+    ]
+    expect(reducer(existing, { type: USER_LEFT_RECEIVED, payload: { leaver: 'bob' } })).toEqual([
+      { userName: 'alice', estimateValue: '5' },
+    ])
+  })
+
+  it('clears on RESET_SESSION', () => {
     const existing = [{ userName: 'alice', estimateValue: '5' }]
     expect(reducer(existing, { type: RESET_SESSION })).toEqual([])
   })
@@ -43,23 +85,5 @@ describe('results reducer', () => {
   it('clears on LEAVE_GAME', () => {
     const existing = [{ userName: 'alice', estimateValue: '5' }]
     expect(reducer(existing, { type: LEAVE_GAME })).toEqual([])
-  })
-
-  it('preserves reference when RESULTS_UPDATED payload is content-equal', () => {
-    const existing = [
-      { userName: 'alice', estimateValue: '5' },
-      { userName: 'bob', estimateValue: '3' },
-    ]
-    const dup = [
-      { userName: 'bob', estimateValue: '3' },
-      { userName: 'alice', estimateValue: '5' },
-    ]
-    expect(reducer(existing, { type: RESULTS_UPDATED, payload: dup })).toBe(existing)
-  })
-
-  it('returns new reference when content differs', () => {
-    const existing = [{ userName: 'alice', estimateValue: '5' }]
-    const updated = [{ userName: 'alice', estimateValue: '8' }]
-    expect(reducer(existing, { type: RESULTS_UPDATED, payload: updated })).toBe(updated)
   })
 })

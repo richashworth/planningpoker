@@ -1,10 +1,13 @@
 package com.richashworth.planningpoker.controller;
 
 import static com.richashworth.planningpoker.common.PlanningPokerTestFixture.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import com.google.common.collect.Lists;
+import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.VoteResponse;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,13 +25,21 @@ class VoteControllerTest extends AbstractControllerTest {
     when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
-    voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(2);
+    List<Estimate> afterVote = List.of(ESTIMATE);
+    // getResults is called twice: once in containsUserEstimate check, again when building response
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of()).thenReturn(afterVote);
+    VoteResponse response = voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
+    assertEquals(2, response.round());
+    assertEquals(afterVote, response.results());
     inOrder.verify(sessionManager, times(1)).getSessionLegalValues(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).isSessionActive(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).getSessionUsers(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).registerEstimate(SESSION_ID, ESTIMATE);
-    inOrder.verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
+    inOrder.verify(sessionManager, times(1)).getRound(SESSION_ID);
+    inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
+    inOrder.verify(messagingUtils, times(1)).sendResultsMessage(SESSION_ID);
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -38,12 +49,16 @@ class VoteControllerTest extends AbstractControllerTest {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
     when(sessionManager.getResults(SESSION_ID)).thenReturn(Lists.newArrayList(ESTIMATE));
-    voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(1);
+    VoteResponse response = voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE);
+    assertEquals(1, response.round());
     inOrder.verify(sessionManager, times(1)).getSessionLegalValues(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).isSessionActive(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).getSessionUsers(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
-    inOrder.verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
+    inOrder.verify(sessionManager, times(1)).getRound(SESSION_ID);
+    inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
+    inOrder.verify(messagingUtils, times(1)).sendResultsMessage(SESSION_ID);
     inOrder.verifyNoMoreInteractions();
   }
 
