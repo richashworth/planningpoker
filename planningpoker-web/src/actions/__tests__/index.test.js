@@ -8,10 +8,16 @@ import {
   createGame,
   joinGame,
   vote,
+  resetSession,
+  refresh,
   CREATE_GAME,
   JOIN_GAME,
   VOTE,
   VOTE_OPTIMISTIC,
+  RESET_SESSION,
+  RESULTS_REPLACE,
+  LABEL_UPDATED,
+  USERS_UPDATED,
 } from '../index'
 
 async function runThunkAsync(thunk) {
@@ -38,7 +44,7 @@ describe('createGame', () => {
   })
 
   it('dispatches CREATE_GAME with payload and meta on success', async () => {
-    axios.post = vi.fn().mockResolvedValue({ data: { sessionId: 'abc12345' } })
+    axios.post = vi.fn().mockResolvedValue({ data: { sessionId: 'abc12345', round: 0 } })
     const onSuccess = vi.fn()
 
     const dispatched = await runThunkAsync(
@@ -51,7 +57,7 @@ describe('createGame', () => {
 
     expect(dispatched).toHaveLength(1)
     expect(dispatched[0].type).toBe(CREATE_GAME)
-    expect(dispatched[0].payload).toEqual({ sessionId: 'abc12345' })
+    expect(dispatched[0].payload).toEqual({ sessionId: 'abc12345', round: 0 })
     expect(dispatched[0].meta.userName).toBe('Alice')
     expect(dispatched[0].error).toBeFalsy()
     expect(onSuccess).toHaveBeenCalledOnce()
@@ -87,14 +93,16 @@ describe('joinGame', () => {
   })
 
   it('dispatches JOIN_GAME with payload and meta on success', async () => {
-    axios.post = vi.fn().mockResolvedValue({ data: { sessionId: 'abc12345' } })
+    axios.post = vi
+      .fn()
+      .mockResolvedValue({ data: { sessionId: 'abc12345', round: 3, results: [], label: '' } })
     const onSuccess = vi.fn()
 
     const dispatched = await runThunkAsync(joinGame('Bob', 'abc12345', onSuccess))
 
     expect(dispatched).toHaveLength(1)
     expect(dispatched[0].type).toBe(JOIN_GAME)
-    expect(dispatched[0].payload).toEqual({ sessionId: 'abc12345' })
+    expect(dispatched[0].payload.round).toBe(3)
     expect(dispatched[0].meta.userName).toBe('Bob')
     expect(dispatched[0].meta.sessionId).toBe('abc12345')
     expect(onSuccess).toHaveBeenCalledOnce()
@@ -106,15 +114,68 @@ describe('vote', () => {
     vi.resetAllMocks()
   })
 
-  it('dispatches VOTE action on success', async () => {
-    axios.post = vi.fn().mockResolvedValue({ data: {} })
+  it('dispatches VOTE action with round and results on success', async () => {
+    axios.post = vi.fn().mockResolvedValue({
+      data: { round: 2, results: [{ userName: 'alice', estimateValue: '5' }] },
+    })
 
     const dispatched = await runThunkAsync(vote('alice', 'abc12345', '5'))
 
     expect(dispatched).toHaveLength(1)
     expect(dispatched[0].type).toBe(VOTE)
     expect(dispatched[0].error).toBeFalsy()
+    expect(dispatched[0].payload.round).toBe(2)
+    expect(dispatched[0].payload.results).toEqual([{ userName: 'alice', estimateValue: '5' }])
     expect(dispatched[0].meta.userName).toBe('alice')
     expect(dispatched[0].meta.estimateValue).toBe('5')
+  })
+})
+
+describe('resetSession', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('dispatches RESET_SESSION with round on success', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: { round: 7 } })
+
+    const dispatched = await runThunkAsync(resetSession('alice', 'abc12345'))
+
+    expect(dispatched).toHaveLength(1)
+    expect(dispatched[0].type).toBe(RESET_SESSION)
+    expect(dispatched[0].payload).toEqual({ round: 7 })
+  })
+})
+
+describe('refresh', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('dispatches RESULTS_REPLACE, LABEL_UPDATED, and USERS_UPDATED from /refresh response', async () => {
+    axios.get = vi.fn().mockResolvedValue({
+      data: {
+        round: 5,
+        results: [{ userName: 'alice', estimateValue: '5' }],
+        label: 'Sprint 1',
+        users: ['alice', 'bob'],
+        host: 'alice',
+      },
+    })
+
+    const dispatched = await runThunkAsync(refresh('abc12345', 'alice'))
+
+    const replaceAction = dispatched.find((a) => a.type === RESULTS_REPLACE)
+    expect(replaceAction).toBeDefined()
+    expect(replaceAction.payload.round).toBe(5)
+    expect(replaceAction.payload.results).toEqual([{ userName: 'alice', estimateValue: '5' }])
+
+    const labelAction = dispatched.find((a) => a.type === LABEL_UPDATED)
+    expect(labelAction).toBeDefined()
+    expect(labelAction.payload).toBe('Sprint 1')
+
+    const usersAction = dispatched.find((a) => a.type === USERS_UPDATED)
+    expect(usersAction).toBeDefined()
+    expect(usersAction.payload).toEqual({ users: ['alice', 'bob'], host: 'alice' })
   })
 })

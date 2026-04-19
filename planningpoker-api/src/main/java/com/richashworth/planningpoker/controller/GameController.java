@@ -1,8 +1,12 @@
 package com.richashworth.planningpoker.controller;
 
 import static com.richashworth.planningpoker.util.CollectionUtils.containsIgnoreCase;
+import static com.richashworth.planningpoker.util.CollectionUtils.containsUserEstimate;
 
 import com.richashworth.planningpoker.model.CreateSessionRequest;
+import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.RefreshResponse;
+import com.richashworth.planningpoker.model.ResetResponse;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SessionResponse;
 import com.richashworth.planningpoker.service.SessionManager;
@@ -49,11 +53,15 @@ public class GameController {
             "user {} joined session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
       }
     }
-    messagingUtils.burstUsersMessages(sessionId);
+    messagingUtils.sendUsersMessage(sessionId);
     SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
-    return new SessionResponse(host, null, config.schemeType(), values, config.includeUnsure());
+    int round = sessionManager.getRound(sessionId);
+    List<Estimate> results = sessionManager.getResults(sessionId);
+    String label = sessionManager.getLabel(sessionId);
+    return new SessionResponse(
+        host, null, config.schemeType(), values, config.includeUnsure(), round, results, label);
   }
 
   @PostMapping("createSession")
@@ -69,30 +77,48 @@ public class GameController {
           LogSafeIds.hash(request.userName()),
           LogSafeIds.hash(sessionId));
     }
-    messagingUtils.burstUsersMessages(sessionId);
+    messagingUtils.sendUsersMessage(sessionId);
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
+    int round = sessionManager.getRound(sessionId);
     return new SessionResponse(
-        host, sessionId, schemeConfig.schemeType(), values, schemeConfig.includeUnsure());
+        host,
+        sessionId,
+        schemeConfig.schemeType(),
+        values,
+        schemeConfig.includeUnsure(),
+        round,
+        List.of(),
+        "");
   }
 
   @PostMapping("logout")
   public void leaveSession(
       @RequestParam(name = "userName") final String userName,
       @RequestParam(name = "sessionId") final String sessionId) {
+    boolean hadVote;
     synchronized (sessionManager) {
       validateSessionMembership(sessionId, userName);
+      hadVote = containsUserEstimate(sessionManager.getResults(sessionId), userName);
       sessionManager.removeUser(userName, sessionId);
       logger.info("user {} left session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
     }
-    messagingUtils.burstUsersMessages(sessionId);
-    messagingUtils.burstResultsMessages(sessionId);
+    messagingUtils.sendUsersMessage(sessionId);
+    if (hadVote) {
+      messagingUtils.sendUserLeftMessage(sessionId, userName);
+    }
   }
 
   @GetMapping("refresh")
-  public void refresh(@RequestParam(name = "sessionId") final String sessionId) {
+  public RefreshResponse refresh(@RequestParam(name = "sessionId") final String sessionId) {
+    int round = sessionManager.getRound(sessionId);
+    List<Estimate> results = sessionManager.getResults(sessionId);
+    String label = sessionManager.getLabel(sessionId);
+    List<String> users = sessionManager.getSessionUsers(sessionId);
+    String host = sessionManager.getHost(sessionId);
     messagingUtils.sendResultsMessage(sessionId);
     messagingUtils.sendUsersMessage(sessionId);
+    return new RefreshResponse(round, results, label, users, host);
   }
 
   @GetMapping("sessionUsers")
@@ -105,6 +131,7 @@ public class GameController {
       @RequestParam(name = "userName") final String userName,
       @RequestParam(name = "targetUser") final String targetUser,
       @RequestParam(name = "sessionId") final String sessionId) {
+    boolean targetHadVote;
     synchronized (sessionManager) {
       validateSessionMembership(sessionId, userName);
       if (userName.equalsIgnoreCase(targetUser)) {
@@ -116,6 +143,7 @@ public class GameController {
       if (!containsIgnoreCase(sessionManager.getSessionUsers(sessionId), targetUser)) {
         throw new IllegalArgumentException("target user is not a member of this session");
       }
+      targetHadVote = containsUserEstimate(sessionManager.getResults(sessionId), targetUser);
       sessionManager.removeUser(targetUser, sessionId);
       logger.info(
           "host {} kicked user {} from session {}",
@@ -123,8 +151,10 @@ public class GameController {
           LogSafeIds.hash(targetUser),
           LogSafeIds.hash(sessionId));
     }
-    messagingUtils.burstUsersMessages(sessionId);
-    messagingUtils.burstResultsMessages(sessionId);
+    messagingUtils.sendUsersMessage(sessionId);
+    if (targetHadVote) {
+      messagingUtils.sendUserLeftMessage(sessionId, targetUser);
+    }
   }
 
   @PostMapping("promote")
@@ -147,21 +177,23 @@ public class GameController {
           LogSafeIds.hash(targetUser),
           LogSafeIds.hash(sessionId));
     }
-    messagingUtils.burstUsersMessages(sessionId);
+    messagingUtils.sendUsersMessage(sessionId);
   }
 
   @PostMapping("reset")
-  public void reset(
+  public ResetResponse reset(
       @RequestParam(name = "sessionId") final String sessionId,
       @RequestParam(name = "userName") final String userName) {
+    int newRound;
     synchronized (sessionManager) {
       validateSessionMembership(sessionId, userName);
       logger.info(
           "host {} reset session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
       sessionManager.resetSession(sessionId);
+      newRound = sessionManager.incrementAndGetRound(sessionId);
     }
-    messagingUtils.sendResetNotification(sessionId);
-    messagingUtils.burstResultsMessages(sessionId);
+    messagingUtils.sendResetMessage(sessionId, newRound);
+    return new ResetResponse(newRound);
   }
 
   @PostMapping("setLabel")
@@ -182,7 +214,7 @@ public class GameController {
       logger.debug(
           "host {} set label in session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
     }
-    messagingUtils.burstResultsMessages(sessionId);
+    messagingUtils.sendResultsMessage(sessionId);
   }
 
   private SchemeConfig buildSchemeConfig(CreateSessionRequest request) {

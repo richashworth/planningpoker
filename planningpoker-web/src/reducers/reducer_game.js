@@ -5,8 +5,10 @@ import {
   LABEL_UPDATED,
   LEAVE_GAME,
   RESET_SESSION,
+  RESULTS_REPLACE,
   USER_REGISTERED,
   USERS_UPDATED,
+  VOTE,
   KICKED,
 } from '../actions'
 
@@ -21,6 +23,7 @@ const initialGameState = {
   host: '',
   kickedMessage: '',
   currentLabel: '',
+  clientRound: 0,
 }
 
 export default function (state = initialGameState, action) {
@@ -35,6 +38,8 @@ export default function (state = initialGameState, action) {
         schemeType: action.payload.schemeType,
         includeUnsure: action.payload.includeUnsure,
         host: action.payload.host || '',
+        clientRound: action.payload.round ?? 0,
+        currentLabel: action.payload.label || '',
       }
     case GAME_CREATED:
       return { ...state, isAdmin: true, isRegistered: true }
@@ -50,13 +55,28 @@ export default function (state = initialGameState, action) {
         schemeType: action.payload.schemeType,
         includeUnsure: action.payload.includeUnsure,
         host: action.payload.host || '',
+        clientRound: action.payload.round ?? 0,
+        currentLabel: action.payload.label || '',
       }
     case USERS_UPDATED:
       return { ...state, host: action.payload.host || '' }
     case LABEL_UPDATED:
       return { ...state, currentLabel: action.payload || '' }
+    case RESULTS_REPLACE:
+      return { ...state, clientRound: action.payload.round ?? state.clientRound }
+    case VOTE:
+      if (action.error) return state
+      return {
+        ...state,
+        clientRound: action.payload?.round ?? state.clientRound,
+      }
     case RESET_SESSION:
-      return { ...state, currentLabel: '' }
+      if (action.error) return state
+      return {
+        ...state,
+        currentLabel: '',
+        clientRound: action.payload?.round ?? state.clientRound,
+      }
     case KICKED:
       return {
         ...initialGameState,

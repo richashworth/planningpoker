@@ -8,6 +8,9 @@ import static org.mockito.Mockito.*;
 
 import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.model.CreateSessionRequest;
+import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.RefreshResponse;
+import com.richashworth.planningpoker.model.ResetResponse;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
 import com.richashworth.planningpoker.model.SessionResponse;
@@ -28,14 +31,21 @@ class GameControllerTest extends AbstractControllerTest {
     List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true);
     when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
     when(sessionManager.getHost(SESSION_ID)).thenReturn("HostUser");
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(4);
+    List<Estimate> existing = List.of(new Estimate("HostUser", "5"));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(existing);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("Sprint 2");
     SessionResponse response = gameController.joinSession(SESSION_ID, USER_NAME);
     assertEquals("fibonacci", response.schemeType());
     assertTrue(response.values().contains("1"));
     assertTrue(response.values().contains("?"));
     assertTrue(response.includeUnsure());
     assertEquals("HostUser", response.host());
+    assertEquals(4, response.round());
+    assertEquals(existing, response.results());
+    assertEquals("Sprint 2", response.label());
     inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
-    inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
+    inOrder.verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
   }
 
   @Test
@@ -60,6 +70,7 @@ class GameControllerTest extends AbstractControllerTest {
     List<String> fibValues = SchemeType.resolveValues("fibonacci", null, true);
     when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(fibValues);
     when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(0);
     final SessionResponse response = gameController.createSession(request);
     assertEquals(SESSION_ID, response.sessionId());
     assertEquals("fibonacci", response.schemeType());
@@ -67,9 +78,12 @@ class GameControllerTest extends AbstractControllerTest {
     assertTrue(response.values().contains("?"));
     assertTrue(response.includeUnsure());
     assertEquals(USER_NAME, response.host());
+    assertEquals(0, response.round());
+    assertTrue(response.results().isEmpty());
+    assertEquals("", response.label());
     inOrder.verify(sessionManager, times(1)).createSession(any(SchemeConfig.class));
     inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
-    inOrder.verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
+    inOrder.verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
     verify(sessionManager).getSessionLegalValues(SESSION_ID);
   }
 
@@ -80,6 +94,7 @@ class GameControllerTest extends AbstractControllerTest {
     List<String> tshirtValues = SchemeType.resolveValues("tshirt", null, true);
     when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(tshirtValues);
     when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(0);
     final SessionResponse response = gameController.createSession(request);
     assertEquals(SESSION_ID, response.sessionId());
     assertEquals("tshirt", response.schemeType());
@@ -91,10 +106,20 @@ class GameControllerTest extends AbstractControllerTest {
 
   @Test
   void testRefresh() {
-    gameController.refresh(SESSION_ID);
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(2);
+    List<Estimate> results = List.of(new Estimate("Alice", "5"));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(results);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("Sprint");
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(List.of("Alice", "Bob"));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn("Alice");
+    RefreshResponse response = gameController.refresh(SESSION_ID);
+    assertEquals(2, response.round());
+    assertEquals(results, response.results());
+    assertEquals("Sprint", response.label());
+    assertEquals(List.of("Alice", "Bob"), response.users());
+    assertEquals("Alice", response.host());
     verify(messagingUtils).sendResultsMessage(SESSION_ID);
     verify(messagingUtils).sendUsersMessage(SESSION_ID);
-    verifyNoInteractions(sessionManager);
   }
 
   @Test
@@ -111,20 +136,35 @@ class GameControllerTest extends AbstractControllerTest {
   void testLeaveSession() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
     gameController.leaveSession(USER_NAME, SESSION_ID);
     verify(sessionManager, times(1)).removeUser(USER_NAME, SESSION_ID);
-    verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
-    verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
+    verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
+    verify(messagingUtils, never()).sendUserLeftMessage(anyString(), anyString());
+  }
+
+  @Test
+  void testLeaveSessionWithVoteEmitsUserLeft() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of(new Estimate(USER_NAME, "5")));
+    gameController.leaveSession(USER_NAME, SESSION_ID);
+    verify(sessionManager, times(1)).removeUser(USER_NAME, SESSION_ID);
+    verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
+    verify(messagingUtils, times(1)).sendUserLeftMessage(SESSION_ID, USER_NAME);
   }
 
   @Test
   void testReset() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
-    gameController.reset(SESSION_ID, USER_NAME);
+    when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(4);
+    ResetResponse response = gameController.reset(SESSION_ID, USER_NAME);
+    assertEquals(4, response.round());
     verify(sessionManager).resetSession(SESSION_ID);
-    verify(messagingUtils).sendResetNotification(SESSION_ID);
-    verify(messagingUtils).burstResultsMessages(SESSION_ID);
+    verify(sessionManager).incrementAndGetRound(SESSION_ID);
+    verify(messagingUtils).sendResetMessage(SESSION_ID, 4);
+    verify(messagingUtils, never()).sendResultsMessage(anyString());
   }
 
   @Test
@@ -152,10 +192,24 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getSessionUsers(SESSION_ID))
         .thenReturn(Lists.newArrayList("Rich", "Alice"));
     when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
     gameController.kickUser("Rich", "Alice", SESSION_ID);
     verify(sessionManager, times(1)).removeUser("Alice", SESSION_ID);
-    verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
-    verify(messagingUtils, times(1)).burstResultsMessages(SESSION_ID);
+    verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
+    verify(messagingUtils, never()).sendUserLeftMessage(anyString(), anyString());
+  }
+
+  @Test
+  void testKickUserWithVoteEmitsUserLeft() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID))
+        .thenReturn(Lists.newArrayList("Rich", "Alice"));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of(new Estimate("Alice", "5")));
+    gameController.kickUser("Rich", "Alice", SESSION_ID);
+    verify(sessionManager, times(1)).removeUser("Alice", SESSION_ID);
+    verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
+    verify(messagingUtils, times(1)).sendUserLeftMessage(SESSION_ID, "Alice");
   }
 
   @Test
@@ -193,8 +247,8 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getHost(SESSION_ID)).thenReturn("Rich");
     gameController.promoteUser("Rich", "Alice", SESSION_ID);
     verify(sessionManager, times(1)).promoteHost(SESSION_ID, "Alice");
-    verify(messagingUtils, times(1)).burstUsersMessages(SESSION_ID);
-    verify(messagingUtils, never()).burstResultsMessages(SESSION_ID);
+    verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
+    verify(messagingUtils, never()).sendResultsMessage(anyString());
   }
 
   @Test
@@ -223,7 +277,7 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
     gameController.setLabel(SESSION_ID, USER_NAME, "Login page redesign");
     verify(sessionManager).setLabel(SESSION_ID, "Login page redesign");
-    verify(messagingUtils).burstResultsMessages(SESSION_ID);
+    verify(messagingUtils).sendResultsMessage(SESSION_ID);
   }
 
   @Test
@@ -251,16 +305,16 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
     gameController.setLabel(SESSION_ID, USER_NAME, "");
     verify(sessionManager).setLabel(SESSION_ID, "");
-    verify(messagingUtils).burstResultsMessages(SESSION_ID);
+    verify(messagingUtils).sendResultsMessage(SESSION_ID);
   }
 
   @Test
   void testResetClearsLabel() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(1);
     gameController.reset(SESSION_ID, USER_NAME);
     verify(sessionManager).resetSession(SESSION_ID);
-    verify(messagingUtils).sendResetNotification(SESSION_ID);
-    verify(messagingUtils).burstResultsMessages(SESSION_ID);
+    verify(messagingUtils).sendResetMessage(SESSION_ID, 1);
   }
 }

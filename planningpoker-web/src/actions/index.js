@@ -6,7 +6,9 @@ export const GAME_CREATED = 'game-created'
 export const JOIN_GAME = 'join-game'
 export const LEAVE_GAME = 'leave-game'
 export const RESET_SESSION = 'reset-session'
-export const RESULTS_UPDATED = 'results-updated'
+export const RESULTS_REPLACE = 'results-replace'
+export const RESULTS_UNION = 'results-union'
+export const USER_LEFT_RECEIVED = 'user-left-received'
 export const USERS_UPDATED = 'users-updated'
 export const USER_REGISTERED = 'user-registered'
 export const HOST_UPDATED = 'host-updated'
@@ -33,10 +35,21 @@ export const gameCreated = () => ({ type: GAME_CREATED })
 
 export const userRegistered = () => ({ type: USER_REGISTERED })
 
-export const resultsUpdated = (results, playerName) => ({
-  type: RESULTS_UPDATED,
-  payload: results,
-  meta: { playerName: playerName },
+export const resultsReplace = (round, results, playerName) => ({
+  type: RESULTS_REPLACE,
+  payload: { round, results },
+  meta: { playerName },
+})
+
+export const resultsUnion = (round, results, playerName) => ({
+  type: RESULTS_UNION,
+  payload: { round, results },
+  meta: { playerName },
+})
+
+export const userLeftReceived = (leaver) => ({
+  type: USER_LEFT_RECEIVED,
+  payload: { leaver },
 })
 
 export const labelUpdated = (label) => ({ type: LABEL_UPDATED, payload: label })
@@ -167,6 +180,21 @@ export function promoteUser(userName, targetUser, sessionId) {
     } catch (err) {
       dispatch({ type: PROMOTE_USER, payload: err, error: true })
       dispatch(showError(err.response?.data?.error || 'Failed to promote user'))
+    }
+  }
+}
+
+export function refresh(sessionId, playerName) {
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.get(`${API_ROOT_URL}/refresh`, {
+        params: { sessionId },
+      })
+      dispatch(resultsReplace(data.round, data.results, playerName))
+      dispatch(labelUpdated(data.label || ''))
+      if (Array.isArray(data.users)) dispatch(usersUpdated({ users: data.users, host: data.host }))
+    } catch (err) {
+      console.error('Failed to refresh session state', err)
     }
   }
 }

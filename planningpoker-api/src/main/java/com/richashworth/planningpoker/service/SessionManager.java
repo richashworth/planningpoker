@@ -10,6 +10,7 @@ import com.richashworth.planningpoker.util.LogSafeIds;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ public class SessionManager {
       new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, String> sessionHosts = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, String> sessionLabels = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, AtomicInteger> sessionRounds = new ConcurrentHashMap<>();
 
   public boolean isSessionActive(final String sessionId) {
     return activeSessions.contains(sessionId);
@@ -64,8 +66,18 @@ public class SessionManager {
         SchemeType.resolveValues(config.schemeType(), csvValues, config.includeUnsure());
     sessionLegalValues.put(sessionId, legal);
     sessionSchemeConfigs.put(sessionId, config);
+    sessionRounds.put(sessionId, new AtomicInteger(0));
     touchSession(sessionId);
     return sessionId;
+  }
+
+  public int getRound(String sessionId) {
+    AtomicInteger round = sessionRounds.get(sessionId);
+    return round == null ? 0 : round.get();
+  }
+
+  public int incrementAndGetRound(String sessionId) {
+    return sessionRounds.computeIfAbsent(sessionId, k -> new AtomicInteger(0)).incrementAndGet();
   }
 
   public List<String> getSessionLegalValues(String sessionId) {
@@ -127,6 +139,7 @@ public class SessionManager {
     sessionSchemeConfigs.clear();
     sessionHosts.clear();
     sessionLabels.clear();
+    sessionRounds.clear();
   }
 
   public void resetSession(final String sessionId) {
@@ -183,6 +196,7 @@ public class SessionManager {
       sessionSchemeConfigs.remove(sessionId);
       sessionHosts.remove(sessionId);
       sessionLabels.remove(sessionId);
+      sessionRounds.remove(sessionId);
     }
     if (!toEvict.isEmpty()) {
       logger.info("Evicted {} idle session(s)", toEvict.size());

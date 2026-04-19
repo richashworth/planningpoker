@@ -33,6 +33,9 @@ test-results/
 *.class
 hs_err_pid*
 
+# jqwik shrinking database
+.jqwik-database
+
 # TLA+ generated outputs
 *.aux
 *.log
