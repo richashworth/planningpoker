@@ -180,12 +180,6 @@ jobs:
       - name: Install frontend dependencies
         run: cd planningpoker-web && npm ci
 
-      - name: Build fat JAR
-        run: |
-          cd planningpoker-web && npm run build && cd ..
-          ./gradlew planningpoker-web:jar --no-daemon
-          ./gradlew planningpoker-api:bootJar --no-daemon
-
       - name: Release
         run: npx semantic-release
         env:
