@@ -109,6 +109,10 @@ export default function PlayGame() {
             )
             dispatch(kicked())
           })
+      } else {
+        // Initial connect: the USERS_MESSAGE broadcast fired by createSession/joinSession
+        // went out before we subscribed, so pull current state now.
+        dispatch(refresh(sessionId, playerName))
       }
       wasConnected.current = true
     }

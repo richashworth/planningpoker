@@ -178,6 +178,29 @@ test.describe('Multi-User Flows', () => {
     await playerCtx.close();
   });
 
+  test('host is visible in joiner players list in round 1 before any voting', async ({
+    browser,
+  }) => {
+    const hostCtx = await browser.newContext();
+    const hostPage = await hostCtx.newPage();
+    const sessionId = await hostGame(hostPage, 'Alice');
+
+    const playerCtx = await browser.newContext();
+    const playerPage = await playerCtx.newPage();
+    await joinGame(playerPage, 'Bob', sessionId);
+
+    // Round 1, no votes cast: joiner must see the host in the Players list
+    const joinerPlayers = playerPage.getByRole('main').getByText('Alice', { exact: true });
+    await expect(joinerPlayers).toBeVisible({ timeout: 10000 });
+
+    // And the host must also see the joiner in the Players list
+    const hostPlayers = hostPage.getByRole('main').getByText('Bob', { exact: true });
+    await expect(hostPlayers).toBeVisible({ timeout: 10000 });
+
+    await hostCtx.close();
+    await playerCtx.close();
+  });
+
   test('non-host does not see Next Item button', async ({ browser }) => {
     const hostCtx = await browser.newContext();
     const hostPage = await hostCtx.newPage();
