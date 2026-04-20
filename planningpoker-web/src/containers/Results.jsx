@@ -54,48 +54,63 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          minHeight: 42,
-          mb: currentLabel ? 1 : 2,
-          gap: 2,
-          flexWrap: 'wrap',
-        }}
-      >
-        <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
-          Results
-        </Typography>
-        {isAdmin && (
-          <Button
-            variant="contained"
-            size="large"
-            disableElevation
-            onClick={handleNextItem}
-            sx={{ px: 4 }}
-          >
-            Next Item
-          </Button>
-        )}
-      </Box>
+      <Typography variant="h6" sx={{ fontSize: '1.1rem', mb: currentLabel ? 1 : 2 }}>
+        Results
+      </Typography>
       {currentLabel && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {currentLabel}
         </Typography>
       )}
-      {isAdmin && displayConsensus && (
-        <Box sx={{ mb: 2.5 }}>
-          <ConsensusCardRail
-            legalEstimates={legalEstimates}
-            results={results}
-            autoConsensus={autoConsensus}
-            value={displayConsensus}
-            onChange={(v) => {
-              setConsensusOverride(v === autoConsensus ? null : v)
+      {isAdmin && (
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
+            gap: 3,
+            alignItems: 'end',
+            mb: 2.5,
+          }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            {displayConsensus && (
+              <ConsensusCardRail
+                legalEstimates={legalEstimates}
+                results={results}
+                value={displayConsensus}
+                onChange={(v) => {
+                  setConsensusOverride(v === autoConsensus ? null : v)
+                }}
+              />
+            )}
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: { xs: 'stretch', md: 'flex-end' },
+              gap: 1,
             }}
-          />
+          >
+            <Button
+              variant="contained"
+              size="large"
+              disableElevation
+              onClick={handleNextItem}
+              sx={{ px: 4, alignSelf: { xs: 'stretch', md: 'flex-end' } }}
+            >
+              Next Item
+            </Button>
+            {autoConsensus && (
+              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.75rem' }}>
+                Suggested:{' '}
+                <Box component="strong" sx={{ color: 'text.primary' }}>
+                  {autoConsensus}
+                </Box>{' '}
+                (mode)
+              </Typography>
+            )}
+          </Box>
         </Box>
       )}
       <Box
