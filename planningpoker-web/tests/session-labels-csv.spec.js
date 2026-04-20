@@ -268,17 +268,20 @@ test.describe('Consensus', () => {
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
-      // Host sees Consensus label + Select showing the value; non-host sees nothing
-      await expect(hostPage.getByText('Consensus:', { exact: true })).toBeVisible()
-      await expect(hostPage.getByRole('combobox')).toHaveText('5')
-      await expect(playerPage.getByText('Consensus:', { exact: true })).toHaveCount(0)
+      // Host sees the card-rail picker with "5" pre-selected (mode); non-host sees nothing
+      await expect(hostPage.getByText('Lock in the estimate')).toBeVisible()
+      await expect(hostPage.getByRole('button', { name: /^Set consensus to 5/ })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+      await expect(playerPage.getByText('Lock in the estimate')).toHaveCount(0)
     } finally {
       await hostCtx.close()
       await playerCtx.close()
     }
   })
 
-  test('host can override consensus via dropdown', async ({ browser }) => {
+  test('host can override consensus via card rail', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const playerCtx = await browser.newContext()
     try {
@@ -294,13 +297,17 @@ test.describe('Consensus', () => {
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
 
-      // Host opens consensus dropdown and picks a different value
-      const select = hostPage.locator('.MuiSelect-select')
-      await select.click()
-      await hostPage.getByRole('option', { name: '8', exact: true }).click()
+      // Mode picks '5' (alphabetical tiebreak); host clicks the '8' card to override
+      const fiveCard = hostPage.getByRole('button', { name: /^Set consensus to 5/ })
+      await expect(fiveCard).toHaveAttribute('aria-pressed', 'true')
+      await hostPage.getByRole('button', { name: /^Set consensus to 8/ }).click()
 
-      // Combobox should display the overridden value
-      await expect(hostPage.getByRole('combobox')).toHaveText('8')
+      // The overridden value should now be selected
+      await expect(hostPage.getByRole('button', { name: /^Set consensus to 8/ })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+      await expect(fiveCard).toHaveAttribute('aria-pressed', 'false')
     } finally {
       await hostCtx.close()
       await playerCtx.close()
@@ -592,7 +599,11 @@ test.describe('Accessibility announcements', () => {
       await playerPage.getByText('5', { exact: true }).click()
 
       await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-      await expect(hostPage.getByRole('combobox')).toHaveText('5', { timeout: 10000 })
+      await expect(hostPage.getByRole('button', { name: /^Set consensus to 5/ })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+        { timeout: 10000 },
+      )
 
       // Live region should contain consensus announcement (fires after 1500ms debounce)
       const liveRegion = hostPage.locator('[role="status"][aria-live="polite"]')
