@@ -58,7 +58,7 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 - **react-router-dom v6** (`Routes`, `useNavigate`)
 - **chart.js 4** + react-chartjs-2 v5 for results bar chart
 - **@stomp/stompjs** via custom `useStomp` hook for WebSocket
-- **Vite 5** for build/dev server
+- **Vite 6** for build/dev server
 - Code-split: vendor chunks (react, mui, charts, redux) + lazy-loaded route pages
 
 ### Frontend -> Backend Communication
@@ -71,7 +71,7 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 - **Spring Boot 3.4** with Java 21
 - **State management:** All session state is in-memory (synchronized Guava `ListMultimap`). Session IDs are random 8-char UUID prefixes. A scheduled task (`ClearSessionsTask`) periodically clears all sessions.
 - **SPA routing:** `SpaWebConfig` forwards unknown routes to `index.html` so client-side routing works on page refresh.
-- **Burst messaging:** When a vote is cast, `MessagingUtils.burstResultsMessages()` sends updated results to all WebSocket subscribers multiple times with increasing delays (10ms, 50ms, 150ms, 500ms, 2s, 5s) via `@Async`.
+- **State sync:** After a mutation, `MessagingUtils.sendResultsMessage()` / `sendUsersMessage()` publishes a single typed `Message` envelope to the relevant `/topic/...`. Clients reconcile via a monotonic `round` (epoch) counter: a newer round replaces state, an equal round unions results, older rounds are ignored — so duplicate or out-of-order broadcasts are idempotent.
 
 ## Web JAR Packaging Chain
 
@@ -85,14 +85,14 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 ## Validation Rules
 
 - Usernames: 3-20 chars, alphanumeric + spaces/hyphens/underscores only
-- Vote values: server-side whitelist matching `LEGAL_ESTIMATES` in `Constants.js`
+- Vote values: server-side whitelist derived from the session's `SchemeConfig` via `SessionManager.getSessionLegalValues`
 - Session membership required for voting, resetting, and logging out
 - No authentication — users are identified by name within a session
 
 ## Testing
 
 - **Backend unit tests:** JUnit 5 + Mockito, run with `./gradlew planningpoker-api:test`
-- **E2E tests:** Playwright (chromium), 15 tests covering welcome, host/join, voting, multi-user flows, dark/light toggle, copy session ID. Run with `cd planningpoker-web && npx playwright test` (requires backend on port 9000)
+- **E2E tests:** Playwright (chromium), 41 tests across `planning-poker.spec.js`, `session-labels-csv.spec.js`, and `epoch-flicker.spec.js`. Run with `cd planningpoker-web && npx playwright test` (requires backend on port 9000)
 - **CI:** GitHub Actions runs three jobs on every push to master and every PR: `lint` (ESLint + Prettier check + `spotlessCheck`) → `unit-tests` → `e2e-tests`. Both test jobs require lint to pass.
 
 ## Deployment
@@ -103,24 +103,18 @@ Deployed to Railway via multi-stage Dockerfile (`node:22-alpine` for frontend bu
 
 Live at: https://planning-poker.up.railway.app
 
-<!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
-**Planning Poker — Estimation Schemes**
+**Planning Poker**
 
-A real-time planning poker web app where distributed teams estimate work collaboratively. Currently supports only Fibonacci-style estimates. This milestone adds customizable estimation schemes so hosts can choose the scale that fits their team.
-
-**Core Value:** Hosts can pick an estimation scheme (Fibonacci, T-shirt, Simple, or Custom) when creating a game, and all participants see the correct cards for that session.
+A real-time planning poker web app for distributed teams. Hosts pick an estimation scheme (Fibonacci, T-shirt, Simple, or Custom) when creating a game, and all participants see the matching cards for that session.
 
 ### Constraints
 
 - **Tech stack**: Spring Boot 3.4 + Java 21 backend, React 18 + MUI v5 frontend — no new frameworks
-- **Backwards compatibility**: Default to Fibonacci so existing flows work unchanged
-- **In-memory state**: No database — scheme config stored in SessionManager maps like existing state
-- **API evolution**: createSession response changes from string to JSON — frontend must handle both during development
-<!-- GSD:project-end -->
+- **In-memory state**: No database — all session state lives in `SessionManager` and is ephemeral
+- **No authentication**: users are identified by name within a session; the 8-char session ID is the only access control
 
-<!-- GSD:stack-start source:codebase/STACK.md -->
 ## Technology Stack
 
 ## Languages
@@ -179,9 +173,7 @@ A real-time planning poker web app where distributed teams estimate work collabo
 - Deployed as single fat JAR: `planningpoker-api/build/libs/planningpoker-*.jar`
 - Docker: multi-stage build (`node:22-alpine` for frontend, `eclipse-temurin:21-jdk` for backend build, `eclipse-temurin:21-jre` for runtime)
 - Health check: `GET /actuator/health`
-<!-- GSD:stack-end -->
 
-<!-- GSD:conventions-start source:CONVENTIONS.md -->
 ## Conventions
 
 ## Naming Patterns
@@ -228,23 +220,14 @@ A real-time planning poker web app where distributed teams estimate work collabo
 - Event actions (no async): `{ type }` only (e.g., `gameCreated()`, `userRegistered()`)
 - Async actions: payload is an axios Promise; `meta` carries local data not in the response
 ## Error Handling
-- HTTP errors in action creators: `err.response?.data?.error || 'Fallback message'` then `alert(msg)` for user-facing errors
-- Non-critical errors logged with `console.error` (e.g., leave session failure)
-- No global error boundary
-- Domain validation throws `IllegalArgumentException` with descriptive messages
-- `ErrorHandler.java` (`@ControllerAdvice`) catches:
-- Controllers do not catch exceptions — they propagate to `ErrorHandler`
-- SLF4J + Logback used for all server-side logging; `logger.info(...)` for business events, `logger.error(...)` for unexpected errors
+- Frontend: action creators `.catch()` errors and dispatch `showError(msg)` (`err.response?.data?.error || 'Fallback message'`); non-critical failures use `console.error`; no global error boundary
+- Backend: `ErrorHandler` (`@ControllerAdvice`) maps `IllegalArgumentException` → 400, `HostActionException` → 403, all others → 500; controllers let exceptions propagate
 ## Logging
+- SLF4J + Logback on the backend; `logger.info` for business events, `logger.error` for unexpected failures; user- and session-identifying values hashed via `LogSafeIds.hash(...)` before logging
 ## Comments
-- Inline explanatory comments for non-obvious logic (e.g., `// Fallback: if we voted but no WS results arrive within 8s...`)
+- Inline explanatory comments for non-obvious logic (e.g. `// Fallback: if we voted but no WS results arrive within 8s...`)
 - `eslint-disable` inline comments when rule suppression is required
-- Commented-out code left in place for configuration alternatives (e.g., `// export const API_ROOT_URL = 'http://localhost:9000'`)
-## Function Design
-## Module Design
-<!-- GSD:conventions-end -->
 
-<!-- GSD:architecture-start source:ARCHITECTURE.md -->
 ## Architecture
 
 ## Pattern Overview
@@ -274,12 +257,12 @@ A real-time planning poker web app where distributed teams estimate work collabo
 - Used by: All containers via `useSelector`
 - Purpose: Redux action creators; REST calls are initiated here using axios
 - Location: `planningpoker-web/src/actions/index.js`
-- Contains: `createGame`, `joinGame`, `leaveGame`, `vote`, `resetSession`, plus event creators `resultsUpdated`, `usersUpdated`
+- Contains: `createGame`, `joinGame`, `leaveGame`, `vote`, `resetSession`, `kickUser`, `promoteUser`, `setLabel`, `refresh`; plus event creators `usersUpdated`, `resultsReplace`, `resultsUnion`, `labelUpdated`, `userLeftReceived`, `kicked`
 - Depends on: axios, `API_ROOT_URL` from `planningpoker-web/src/config/Constants.js`
 - Used by: Containers and pages that dispatch actions
 - Purpose: REST endpoint handlers; validate input, delegate to service, trigger WebSocket push
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/controller/`
-- Contains: `GameController.java` (session lifecycle + user management), `VoteController.java` (vote submission), `AppController.java` (version endpoint), `ErrorHandler.java` (global exception handling)
+- Contains: `GameController.java` (session lifecycle + user/host management: create, join, logout, kick, promote, reset, setLabel, refresh), `VoteController.java` (vote submission), `AppController.java` (version endpoint), `ErrorHandler.java` (global exception handling), `HostActionException.java` (403 for host-only actions)
 - Depends on: `SessionManager`, `MessagingUtils`
 - Used by: Spring MVC dispatcher
 - Purpose: Single stateful service holding all in-memory session data
@@ -289,29 +272,26 @@ A real-time planning poker web app where distributed teams estimate work collabo
 - Used by: All controllers, `MessagingUtils`, `ClearSessionsTask`
 - Purpose: Push updated state to all subscribers after mutations
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/util/MessagingUtils.java`
-- Contains: `burstResultsMessages()`, `burstUsersMessages()` — each sends the same message at increasing delays (10ms, 50ms, 150ms, 500ms, 2s, 5s) to compensate for eventual-consistency lag
-- Depends on: `SimpMessagingTemplate`, `SessionManager`, `Clock`
+- Contains: `sendResultsMessage()`, `sendUsersMessage()`, `sendResetMessage()`, `sendUserLeftMessage()` — each wraps the payload in a typed `Message` envelope (`RESULTS_MESSAGE` / `USERS_MESSAGE` / `RESET_MESSAGE` / `USER_LEFT_MESSAGE`) and publishes once to `/topic/results/{id}` or `/topic/users/{id}`
+- Depends on: `SimpMessagingTemplate`, `SessionManager`
 - Used by: All controllers after state mutations
 - Purpose: Spring configuration classes
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/config/`
-- Contains: `WebSocketConfig.java` (STOMP endpoint at `/stomp`, topic prefix `/topic`), `SpaWebConfig.java` (SPA fallback to `index.html`), `AsyncConfig.java` (thread pool for `@Async` burst messaging), `CorsConfig.java`
+- Contains: `WebSocketConfig.java` (STOMP endpoint at `/stomp`, topic prefix `/topic`), `SpaWebConfig.java` (SPA fallback to `index.html`), `CorsConfig.java` (configurable allowed origins)
 - Purpose: Background maintenance of session state
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/tasks/ClearSessionsTask.java`
 - Contains: Weekly full clear (`0 0 0 * * Sun`), 5-minute idle eviction (sessions inactive > 24h)
 - Depends on: `SessionManager`
-## Data Flow
 ## Key Abstractions
 - Purpose: Single source of truth for all server-side session state
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/service/SessionManager.java`
 - Pattern: Singleton Spring component with synchronized data structures; no persistence layer
-- Purpose: Reliable delivery of state updates over WebSocket despite network variability
-- Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/util/MessagingUtils.java`
-- Pattern: `@Async` method sends the same payload 6 times with increasing delays via `Clock.LATENCIES`
+- Purpose: Idempotent state sync via round/epoch counter
+- Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/util/MessagingUtils.java` + `planningpoker-web/src/reducers/reducer_results.js`
+- Pattern: Each results payload carries a monotonic `round`. Clients use `resultsReplace` when the incoming round is newer, `resultsUnion` (merge by `userName`) when it matches, and ignore older rounds — so duplicate or out-of-order broadcasts are harmless.
 - Purpose: Manages STOMP/SockJS lifecycle (connect, subscribe, reconnect, disconnect)
 - Location: `planningpoker-web/src/hooks/useStomp.js`
 - Pattern: Custom React hook; returns `{ connected }` boolean for UI feedback; auto-reconnects every 3s
-```js
-```
 - Purpose: Theme toggle shared between `App.jsx` and `Header.jsx`
 - Location: `planningpoker-web/src/App.jsx` (exported as `useColorMode()`)
 - Pattern: React Context with localStorage persistence under key `pp-theme`
@@ -332,24 +312,3 @@ A real-time planning poker web app where distributed teams estimate work collabo
 - WebSocket: `useStomp` sets `connected: false` on disconnect, triggering a "Reconnecting..." banner in `GamePane.jsx`
 - Fallback: If WebSocket results don't arrive within 8s after a vote, `PlayGame.jsx` calls `GET /refresh` to trigger a re-broadcast
 ## Cross-Cutting Concerns
-<!-- GSD:architecture-end -->
-
-<!-- GSD:workflow-start source:GSD defaults -->
-## GSD Workflow Enforcement
-
-Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
-
-Use these entry points:
-- `/gsd:quick` for small fixes, doc updates, and ad-hoc tasks
-- `/gsd:debug` for investigation and bug fixing
-- `/gsd:execute-phase` for planned phase work
-
-Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
-<!-- GSD:workflow-end -->
-
-<!-- GSD:profile-start -->
-## Developer Profile
-
-> Profile not yet configured. Run `/gsd:profile-user` to generate your developer profile.
-> This section is managed by `generate-claude-profile` -- do not edit manually.
-<!-- GSD:profile-end -->
