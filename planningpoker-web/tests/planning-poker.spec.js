@@ -178,6 +178,45 @@ test.describe('Multi-User Flows', () => {
     await playerCtx.close();
   });
 
+  test('self-initiated logout does not show kicked toast', async ({ browser }) => {
+    const hostCtx = await browser.newContext();
+    const hostPage = await hostCtx.newPage();
+    const sessionId = await hostGame(hostPage, 'Alice');
+
+    const playerCtx = await browser.newContext();
+    const playerPage = await playerCtx.newPage();
+    await joinGame(playerPage, 'Bob', sessionId);
+
+    // Wait until both clients have finished subscribing
+    await expect(hostPage.getByRole('main').getByText('Bob', { exact: true })).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Deterministically reproduce the race: hold the /logout response client-side
+    // for 800ms so the server-side USERS_MESSAGE broadcast always arrives first.
+    await playerPage.route('**/logout', async (route) => {
+      await new Promise((r) => setTimeout(r, 800));
+      await route.continue();
+    });
+
+    // Bob logs himself out
+    await playerPage.getByRole('button', { name: /Bob/i }).click();
+    await playerPage.getByRole('menuitem', { name: 'Log out' }).click();
+    await expect(playerPage).toHaveURL('/');
+
+    // No "removed by the host" toast should appear, immediately or after a beat
+    await expect(
+      playerPage.getByText(/removed from the session by the host/i),
+    ).not.toBeVisible();
+    await playerPage.waitForTimeout(500);
+    await expect(
+      playerPage.getByText(/removed from the session by the host/i),
+    ).not.toBeVisible();
+
+    await hostCtx.close();
+    await playerCtx.close();
+  });
+
   test('host is visible in joiner players list in round 1 before any voting', async ({
     browser,
   }) => {
