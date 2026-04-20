@@ -8,6 +8,18 @@ export default defineConfig({
   },
   test: {
     exclude: ['tests/**', 'node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: 'coverage',
+      include: ['src/**/*.{js,jsx}'],
+      exclude: [
+        'src/**/*.test.{js,jsx}',
+        'src/**/__tests__/**',
+        'src/index.jsx',
+        'src/testUtils/**',
+      ],
+    },
   },
   build: {
     outDir: 'build',

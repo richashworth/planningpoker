@@ -99,8 +99,17 @@ jobs:
       - name: Install frontend dependencies
         run: cd planningpoker-web && npm ci
 
-      - name: Run frontend unit tests
-        run: cd planningpoker-web && npm test
+      - name: Run frontend unit tests with coverage
+        run: cd planningpoker-web && npm run test:coverage
+
+      - name: Upload frontend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: planningpoker-web/coverage/
+          retention-days: 7
+          if-no-files-found: warn
 
       - name: Download Vite output
         uses: actions/download-artifact@v4
@@ -111,8 +120,17 @@ jobs:
       - name: Package web JAR
         run: ./gradlew planningpoker-web:jar --no-daemon
 
-      - name: Run backend tests
-        run: ./gradlew planningpoker-api:test --no-daemon
+      - name: Run backend tests + coverage verification
+        run: ./gradlew planningpoker-api:check --no-daemon
+
+      - name: Upload backend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: planningpoker-api/build/reports/jacoco/test/
+          retention-days: 7
+          if-no-files-found: warn
 
   e2e-tests:
     needs: build-web

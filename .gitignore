@@ -28,6 +28,7 @@ bin/
 
 # Test output
 test-results/
+coverage/
 
 # Java
 *.class
