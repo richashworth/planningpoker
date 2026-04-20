@@ -1,13 +1,7 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
-export default function ConsensusCardRail({
-  legalEstimates,
-  results,
-  autoConsensus,
-  value,
-  onChange,
-}) {
+export default function ConsensusCardRail({ legalEstimates, results, value, onChange }) {
   const counts = {}
   for (const { estimateValue } of results) {
     counts[estimateValue] = (counts[estimateValue] || 0) + 1
@@ -15,32 +9,12 @@ export default function ConsensusCardRail({
 
   return (
     <Box sx={{ minWidth: 0, pt: 1 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'baseline',
-          justifyContent: 'space-between',
-          gap: 1,
-          mb: 1,
-          flexWrap: 'wrap',
-        }}
+      <Typography
+        variant="body2"
+        sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '0.8rem', mb: 1 }}
       >
-        <Typography
-          variant="body2"
-          sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '0.8rem' }}
-        >
-          Lock in the estimate
-        </Typography>
-        {autoConsensus && (
-          <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.75rem' }}>
-            Suggested:{' '}
-            <Box component="strong" sx={{ color: 'text.primary' }}>
-              {autoConsensus}
-            </Box>{' '}
-            (mode)
-          </Typography>
-        )}
-      </Box>
+        Lock in the estimate
+      </Typography>
       <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', pt: 0.75, pr: 0.75 }}>
         {legalEstimates.map((v) => {
           const n = counts[v] || 0
