@@ -25,6 +25,14 @@ public class VoteController {
     this.messagingUtils = messagingUtils;
   }
 
+  /**
+   * Registers a vote for {@code userName} in {@code sessionId}. Re-voting is a no-op within the
+   * same round; subsequent rounds are tracked via {@code SessionManager#incrementAndGetRound}.
+   * Broadcasts the updated results to {@code /topic/results/{sessionId}} after the write.
+   *
+   * @throws IllegalArgumentException if the estimate is not in the session's legal values, the
+   *     session is inactive, or the user is not a member of the session.
+   */
   @PostMapping("vote")
   public VoteResponse vote(
       @RequestParam(name = "sessionId") final String sessionId,
