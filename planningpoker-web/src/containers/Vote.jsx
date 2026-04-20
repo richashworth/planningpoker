@@ -142,7 +142,7 @@ export default function Vote() {
               {isAdmin ? (
                 <TextField
                   variant="standard"
-                  placeholder="Round label (optional)"
+                  placeholder="Item label (optional)"
                   fullWidth
                   size="small"
                   value={labelInput}

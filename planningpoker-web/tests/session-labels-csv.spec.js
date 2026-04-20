@@ -58,16 +58,16 @@ test.describe('Session Labels', () => {
       await joinGame(playerPage, 'Bob', sessionId)
 
       // Host sees the inline label input
-      await expect(hostPage.getByPlaceholder('Round label (optional)')).toBeVisible()
+      await expect(hostPage.getByPlaceholder('Item label (optional)')).toBeVisible()
 
       // Non-host should NOT have a label input
-      await expect(playerPage.getByPlaceholder('Round label (optional)')).not.toBeVisible()
+      await expect(playerPage.getByPlaceholder('Item label (optional)')).not.toBeVisible()
 
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host types a label and presses Enter to commit
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
+      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
       await labelInput.fill('Login page redesign')
       await labelInput.press('Enter')
 
@@ -95,7 +95,7 @@ test.describe('Session Labels', () => {
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host opens the banner, sets a label and commits with Enter
-      const sprintInput = hostPage.getByPlaceholder('Round label (optional)')
+      const sprintInput = hostPage.getByPlaceholder('Item label (optional)')
       await sprintInput.fill('Sprint 42')
       await sprintInput.press('Enter')
 
@@ -133,7 +133,7 @@ test.describe('Session Labels', () => {
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host opens banner, sets label and commits with Enter
-      const itemAInput = hostPage.getByPlaceholder('Round label (optional)')
+      const itemAInput = hostPage.getByPlaceholder('Item label (optional)')
       await itemAInput.fill('Item A')
       await itemAInput.press('Enter')
       await expect(playerPage.getByText('Item A')).toBeVisible({ timeout: 15000 })
@@ -150,7 +150,7 @@ test.describe('Session Labels', () => {
       await expect(hostPage.getByText('Cast your estimate')).toBeVisible({
         timeout: 15000,
       })
-      await expect(hostPage.getByPlaceholder('Round label (optional)')).toHaveValue('')
+      await expect(hostPage.getByPlaceholder('Item label (optional)')).toHaveValue('')
     } finally {
       await hostCtx.close()
       await playerCtx.close()
@@ -170,7 +170,7 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
+      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
 
       // Host types — do not yet commit. Non-host should NOT see it within debounce window.
       await labelInput.fill('Deliberate')
@@ -199,7 +199,7 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
+      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
 
       // Host types and presses Enter to submit
       await labelInput.fill('Via Enter')
@@ -228,7 +228,7 @@ test.describe('Session Labels', () => {
       // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
+      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
 
       // Host sets a label
       await labelInput.fill('Something')
@@ -238,7 +238,7 @@ test.describe('Session Labels', () => {
       })
 
       // Re-enter edit mode, clear input, press Enter — non-host should no longer see label
-      const labelInput2 = hostPage.getByPlaceholder('Round label (optional)')
+      const labelInput2 = hostPage.getByPlaceholder('Item label (optional)')
       await labelInput2.fill('')
       await labelInput2.press('Enter')
       await expect(playerPage.getByText('Something')).not.toBeVisible({
@@ -349,7 +349,7 @@ test.describe('CSV Export', () => {
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Set label via banner → Enter commit
-      const story1Input = hostPage.getByPlaceholder('Round label (optional)')
+      const story1Input = hostPage.getByPlaceholder('Item label (optional)')
       await story1Input.fill('Story 1')
       await story1Input.press('Enter')
       await expect(playerPage.getByText('Story 1')).toBeVisible({
@@ -511,7 +511,7 @@ test.describe('Accessibility announcements', () => {
       })
 
       // Enter edit mode via banner
-      const labelInput = hostPage.getByPlaceholder('Round label (optional)')
+      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
       await expect(labelInput).toBeVisible()
 
       // Type 'Hello' character-by-character well under the 1000ms debounce window
