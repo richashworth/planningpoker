@@ -84,17 +84,18 @@ export function createGame(playerName, schemeOptions, onSuccess) {
 
 export function leaveGame(playerName, sessionId, onSuccess) {
   return async (dispatch) => {
+    // Reset local state first so the users-list broadcast that follows the
+    // server-side logout can't trip PlayGame's kick-detection effect on us.
+    dispatch({ type: LEAVE_GAME })
     try {
       await axios.post(
         `${API_ROOT_URL}/logout`,
         new URLSearchParams({ userName: playerName, sessionId }),
       )
-      dispatch({ type: LEAVE_GAME })
-      if (onSuccess) onSuccess()
     } catch (err) {
       console.error('Failed to leave session', err)
-      dispatch({ type: LEAVE_GAME })
     }
+    if (onSuccess) onSuccess()
   }
 }
 
