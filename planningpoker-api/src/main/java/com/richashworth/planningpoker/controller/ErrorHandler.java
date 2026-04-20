@@ -1,5 +1,6 @@
 package com.richashworth.planningpoker.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -29,8 +30,8 @@ public class ErrorHandler {
   @ExceptionHandler(Exception.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public Map<String, String> handleGenericException(Exception e) {
-    logger.error("Unexpected error", e);
+  public Map<String, String> handleGenericException(Exception e, HttpServletRequest request) {
+    logger.error("Unexpected error on {} {}", request.getMethod(), request.getRequestURI(), e);
     return Collections.singletonMap("error", "Internal server error");
   }
 }
