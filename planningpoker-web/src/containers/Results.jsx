@@ -62,70 +62,84 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
 
   return (
     <Box>
-      <Box
+      <Typography
+        component="h2"
         sx={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          minHeight: 42,
-          mb: 2,
-          gap: 2,
-          flexWrap: 'wrap',
+          fontSize: '0.6875rem',
+          fontWeight: 600,
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          color: 'primary.main',
+          mb: 0.5,
         }}
       >
-        <Box sx={{ minWidth: 0, flex: '1 1 auto' }}>
-          <Typography
-            component="h2"
+        {totalRounds > 0 ? `Round ${totalRounds}` : 'Results'}
+        {results.length > 0 && ' · Revealed'}
+      </Typography>
+      {currentLabel && (
+        <Typography
+          sx={{
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            color: 'text.primary',
+            lineHeight: 1.3,
+            wordBreak: 'break-word',
+            mb: 2,
+          }}
+        >
+          {currentLabel}
+        </Typography>
+      )}
+      {isAdmin && (
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
+            gap: 3,
+            alignItems: 'end',
+            mb: 2.5,
+          }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            {displayConsensus && (
+              <ConsensusCardRail
+                legalEstimates={legalEstimates}
+                results={results}
+                value={displayConsensus}
+                onChange={(v) => {
+                  setConsensusOverride(v === autoConsensus ? null : v)
+                }}
+              />
+            )}
+          </Box>
+          <Box
             sx={{
-              fontSize: '0.6875rem',
-              fontWeight: 600,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: 'primary.main',
-              mb: 0.5,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: { xs: 'stretch', md: 'flex-end' },
+              gap: 1,
             }}
           >
-            {totalRounds > 0 ? `Round ${totalRounds}` : 'Results'}
-            {results.length > 0 && ' · Revealed'}
-          </Typography>
-          {currentLabel && (
-            <Typography
-              sx={{
-                fontSize: '1.25rem',
-                fontWeight: 600,
-                letterSpacing: '-0.01em',
-                color: 'text.primary',
-                lineHeight: 1.3,
-                wordBreak: 'break-word',
-              }}
+            <Button
+              variant="contained"
+              size="large"
+              disableElevation
+              onClick={handleNextItem}
+              sx={{ px: 4, alignSelf: { xs: 'stretch', md: 'flex-end' } }}
             >
-              {currentLabel}
-            </Typography>
-          )}
-        </Box>
-        {isAdmin && (
-          <Button
-            variant="contained"
-            size="large"
-            disableElevation
-            onClick={handleNextItem}
-            sx={{ px: 4, flexShrink: 0 }}
-          >
-            Next Item
-          </Button>
-        )}
-      </Box>
-      {isAdmin && displayConsensus && (
-        <Box sx={{ mb: 2.5 }}>
-          <ConsensusCardRail
-            legalEstimates={legalEstimates}
-            results={results}
-            autoConsensus={autoConsensus}
-            value={displayConsensus}
-            onChange={(v) => {
-              setConsensusOverride(v === autoConsensus ? null : v)
-            }}
-          />
+              Next Item
+            </Button>
+            {autoConsensus && (
+              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.75rem' }}>
+                Suggested:{' '}
+                <Box component="strong" sx={{ color: 'text.primary' }}>
+                  {autoConsensus}
+                </Box>{' '}
+                (mode)
+              </Typography>
+            )}
+          </Box>
         </Box>
       )}
       <Box
