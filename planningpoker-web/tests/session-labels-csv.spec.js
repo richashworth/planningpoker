@@ -108,7 +108,7 @@ test.describe('Session Labels', () => {
       await playerPage.getByText('8', { exact: true }).click()
 
       // Both should see results with label
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
       await expect(hostPage.getByText('Sprint 42')).toBeVisible()
       await expect(playerPage.getByText('Sprint 42')).toBeVisible({
         timeout: 15000,
@@ -141,7 +141,7 @@ test.describe('Session Labels', () => {
       await hostPage.getByText('3', { exact: true }).click()
       await playerPage.getByText('5', { exact: true }).click()
 
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       // Host clicks Next Item
       await hostPage.getByRole('button', { name: 'Next Item' }).click()
@@ -266,7 +266,7 @@ test.describe('Consensus', () => {
       await hostPage.getByText('5', { exact: true }).click()
       await playerPage.getByText('5', { exact: true }).click()
 
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       // Host sees the card-rail picker with "5" pre-selected (mode); non-host sees nothing
       await expect(hostPage.getByText('Lock in the estimate')).toBeVisible()
@@ -295,7 +295,7 @@ test.describe('Consensus', () => {
       await hostPage.getByText('5', { exact: true }).click()
       await playerPage.getByText('8', { exact: true }).click()
 
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       // Mode picks '5' (alphabetical tiebreak); host clicks the '8' card to override
       const fiveCard = hostPage.getByRole('button', { name: /^Set consensus to 5/ })
@@ -330,7 +330,7 @@ test.describe('CSV Export', () => {
       await hostPage.getByText('5', { exact: true }).click()
       await playerPage.getByText('5', { exact: true }).click()
 
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       // Export CSV button should be enabled even on first round
       const exportBtn = hostPage.getByRole('button', { name: 'Export CSV' })
@@ -365,7 +365,7 @@ test.describe('CSV Export', () => {
 
       await hostPage.getByText('5', { exact: true }).click()
       await playerPage.getByText('8', { exact: true }).click()
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       await hostPage.getByRole('button', { name: 'Next Item' }).click()
       await expect(hostPage.getByText('Cast your estimate')).toBeVisible({
@@ -375,7 +375,7 @@ test.describe('CSV Export', () => {
       // Vote again to see export button
       await hostPage.getByText('3', { exact: true }).click()
       await playerPage.getByText('3', { exact: true }).click()
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       // Intercept download (button is below the chart now — scroll it in)
       const exportBtn = hostPage.getByRole('button', { name: 'Export CSV' })
@@ -418,7 +418,7 @@ test.describe('CSV Export', () => {
       // Only Alice and Bob vote; Carol does not
       await hostPage.getByText('5', { exact: true }).click()
       await voterPage.getByText('5', { exact: true }).click()
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       const exportBtn = hostPage.getByRole('button', { name: 'Export CSV' })
       await exportBtn.scrollIntoViewIfNeeded()
@@ -494,7 +494,7 @@ test.describe('Accessibility announcements', () => {
         timeout: 15000,
       })
 
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
     } finally {
       await hostCtx.close()
       await playerCtx.close()
@@ -598,7 +598,7 @@ test.describe('Accessibility announcements', () => {
       await hostPage.getByText('5', { exact: true }).click()
       await playerPage.getByText('5', { exact: true }).click()
 
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
       await expect(hostPage.getByRole('button', { name: /^Set consensus to 5/ })).toHaveAttribute(
         'aria-pressed',
         'true',

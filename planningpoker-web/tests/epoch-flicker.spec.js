@@ -34,8 +34,8 @@ test.describe('Epoch-based messaging — race conditions', () => {
       await hostPage.getByText(hostVote, { exact: true }).click()
       await playerPage.getByText(playerVote, { exact: true }).click()
 
-      await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-      await expect(playerPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+      await expect(playerPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       await hostPage.getByRole('button', { name: 'Next Item' }).click()
       await expect(hostPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 })
@@ -57,8 +57,8 @@ test.describe('Epoch-based messaging — race conditions', () => {
 
     await hostPage.getByText('3', { exact: true }).click()
     await playerPage.getByText('3', { exact: true }).click()
-    await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-    await expect(playerPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+    await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+    await expect(playerPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
     await hostPage.getByRole('button', { name: 'Next Item' }).click()
     await expect(playerPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 })
@@ -66,8 +66,8 @@ test.describe('Epoch-based messaging — race conditions', () => {
 
     await playerPage.getByText('8', { exact: true }).click()
     await hostPage.getByText('8', { exact: true }).click()
-    await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-    await expect(playerPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+    await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+    await expect(playerPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
     await hostCtx.close()
     await playerCtx.close()
@@ -85,15 +85,15 @@ test.describe('Epoch-based messaging — race conditions', () => {
     await hostPage.getByText('5', { exact: true }).click()
     await playerPage.getByText('8', { exact: true }).click()
 
-    await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 15000 })
-    await expect(playerPage.getByText('Results')).toBeVisible({ timeout: 15000 })
+    await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+    await expect(playerPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
     await playerPage.getByRole('button', { name: /Bob/i }).click()
     await playerPage.getByRole('menuitem', { name: 'Log out' }).click()
     await expect(playerPage).toHaveURL('/')
 
     // Host remains in Results view — Bob is gone but Alice's vote persists.
-    await expect(hostPage.getByText('Results')).toBeVisible({ timeout: 5000 })
+    await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 5000 })
     await expect(hostPage.getByText('Cast your estimate')).not.toBeVisible()
 
     await hostCtx.close()
