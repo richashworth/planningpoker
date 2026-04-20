@@ -32,7 +32,7 @@ const PLAYERS = ['Bob', 'Carol', 'Dave', 'Eve', 'Frank', 'Grace', 'Henry', 'Iris
 const ROUND_1 = { Alice: '5', Bob: '5', Carol: '5', Dave: '3', Eve: '5', Frank: '5', Grace: '5', Henry: '5', Iris: '8', Jack: '13' };
 const ROUND_2 = { Alice: '8', Bob: '8', Carol: '13', Dave: '8', Eve: '8', Frank: '8', Grace: '8', Henry: '5', Iris: '8', Jack: '8' };
 
-// Round labels (descriptions) the host types before each vote.
+// Item labels (descriptions) the host types before each vote.
 const ROUND_1_LABEL = 'AUTH-142 — OAuth login with Google';
 const ROUND_2_LABEL = 'AUTH-143 — Password reset via email';
 
@@ -79,7 +79,7 @@ async function castVote(page, value) {
 // In Option F the banner is click-to-edit: we first click the banner to reveal
 // the TextField, then pressSequentially so viewers see the text appear.
 async function setRoundLabel(hostPage, label) {
-  const field = hostPage.getByPlaceholder('Round label (optional)');
+  const field = hostPage.getByPlaceholder('Item label (optional)');
   await field.waitFor({ timeout: 5000 });
   await field.fill('');
   await field.pressSequentially(label, { delay: 45 });
