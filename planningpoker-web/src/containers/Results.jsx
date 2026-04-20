@@ -2,11 +2,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
 import DownloadIcon from '@mui/icons-material/Download'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
+import ConsensusCardRail from '../components/ConsensusCardRail'
 import { resetSession, roundCompleted } from '../actions'
 import { calcConsensus } from '../utils/consensus'
 import { generateCsv, downloadCsv } from '../utils/csvExport'
@@ -66,50 +65,38 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           flexWrap: 'wrap',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
-            Results
-          </Typography>
-          {isAdmin && displayConsensus && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Typography variant="body2" color="text.secondary">
-                Consensus:
-              </Typography>
-              <Select
-                size="small"
-                value={displayConsensus}
-                onChange={(e) => {
-                  setConsensusOverride(e.target.value === autoConsensus ? null : e.target.value)
-                }}
-                sx={{ minWidth: 72 }}
-              >
-                {legalEstimates.map((val) => (
-                  <MenuItem key={val} value={val}>
-                    {val}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-          )}
-        </Box>
+        <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
+          Results
+        </Typography>
         {isAdmin && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Button
-              variant="contained"
-              size="large"
-              disableElevation
-              onClick={handleNextItem}
-              sx={{ px: 4 }}
-            >
-              Next Item
-            </Button>
-          </Box>
+          <Button
+            variant="contained"
+            size="large"
+            disableElevation
+            onClick={handleNextItem}
+            sx={{ px: 4 }}
+          >
+            Next Item
+          </Button>
         )}
       </Box>
       {currentLabel && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {currentLabel}
         </Typography>
+      )}
+      {isAdmin && displayConsensus && (
+        <Box sx={{ mb: 2.5 }}>
+          <ConsensusCardRail
+            legalEstimates={legalEstimates}
+            results={results}
+            autoConsensus={autoConsensus}
+            value={displayConsensus}
+            onChange={(v) => {
+              setConsensusOverride(v === autoConsensus ? null : v)
+            }}
+          />
+        </Box>
       )}
       <Box
         sx={{
