@@ -10,4 +10,5 @@ public record SessionResponse(
     boolean includeUnsure,
     int round,
     List<Estimate> results,
-    String label) {}
+    String label,
+    List<Round> completedRounds) {}

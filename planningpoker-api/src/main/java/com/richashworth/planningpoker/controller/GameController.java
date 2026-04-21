@@ -7,12 +7,17 @@ import com.richashworth.planningpoker.model.CreateSessionRequest;
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.model.RefreshResponse;
 import com.richashworth.planningpoker.model.ResetResponse;
+import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SessionResponse;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.LogSafeIds;
 import com.richashworth.planningpoker.util.MessagingUtils;
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,8 +73,17 @@ public class GameController {
     int round = sessionManager.getRound(sessionId);
     List<Estimate> results = sessionManager.getResults(sessionId);
     String label = sessionManager.getLabel(sessionId);
+    List<Round> completedRounds = sessionManager.getCompletedRounds(sessionId);
     return new SessionResponse(
-        host, null, config.schemeType(), values, config.includeUnsure(), round, results, label);
+        host,
+        null,
+        config.schemeType(),
+        values,
+        config.includeUnsure(),
+        round,
+        results,
+        label,
+        completedRounds);
   }
 
   /**
@@ -104,7 +118,8 @@ public class GameController {
         schemeConfig.includeUnsure(),
         round,
         List.of(),
-        "");
+        "",
+        List.of());
   }
 
   /**
@@ -143,9 +158,10 @@ public class GameController {
     String label = sessionManager.getLabel(sessionId);
     List<String> users = sessionManager.getSessionUsers(sessionId);
     String host = sessionManager.getHost(sessionId);
+    List<Round> completedRounds = sessionManager.getCompletedRounds(sessionId);
     messagingUtils.sendResultsMessage(sessionId);
     messagingUtils.sendUsersMessage(sessionId);
-    return new RefreshResponse(round, results, label, users, host);
+    return new RefreshResponse(round, results, label, users, host, completedRounds);
   }
 
   /** Returns the list of usernames currently registered in {@code sessionId}. */
@@ -225,26 +241,61 @@ public class GameController {
   }
 
   /**
-   * Clears the current round's estimates and increments the round counter. Broadcasts a {@code
-   * RESET_MESSAGE} with the new round number so all clients return to the voting view. Currently
-   * any session member can trigger a reset; host-only enforcement is not applied here.
+   * Snapshots the current round's estimates into the session's completed-rounds history (if any
+   * votes were cast), clears the current estimates, and increments the round counter. Broadcasts
+   * {@code ROUND_COMPLETED_MESSAGE} (when a snapshot was taken) followed by {@code RESET_MESSAGE}
+   * so every participant's client converges on the same history and returns to the voting view.
+   * Currently any session member can trigger a reset; host-only enforcement is not applied here.
+   *
+   * <p>The optional {@code consensus} parameter lets the host supply an override (e.g. from the
+   * consensus card rail); if omitted, the server falls back to the mode of the captured estimates.
    *
    * @throws IllegalArgumentException if the session is not active or the user is not a member.
    */
   @PostMapping("reset")
   public ResetResponse reset(
       @RequestParam(name = "sessionId") final String sessionId,
-      @RequestParam(name = "userName") final String userName) {
+      @RequestParam(name = "userName") final String userName,
+      @RequestParam(name = "consensus", required = false) final String consensus) {
     int newRound;
+    Round snapshot = null;
     synchronized (sessionManager) {
       validateSessionMembership(sessionId, userName);
       logger.info(
           "host {} reset session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
+      List<Estimate> votes = sessionManager.getResults(sessionId);
+      if (!votes.isEmpty()) {
+        String resolvedConsensus =
+            (consensus != null && !consensus.isBlank()) ? consensus : modeOf(votes);
+        snapshot =
+            new Round(
+                sessionManager.getRound(sessionId),
+                sessionManager.getLabel(sessionId),
+                resolvedConsensus,
+                votes,
+                Instant.now().toString());
+        sessionManager.appendCompletedRound(sessionId, snapshot);
+      }
       sessionManager.resetSession(sessionId);
       newRound = sessionManager.incrementAndGetRound(sessionId);
     }
+    if (snapshot != null) {
+      messagingUtils.sendRoundCompletedMessage(sessionId, snapshot);
+    }
     messagingUtils.sendResetMessage(sessionId, newRound);
     return new ResetResponse(newRound);
+  }
+
+  private static String modeOf(List<Estimate> votes) {
+    return votes.stream()
+        .collect(Collectors.groupingBy(Estimate::estimateValue, Collectors.counting()))
+        .entrySet()
+        .stream()
+        .max(
+            Comparator.<Map.Entry<String, Long>>comparingLong(Map.Entry::getValue)
+                .thenComparing(Map.Entry::getKey, Comparator.reverseOrder()))
+        .map(Map.Entry::getKey)
+        .orElse("");
   }
 
   /**

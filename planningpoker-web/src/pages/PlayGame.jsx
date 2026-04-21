@@ -7,6 +7,7 @@ import useStomp from '../hooks/useStomp'
 import {
   resultsReplace,
   resultsUnion,
+  roundCompleted,
   userLeftReceived,
   usersUpdated,
   kicked,
@@ -90,6 +91,9 @@ export default function PlayGame() {
         }
         case 'USERS_MESSAGE':
           return dispatch(usersUpdated(msg.payload))
+        case 'ROUND_COMPLETED_MESSAGE':
+          if (msg.payload) dispatch(roundCompleted(msg.payload))
+          return
         default:
           return
       }

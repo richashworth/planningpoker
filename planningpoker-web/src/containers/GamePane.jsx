@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Vote from './Vote'
 import Results from './Results'
+import SessionHistory from './SessionHistory'
 import LiveAnnouncer from '../components/LiveAnnouncer'
 import { calcConsensus } from '../utils/consensus'
 
@@ -95,6 +96,7 @@ export default function GamePane({ connected }) {
         ) : (
           <Vote />
         )}
+        <SessionHistory consensusOverride={consensusOverride} />
       </Box>
     </>
   )

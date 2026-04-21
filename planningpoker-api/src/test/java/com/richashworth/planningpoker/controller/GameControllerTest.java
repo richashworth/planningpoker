@@ -11,6 +11,7 @@ import com.richashworth.planningpoker.model.CreateSessionRequest;
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.model.RefreshResponse;
 import com.richashworth.planningpoker.model.ResetResponse;
+import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
 import com.richashworth.planningpoker.model.SessionResponse;
@@ -35,6 +36,11 @@ class GameControllerTest extends AbstractControllerTest {
     List<Estimate> existing = List.of(new Estimate("HostUser", "5"));
     when(sessionManager.getResults(SESSION_ID)).thenReturn(existing);
     when(sessionManager.getLabel(SESSION_ID)).thenReturn("Sprint 2");
+    List<Round> priorRounds =
+        List.of(
+            new Round(
+                3, "Story A", "5", List.of(new Estimate("HostUser", "5")), "2026-04-21T10:00:00Z"));
+    when(sessionManager.getCompletedRounds(SESSION_ID)).thenReturn(priorRounds);
     SessionResponse response = gameController.joinSession(SESSION_ID, USER_NAME);
     assertEquals("fibonacci", response.schemeType());
     assertTrue(response.values().contains("1"));
@@ -44,6 +50,7 @@ class GameControllerTest extends AbstractControllerTest {
     assertEquals(4, response.round());
     assertEquals(existing, response.results());
     assertEquals("Sprint 2", response.label());
+    assertEquals(priorRounds, response.completedRounds());
     inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
     inOrder.verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
   }
@@ -81,6 +88,7 @@ class GameControllerTest extends AbstractControllerTest {
     assertEquals(0, response.round());
     assertTrue(response.results().isEmpty());
     assertEquals("", response.label());
+    assertTrue(response.completedRounds().isEmpty());
     inOrder.verify(sessionManager, times(1)).createSession(any(SchemeConfig.class));
     inOrder.verify(sessionManager, times(1)).registerUser(USER_NAME, SESSION_ID);
     inOrder.verify(messagingUtils, times(1)).sendUsersMessage(SESSION_ID);
@@ -112,12 +120,18 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getLabel(SESSION_ID)).thenReturn("Sprint");
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(List.of("Alice", "Bob"));
     when(sessionManager.getHost(SESSION_ID)).thenReturn("Alice");
+    List<Round> priorRounds =
+        List.of(
+            new Round(
+                1, "Story A", "3", List.of(new Estimate("Alice", "3")), "2026-04-21T10:00:00Z"));
+    when(sessionManager.getCompletedRounds(SESSION_ID)).thenReturn(priorRounds);
     RefreshResponse response = gameController.refresh(SESSION_ID);
     assertEquals(2, response.round());
     assertEquals(results, response.results());
     assertEquals("Sprint", response.label());
     assertEquals(List.of("Alice", "Bob"), response.users());
     assertEquals("Alice", response.host());
+    assertEquals(priorRounds, response.completedRounds());
     verify(messagingUtils).sendResultsMessage(SESSION_ID);
     verify(messagingUtils).sendUsersMessage(SESSION_ID);
   }
@@ -158,20 +172,86 @@ class GameControllerTest extends AbstractControllerTest {
   void testReset() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
     when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(4);
-    ResetResponse response = gameController.reset(SESSION_ID, USER_NAME);
+    ResetResponse response = gameController.reset(SESSION_ID, USER_NAME, null);
     assertEquals(4, response.round());
     verify(sessionManager).resetSession(SESSION_ID);
     verify(sessionManager).incrementAndGetRound(SESSION_ID);
     verify(messagingUtils).sendResetMessage(SESSION_ID, 4);
+    verify(messagingUtils, never()).sendRoundCompletedMessage(anyString(), any(Round.class));
     verify(messagingUtils, never()).sendResultsMessage(anyString());
+  }
+
+  @Test
+  void testResetWithVotesBroadcastsRoundCompleted() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    List<Estimate> votes =
+        List.of(new Estimate("Alice", "5"), new Estimate("Bob", "5"), new Estimate("Carol", "3"));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(votes);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("Login page");
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(2);
+    when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(3);
+
+    ResetResponse response = gameController.reset(SESSION_ID, USER_NAME, "8");
+
+    assertEquals(3, response.round());
+    org.mockito.ArgumentCaptor<Round> captor = org.mockito.ArgumentCaptor.forClass(Round.class);
+    verify(sessionManager).appendCompletedRound(eq(SESSION_ID), captor.capture());
+    Round stored = captor.getValue();
+    assertEquals(2, stored.round());
+    assertEquals("Login page", stored.label());
+    assertEquals("8", stored.consensus()); // explicit override preferred over mode
+    assertEquals(votes, stored.votes());
+    assertNotNull(stored.timestamp());
+    verify(messagingUtils).sendRoundCompletedMessage(SESSION_ID, stored);
+    verify(messagingUtils).sendResetMessage(SESSION_ID, 3);
+  }
+
+  @Test
+  void testResetWithoutConsensusFallsBackToMode() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    // Two "5"s and one "3" → mode is "5"
+    List<Estimate> votes =
+        List.of(new Estimate("Alice", "5"), new Estimate("Bob", "5"), new Estimate("Carol", "3"));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(votes);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("");
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(0);
+    when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(1);
+
+    gameController.reset(SESSION_ID, USER_NAME, null);
+
+    org.mockito.ArgumentCaptor<Round> captor = org.mockito.ArgumentCaptor.forClass(Round.class);
+    verify(sessionManager).appendCompletedRound(eq(SESSION_ID), captor.capture());
+    assertEquals("5", captor.getValue().consensus());
+  }
+
+  @Test
+  void testResetWithTiedVotesPicksAlphabeticallyFirstMode() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    // Tie: one "3" and one "5" → alphabetically first → "3"
+    List<Estimate> votes = List.of(new Estimate("Alice", "5"), new Estimate("Bob", "3"));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(votes);
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("");
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(0);
+    when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(1);
+
+    gameController.reset(SESSION_ID, USER_NAME, "");
+
+    org.mockito.ArgumentCaptor<Round> captor = org.mockito.ArgumentCaptor.forClass(Round.class);
+    verify(sessionManager).appendCompletedRound(eq(SESSION_ID), captor.capture());
+    assertEquals("3", captor.getValue().consensus());
   }
 
   @Test
   void testResetNonMemberRejected() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList());
-    assertThrows(IllegalArgumentException.class, () -> gameController.reset(SESSION_ID, USER_NAME));
+    assertThrows(
+        IllegalArgumentException.class, () -> gameController.reset(SESSION_ID, USER_NAME, null));
   }
 
   @Test
@@ -312,8 +392,9 @@ class GameControllerTest extends AbstractControllerTest {
   void testResetClearsLabel() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
     when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(1);
-    gameController.reset(SESSION_ID, USER_NAME);
+    gameController.reset(SESSION_ID, USER_NAME, null);
     verify(sessionManager).resetSession(SESSION_ID);
     verify(messagingUtils).sendResetMessage(SESSION_ID, 1);
   }

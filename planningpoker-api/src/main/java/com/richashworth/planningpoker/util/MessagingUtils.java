@@ -1,5 +1,6 @@
 package com.richashworth.planningpoker.util;
 
+import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.service.SessionManager;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,6 +56,12 @@ public class MessagingUtils {
         getTopic(TOPIC_RESULTS, sessionId), new Message(MessageType.USER_LEFT_MESSAGE, payload));
   }
 
+  public void sendRoundCompletedMessage(String sessionId, Round round) {
+    template.convertAndSend(
+        getTopic(TOPIC_RESULTS, sessionId),
+        new Message(MessageType.ROUND_COMPLETED_MESSAGE, round));
+  }
+
   Message resultsMessage(Object payload) {
     return new Message(MessageType.RESULTS_MESSAGE, payload);
   }
@@ -67,7 +74,8 @@ public class MessagingUtils {
     USERS_MESSAGE,
     RESULTS_MESSAGE,
     RESET_MESSAGE,
-    USER_LEFT_MESSAGE
+    USER_LEFT_MESSAGE,
+    ROUND_COMPLETED_MESSAGE
   }
 
   private record Message(MessageType type, Object payload) {}
