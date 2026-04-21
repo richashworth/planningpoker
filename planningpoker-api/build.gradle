@@ -39,8 +39,10 @@ dependencies {
     implementation 'org.springframework:spring-messaging'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testImplementation platform('org.junit:junit-bom:6.0.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.junit.platform:junit-platform-engine'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.23.0'
     testImplementation 'org.mockito:mockito-core:5.23.0'
     testImplementation 'net.jqwik:jqwik:1.9.3'
