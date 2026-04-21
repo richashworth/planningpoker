@@ -399,6 +399,78 @@ test.describe('CSV Export', () => {
     }
   })
 
+  test('export button is not rendered on a fresh session before the first reveal', async ({
+    browser,
+  }) => {
+    const hostCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      await hostGame(hostPage, 'Alice')
+
+      // On round 1 before voting/reveal, there is no history and nothing to export
+      await expect(hostPage.getByText('Cast your estimate')).toBeVisible()
+      await expect(hostPage.getByRole('button', { name: 'Export CSV' })).toHaveCount(0)
+    } finally {
+      await hostCtx.close()
+    }
+  })
+
+  test('Export CSV is available on the voting screen of round 2', async ({ browser }) => {
+    const hostCtx = await browser.newContext()
+    const playerCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      const sessionId = await hostGame(hostPage, 'Alice')
+
+      const playerPage = await playerCtx.newPage()
+      await joinGame(playerPage, 'Bob', sessionId)
+
+      await waitForWsReady(playerPage, sessionId, 'Alice')
+
+      // Set a label so the exported round has something identifiable
+      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
+      await labelInput.fill('Story 1')
+      await labelInput.press('Enter')
+      await expect(playerPage.getByText('Story 1')).toBeVisible({ timeout: 15000 })
+
+      // Round 1: both vote, reveal, and advance
+      await hostPage.getByText('5', { exact: true }).click()
+      await playerPage.getByText('5', { exact: true }).click()
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+      await hostPage.getByRole('button', { name: 'Next Item' }).click()
+
+      // Back on the voting screen of round 2
+      await expect(hostPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 })
+
+      // Export CSV should be visible to the host on the voting screen
+      const hostExport = hostPage.getByRole('button', { name: 'Export CSV' })
+      await expect(hostExport).toBeVisible()
+
+      // And also visible to the non-host player on their voting screen
+      await expect(playerPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 })
+      await expect(playerPage.getByRole('button', { name: 'Export CSV' })).toBeVisible()
+
+      // Non-host can actually trigger the download
+      const playerExport = playerPage.getByRole('button', { name: 'Export CSV' })
+      await playerExport.scrollIntoViewIfNeeded()
+      const [download] = await Promise.all([
+        playerPage.waitForEvent('download'),
+        playerExport.click(),
+      ])
+      expect(download.suggestedFilename()).toMatch(/^planning-poker-[a-f0-9]+\.csv$/)
+      const content = await download.path().then((p) => {
+        // eslint-disable-next-line no-undef
+        const fs = require('fs')
+        return fs.readFileSync(p, 'utf-8')
+      })
+      expect(content).toContain('Story 1')
+      expect(content.split('\n')).toHaveLength(2) // header + 1 completed round only
+    } finally {
+      await hostCtx.close()
+      await playerCtx.close()
+    }
+  })
+
   test('CSV has no stats columns and includes non-voting players', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const voterCtx = await browser.newContext()

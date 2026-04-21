@@ -10,11 +10,6 @@ vi.mock('axios', () => ({
   },
 }))
 
-vi.mock('../../utils/csvExport', () => ({
-  generateCsv: vi.fn(() => 'csv-content'),
-  downloadCsv: vi.fn(),
-}))
-
 vi.mock('react-chartjs-2', () => ({
   Bar: () => null,
 }))
@@ -22,7 +17,6 @@ vi.mock('react-chartjs-2', () => ({
 import axios from 'axios'
 import Results from '../Results'
 import { renderWithStore } from '../../testUtils/renderWithStore'
-import { generateCsv, downloadCsv } from '../../utils/csvExport'
 
 function baseState(overrides = {}) {
   return {
@@ -75,13 +69,12 @@ describe('Results container', () => {
     expect(screen.getByText('Login screen')).toBeInTheDocument()
   })
 
-  it('shows "Next Item" and Export CSV buttons to the host', () => {
+  it('shows "Next Item" button to the host', () => {
     renderWithStore(
       <Results consensusOverride={null} setConsensusOverride={setConsensusOverride} />,
       { preloadedState: baseState() },
     )
     expect(screen.getByRole('button', { name: /Next Item/ })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Export CSV/ })).toBeInTheDocument()
   })
 
   it('hides the host-only controls for non-host players', () => {
@@ -90,20 +83,6 @@ describe('Results container', () => {
       { preloadedState: baseState({ game: { isAdmin: false } }) },
     )
     expect(screen.queryByRole('button', { name: /Next Item/ })).not.toBeInTheDocument()
-  })
-
-  it('triggers CSV export through generateCsv + downloadCsv', async () => {
-    renderWithStore(
-      <Results consensusOverride={null} setConsensusOverride={setConsensusOverride} />,
-      { preloadedState: baseState() },
-    )
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Export CSV/ }))
-    })
-
-    expect(generateCsv).toHaveBeenCalled()
-    expect(downloadCsv).toHaveBeenCalledWith('csv-content', 'planning-poker-abc12345.csv')
   })
 
   it('POSTs to /reset when "Next Item" is clicked', async () => {
@@ -117,16 +96,5 @@ describe('Results container', () => {
     })
 
     expect(axios.post).toHaveBeenCalledWith(expect.stringMatching(/\/reset$/), expect.anything())
-  })
-
-  it('shows "Show session history" only after at least one completed round', () => {
-    const withHistory = baseState({
-      rounds: [{ label: 'Prev', consensus: '3', votes: [], timestamp: new Date().toISOString() }],
-    })
-    renderWithStore(
-      <Results consensusOverride={null} setConsensusOverride={setConsensusOverride} />,
-      { preloadedState: withHistory },
-    )
-    expect(screen.getByRole('button', { name: /Show session history/ })).toBeInTheDocument()
   })
 })
