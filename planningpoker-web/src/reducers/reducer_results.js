@@ -37,9 +37,12 @@ export default function (state = initialResultsState, action) {
       const { userName, estimateValue } = action.payload
       return [...state.filter((r) => r.userName !== userName), { userName, estimateValue }]
     }
-    case VOTE:
+    case VOTE: {
       if (action.error) return state.filter((r) => r.userName !== action.meta.userName)
-      return action.payload?.results ?? state
+      const incoming = action.payload?.results
+      if (!incoming) return state
+      return sameResults(state, incoming) ? state : incoming
+    }
     case RESULTS_REPLACE: {
       const incoming = action.payload.results ?? state
       return sameResults(state, incoming) ? state : incoming
