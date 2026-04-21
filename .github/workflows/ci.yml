@@ -112,7 +112,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Download Vite output
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: web-build
           path: planningpoker-web/build/
@@ -162,7 +162,7 @@ jobs:
         run: cd planningpoker-web && npm ci
 
       - name: Download Vite output
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: web-build
           path: planningpoker-web/build/
