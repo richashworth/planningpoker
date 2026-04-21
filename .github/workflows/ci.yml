@@ -41,6 +41,9 @@ jobs:
       - name: Frontend lint + format check
         run: cd planningpoker-web && npm run lint && npm run format:check
 
+      - name: Frontend vulnerability audit
+        run: cd planningpoker-web && npm audit --audit-level=high
+
       - name: Backend format check
         run: ./gradlew spotlessCheck --no-daemon
 
