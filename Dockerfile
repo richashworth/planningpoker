@@ -1,5 +1,5 @@
 # Stage 1: Build frontend
-FROM node:25-alpine AS frontend
+FROM node:22-alpine AS frontend
 WORKDIR /app/planningpoker-web
 COPY planningpoker-web/package.json planningpoker-web/package-lock.json ./
 RUN npm ci
@@ -7,7 +7,7 @@ COPY planningpoker-web/ ./
 RUN npm run build
 
 # Stage 2: Build backend
-FROM eclipse-temurin:25-jdk AS backend
+FROM eclipse-temurin:21-jdk AS backend
 WORKDIR /app
 COPY gradle/ gradle/
 COPY gradlew settings.gradle build.gradle ./
@@ -19,7 +19,7 @@ RUN chmod +x gradlew && ./gradlew planningpoker-web:jar --no-daemon
 RUN ./gradlew planningpoker-api:bootJar --no-daemon
 
 # Stage 3: Runtime
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:21-jre
 RUN addgroup --system app && adduser --system --ingroup app app
 WORKDIR /app
 COPY --from=backend /app/planningpoker-api/build/libs/planningpoker-*.jar app.jar
