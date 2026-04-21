@@ -38,9 +38,17 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 3
+    groups:
+      all-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 3
+    groups:
+      all-docker:
+        patterns:
+          - "*"
