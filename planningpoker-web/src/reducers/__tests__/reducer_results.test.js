@@ -67,6 +67,28 @@ describe('results reducer', () => {
     expect(reducer(optimistic, action)).toEqual(serverState)
   })
 
+  it('preserves state reference when VOTE echoes identical content', () => {
+    const state = [{ userName: 'alice', estimateValue: '5' }]
+    const action = {
+      type: VOTE,
+      payload: { round: 1, results: [{ userName: 'alice', estimateValue: '5' }] },
+      meta: { userName: 'alice', estimateValue: '5' },
+    }
+    expect(reducer(state, action)).toBe(state)
+  })
+
+  it('preserves state reference when RESULTS_REPLACE carries identical content', () => {
+    const state = [{ userName: 'alice', estimateValue: '5' }]
+    const action = replace(1, [{ userName: 'alice', estimateValue: '5' }])
+    expect(reducer(state, action)).toBe(state)
+  })
+
+  it('preserves state reference when RESULTS_UNION adds no new content', () => {
+    const state = [{ userName: 'alice', estimateValue: '5' }]
+    const action = union(1, [{ userName: 'alice', estimateValue: '5' }])
+    expect(reducer(state, action)).toBe(state)
+  })
+
   it('removes leaver on USER_LEFT_RECEIVED', () => {
     const existing = [
       { userName: 'alice', estimateValue: '5' },
