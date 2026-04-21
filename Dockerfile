@@ -1,5 +1,5 @@
 # Stage 1: Build frontend
-FROM node:22-alpine AS frontend
+FROM node:25-alpine AS frontend
 WORKDIR /app/planningpoker-web
 COPY planningpoker-web/package.json planningpoker-web/package-lock.json ./
 RUN npm ci
