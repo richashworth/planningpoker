@@ -115,10 +115,8 @@ class SessionManagerTest {
     final String sessionId = sessionManager.createSession();
     assertTrue(sessionManager.getCompletedRounds(sessionId).isEmpty());
 
-    Round r1 =
-        new Round(1, "A", "5", List.of(new Estimate("Alice", "5")), "2026-04-21T10:00:00Z");
-    Round r2 =
-        new Round(2, "B", "3", List.of(new Estimate("Alice", "3")), "2026-04-21T10:05:00Z");
+    Round r1 = new Round(1, "A", "5", List.of(new Estimate("Alice", "5")), "2026-04-21T10:00:00Z");
+    Round r2 = new Round(2, "B", "3", List.of(new Estimate("Alice", "3")), "2026-04-21T10:05:00Z");
     sessionManager.appendCompletedRound(sessionId, r1);
     sessionManager.appendCompletedRound(sessionId, r2);
 

@@ -251,8 +251,7 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList());
     assertThrows(
-        IllegalArgumentException.class,
-        () -> gameController.reset(SESSION_ID, USER_NAME, null));
+        IllegalArgumentException.class, () -> gameController.reset(SESSION_ID, USER_NAME, null));
   }
 
   @Test
