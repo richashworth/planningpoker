@@ -2,7 +2,10 @@ package com.richashworth.planningpoker.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -32,7 +35,11 @@ class ErrorHandlerTest {
   @Test
   void testHandleGenericExceptionReturns500WithErrorBody() {
     RuntimeException exception = new RuntimeException("unexpected");
-    Map<String, String> body = errorHandler.handleGenericException(exception);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getMethod()).thenReturn("POST");
+    when(request.getRequestURI()).thenReturn("/vote");
+    Map<String, String> body = errorHandler.handleGenericException(exception, request);
     assertNotNull(body.get("error"));
+    assertEquals("Internal server error", body.get("error"));
   }
 }

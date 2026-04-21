@@ -44,8 +44,34 @@ jobs:
       - name: Backend format check
         run: ./gradlew spotlessCheck --no-daemon
 
-  unit-tests:
+  build-web:
     needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: planningpoker-web/package-lock.json
+
+      - name: Install frontend dependencies
+        run: cd planningpoker-web && npm ci
+
+      - name: Build frontend
+        run: cd planningpoker-web && npm run build
+
+      - name: Upload Vite output
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: planningpoker-web/build/
+          retention-days: 1
+          if-no-files-found: error
+
+  unit-tests:
+    needs: build-web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -73,19 +99,41 @@ jobs:
       - name: Install frontend dependencies
         run: cd planningpoker-web && npm ci
 
-      - name: Run frontend unit tests
-        run: cd planningpoker-web && npm test
+      - name: Run frontend unit tests with coverage
+        run: cd planningpoker-web && npm run test:coverage
 
-      - name: Build frontend + web JAR
-        run: |
-          cd planningpoker-web && npm run build && cd ..
-          ./gradlew planningpoker-web:jar --no-daemon
+      - name: Upload frontend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: planningpoker-web/coverage/
+          retention-days: 7
+          if-no-files-found: warn
 
-      - name: Run backend tests
-        run: ./gradlew planningpoker-api:test --no-daemon
+      - name: Download Vite output
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: planningpoker-web/build/
+
+      - name: Package web JAR
+        run: ./gradlew planningpoker-web:jar --no-daemon
+
+      - name: Run backend tests + coverage verification
+        run: ./gradlew planningpoker-api:check --no-daemon
+
+      - name: Upload backend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: planningpoker-api/build/reports/jacoco/test/
+          retention-days: 7
+          if-no-files-found: warn
 
   e2e-tests:
-    needs: lint
+    needs: build-web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -113,10 +161,14 @@ jobs:
       - name: Install frontend dependencies
         run: cd planningpoker-web && npm ci
 
-      - name: Build frontend + web JAR
-        run: |
-          cd planningpoker-web && npm run build && cd ..
-          ./gradlew planningpoker-web:jar --no-daemon
+      - name: Download Vite output
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: planningpoker-web/build/
+
+      - name: Package web JAR
+        run: ./gradlew planningpoker-web:jar --no-daemon
 
       - name: Install Playwright browsers
         run: cd planningpoker-web && npx playwright install chromium --with-deps

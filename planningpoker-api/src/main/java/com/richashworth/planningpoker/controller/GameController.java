@@ -37,6 +37,14 @@ public class GameController {
     this.messagingUtils = messagingUtils;
   }
 
+  /**
+   * Registers {@code userName} as a new member of {@code sessionId} and returns the session's
+   * current scheme, host, round, results, and label. Broadcasts the updated user list to {@code
+   * /topic/users/{sessionId}}.
+   *
+   * @throws IllegalArgumentException if the username is invalid, the session is not active, or the
+   *     username (case-insensitive) is already taken in this session.
+   */
   @PostMapping("joinSession")
   public SessionResponse joinSession(
       @RequestParam(name = "sessionId") final String sessionId,
@@ -64,6 +72,13 @@ public class GameController {
         host, null, config.schemeType(), values, config.includeUnsure(), round, results, label);
   }
 
+  /**
+   * Creates a new session with the requested estimation scheme and registers the requester as both
+   * the first member and the host. Returns the generated session id, scheme metadata, and initial
+   * (empty) results.
+   *
+   * @throws IllegalArgumentException if the username is invalid.
+   */
   @PostMapping("createSession")
   public SessionResponse createSession(@RequestBody CreateSessionRequest request) {
     validateUserName(request.userName());
@@ -92,6 +107,13 @@ public class GameController {
         "");
   }
 
+  /**
+   * Removes {@code userName} from {@code sessionId}. Broadcasts the updated user list and, if the
+   * user had already voted this round, a {@code USER_LEFT_MESSAGE} so other clients can reconcile
+   * their local result lists.
+   *
+   * @throws IllegalArgumentException if the session is not active or the user is not a member.
+   */
   @PostMapping("logout")
   public void leaveSession(
       @RequestParam(name = "userName") final String userName,
@@ -109,6 +131,11 @@ public class GameController {
     }
   }
 
+  /**
+   * Returns the current round, results, label, users, and host for {@code sessionId}, and
+   * re-broadcasts the results and user list on the WebSocket topics. Used by clients as a fallback
+   * when WebSocket messages appear to have been missed.
+   */
   @GetMapping("refresh")
   public RefreshResponse refresh(@RequestParam(name = "sessionId") final String sessionId) {
     int round = sessionManager.getRound(sessionId);
@@ -121,11 +148,20 @@ public class GameController {
     return new RefreshResponse(round, results, label, users, host);
   }
 
+  /** Returns the list of usernames currently registered in {@code sessionId}. */
   @GetMapping("sessionUsers")
   public List<String> getSessionUsers(@RequestParam(name = "sessionId") final String sessionId) {
     return sessionManager.getSessionUsers(sessionId);
   }
 
+  /**
+   * Host-only action that removes {@code targetUser} from {@code sessionId}. Broadcasts the updated
+   * user list and, if the target had voted this round, a {@code USER_LEFT_MESSAGE}.
+   *
+   * @throws HostActionException if {@code userName} is not the host.
+   * @throws IllegalArgumentException if the host tries to kick themselves, the session is not
+   *     active, or the target is not a member of the session.
+   */
   @PostMapping("kick")
   public void kickUser(
       @RequestParam(name = "userName") final String userName,
@@ -157,6 +193,14 @@ public class GameController {
     }
   }
 
+  /**
+   * Host-only action that transfers host status from {@code userName} to {@code targetUser}.
+   * Broadcasts the updated user list so all clients see the new host.
+   *
+   * @throws HostActionException if {@code userName} is not the host.
+   * @throws IllegalArgumentException if the host tries to promote themselves, the session is not
+   *     active, or {@code userName}/{@code targetUser} is not a member.
+   */
   @PostMapping("promote")
   public void promoteUser(
       @RequestParam(name = "userName") final String userName,
@@ -180,6 +224,13 @@ public class GameController {
     messagingUtils.sendUsersMessage(sessionId);
   }
 
+  /**
+   * Clears the current round's estimates and increments the round counter. Broadcasts a {@code
+   * RESET_MESSAGE} with the new round number so all clients return to the voting view. Currently
+   * any session member can trigger a reset; host-only enforcement is not applied here.
+   *
+   * @throws IllegalArgumentException if the session is not active or the user is not a member.
+   */
   @PostMapping("reset")
   public ResetResponse reset(
       @RequestParam(name = "sessionId") final String sessionId,
@@ -196,6 +247,15 @@ public class GameController {
     return new ResetResponse(newRound);
   }
 
+  /**
+   * Host-only action that updates the session's label (the item/story currently being estimated).
+   * Control characters are stripped and the value is capped at 100 characters. Broadcasts the
+   * updated label to {@code /topic/results/{sessionId}} so all clients refresh.
+   *
+   * @throws IllegalArgumentException if the label exceeds 100 characters, the session is not
+   *     active, or the user is not a member.
+   * @throws HostActionException if the caller is not the host.
+   */
   @PostMapping("setLabel")
   public void setLabel(
       @RequestParam(name = "sessionId") final String sessionId,
