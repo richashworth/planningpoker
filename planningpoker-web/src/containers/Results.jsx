@@ -5,7 +5,7 @@ import Button from '@mui/material/Button'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
 import ConsensusCardRail from '../components/ConsensusCardRail'
-import { resetSession, roundCompleted } from '../actions'
+import { resetSession } from '../actions'
 import { calcConsensus } from '../utils/consensus'
 
 export default function Results({ consensusOverride, setConsensusOverride }) {
@@ -23,15 +23,9 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
   const totalRounds = rounds.length + (results.length > 0 ? 1 : 0)
 
   const handleNextItem = () => {
-    const round = {
-      label: currentLabel,
-      consensus: consensusOverride || calcConsensus(results),
-      votes: [...results],
-      timestamp: new Date().toISOString(),
-    }
-    dispatch(roundCompleted(round))
+    const consensus = consensusOverride || calcConsensus(results) || ''
     setConsensusOverride(null)
-    dispatch(resetSession(playerName, sessionId))
+    dispatch(resetSession(playerName, sessionId, consensus))
   }
 
   return (

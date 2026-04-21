@@ -5,6 +5,8 @@ import static com.richashworth.planningpoker.util.MessagingUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.service.SessionManager;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -126,5 +128,25 @@ class MessagingUtilsTest {
     verify(template, times(1))
         .convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), (Object) any());
     verifyNoMoreInteractions(template);
+  }
+
+  @Test
+  void testSendRoundCompletedMessageEmitsOnce() {
+    Round round =
+        new Round(
+            3,
+            "Login page",
+            "5",
+            List.of(new Estimate("Alice", "5"), new Estimate("Bob", "5")),
+            "2026-04-21T10:00:00Z");
+    messagingUtils.sendRoundCompletedMessage(SESSION_ID, round);
+    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+    verify(template, times(1))
+        .convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), captor.capture());
+    verifyNoMoreInteractions(template);
+    String str = captor.getValue().toString();
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("ROUND_COMPLETED_MESSAGE"), str);
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("round=3"), str);
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("consensus=5"), str);
   }
 }

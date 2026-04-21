@@ -20,6 +20,7 @@ export const VOTE_OPTIMISTIC = 'vote-optimistic'
 export const SET_LABEL = 'set-label'
 export const LABEL_UPDATED = 'label-updated'
 export const ROUND_COMPLETED = 'round-completed'
+export const ROUNDS_REPLACE = 'rounds-replace'
 export const SET_CONSENSUS_OVERRIDE = 'set-consensus-override'
 
 export const showError = (message) => ({ type: 'show-error', payload: message })
@@ -55,6 +56,8 @@ export const userLeftReceived = (leaver) => ({
 export const labelUpdated = (label) => ({ type: LABEL_UPDATED, payload: label })
 
 export const roundCompleted = (round) => ({ type: ROUND_COMPLETED, payload: round })
+
+export const roundsReplace = (rounds) => ({ type: ROUNDS_REPLACE, payload: rounds })
 
 export const setConsensusOverride = (value) => ({ type: SET_CONSENSUS_OVERRIDE, payload: value })
 
@@ -140,13 +143,12 @@ export function vote(playerName, sessionId, estimateValue) {
   }
 }
 
-export function resetSession(playerName, sessionId) {
+export function resetSession(playerName, sessionId, consensus) {
   return async (dispatch) => {
     try {
-      const { data } = await axios.post(
-        `${API_ROOT_URL}/reset`,
-        new URLSearchParams({ sessionId, userName: playerName }),
-      )
+      const params = { sessionId, userName: playerName }
+      if (consensus != null && consensus !== '') params.consensus = consensus
+      const { data } = await axios.post(`${API_ROOT_URL}/reset`, new URLSearchParams(params))
       dispatch({ type: RESET_SESSION, payload: data })
     } catch (err) {
       dispatch({ type: RESET_SESSION, payload: err, error: true })
@@ -194,6 +196,7 @@ export function refresh(sessionId, playerName) {
       dispatch(resultsReplace(data.round, data.results, playerName))
       dispatch(labelUpdated(data.label || ''))
       if (Array.isArray(data.users)) dispatch(usersUpdated({ users: data.users, host: data.host }))
+      if (Array.isArray(data.completedRounds)) dispatch(roundsReplace(data.completedRounds))
     } catch (err) {
       console.error('Failed to refresh session state', err)
     }

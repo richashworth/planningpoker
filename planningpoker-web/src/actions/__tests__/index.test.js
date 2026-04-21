@@ -18,6 +18,7 @@ import {
   RESULTS_REPLACE,
   LABEL_UPDATED,
   USERS_UPDATED,
+  ROUNDS_REPLACE,
 } from '../index'
 
 async function runThunkAsync(thunk) {
@@ -145,6 +146,26 @@ describe('resetSession', () => {
     expect(dispatched[0].type).toBe(RESET_SESSION)
     expect(dispatched[0].payload).toEqual({ round: 7 })
   })
+
+  it('omits the consensus param when none is supplied', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: { round: 1 } })
+
+    await runThunkAsync(resetSession('alice', 'abc12345'))
+
+    const [, params] = axios.post.mock.calls[0]
+    expect(params.get('userName')).toBe('alice')
+    expect(params.get('sessionId')).toBe('abc12345')
+    expect(params.has('consensus')).toBe(false)
+  })
+
+  it('includes the consensus param when supplied', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: { round: 2 } })
+
+    await runThunkAsync(resetSession('alice', 'abc12345', '8'))
+
+    const [, params] = axios.post.mock.calls[0]
+    expect(params.get('consensus')).toBe('8')
+  })
 })
 
 describe('refresh', () => {
@@ -152,7 +173,16 @@ describe('refresh', () => {
     vi.resetAllMocks()
   })
 
-  it('dispatches RESULTS_REPLACE, LABEL_UPDATED, and USERS_UPDATED from /refresh response', async () => {
+  it('dispatches RESULTS_REPLACE, LABEL_UPDATED, USERS_UPDATED, and ROUNDS_REPLACE from /refresh response', async () => {
+    const completedRounds = [
+      {
+        round: 1,
+        label: 'Story A',
+        consensus: '3',
+        votes: [{ userName: 'alice', estimateValue: '3' }],
+        timestamp: '2026-04-21T10:00:00Z',
+      },
+    ]
     axios.get = vi.fn().mockResolvedValue({
       data: {
         round: 5,
@@ -160,6 +190,7 @@ describe('refresh', () => {
         label: 'Sprint 1',
         users: ['alice', 'bob'],
         host: 'alice',
+        completedRounds,
       },
     })
 
@@ -177,5 +208,25 @@ describe('refresh', () => {
     const usersAction = dispatched.find((a) => a.type === USERS_UPDATED)
     expect(usersAction).toBeDefined()
     expect(usersAction.payload).toEqual({ users: ['alice', 'bob'], host: 'alice' })
+
+    const roundsAction = dispatched.find((a) => a.type === ROUNDS_REPLACE)
+    expect(roundsAction).toBeDefined()
+    expect(roundsAction.payload).toEqual(completedRounds)
+  })
+
+  it('skips ROUNDS_REPLACE when the refresh response omits completedRounds', async () => {
+    axios.get = vi.fn().mockResolvedValue({
+      data: {
+        round: 1,
+        results: [],
+        label: '',
+        users: ['alice'],
+        host: 'alice',
+      },
+    })
+
+    const dispatched = await runThunkAsync(refresh('abc12345', 'alice'))
+
+    expect(dispatched.find((a) => a.type === ROUNDS_REPLACE)).toBeUndefined()
   })
 })

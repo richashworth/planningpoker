@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
 import com.richashworth.planningpoker.util.LogSafeIds;
@@ -36,6 +37,8 @@ public class SessionManager {
   private final ConcurrentHashMap<String, String> sessionHosts = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, String> sessionLabels = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, AtomicInteger> sessionRounds = new ConcurrentHashMap<>();
+  private final ListMultimap<String, Round> sessionCompletedRounds =
+      Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
 
   public boolean isSessionActive(final String sessionId) {
     return activeSessions.contains(sessionId);
@@ -78,6 +81,15 @@ public class SessionManager {
 
   public int incrementAndGetRound(String sessionId) {
     return sessionRounds.computeIfAbsent(sessionId, k -> new AtomicInteger(0)).incrementAndGet();
+  }
+
+  public void appendCompletedRound(String sessionId, Round round) {
+    sessionCompletedRounds.put(sessionId, round);
+    touchSession(sessionId);
+  }
+
+  public List<Round> getCompletedRounds(String sessionId) {
+    return List.copyOf(sessionCompletedRounds.get(sessionId));
   }
 
   public List<String> getSessionLegalValues(String sessionId) {
@@ -140,6 +152,7 @@ public class SessionManager {
     sessionHosts.clear();
     sessionLabels.clear();
     sessionRounds.clear();
+    sessionCompletedRounds.clear();
   }
 
   public void resetSession(final String sessionId) {
@@ -197,6 +210,7 @@ public class SessionManager {
       sessionHosts.remove(sessionId);
       sessionLabels.remove(sessionId);
       sessionRounds.remove(sessionId);
+      sessionCompletedRounds.removeAll(sessionId);
     }
     if (!toEvict.isEmpty()) {
       logger.info("Evicted {} idle session(s)", toEvict.size());

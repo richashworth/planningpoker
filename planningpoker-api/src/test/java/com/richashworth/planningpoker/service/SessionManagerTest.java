@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.Lists;
 import com.richashworth.planningpoker.model.Estimate;
+import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
 import java.lang.reflect.Field;
@@ -107,6 +108,32 @@ class SessionManagerTest {
     sessionManager.resetSession(sessionId);
     assertTrue(sessionManager.getResults(sessionId).isEmpty());
     assertEquals(Lists.newArrayList(userName), sessionManager.getSessionUsers(sessionId));
+  }
+
+  @Test
+  void testAppendAndGetCompletedRounds() {
+    final String sessionId = sessionManager.createSession();
+    assertTrue(sessionManager.getCompletedRounds(sessionId).isEmpty());
+
+    Round r1 =
+        new Round(1, "A", "5", List.of(new Estimate("Alice", "5")), "2026-04-21T10:00:00Z");
+    Round r2 =
+        new Round(2, "B", "3", List.of(new Estimate("Alice", "3")), "2026-04-21T10:05:00Z");
+    sessionManager.appendCompletedRound(sessionId, r1);
+    sessionManager.appendCompletedRound(sessionId, r2);
+
+    List<Round> rounds = sessionManager.getCompletedRounds(sessionId);
+    assertEquals(List.of(r1, r2), rounds);
+    assertThrows(UnsupportedOperationException.class, () -> rounds.add(r1));
+  }
+
+  @Test
+  void testCompletedRoundsClearedOnClearSessions() {
+    final String sessionId = sessionManager.createSession();
+    sessionManager.appendCompletedRound(
+        sessionId, new Round(1, "A", "5", List.of(), "2026-04-21T10:00:00Z"));
+    sessionManager.clearSessions();
+    assertTrue(sessionManager.getCompletedRounds(sessionId).isEmpty());
   }
 
   @Test
