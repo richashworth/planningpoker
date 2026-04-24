@@ -25,11 +25,34 @@ export default defineConfig({
     outDir: 'build',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          mui: ['@mui/material', '@emotion/react', '@emotion/styled'],
-          redux: ['redux', 'react-redux', '@reduxjs/toolkit'],
-          charts: ['chart.js', 'react-chartjs-2'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react-router-dom/') ||
+            id.includes('/react-router/')
+          ) {
+            return 'vendor'
+          }
+          if (
+            id.includes('/@mui/') ||
+            id.includes('/@emotion/react/') ||
+            id.includes('/@emotion/styled/')
+          ) {
+            return 'mui'
+          }
+          if (
+            id.includes('/redux/') ||
+            id.includes('/react-redux/') ||
+            id.includes('/@reduxjs/toolkit/')
+          ) {
+            return 'redux'
+          }
+          if (id.includes('/chart.js/') || id.includes('/react-chartjs-2/')) {
+            return 'charts'
+          }
+          return undefined
         },
       },
     },
