@@ -85,7 +85,7 @@ tasks.named('jacocoTestCoverageVerification') {
 spotless {
     java {
         target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
-        googleJavaFormat('1.22.0')
+        googleJavaFormat('1.27.0')
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
