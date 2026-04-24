@@ -1,6 +1,8 @@
 # Planning Poker
 
 [![CI](https://github.com/richashworth/planningpoker/actions/workflows/ci.yml/badge.svg)](https://github.com/richashworth/planningpoker/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/richashworth/planningpoker)](https://github.com/richashworth/planningpoker/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
 A web-based planning poker tool for agile estimation. See [this blog post](https://richashworth.com/blog/agile-estimation-for-distributed-teams/) for more information.
 
