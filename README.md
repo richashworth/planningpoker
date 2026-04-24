@@ -13,7 +13,7 @@ A web-based planning poker tool for agile estimation. See [this blog post](https
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 18, MUI v5, Redux, react-router v6, chart.js 4 |
-| Backend | Spring Boot 3.4, Java 21 |
+| Backend | Spring Boot 3.4, Java 25 |
 | Real-time | STOMP over SockJS (WebSocket) |
 | Build | Gradle 8.14, Vite 5 |
 | CI | GitHub Actions |

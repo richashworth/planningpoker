@@ -68,7 +68,7 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 
 ### Backend
 
-- **Spring Boot 3.4** with Java 21
+- **Spring Boot 3.4** with Java 25
 - **State management:** All session state is in-memory (synchronized Guava `ListMultimap`). Session IDs are random 8-char UUID prefixes. A scheduled task (`ClearSessionsTask`) periodically clears all sessions.
 - **SPA routing:** `SpaWebConfig` forwards unknown routes to `index.html` so client-side routing works on page refresh.
 - **State sync:** After a mutation, `MessagingUtils.sendResultsMessage()` / `sendUsersMessage()` publishes a single typed `Message` envelope to the relevant `/topic/...`. Clients reconcile via a monotonic `round` (epoch) counter: a newer round replaces state, an equal round unions results, older rounds are ignored — so duplicate or out-of-order broadcasts are idempotent.
@@ -97,7 +97,7 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 
 ## Deployment
 
-Deployed to Railway via multi-stage Dockerfile (`node:22-alpine` for frontend build, `eclipse-temurin:21-jdk` for backend build, `eclipse-temurin:21-jre` for runtime). Railway config in `railway.toml`. The app reads `$PORT` env var (defaults to 9000). Health check at `/actuator/health`.
+Deployed to Railway via multi-stage Dockerfile (`node:25-alpine` for frontend build, `eclipse-temurin:25-jdk` for backend build, `eclipse-temurin:25-jre` for runtime). Railway config in `railway.toml`. The app reads `$PORT` env var (defaults to 9000). Health check at `/actuator/health`.
 
 **Automated releases:** semantic-release runs after every green master push. Conventional commit prefixes drive version bumps: `fix:` → patch, `feat:` → minor, `BREAKING CHANGE` footer → major. `chore:`/`docs:`/`test:` commits produce no release. On release, the fat JAR is attached as an asset to the GitHub release and a `v{version}` tag is pushed. Config in `.releaserc.json`.
 
@@ -111,7 +111,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 
 ### Constraints
 
-- **Tech stack**: Spring Boot 3.4 + Java 21 backend, React 18 + MUI v5 frontend — no new frameworks
+- **Tech stack**: Spring Boot 3.4 + Java 25 backend, React 18 + MUI v5 frontend — no new frameworks
 - **In-memory state**: No database — all session state lives in `SessionManager` and is ephemeral
 - **No authentication**: users are identified by name within a session; the 8-char session ID is the only access control
 
@@ -119,7 +119,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 
 ## Languages
 - JavaScript (ES modules) - Frontend source (`planningpoker-web/src/**/*.js`, `*.jsx`)
-- Java 21 - Backend source (`planningpoker-api/src/main/java/**/*.java`)
+- Java 25 - Backend source (`planningpoker-api/src/main/java/**/*.java`)
 - HTML - SPA entry point (`planningpoker-web/index.html`)
 ## Runtime
 - Node.js 22 (frontend build, dev server, CI)
@@ -164,14 +164,14 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - `planningpoker-web/vite.config.js` - Vite build config: outDir `build/`, manual chunk splitting (vendor/mui/redux/charts), dev proxy rules to backend port 9000
 - `planningpoker-web/build.gradle` - Packages `build/` into JAR under `META-INF/resources/`
 - `planningpoker-api/build.gradle` - Spring Boot fat JAR; depends on web JAR via `flatDir` at `../planningpoker-web/dist/libs`
-- `build.gradle` (root) - Sets Gradle 8.14 wrapper, Java 21 release target for all projects
+- `build.gradle` (root) - Sets Gradle 8.14 wrapper, Java 25 release target for all projects
 - `planningpoker-api/src/main/resources/application.properties` - WebSocket message size limits, actuator exposure, logging levels
 ## Platform Requirements
 - Node.js 22+
-- JDK 21 (Eclipse Temurin recommended)
+- JDK 25 (Eclipse Temurin recommended)
 - Backend on port 9000; frontend dev server on port 3000 (proxies API calls to 9000)
 - Deployed as single fat JAR: `planningpoker-api/build/libs/planningpoker-*.jar`
-- Docker: multi-stage build (`node:22-alpine` for frontend, `eclipse-temurin:21-jdk` for backend build, `eclipse-temurin:21-jre` for runtime)
+- Docker: multi-stage build (`node:25-alpine` for frontend, `eclipse-temurin:25-jdk` for backend build, `eclipse-temurin:25-jre` for runtime)
 - Health check: `GET /actuator/health`
 
 ## Conventions
