@@ -5,7 +5,7 @@ Thanks for wanting to help. This project is a small two-module app (React fronte
 ## Prerequisites
 
 - **Node.js 22+**
-- **JDK 21** (Eclipse Temurin recommended)
+- **JDK 25** (Eclipse Temurin recommended)
 - **Gradle** — use the wrapper (`./gradlew`), don't install Gradle globally.
 
 ## Getting started
@@ -80,7 +80,7 @@ Closes #123
 See [CLAUDE.md](./CLAUDE.md) for the full tour. In short:
 
 - `planningpoker-web/` — React 18 + MUI v5 + Redux Toolkit; builds to a JAR that the backend embeds.
-- `planningpoker-api/` — Spring Boot 3.4 on Java 21; in-memory session state (no database), STOMP/WebSocket for live updates.
+- `planningpoker-api/` — Spring Boot 3.4 on Java 25; in-memory session state (no database), STOMP/WebSocket for live updates.
 
 ## Reporting bugs
 
