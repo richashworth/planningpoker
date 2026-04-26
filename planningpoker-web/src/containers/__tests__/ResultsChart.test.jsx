@@ -75,35 +75,67 @@ describe('ResultsChart container', () => {
     expect(highlightedCount).toBe(1)
   })
 
-  it('highlights the x-axis tick when consensus has zero votes', () => {
+  it('highlights the x-axis tick whenever consensus is set', () => {
+    // Case A: consensus value has zero votes
+    renderWithStore(<ResultsChart consensus="2" />, {
+      preloadedState: state({
+        results: [{ userName: 'alice', estimateValue: '5' }],
+      }),
+    })
+    let props = barSpy.mock.calls[barSpy.mock.calls.length - 1][0]
+    let tickColorFn = props.options.scales.x.ticks.color
+    let tickFontFn = props.options.scales.x.ticks.font
+    expect(typeof tickColorFn).toBe('function')
+    expect(tickColorFn({ index: 1 })).not.toBe(tickColorFn({ index: 0 }))
+    expect(tickFontFn({ index: 1 })).toEqual({ weight: 'bold' })
+    expect(tickFontFn({ index: 0 })).toEqual({})
+
+    cleanup()
+    barSpy.mockReset()
+
+    // Case B: consensus value has votes — tick still highlights
+    renderWithStore(<ResultsChart consensus="5" />, {
+      preloadedState: state({
+        results: [{ userName: 'alice', estimateValue: '5' }],
+      }),
+    })
+    props = barSpy.mock.calls[barSpy.mock.calls.length - 1][0]
+    tickColorFn = props.options.scales.x.ticks.color
+    tickFontFn = props.options.scales.x.ticks.font
+    // index 3 is '5'
+    expect(tickColorFn({ index: 3 })).not.toBe(tickColorFn({ index: 0 }))
+    expect(tickFontFn({ index: 3 })).toEqual({ weight: 'bold' })
+  })
+
+  it('does not highlight any x-axis tick when no consensus is set', () => {
+    renderWithStore(<ResultsChart />, { preloadedState: state() })
+    const props = barSpy.mock.calls[barSpy.mock.calls.length - 1][0]
+    const tickColorFn = props.options.scales.x.ticks.color
+    const tickFontFn = props.options.scales.x.ticks.font
+    const colors = [0, 1, 2, 3, 4].map((i) => tickColorFn({ index: i }))
+    expect(new Set(colors).size).toBe(1)
+    ;[0, 1, 2, 3, 4].forEach((i) => expect(tickFontFn({ index: i })).toEqual({}))
+  })
+
+  it('registers the axis-highlight plugin with current consensus options', () => {
     renderWithStore(<ResultsChart consensus="2" />, {
       preloadedState: state({
         results: [{ userName: 'alice', estimateValue: '5' }],
       }),
     })
     const props = barSpy.mock.calls[barSpy.mock.calls.length - 1][0]
-    const tickColorFn = props.options.scales.x.ticks.color
-    const tickFontFn = props.options.scales.x.ticks.font
-    expect(typeof tickColorFn).toBe('function')
-    // index 1 is '2' — the unvoted consensus value
-    const consensusTickColor = tickColorFn({ index: 1 })
-    const otherTickColor = tickColorFn({ index: 0 })
-    expect(consensusTickColor).not.toBe(otherTickColor)
-    expect(tickFontFn({ index: 1 })).toEqual({ weight: 'bold' })
-    expect(tickFontFn({ index: 0 })).toEqual({})
+    expect(Array.isArray(props.plugins)).toBe(true)
+    expect(props.plugins.some((p) => p.id === 'consensusAxisHighlight')).toBe(true)
+    expect(props.options.plugins.consensusAxisHighlight).toEqual({
+      consensus: '2',
+      legalEstimates: ['1', '2', '3', '5', '8'],
+      aggregateData: [0, 0, 0, 1, 0],
+    })
   })
 
-  it('does not highlight the x-axis tick when consensus has votes', () => {
-    renderWithStore(<ResultsChart consensus="5" />, {
-      preloadedState: state({
-        results: [{ userName: 'alice', estimateValue: '5' }],
-      }),
-    })
+  it('passes null consensus to the axis-highlight plugin when none provided', () => {
+    renderWithStore(<ResultsChart />, { preloadedState: state() })
     const props = barSpy.mock.calls[barSpy.mock.calls.length - 1][0]
-    const tickColorFn = props.options.scales.x.ticks.color
-    const tickFontFn = props.options.scales.x.ticks.font
-    // index 3 is '5' — has a vote, so the bar (not the tick) carries the highlight
-    expect(tickColorFn({ index: 3 })).toBe(tickColorFn({ index: 0 }))
-    expect(tickFontFn({ index: 3 })).toEqual({})
+    expect(props.options.plugins.consensusAxisHighlight.consensus).toBeNull()
   })
 })

@@ -11,6 +11,38 @@ const HIGHLIGHT_BG = 'rgba(102, 126, 234, 0.85)'
 const HIGHLIGHT_BORDER = 'rgba(102, 126, 234, 1)'
 const HIGHLIGHT_HOVER_BG = 'rgba(102, 126, 234, 0.95)'
 
+// Draws a colored segment of the x-axis line under the consensus tick when
+// that estimate has zero votes — the bar already carries the highlight when
+// votes exist, so we only paint the axis when there's no bar to color.
+const consensusAxisHighlightPlugin = {
+  id: 'consensusAxisHighlight',
+  afterDatasetsDraw(chart, _args, opts) {
+    if (!opts) return
+    const { consensus, legalEstimates, aggregateData } = opts
+    if (consensus == null) return
+    const idx = legalEstimates.indexOf(consensus)
+    if (idx === -1 || aggregateData[idx] !== 0) return
+
+    const xScale = chart.scales.x
+    if (!xScale) return
+    const xCenter = xScale.getPixelForValue(idx)
+    const slotWidth = xScale.width / legalEstimates.length
+    const half = slotWidth * 0.4
+    const y = xScale.top
+
+    const ctx = chart.ctx
+    ctx.save()
+    ctx.strokeStyle = HIGHLIGHT_BORDER
+    ctx.lineWidth = 3
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(xCenter - half, y)
+    ctx.lineTo(xCenter + half, y)
+    ctx.stroke()
+    ctx.restore()
+  },
+}
+
 export default function ResultsChart({ consensus = null }) {
   const results = useSelector((state) => state.results)
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
@@ -32,17 +64,18 @@ export default function ResultsChart({ consensus = null }) {
   )
   const borderWidth = legalEstimates.map((l) => (isHighlighted(l) ? 2 : 1))
 
-  // When the chosen consensus has zero votes, there's no bar to color,
-  // so highlight the x-axis tick instead.
-  const isUnvotedConsensus = (idx) => isHighlighted(legalEstimates[idx]) && aggregateData[idx] === 0
-  const xTickColor = (ctx) => (isUnvotedConsensus(ctx.index) ? HIGHLIGHT_BORDER : tickColor)
-  const xTickFont = (ctx) => (isUnvotedConsensus(ctx.index) ? { weight: 'bold' } : {})
+  // Always highlight the consensus tick label so the axis stays in sync with
+  // the bar, even when the bar happens to have zero votes (no fill to see).
+  const isConsensusTick = (idx) => isHighlighted(legalEstimates[idx])
+  const xTickColor = (ctx) => (isConsensusTick(ctx.index) ? HIGHLIGHT_BORDER : tickColor)
+  const xTickFont = (ctx) => (isConsensusTick(ctx.index) ? { weight: 'bold' } : {})
 
   const options = {
     responsive: true,
     plugins: {
       legend: { display: false },
       tooltip: { enabled: false },
+      consensusAxisHighlight: { consensus, legalEstimates, aggregateData },
     },
     scales: {
       y: {
@@ -76,5 +109,5 @@ export default function ResultsChart({ consensus = null }) {
     ],
   }
 
-  return <Bar options={options} data={data} />
+  return <Bar options={options} data={data} plugins={[consensusAxisHighlightPlugin]} />
 }
