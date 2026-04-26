@@ -53,12 +53,12 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 ### Frontend Stack
 
 - **React 18** with functional components and hooks
-- **MUI v5** with custom dark/light theme (toggle in header)
+- **MUI v9** with custom dark/light theme (toggle in header)
 - **Redux 5** + `@reduxjs/toolkit` 2.x + react-redux 8 (`useSelector`/`useDispatch`)
 - **react-router-dom v6** (`Routes`, `useNavigate`)
 - **chart.js 4** + react-chartjs-2 v5 for results bar chart
 - **@stomp/stompjs** via custom `useStomp` hook for WebSocket
-- **Vite 6** for build/dev server
+- **Vite 8** for build/dev server
 - Code-split: vendor chunks (react, mui, charts, redux) + lazy-loaded route pages
 
 ### Frontend -> Backend Communication
@@ -92,7 +92,7 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 ## Testing
 
 - **Backend unit tests:** JUnit 5 + Mockito, run with `./gradlew planningpoker-api:test`
-- **E2E tests:** Playwright (chromium), 41 tests across `planning-poker.spec.js`, `session-labels-csv.spec.js`, and `epoch-flicker.spec.js`. Run with `cd planningpoker-web && npx playwright test` (requires backend on port 9000)
+- **E2E tests:** Playwright (chromium), 43 tests across `planning-poker.spec.js`, `session-labels-csv.spec.js`, and `epoch-flicker.spec.js`. Run with `cd planningpoker-web && npx playwright test` (Playwright config spins up backend + dev server automatically)
 - **CI:** GitHub Actions runs three jobs on every push to master and every PR: `lint` (ESLint + Prettier check + `spotlessCheck`) → `unit-tests` → `e2e-tests`. Both test jobs require lint to pass.
 
 ## Deployment
@@ -111,7 +111,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 
 ### Constraints
 
-- **Tech stack**: Spring Boot 3.4 + Java 25 backend, React 18 + MUI v5 frontend — no new frameworks
+- **Tech stack**: Spring Boot 3.4 + Java 25 backend, React 18 + MUI v9 + Redux 5 + RTK frontend — no new frameworks
 - **In-memory state**: No database — all session state lives in `SessionManager` and is ephemeral
 - **No authentication**: users are identified by name within a session; the 8-char session ID is the only access control
 
@@ -129,7 +129,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 ## Frameworks
 - React 18.2 - Frontend UI framework (`planningpoker-web/src/`)
 - Spring Boot 3.4.4 - Backend application framework (`planningpoker-api/`)
-- MUI v5 (`@mui/material` ^5.15.0) - Component library with custom theme
+- MUI v9 (`@mui/material` ^9.0.0) - Component library with custom theme
 - `@emotion/react` ^11.11.0 and `@emotion/styled` ^11.11.0 - CSS-in-JS (required by MUI)
 - Redux 5.0.1 + `@reduxjs/toolkit` 2.11.2 - Global state store wired via `configureStore` in `planningpoker-web/src/App.jsx`
 - react-redux 8.1.0 - React bindings (`useSelector`/`useDispatch`)
@@ -144,7 +144,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - `@playwright/test` 1.59 - E2E tests (config at `planningpoker-web/playwright.config.js`)
 - JUnit 5.11 - Backend unit tests
 - Mockito 5.15 - Backend mocking
-- Vite 6.4 + `@vitejs/plugin-react` 4.5 - Frontend build and dev server (`planningpoker-web/vite.config.js`)
+- Vite 8.0 + `@vitejs/plugin-react` 6.0 - Frontend build and dev server (`planningpoker-web/vite.config.js`)
 - Gradle 8.14 - Backend build and packaging (`build.gradle`, `planningpoker-api/build.gradle`)
 - JaCoCo - Backend code coverage reporting (configured in `planningpoker-api/build.gradle`)
 - Lombok 1.18.36 - Java boilerplate reduction (annotation processor)
