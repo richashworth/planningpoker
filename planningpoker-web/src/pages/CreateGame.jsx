@@ -63,25 +63,29 @@ export default function CreateGame() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitting) return
     const nameRegex = /^[a-zA-Z0-9 _-]{3,20}$/
     if (!nameRegex.test(playerName)) return
     if (!isCustomValid()) return
     setSubmitting(true)
-    await dispatch(
-      createGame(
-        playerName,
-        {
-          schemeType,
-          customValues: schemeType === 'custom' ? customValues : null,
-          includeUnsure,
-        },
-        () => {
-          dispatch(gameCreated())
-          navigate('/game')
-        },
-      ),
-    )
-    setSubmitting(false)
+    try {
+      await dispatch(
+        createGame(
+          playerName,
+          {
+            schemeType,
+            customValues: schemeType === 'custom' ? customValues : null,
+            includeUnsure,
+          },
+          () => {
+            dispatch(gameCreated())
+            navigate('/game')
+          },
+        ),
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
