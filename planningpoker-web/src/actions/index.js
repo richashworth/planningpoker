@@ -21,7 +21,6 @@ export const SET_LABEL = 'set-label'
 export const LABEL_UPDATED = 'label-updated'
 export const ROUND_COMPLETED = 'round-completed'
 export const ROUNDS_REPLACE = 'rounds-replace'
-export const SET_CONSENSUS_OVERRIDE = 'set-consensus-override'
 
 export const showError = (message) => ({ type: 'show-error', payload: message })
 export const clearError = () => ({ type: 'clear-error' })
@@ -58,8 +57,6 @@ export const labelUpdated = (label) => ({ type: LABEL_UPDATED, payload: label })
 export const roundCompleted = (round) => ({ type: ROUND_COMPLETED, payload: round })
 
 export const roundsReplace = (rounds) => ({ type: ROUNDS_REPLACE, payload: rounds })
-
-export const setConsensusOverride = (value) => ({ type: SET_CONSENSUS_OVERRIDE, payload: value })
 
 export const usersUpdated = (users) => ({ type: USERS_UPDATED, payload: users })
 
