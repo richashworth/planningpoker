@@ -54,7 +54,7 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 
 - **React 18** with functional components and hooks
 - **MUI v5** with custom dark/light theme (toggle in header)
-- **Redux 4** + react-redux 8 (`useSelector`/`useDispatch`)
+- **Redux 5** + `@reduxjs/toolkit` 2.x + react-redux 8 (`useSelector`/`useDispatch`)
 - **react-router-dom v6** (`Routes`, `useNavigate`)
 - **chart.js 4** + react-chartjs-2 v5 for results bar chart
 - **@stomp/stompjs** via custom `useStomp` hook for WebSocket
@@ -131,9 +131,9 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - Spring Boot 3.4.4 - Backend application framework (`planningpoker-api/`)
 - MUI v5 (`@mui/material` ^5.15.0) - Component library with custom theme
 - `@emotion/react` ^11.11.0 and `@emotion/styled` ^11.11.0 - CSS-in-JS (required by MUI)
-- Redux 4.2.1 - Global state store (`planningpoker-web/src/reducers/`)
+- Redux 5.0.1 + `@reduxjs/toolkit` 2.11.2 - Global state store wired via `configureStore` in `planningpoker-web/src/App.jsx`
 - react-redux 8.1.0 - React bindings (`useSelector`/`useDispatch`)
-- redux-promise 0.6.0 - Middleware for async action payloads
+- Async actions are plain thunks (RTK's default middleware includes `redux-thunk`); no extra promise middleware
 - react-router-dom 6.20 - Client-side routing (`planningpoker-web/src/App.jsx`)
 - chart.js 4.4 + react-chartjs-2 5.2 - Results bar chart (`planningpoker-web/src/containers/ResultsChart.jsx`)
 - `@stomp/stompjs` 7.0 - STOMP over WebSocket client
@@ -216,9 +216,9 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - Component variants: `variant="contained"` for primary, `variant="outlined"` for secondary buttons
 - Theme customization centralized in `src/theme.js` — shared config object spread into dark/light variants
 ## Redux Patterns
-- All actions: `{ type, payload, meta }` — redux-promise middleware resolves promise payloads
-- Event actions (no async): `{ type }` only (e.g., `gameCreated()`, `userRegistered()`)
-- Async actions: payload is an axios Promise; `meta` carries local data not in the response
+- Store wired via `configureStore` from `@reduxjs/toolkit` (RTK includes `redux-thunk` by default)
+- Event actions: `{ type, payload?, meta? }` plain object creators (e.g., `gameCreated()`, `userRegistered()`)
+- Async actions: thunks — `(args) => async (dispatch) => { try { dispatch(...success) } catch { dispatch(...error: true) } }`. No `createAsyncThunk` yet; the existing `error: true` flag pattern is the convention
 ## Error Handling
 - Frontend: action creators `.catch()` errors and dispatch `showError(msg)` (`err.response?.data?.error || 'Fallback message'`); non-critical failures use `console.error`; no global error boundary
 - Backend: `ErrorHandler` (`@ControllerAdvice`) maps `IllegalArgumentException` → 400, `HostActionException` → 403, all others → 500; controllers let exceptions propagate
