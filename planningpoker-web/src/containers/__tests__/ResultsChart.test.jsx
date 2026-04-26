@@ -54,4 +54,24 @@ describe('ResultsChart container', () => {
     const values = props.data.datasets[0].data
     expect(values[3]).toBe(2)
   })
+
+  it('uses uniform default colors when no consensus is passed', () => {
+    renderWithStore(<ResultsChart />, { preloadedState: state() })
+    const ds = barSpy.mock.calls[barSpy.mock.calls.length - 1][0].data.datasets[0]
+    const unique = new Set(ds.backgroundColor)
+    expect(unique.size).toBe(1)
+    expect(ds.borderWidth.every((w) => w === 1)).toBe(true)
+  })
+
+  it('highlights only the bar matching the consensus value', () => {
+    renderWithStore(<ResultsChart consensus="5" />, { preloadedState: state() })
+    const ds = barSpy.mock.calls[barSpy.mock.calls.length - 1][0].data.datasets[0]
+    // labels are ['1','2','3','5','8'] — index 3 is '5'
+    expect(ds.backgroundColor[3]).not.toBe(ds.backgroundColor[0])
+    expect(ds.borderWidth[3]).toBe(2)
+    expect(ds.borderWidth[0]).toBe(1)
+    // Only one bar is highlighted
+    const highlightedCount = ds.borderWidth.filter((w) => w === 2).length
+    expect(highlightedCount).toBe(1)
+  })
 })

@@ -99,7 +99,7 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
               transition: 'border-color 0.3s ease, background-color 0.3s ease',
             }}
           >
-            <ResultsChart />
+            <ResultsChart consensus={displayConsensus} />
           </Box>
           <SessionHistory consensusOverride={consensusOverride} />
         </Box>
