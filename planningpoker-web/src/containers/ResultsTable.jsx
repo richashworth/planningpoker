@@ -46,83 +46,102 @@ export default function ResultsTable() {
       >
         Votes
       </Typography>
-      <Box
-        component="table"
-        aria-label="Voting results"
-        sx={{ width: '100%', borderCollapse: 'collapse' }}
-      >
-        <thead>
-          <tr>
-            <Box
-              component="th"
-              scope="col"
-              sx={{
-                textAlign: 'left',
-                pb: 0.75,
-                fontSize: '0.65rem',
-                color: 'text.disabled',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Player
-            </Box>
-            <Box
-              component="th"
-              scope="col"
-              sx={{
-                textAlign: 'right',
-                pb: 0.75,
-                fontSize: '0.65rem',
-                color: 'text.disabled',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Vote
-            </Box>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedResults.map((x) => (
-            <tr key={x.userName}>
-              <Box component="td" sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.primary' }}>
-                {startCase(x.userName)}
-              </Box>
+      <Box sx={{ maxHeight: 360, overflowY: 'auto' }}>
+        <Box
+          component="table"
+          aria-label="Voting results"
+          sx={{ width: '100%', borderCollapse: 'collapse' }}
+        >
+          <thead>
+            <tr>
               <Box
-                component="td"
+                component="th"
+                scope="col"
                 sx={{
-                  py: 0.5,
-                  fontSize: '0.85rem',
-                  color: 'text.primary',
-                  textAlign: 'right',
-                  fontWeight: 700,
-                  fontVariantNumeric: 'tabular-nums',
+                  textAlign: 'left',
+                  pb: 0.75,
+                  fontSize: '0.65rem',
+                  color: 'text.disabled',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  position: 'sticky',
+                  top: 0,
+                  bgcolor: 'background.paper',
+                  zIndex: 1,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
                 }}
               >
-                {x.estimateValue}
-              </Box>
-            </tr>
-          ))}
-          {notVoted.map((x) => (
-            <tr key={x}>
-              <Box
-                component="td"
-                sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.disabled', fontStyle: 'italic' }}
-              >
-                {startCase(x)}
+                Player
               </Box>
               <Box
-                component="td"
-                sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.disabled', textAlign: 'right' }}
+                component="th"
+                scope="col"
+                sx={{
+                  textAlign: 'right',
+                  pb: 0.75,
+                  fontSize: '0.65rem',
+                  color: 'text.disabled',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  position: 'sticky',
+                  top: 0,
+                  bgcolor: 'background.paper',
+                  zIndex: 1,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                }}
               >
-                —
+                Vote
               </Box>
             </tr>
-          ))}
-        </tbody>
+          </thead>
+          <tbody>
+            {sortedResults.map((x) => (
+              <tr key={x.userName}>
+                <Box component="td" sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.primary' }}>
+                  {startCase(x.userName)}
+                </Box>
+                <Box
+                  component="td"
+                  sx={{
+                    py: 0.5,
+                    fontSize: '0.85rem',
+                    color: 'text.primary',
+                    textAlign: 'right',
+                    fontWeight: 700,
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {x.estimateValue}
+                </Box>
+              </tr>
+            ))}
+            {notVoted.map((x) => (
+              <tr key={x}>
+                <Box
+                  component="td"
+                  sx={{
+                    py: 0.5,
+                    fontSize: '0.85rem',
+                    color: 'text.disabled',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {startCase(x)}
+                </Box>
+                <Box
+                  component="td"
+                  sx={{ py: 0.5, fontSize: '0.85rem', color: 'text.disabled', textAlign: 'right' }}
+                >
+                  —
+                </Box>
+              </tr>
+            ))}
+          </tbody>
+        </Box>
       </Box>
     </Box>
   )
