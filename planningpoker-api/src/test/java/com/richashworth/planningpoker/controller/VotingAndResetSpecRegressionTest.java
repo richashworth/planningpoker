@@ -15,7 +15,6 @@ import com.richashworth.planningpoker.model.VoteResponse;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
@@ -77,8 +76,6 @@ class VotingAndResetSpecRegressionTest extends AbstractControllerTest {
    * <p>This test will FAIL until {@link VoteController#vote} replaces (rather than ignores) the
    * second vote.
    */
-  // Disabled here only because issue #111's fix lives on a sibling PR; re-enable once it lands.
-  @Disabled("Re-enable once #111 lands")
   @Test
   void testReVoteReplacesOriginalValue() {
     SessionManager realSessionManager = new SessionManager();

@@ -128,8 +128,22 @@ public class SessionManager {
     touchSession(sessionId);
   }
 
+  /**
+   * Registers an estimate for a user in the given session, replacing any prior estimate the same
+   * user submitted in the current round. The replace + put is performed atomically against the
+   * synchronized multimap so concurrent callers cannot observe a transient state with both the old
+   * and new values, nor with neither. Matches users case-insensitively, mirroring {@link
+   * #removeUser(String, String)}.
+   */
   public void registerEstimate(final String sessionId, final Estimate estimate) {
-    sessionEstimates.put(sessionId, estimate);
+    // synchronized(sessionEstimates) is the documented way to make a compound operation atomic on
+    // a Multimaps.synchronizedListMultimap — the per-method locks alone are not sufficient.
+    synchronized (sessionEstimates) {
+      sessionEstimates
+          .get(sessionId)
+          .removeIf(e -> e.userName().equalsIgnoreCase(estimate.userName()));
+      sessionEstimates.put(sessionId, estimate);
+    }
     touchSession(sessionId);
   }
 
