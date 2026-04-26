@@ -51,24 +51,6 @@ describe('Results container', () => {
     cleanup()
   })
 
-  it('renders the round eyebrow with "Revealed" when results exist', () => {
-    renderWithStore(
-      <Results consensusOverride={null} setConsensusOverride={setConsensusOverride} />,
-      { preloadedState: baseState() },
-    )
-    // "Round 1 · Revealed" — text is split across children
-    expect(screen.getByText(/Round 1/)).toBeInTheDocument()
-    expect(screen.getByText(/Revealed/)).toBeInTheDocument()
-  })
-
-  it('renders the current label as a heading', () => {
-    renderWithStore(
-      <Results consensusOverride={null} setConsensusOverride={setConsensusOverride} />,
-      { preloadedState: baseState() },
-    )
-    expect(screen.getByText('Login screen')).toBeInTheDocument()
-  })
-
   it('shows "Next Item" button to the host', () => {
     renderWithStore(
       <Results consensusOverride={null} setConsensusOverride={setConsensusOverride} />,
