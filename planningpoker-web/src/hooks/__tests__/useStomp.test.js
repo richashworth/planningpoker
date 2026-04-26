@@ -1,9 +1,11 @@
+// @vitest-environment jsdom
 /**
  * useStomp hook tests.
  *
- * Because no DOM/jsdom environment is installed, we test the STOMP wiring by
- * mocking @stomp/stompjs and sockjs-client at module level, then directly
- * exercising the same logic the hook's useEffect runs — without React rendering.
+ * Mounts the real hook via `renderHook` from @testing-library/react with
+ * @stomp/stompjs and sockjs-client mocked at module level. Asserts on the
+ * mocked Client constructor calls, activate/deactivate, subscribe per topic,
+ * and the onMessage JSON-parse + dispatch path.
  *
  * Covered:
  *   - Client is NOT constructed when url/topics are empty
@@ -12,11 +14,16 @@
  *   - Incoming STOMP message is JSON-parsed and forwarded to onMessage
  *   - client.deactivate() is called on cleanup (when active)
  *   - deactivate is NOT called when client is already inactive
+ *   - connected state transitions for connect/disconnect/error/close
+ *   - disconnect/error before initial connect is ignored
+ *   - reconnect resubscribes to all topics
+ *   - latest onMessage callback is used (ref-tracked, not re-mounted)
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { renderHook, act } from '@testing-library/react'
 
 // ---------------------------------------------------------------------------
-// Mocks — must be declared before any imports that resolve the mocked modules
+// Module-level mocks — declared via vi.mock so they're hoisted before imports.
 // ---------------------------------------------------------------------------
 let lastClientConfig = null
 let lastClientInstance = null
@@ -42,230 +49,218 @@ vi.mock('sockjs-client', () => ({
 
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
+import useStomp from '../useStomp'
 
-// ---------------------------------------------------------------------------
-// Helper: mirrors the useStomp useEffect body without React
-// ---------------------------------------------------------------------------
-function simulateMount({ url, topics, onMessage }) {
-  if (!url || !topics || topics.length === 0) {
-    return { client: null, cleanup: () => {}, connectedStates: [] }
-  }
+// Stable topics arrays so we don't trigger the [url, topics] effect via referential changes.
+const ONE_TOPIC = ['/topic/results/abc']
+const TWO_TOPICS = ['/topic/results/abc', '/topic/users/abc']
 
-  const connectedStates = []
-  const setConnected = (val) => connectedStates.push(val)
-  const hasConnected = { current: false }
+beforeEach(() => {
+  lastClientConfig = null
+  lastClientInstance = null
+  vi.clearAllMocks()
+})
 
-  const client = new Client({
-    webSocketFactory: () => new SockJS(url),
-    reconnectDelay: 3000,
-    onConnect: () => {
-      hasConnected.current = true
-      setConnected(true)
-      topics.forEach((topic) => {
-        client.subscribe(topic, (message) => {
-          onMessage(JSON.parse(message.body))
-        })
-      })
-    },
-    onDisconnect: () => {
-      if (hasConnected.current) setConnected(false)
-    },
-    onStompError: () => {
-      if (hasConnected.current) setConnected(false)
-    },
-    onWebSocketClose: () => {
-      if (hasConnected.current) setConnected(false)
-    },
-  })
-
-  client.activate()
-
-  const cleanup = () => {
-    if (client.active) client.deactivate()
-  }
-
-  return { client, cleanup, connectedStates }
-}
-
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// Tests — reconnect lifecycle and connected state
-// ---------------------------------------------------------------------------
-describe('useStomp — reconnect lifecycle and connected state', () => {
-  beforeEach(() => {
-    lastClientConfig = null
-    lastClientInstance = null
-    vi.clearAllMocks()
-  })
-
-  it('onConnect sets connected to true', () => {
-    const { connectedStates } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-    lastClientConfig.onConnect()
-    expect(connectedStates).toEqual([true])
-  })
-
-  it('onDisconnect sets connected to false after prior connect', () => {
-    const { connectedStates } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-    lastClientConfig.onConnect()
-    lastClientConfig.onDisconnect()
-    expect(connectedStates).toEqual([true, false])
-  })
-
-  it('onStompError sets connected to false after prior connect', () => {
-    const { connectedStates } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-    lastClientConfig.onConnect()
-    lastClientConfig.onStompError()
-    expect(connectedStates).toEqual([true, false])
-  })
-
-  it('onWebSocketClose sets connected to false after prior connect', () => {
-    const { connectedStates } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-    lastClientConfig.onConnect()
-    lastClientConfig.onWebSocketClose()
-    expect(connectedStates).toEqual([true, false])
-  })
-
-  it('onDisconnect is ignored before initial connect', () => {
-    const { connectedStates } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-    lastClientConfig.onDisconnect()
-    expect(connectedStates).toEqual([])
-  })
-
-  it('onStompError is ignored before initial connect', () => {
-    const { connectedStates } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-    lastClientConfig.onStompError()
-    expect(connectedStates).toEqual([])
-  })
-
-  it('reconnect resubscribes to all topics', () => {
-    const topics = ['/topic/results/abc', '/topic/users/abc']
-    simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics,
-      onMessage: vi.fn(),
-    })
-    lastClientConfig.onConnect()
-    lastClientInstance.subscribe.mockClear()
-    lastClientConfig.onConnect()
-    expect(lastClientInstance.subscribe).toHaveBeenCalledTimes(2)
-    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(topics[0], expect.any(Function))
-    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(topics[1], expect.any(Function))
-  })
+afterEach(() => {
+  vi.useRealTimers()
 })
 
 describe('useStomp — STOMP client wiring', () => {
-  beforeEach(() => {
-    lastClientConfig = null
-    lastClientInstance = null
-    vi.clearAllMocks()
-  })
-
   it('does not construct a Client when url is empty', () => {
-    const { client } = simulateMount({ url: '', topics: [], onMessage: vi.fn() })
-    expect(client).toBeNull()
+    renderHook(() => useStomp({ url: '', topics: ONE_TOPIC, onMessage: vi.fn() }))
     expect(Client).not.toHaveBeenCalled()
   })
 
   it('does not construct a Client when topics list is empty', () => {
-    const { client } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: [],
-      onMessage: vi.fn(),
-    })
-    expect(client).toBeNull()
+    renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: [], onMessage: vi.fn() }),
+    )
     expect(Client).not.toHaveBeenCalled()
   })
 
-  it('calls client.activate() on mount', () => {
-    const { client } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-    expect(client).not.toBeNull()
-    expect(client.activate).toHaveBeenCalledOnce()
+  it('does not construct a Client when topics is undefined', () => {
+    renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: undefined, onMessage: vi.fn() }),
+    )
+    expect(Client).not.toHaveBeenCalled()
+  })
+
+  it('calls client.activate() on mount and uses SockJS factory with the given url', () => {
+    renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    expect(Client).toHaveBeenCalledTimes(1)
+    expect(lastClientInstance.activate).toHaveBeenCalledOnce()
+    // Invoke the webSocketFactory the hook passed in, to confirm SockJS is wired.
+    lastClientConfig.webSocketFactory()
+    expect(SockJS).toHaveBeenCalledWith('http://localhost:9000/stomp')
   })
 
   it('subscribes to every requested topic when onConnect fires', () => {
-    const topics = ['/topic/results/abc', '/topic/users/abc']
-    simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics,
-      onMessage: vi.fn(),
-    })
-
-    lastClientConfig.onConnect()
-
+    renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: TWO_TOPICS, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onConnect())
     expect(lastClientInstance.subscribe).toHaveBeenCalledTimes(2)
-    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(topics[0], expect.any(Function))
-    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(topics[1], expect.any(Function))
+    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(TWO_TOPICS[0], expect.any(Function))
+    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(TWO_TOPICS[1], expect.any(Function))
   })
 
   it('parses JSON from incoming message and calls onMessage', () => {
     const onMessage = vi.fn()
     const payload = [{ userName: 'alice', estimateValue: '5' }]
 
-    simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage,
-    })
+    renderHook(() => useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage }))
 
-    lastClientConfig.onConnect()
+    act(() => lastClientConfig.onConnect())
     const [, messageHandler] = lastClientInstance.subscribe.mock.calls[0]
-    messageHandler({ body: JSON.stringify(payload) })
+    act(() => messageHandler({ body: JSON.stringify(payload) }))
 
     expect(onMessage).toHaveBeenCalledWith(payload)
   })
 
+  it('uses latest onMessage callback after re-render (ref-tracked)', () => {
+    const first = vi.fn()
+    const second = vi.fn()
+
+    const { rerender } = renderHook(
+      ({ onMessage }) =>
+        useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage }),
+      {
+        initialProps: { onMessage: first },
+      },
+    )
+
+    act(() => lastClientConfig.onConnect())
+    const [, messageHandler] = lastClientInstance.subscribe.mock.calls[0]
+
+    rerender({ onMessage: second })
+    act(() => messageHandler({ body: JSON.stringify({ ok: true }) }))
+
+    expect(first).not.toHaveBeenCalled()
+    expect(second).toHaveBeenCalledWith({ ok: true })
+  })
+
   it('calls client.deactivate() on cleanup when client is active', () => {
-    const { client, cleanup } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
-    })
-
-    cleanup()
-
-    expect(client.deactivate).toHaveBeenCalledOnce()
+    const { unmount } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    const instance = lastClientInstance
+    unmount()
+    expect(instance.deactivate).toHaveBeenCalledOnce()
   })
 
   it('does not call deactivate when client is already inactive', () => {
-    const { client, cleanup } = simulateMount({
-      url: 'http://localhost:9000/stomp',
-      topics: ['/topic/results/abc'],
-      onMessage: vi.fn(),
+    const { unmount } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    const instance = lastClientInstance
+    instance.active = false
+    unmount()
+    expect(instance.deactivate).not.toHaveBeenCalled()
+  })
+})
+
+describe('useStomp — connected state and reconnect lifecycle', () => {
+  it('starts with connected === null (no banner before any attempt)', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    expect(result.current.connected).toBeNull()
+  })
+
+  it('onConnect sets connected to true', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onConnect())
+    expect(result.current.connected).toBe(true)
+  })
+
+  it('onDisconnect sets connected to false after prior connect', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onConnect())
+    act(() => lastClientConfig.onDisconnect())
+    expect(result.current.connected).toBe(false)
+  })
+
+  it('onStompError sets connected to false after prior connect', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onConnect())
+    act(() => lastClientConfig.onStompError())
+    expect(result.current.connected).toBe(false)
+  })
+
+  it('onWebSocketClose sets connected to false after prior connect', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onConnect())
+    act(() => lastClientConfig.onWebSocketClose())
+    expect(result.current.connected).toBe(false)
+  })
+
+  it('onDisconnect is ignored before initial connect', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onDisconnect())
+    expect(result.current.connected).toBeNull()
+  })
+
+  it('onStompError is ignored before initial connect', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onStompError())
+    expect(result.current.connected).toBeNull()
+  })
+
+  it('onWebSocketClose is ignored before initial connect', () => {
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onWebSocketClose())
+    expect(result.current.connected).toBeNull()
+  })
+
+  it('flips connected to false after 5s if onConnect never fires', () => {
+    vi.useFakeTimers()
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    expect(result.current.connected).toBeNull()
+    act(() => {
+      vi.advanceTimersByTime(5000)
     })
+    expect(result.current.connected).toBe(false)
+  })
 
-    client.active = false
-    cleanup()
+  it('does not flip to false at 5s if onConnect fires first', () => {
+    vi.useFakeTimers()
+    const { result } = renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: ONE_TOPIC, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onConnect())
+    act(() => {
+      vi.advanceTimersByTime(5000)
+    })
+    expect(result.current.connected).toBe(true)
+  })
 
-    expect(client.deactivate).not.toHaveBeenCalled()
+  it('reconnect resubscribes to all topics', () => {
+    renderHook(() =>
+      useStomp({ url: 'http://localhost:9000/stomp', topics: TWO_TOPICS, onMessage: vi.fn() }),
+    )
+    act(() => lastClientConfig.onConnect())
+    lastClientInstance.subscribe.mockClear()
+    act(() => lastClientConfig.onConnect())
+    expect(lastClientInstance.subscribe).toHaveBeenCalledTimes(2)
+    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(TWO_TOPICS[0], expect.any(Function))
+    expect(lastClientInstance.subscribe).toHaveBeenCalledWith(TWO_TOPICS[1], expect.any(Function))
   })
 })
