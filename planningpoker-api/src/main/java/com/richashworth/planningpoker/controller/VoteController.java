@@ -26,9 +26,11 @@ public class VoteController {
   }
 
   /**
-   * Registers a vote for {@code userName} in {@code sessionId}. Re-voting is a no-op within the
-   * same round; subsequent rounds are tracked via {@code SessionManager#incrementAndGetRound}.
-   * Broadcasts the updated results to {@code /topic/results/{sessionId}} after the write.
+   * Registers a vote for {@code userName} in {@code sessionId}. Re-voting within the same round
+   * replaces the prior estimate (matching the spec's {@code UpdateVote} action — see {@code
+   * specs/VotingAndReset.tla}). Subsequent rounds are tracked via {@code
+   * SessionManager#incrementAndGetRound}. Broadcasts the updated results to {@code
+   * /topic/results/{sessionId}} after the write.
    *
    * @throws IllegalArgumentException if the estimate is not in the session's legal values, the
    *     session is inactive, or the user is not a member of the session.
@@ -57,10 +59,9 @@ public class VoteController {
           LogSafeIds.hash(userName),
           LogSafeIds.hash(sessionId),
           LogSafeIds.hash(estimateValue));
-      if (!CollectionUtils.containsUserEstimate(sessionManager.getResults(sessionId), userName)) {
-        final Estimate estimate = new Estimate(userName, estimateValue);
-        sessionManager.registerEstimate(sessionId, estimate);
-      }
+      // registerEstimate is an upsert: it replaces any prior estimate this user already cast in
+      // the current round. See SessionManager#registerEstimate.
+      sessionManager.registerEstimate(sessionId, new Estimate(userName, estimateValue));
       round = sessionManager.getRound(sessionId);
       results = sessionManager.getResults(sessionId);
     }

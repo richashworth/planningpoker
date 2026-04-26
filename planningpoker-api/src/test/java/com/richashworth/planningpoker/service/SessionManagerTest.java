@@ -64,6 +64,50 @@ class SessionManagerTest {
     assertEquals(Lists.newArrayList(estimate), results);
   }
 
+  /**
+   * Issue #111: registerEstimate is an upsert. A second call for the same user must replace the
+   * prior value rather than append a duplicate.
+   */
+  @Test
+  void testRegisterEstimateReplacesExistingForSameUser() {
+    final String sessionId = sessionManager.createSession();
+    sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
+    sessionManager.registerEstimate(sessionId, new Estimate("Alice", "8"));
+
+    List<Estimate> results = sessionManager.getResults(sessionId);
+    assertEquals(1, results.size(), "re-vote must not append a duplicate row");
+    assertEquals(new Estimate("Alice", "8"), results.get(0), "re-vote must keep the new value");
+  }
+
+  /**
+   * Issue #111: the upsert match is case-insensitive (matching {@link
+   * SessionManager#removeUser(String, String)}'s behaviour).
+   */
+  @Test
+  void testRegisterEstimateUpsertIsCaseInsensitive() {
+    final String sessionId = sessionManager.createSession();
+    sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
+    sessionManager.registerEstimate(sessionId, new Estimate("ALICE", "8"));
+
+    List<Estimate> results = sessionManager.getResults(sessionId);
+    assertEquals(1, results.size());
+    assertEquals(new Estimate("ALICE", "8"), results.get(0));
+  }
+
+  /** Upsert for one user must not affect estimates from other users in the same session. */
+  @Test
+  void testRegisterEstimateDoesNotAffectOtherUsers() {
+    final String sessionId = sessionManager.createSession();
+    sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
+    sessionManager.registerEstimate(sessionId, new Estimate("Bob", "3"));
+    sessionManager.registerEstimate(sessionId, new Estimate("Alice", "8"));
+
+    List<Estimate> results = sessionManager.getResults(sessionId);
+    assertEquals(2, results.size());
+    assertTrue(results.contains(new Estimate("Alice", "8")));
+    assertTrue(results.contains(new Estimate("Bob", "3")));
+  }
+
   @Test
   void testGetResultsReturnsDefensiveCopy() {
     final String sessionId = sessionManager.createSession();
