@@ -32,6 +32,12 @@ export default function ResultsChart({ consensus = null }) {
   )
   const borderWidth = legalEstimates.map((l) => (isHighlighted(l) ? 2 : 1))
 
+  // When the chosen consensus has zero votes, there's no bar to color,
+  // so highlight the x-axis tick instead.
+  const isUnvotedConsensus = (idx) => isHighlighted(legalEstimates[idx]) && aggregateData[idx] === 0
+  const xTickColor = (ctx) => (isUnvotedConsensus(ctx.index) ? HIGHLIGHT_BORDER : tickColor)
+  const xTickFont = (ctx) => (isUnvotedConsensus(ctx.index) ? { weight: 'bold' } : {})
+
   const options = {
     responsive: true,
     plugins: {
@@ -49,7 +55,7 @@ export default function ResultsChart({ consensus = null }) {
         border: { color: gridColor },
       },
       x: {
-        ticks: { color: tickColor },
+        ticks: { color: xTickColor, font: xTickFont },
         grid: { color: 'transparent' },
         border: { color: gridColor },
       },
