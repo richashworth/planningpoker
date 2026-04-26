@@ -1,4 +1,9 @@
-import { CONSENSUS_OVERRIDE_UPDATED, LEAVE_GAME, RESET_SESSION } from '../actions'
+import {
+  CONSENSUS_OVERRIDE_LOCAL,
+  CONSENSUS_OVERRIDE_UPDATED,
+  LEAVE_GAME,
+  RESET_SESSION,
+} from '../actions'
 
 const initialState = { value: null, round: 0 }
 
@@ -11,6 +16,12 @@ export default function (state = initialState, action) {
       if (typeof round !== 'number') return state
       if (round <= state.round) return state
       return { value: value ?? null, round }
+    }
+    case CONSENSUS_OVERRIDE_LOCAL: {
+      // Optimistic local update from the host's click. Leaves round untouched so the
+      // server's authoritative broadcast (with a strictly newer round) still wins.
+      const { value } = action.payload ?? {}
+      return { ...state, value: value ?? null }
     }
     case RESET_SESSION:
       // Server also broadcasts a CONSENSUS_OVERRIDE_MESSAGE with a bumped round on reset, but we

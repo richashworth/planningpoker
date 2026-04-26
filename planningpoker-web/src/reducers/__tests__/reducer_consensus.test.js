@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import reducer from '../reducer_consensus'
 import {
+  CONSENSUS_OVERRIDE_LOCAL,
   CONSENSUS_OVERRIDE_UPDATED,
   LEAVE_GAME,
   RESET_SESSION,
+  consensusOverrideLocal,
   consensusOverrideUpdated,
 } from '../../actions'
 
@@ -65,5 +67,29 @@ describe('consensus reducer', () => {
   it('resets fully on LEAVE_GAME', () => {
     const before = { value: '8', round: 9 }
     expect(reducer(before, { type: LEAVE_GAME })).toEqual({ value: null, round: 0 })
+  })
+
+  it('updates value but leaves round on CONSENSUS_OVERRIDE_LOCAL (optimistic)', () => {
+    const before = { value: null, round: 4 }
+    const next = reducer(before, consensusOverrideLocal('8'))
+    expect(next).toEqual({ value: '8', round: 4 })
+  })
+
+  it('coerces null/undefined value on CONSENSUS_OVERRIDE_LOCAL', () => {
+    const before = { value: '8', round: 4 }
+    expect(reducer(before, consensusOverrideLocal(null))).toEqual({ value: null, round: 4 })
+    expect(reducer(before, { type: CONSENSUS_OVERRIDE_LOCAL, payload: {} })).toEqual({
+      value: null,
+      round: 4,
+    })
+  })
+
+  it('CONSENSUS_OVERRIDE_UPDATED with newer round still overrides an optimistic local value', () => {
+    // Optimistic set to '8' at round 4; server broadcasts authoritative '13' at round 5.
+    let state = { value: null, round: 4 }
+    state = reducer(state, consensusOverrideLocal('8'))
+    expect(state).toEqual({ value: '8', round: 4 })
+    state = reducer(state, consensusOverrideUpdated({ value: '13', round: 5 }))
+    expect(state).toEqual({ value: '13', round: 5 })
   })
 })
