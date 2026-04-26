@@ -11,12 +11,12 @@ const HIGHLIGHT_BG = 'rgba(102, 126, 234, 0.85)'
 const HIGHLIGHT_BORDER = 'rgba(102, 126, 234, 1)'
 const HIGHLIGHT_HOVER_BG = 'rgba(102, 126, 234, 0.95)'
 
-// Draws a colored segment of the x-axis line under the consensus tick when
-// that estimate has zero votes — the bar already carries the highlight when
-// votes exist, so we only paint the axis when there's no bar to color.
+// Draws a stroked circle around the consensus tick label when that estimate
+// has zero votes — the bar already carries the highlight when votes exist,
+// so we only ring the tick when there's no bar to color.
 const consensusAxisHighlightPlugin = {
   id: 'consensusAxisHighlight',
-  afterDatasetsDraw(chart, _args, opts) {
+  afterDraw(chart, _args, opts) {
     if (!opts) return
     const { consensus, legalEstimates, aggregateData } = opts
     if (consensus == null) return
@@ -26,18 +26,16 @@ const consensusAxisHighlightPlugin = {
     const xScale = chart.scales.x
     if (!xScale) return
     const xCenter = xScale.getPixelForValue(idx)
-    const slotWidth = xScale.width / legalEstimates.length
-    const half = slotWidth * 0.4
-    const y = xScale.top
+    // Tick labels sit below the axis line; aim for the vertical centre of
+    // the label band rather than the axis line itself.
+    const yCenter = xScale.top + xScale.height * 0.55
 
     const ctx = chart.ctx
     ctx.save()
     ctx.strokeStyle = HIGHLIGHT_BORDER
-    ctx.lineWidth = 3
-    ctx.lineCap = 'round'
+    ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.moveTo(xCenter - half, y)
-    ctx.lineTo(xCenter + half, y)
+    ctx.arc(xCenter, yCenter, 13, 0, Math.PI * 2)
     ctx.stroke()
     ctx.restore()
   },
