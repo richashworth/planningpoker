@@ -172,6 +172,7 @@ class GameControllerTest extends AbstractControllerTest {
   void testReset() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
     when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
     when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(4);
     ResetResponse response = gameController.reset(SESSION_ID, USER_NAME, null);
@@ -187,6 +188,7 @@ class GameControllerTest extends AbstractControllerTest {
   void testResetWithVotesBroadcastsRoundCompleted() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
     List<Estimate> votes =
         List.of(new Estimate("Alice", "5"), new Estimate("Bob", "5"), new Estimate("Carol", "3"));
     when(sessionManager.getResults(SESSION_ID)).thenReturn(votes);
@@ -213,6 +215,7 @@ class GameControllerTest extends AbstractControllerTest {
   void testResetWithoutConsensusFallsBackToMode() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
     // Two "5"s and one "3" → mode is "5"
     List<Estimate> votes =
         List.of(new Estimate("Alice", "5"), new Estimate("Bob", "5"), new Estimate("Carol", "3"));
@@ -232,6 +235,7 @@ class GameControllerTest extends AbstractControllerTest {
   void testResetWithTiedVotesPicksAlphabeticallyFirstMode() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
     // Tie: one "3" and one "5" → alphabetically first → "3"
     List<Estimate> votes = List.of(new Estimate("Alice", "5"), new Estimate("Bob", "3"));
     when(sessionManager.getResults(SESSION_ID)).thenReturn(votes);
@@ -252,6 +256,22 @@ class GameControllerTest extends AbstractControllerTest {
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList());
     assertThrows(
         IllegalArgumentException.class, () -> gameController.reset(SESSION_ID, USER_NAME, null));
+  }
+
+  @Test
+  void testResetNonHostRejected() {
+    // Issue #110: only the host may trigger a reset; a non-host session member must be rejected
+    // with HostActionException (mapped to HTTP 403 by ErrorHandler).
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID))
+        .thenReturn(Lists.newArrayList(USER_NAME, "Alice"));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn("Alice");
+    assertThrows(
+        HostActionException.class, () -> gameController.reset(SESSION_ID, USER_NAME, null));
+    verify(sessionManager, never()).resetSession(anyString());
+    verify(sessionManager, never()).incrementAndGetRound(anyString());
+    verify(messagingUtils, never()).sendResetMessage(anyString(), anyInt());
+    verify(messagingUtils, never()).sendRoundCompletedMessage(anyString(), any(Round.class));
   }
 
   @Test
@@ -392,6 +412,7 @@ class GameControllerTest extends AbstractControllerTest {
   void testResetClearsLabel() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
     when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
     when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(1);
     gameController.reset(SESSION_ID, USER_NAME, null);
