@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
+import SessionHistory from './SessionHistory'
 import ConsensusCardRail from '../components/ConsensusCardRail'
 import { resetSession } from '../actions'
 import { calcConsensus } from '../utils/consensus'
@@ -87,17 +88,20 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           minHeight: 300,
         }}
       >
-        <Box
-          sx={{
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1,
-            p: 2.5,
-            transition: 'border-color 0.3s ease, background-color 0.3s ease',
-          }}
-        >
-          <ResultsChart />
+        <Box sx={{ minWidth: 0 }}>
+          <Box
+            sx={{
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              p: 2.5,
+              transition: 'border-color 0.3s ease, background-color 0.3s ease',
+            }}
+          >
+            <ResultsChart />
+          </Box>
+          <SessionHistory consensusOverride={consensusOverride} />
         </Box>
         <ResultsTable />
       </Box>

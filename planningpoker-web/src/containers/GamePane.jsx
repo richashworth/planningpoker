@@ -96,9 +96,11 @@ export default function GamePane({ connected }) {
             setConsensusOverride={setConsensusOverride}
           />
         ) : (
-          <Vote />
+          <>
+            <Vote />
+            <SessionHistory consensusOverride={consensusOverride} />
+          </>
         )}
-        <SessionHistory consensusOverride={consensusOverride} />
       </Box>
     </>
   )
