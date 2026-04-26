@@ -55,6 +55,13 @@ public class GameController {
       @RequestParam(name = "sessionId") final String sessionId,
       @RequestParam(name = "userName") final String userName) {
     validateUserName(userName);
+    final SchemeConfig config;
+    final List<String> values;
+    final String host;
+    final int round;
+    final List<Estimate> results;
+    final String label;
+    final List<Round> completedRounds;
     synchronized (sessionManager) {
       if (!sessionManager.isSessionActive(sessionId)) {
         throw new IllegalArgumentException("session not found");
@@ -65,15 +72,15 @@ public class GameController {
         logger.info(
             "user {} joined session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
       }
+      config = sessionManager.getSessionSchemeConfig(sessionId);
+      values = sessionManager.getSessionLegalValues(sessionId);
+      host = sessionManager.getHost(sessionId);
+      round = sessionManager.getRound(sessionId);
+      results = sessionManager.getResults(sessionId);
+      label = sessionManager.getLabel(sessionId);
+      completedRounds = sessionManager.getCompletedRounds(sessionId);
     }
     messagingUtils.sendUsersMessage(sessionId);
-    SchemeConfig config = sessionManager.getSessionSchemeConfig(sessionId);
-    List<String> values = sessionManager.getSessionLegalValues(sessionId);
-    String host = sessionManager.getHost(sessionId);
-    int round = sessionManager.getRound(sessionId);
-    List<Estimate> results = sessionManager.getResults(sessionId);
-    String label = sessionManager.getLabel(sessionId);
-    List<Round> completedRounds = sessionManager.getCompletedRounds(sessionId);
     return new SessionResponse(
         host,
         null,

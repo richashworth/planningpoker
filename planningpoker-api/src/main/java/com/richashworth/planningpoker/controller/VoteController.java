@@ -40,15 +40,14 @@ public class VoteController {
       @RequestParam(name = "sessionId") final String sessionId,
       @RequestParam(name = "userName") final String userName,
       @RequestParam(name = "estimateValue") final String estimateValue) {
-    List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
-    if (!legalValues.contains(estimateValue)) {
-      throw new IllegalArgumentException("Invalid estimate value");
-    }
     int round;
     List<Estimate> results;
     synchronized (sessionManager) {
       if (!sessionManager.isSessionActive(sessionId)) {
         throw new IllegalArgumentException("Session not active");
+      }
+      if (!sessionManager.getSessionLegalValues(sessionId).contains(estimateValue)) {
+        throw new IllegalArgumentException("Invalid estimate value");
       }
       if (!CollectionUtils.containsIgnoreCase(
           sessionManager.getSessionUsers(sessionId), userName)) {

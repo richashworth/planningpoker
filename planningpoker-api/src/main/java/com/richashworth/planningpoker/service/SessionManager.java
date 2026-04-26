@@ -183,11 +183,20 @@ public class SessionManager {
 
   public synchronized void removeUser(String userName, String sessionId) {
     sessionUsers.get(sessionId).removeIf(u -> u.equalsIgnoreCase(userName));
-    sessionEstimates
-        .entries()
-        .removeIf(
-            e ->
-                e.getKey().equals(sessionId) && e.getValue().userName().equalsIgnoreCase(userName));
+    // Match registerEstimate's locking discipline: iteration on a
+    // Multimaps.synchronizedListMultimap
+    // requires holding the multimap's own monitor. Without this, a concurrent registerEstimate
+    // (which
+    // holds only sessionEstimates) can mutate the map mid-iteration, throwing CME or producing a
+    // partial removal.
+    synchronized (sessionEstimates) {
+      sessionEstimates
+          .entries()
+          .removeIf(
+              e ->
+                  e.getKey().equals(sessionId)
+                      && e.getValue().userName().equalsIgnoreCase(userName));
+    }
     String currentHost = sessionHosts.get(sessionId);
     if (currentHost != null && currentHost.equalsIgnoreCase(userName)) {
       List<String> remainingUsers = sessionUsers.get(sessionId);
