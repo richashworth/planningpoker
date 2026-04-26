@@ -71,4 +71,94 @@ describe('JoinGame page', () => {
       expect.anything(),
     )
   })
+
+  it('disables the submit button while the POST is in flight and re-enables on success', async () => {
+    let resolvePost
+    axios.post.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolvePost = () => resolve({ data: { sessionId: 'abc12345' } })
+        }),
+    )
+
+    renderPage()
+    fireEvent.change(screen.getByLabelText(/Your Name/i), { target: { value: 'alice' } })
+    fireEvent.change(screen.getByLabelText(/Session ID/), { target: { value: 'abc12345' } })
+
+    const button = screen.getByRole('button', { name: /Join Game/ })
+    expect(button).not.toBeDisabled()
+
+    const form = button.closest('form')
+    await act(async () => {
+      fireEvent.submit(form)
+    })
+
+    // While the in-flight POST is unresolved, the button must stay disabled
+    // so a second click can't fire another /joinSession.
+    expect(button).toBeDisabled()
+
+    await act(async () => {
+      resolvePost()
+    })
+
+    expect(button).not.toBeDisabled()
+    expect(axios.post).toHaveBeenCalledTimes(1)
+  })
+
+  it('re-enables the submit button after a failed POST', async () => {
+    let rejectPost
+    axios.post.mockImplementationOnce(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectPost = () => reject(new Error('boom'))
+        }),
+    )
+
+    renderPage()
+    fireEvent.change(screen.getByLabelText(/Your Name/i), { target: { value: 'alice' } })
+    fireEvent.change(screen.getByLabelText(/Session ID/), { target: { value: 'abc12345' } })
+
+    const button = screen.getByRole('button', { name: /Join Game/ })
+    const form = button.closest('form')
+    await act(async () => {
+      fireEvent.submit(form)
+    })
+    expect(button).toBeDisabled()
+
+    await act(async () => {
+      rejectPost()
+    })
+
+    expect(button).not.toBeDisabled()
+  })
+
+  it('does not issue a second POST when the form is re-submitted while submitting', async () => {
+    let resolvePost
+    axios.post.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolvePost = () => resolve({ data: { sessionId: 'abc12345' } })
+        }),
+    )
+
+    renderPage()
+    fireEvent.change(screen.getByLabelText(/Your Name/i), { target: { value: 'alice' } })
+    fireEvent.change(screen.getByLabelText(/Session ID/), { target: { value: 'abc12345' } })
+
+    const form = screen.getByRole('button', { name: /Join Game/ }).closest('form')
+    await act(async () => {
+      fireEvent.submit(form)
+    })
+
+    // Simulate a rapid second submission while the first is still pending.
+    await act(async () => {
+      fireEvent.submit(form)
+    })
+
+    expect(axios.post).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      resolvePost()
+    })
+  })
 })

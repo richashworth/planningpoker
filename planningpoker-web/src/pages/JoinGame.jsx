@@ -20,16 +20,20 @@ export default function JoinGame() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitting) return
     const nameRegex = /^[a-zA-Z0-9 _-]{3,20}$/
     if (!nameRegex.test(playerName)) return
     setSubmitting(true)
-    await dispatch(
-      joinGame(playerName, sessionId, () => {
-        dispatch(userRegistered())
-        navigate('/game')
-      }),
-    )
-    setSubmitting(false)
+    try {
+      await dispatch(
+        joinGame(playerName, sessionId, () => {
+          dispatch(userRegistered())
+          navigate('/game')
+        }),
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
