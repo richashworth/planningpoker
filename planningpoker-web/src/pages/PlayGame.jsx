@@ -13,6 +13,7 @@ import {
   kicked,
   labelUpdated,
   refresh,
+  consensusOverrideUpdated,
   RESET_SESSION,
 } from '../actions'
 import { API_ROOT_URL } from '../config/Constants'
@@ -52,7 +53,11 @@ export default function PlayGame() {
   }, [kickedMessage])
 
   const topics = useMemo(
-    () => [`/topic/results/${sessionId}`, `/topic/users/${sessionId}`],
+    () => [
+      `/topic/results/${sessionId}`,
+      `/topic/users/${sessionId}`,
+      `/topic/consensus/${sessionId}`,
+    ],
     [sessionId],
   )
 
@@ -94,6 +99,12 @@ export default function PlayGame() {
         case 'ROUND_COMPLETED_MESSAGE':
           if (msg.payload) dispatch(roundCompleted(msg.payload))
           return
+        case 'CONSENSUS_OVERRIDE_MESSAGE': {
+          const { value, round } = msg.payload ?? {}
+          if (typeof round !== 'number') return
+          dispatch(consensusOverrideUpdated({ value, round }))
+          return
+        }
         default:
           return
       }

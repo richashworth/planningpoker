@@ -168,6 +168,7 @@ public class GameController {
     List<Round> completedRounds = sessionManager.getCompletedRounds(sessionId);
     messagingUtils.sendResultsMessage(sessionId);
     messagingUtils.sendUsersMessage(sessionId);
+    messagingUtils.sendConsensusMessage(sessionId);
     return new RefreshResponse(round, results, label, users, host, completedRounds);
   }
 
@@ -293,6 +294,9 @@ public class GameController {
     if (snapshot != null) {
       messagingUtils.sendRoundCompletedMessage(sessionId, snapshot);
     }
+    // resetSession() cleared the override (round still climbs), so broadcast the cleared state.
+    sessionManager.setConsensusOverride(sessionId, null);
+    messagingUtils.sendConsensusMessage(sessionId);
     messagingUtils.sendResetMessage(sessionId, newRound);
     return new ResetResponse(newRound);
   }
@@ -307,6 +311,36 @@ public class GameController {
                 .thenComparing(Map.Entry::getKey, Comparator.reverseOrder()))
         .map(Map.Entry::getKey)
         .orElse("");
+  }
+
+  /**
+   * Host-only action that updates the session's locked-in consensus value (the highlight on the
+   * results chart). A blank or {@code null} value clears the override so all clients fall back to
+   * the auto-computed consensus. Broadcasts {@code CONSENSUS_OVERRIDE_MESSAGE} on {@code
+   * /topic/consensus/{sessionId}} carrying the new value and a monotonic round counter so
+   * out-of-order deliveries don't flicker the highlight backward.
+   *
+   * @throws IllegalArgumentException if the session is not active or the user is not a member.
+   * @throws HostActionException if the caller is not the host.
+   */
+  @PostMapping("setConsensus")
+  public void setConsensus(
+      @RequestParam(name = "sessionId") final String sessionId,
+      @RequestParam(name = "userName") final String userName,
+      @RequestParam(name = "value", required = false) final String value) {
+    String normalised = (value == null || value.isBlank()) ? null : value;
+    synchronized (sessionManager) {
+      validateSessionMembership(sessionId, userName);
+      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+        throw new HostActionException("only the host can perform this action");
+      }
+      sessionManager.setConsensusOverride(sessionId, normalised);
+      logger.debug(
+          "host {} set consensus override in session {}",
+          LogSafeIds.hash(userName),
+          LogSafeIds.hash(sessionId));
+    }
+    messagingUtils.sendConsensusMessage(sessionId);
   }
 
   /**

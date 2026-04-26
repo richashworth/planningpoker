@@ -9,6 +9,7 @@ import usersReducer from '../reducers/reducer_users'
 import voteReducer from '../reducers/reducer_vote'
 import notificationReducer from '../reducers/reducer_notification'
 import roundsReducer from '../reducers/reducer_rounds'
+import consensusReducer from '../reducers/reducer_consensus'
 
 const theme = createTheme()
 
@@ -23,6 +24,7 @@ export function renderWithStore(ui, { preloadedState = {}, store, ...options } =
         voted: voteReducer,
         notification: notificationReducer,
         rounds: roundsReducer,
+        consensus: consensusReducer,
       },
       preloadedState,
     })

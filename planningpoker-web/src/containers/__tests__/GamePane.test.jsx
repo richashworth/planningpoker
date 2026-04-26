@@ -32,6 +32,7 @@ function state({ voted = false } = {}) {
     voted,
     notification: { error: null },
     rounds: [],
+    consensus: { value: null, round: 0 },
   }
 }
 

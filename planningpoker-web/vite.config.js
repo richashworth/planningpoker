@@ -72,6 +72,7 @@ export default defineConfig({
       '/kick': 'http://localhost:9000',
       '/promote': 'http://localhost:9000',
       '/setLabel': 'http://localhost:9000',
+      '/setConsensus': 'http://localhost:9000',
       '/timer': 'http://localhost:9000',
       '/stomp': {
         target: 'http://localhost:9000',

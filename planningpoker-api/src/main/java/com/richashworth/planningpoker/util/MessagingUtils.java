@@ -13,6 +13,7 @@ public class MessagingUtils {
 
   public static final String TOPIC_RESULTS = "/topic/results/";
   public static final String TOPIC_USERS = "/topic/users/";
+  public static final String TOPIC_CONSENSUS = "/topic/consensus/";
 
   private final SessionManager sessionManager;
   private final SimpMessagingTemplate template;
@@ -62,6 +63,20 @@ public class MessagingUtils {
         new Message(MessageType.ROUND_COMPLETED_MESSAGE, round));
   }
 
+  /**
+   * Publishes the host's locked-in consensus value alongside the monotonic consensus round counter
+   * so clients can ignore out-of-order broadcasts. A {@code null} value signals "no override" (e.g.
+   * cleared by reset).
+   */
+  public void sendConsensusMessage(String sessionId) {
+    Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("value", sessionManager.getConsensusOverride(sessionId));
+    payload.put("round", sessionManager.getConsensusRound(sessionId));
+    template.convertAndSend(
+        getTopic(TOPIC_CONSENSUS, sessionId),
+        new Message(MessageType.CONSENSUS_OVERRIDE_MESSAGE, payload));
+  }
+
   Message resultsMessage(Object payload) {
     return new Message(MessageType.RESULTS_MESSAGE, payload);
   }
@@ -75,7 +90,8 @@ public class MessagingUtils {
     RESULTS_MESSAGE,
     RESET_MESSAGE,
     USER_LEFT_MESSAGE,
-    ROUND_COMPLETED_MESSAGE
+    ROUND_COMPLETED_MESSAGE,
+    CONSENSUS_OVERRIDE_MESSAGE
   }
 
   private record Message(MessageType type, Object payload) {}

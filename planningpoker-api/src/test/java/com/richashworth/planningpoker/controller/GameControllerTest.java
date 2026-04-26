@@ -419,4 +419,89 @@ class GameControllerTest extends AbstractControllerTest {
     verify(sessionManager).resetSession(SESSION_ID);
     verify(messagingUtils).sendResetMessage(SESSION_ID, 1);
   }
+
+  @Test
+  void testSetConsensusByHost() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    gameController.setConsensus(SESSION_ID, USER_NAME, "8");
+    verify(sessionManager).setConsensusOverride(SESSION_ID, "8");
+    verify(messagingUtils).sendConsensusMessage(SESSION_ID);
+  }
+
+  @Test
+  void testSetConsensusBlankClearsOverride() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    gameController.setConsensus(SESSION_ID, USER_NAME, "");
+    verify(sessionManager).setConsensusOverride(SESSION_ID, null);
+    verify(messagingUtils).sendConsensusMessage(SESSION_ID);
+  }
+
+  @Test
+  void testSetConsensusNullClearsOverride() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    gameController.setConsensus(SESSION_ID, USER_NAME, null);
+    verify(sessionManager).setConsensusOverride(SESSION_ID, null);
+    verify(messagingUtils).sendConsensusMessage(SESSION_ID);
+  }
+
+  @Test
+  void testSetConsensusNonHostRejected() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID))
+        .thenReturn(Lists.newArrayList(USER_NAME, "Alice"));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn("Alice");
+    assertThrows(
+        HostActionException.class, () -> gameController.setConsensus(SESSION_ID, USER_NAME, "5"));
+    verify(sessionManager, never()).setConsensusOverride(anyString(), any());
+    verify(messagingUtils, never()).sendConsensusMessage(anyString());
+  }
+
+  @Test
+  void testSetConsensusNonMemberRejected() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList());
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> gameController.setConsensus(SESSION_ID, USER_NAME, "5"));
+    verify(sessionManager, never()).setConsensusOverride(anyString(), any());
+  }
+
+  @Test
+  void testSetConsensusInactiveSessionRejected() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(false);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> gameController.setConsensus(SESSION_ID, USER_NAME, "5"));
+    verify(sessionManager, never()).setConsensusOverride(anyString(), any());
+  }
+
+  @Test
+  void testResetClearsConsensusAndBroadcasts() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
+    when(sessionManager.incrementAndGetRound(SESSION_ID)).thenReturn(2);
+    gameController.reset(SESSION_ID, USER_NAME, null);
+    verify(sessionManager).setConsensusOverride(SESSION_ID, null);
+    verify(messagingUtils).sendConsensusMessage(SESSION_ID);
+  }
+
+  @Test
+  void testRefreshBroadcastsConsensus() {
+    when(sessionManager.getRound(SESSION_ID)).thenReturn(1);
+    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
+    when(sessionManager.getLabel(SESSION_ID)).thenReturn("");
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(List.of("Alice"));
+    when(sessionManager.getHost(SESSION_ID)).thenReturn("Alice");
+    when(sessionManager.getCompletedRounds(SESSION_ID)).thenReturn(List.of());
+    gameController.refresh(SESSION_ID);
+    verify(messagingUtils).sendConsensusMessage(SESSION_ID);
+  }
 }
