@@ -1,6 +1,7 @@
 package com.richashworth.planningpoker.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -252,6 +253,86 @@ class VotingAndResetConcurrencyTest {
       assertTrue(
           seen.add(e.userName()),
           "TypeOK: at most one vote per member per round; duplicate for " + e.userName());
+    }
+  }
+
+  /**
+   * Spec property: {@code UpdateVote} and {@code Leave} are atomic — both mutate {@code
+   * serverVotes} as a single indivisible step. The Java implementation must therefore serialise the
+   * two SessionManager methods on the same monitor. {@code registerEstimate} synchronises on {@code
+   * sessionEstimates}; {@code removeUser} must do the same when it iterates {@code entries()},
+   * otherwise the multimap's iterator races with {@code put} and throws CME.
+   *
+   * <p>This test exercises {@link SessionManager} directly (not through controllers) because the
+   * controller layer wraps both methods in {@code synchronized(sessionManager)}, which masks the
+   * underlying API-level race. The SessionManager API must be safe on its own — scheduled tasks and
+   * future callers will not always go through a controller.
+   */
+  @Test
+  void testConcurrentRegisterEstimateAndRemoveUserMaintainsInvariants()
+      throws InterruptedException {
+    String sessionId = sessionManager.createSession();
+    int memberCount = 60;
+    List<String> voters = new ArrayList<>();
+    List<String> leavers = new ArrayList<>();
+    String legal = sessionManager.getSessionLegalValues(sessionId).get(0);
+
+    for (int i = 0; i < memberCount; i++) {
+      String name = "M" + i;
+      sessionManager.registerUser(name, sessionId);
+      sessionManager.registerEstimate(sessionId, new Estimate(name, legal));
+      if (i < memberCount / 2) {
+        voters.add(name);
+      } else {
+        leavers.add(name);
+      }
+    }
+
+    CountDownLatch start = new CountDownLatch(1);
+    ExecutorService pool = Executors.newFixedThreadPool(memberCount);
+    List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
+    int iterations = 100;
+
+    for (String v : voters) {
+      pool.submit(
+          () -> {
+            try {
+              start.await();
+              for (int n = 0; n < iterations; n++) {
+                sessionManager.registerEstimate(sessionId, new Estimate(v, legal));
+              }
+            } catch (Throwable t) {
+              errors.add(t);
+            }
+          });
+    }
+    for (String l : leavers) {
+      pool.submit(
+          () -> {
+            try {
+              start.await();
+              for (int n = 0; n < iterations; n++) {
+                sessionManager.removeUser(l, sessionId);
+              }
+            } catch (Throwable t) {
+              errors.add(t);
+            }
+          });
+    }
+
+    start.countDown();
+    pool.shutdown();
+    assertTrue(pool.awaitTermination(30, TimeUnit.SECONDS));
+    assertTrue(
+        errors.isEmpty(),
+        "registerEstimate + removeUser must not race the multimap iteration: " + errors);
+
+    // No leaver should have a lingering estimate
+    Set<String> leaverSet = new HashSet<>(leavers);
+    for (Estimate e : sessionManager.getResults(sessionId)) {
+      assertFalse(
+          leaverSet.contains(e.userName()),
+          "leaver " + e.userName() + " has lingering estimate (race left stale state)");
     }
   }
 
