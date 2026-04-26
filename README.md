@@ -14,10 +14,10 @@ A web-based planning poker tool for agile estimation. See [this blog post](https
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18, MUI v5, Redux, react-router v6, chart.js 4 |
+| Frontend | React 18, MUI v9, Redux 5 + Redux Toolkit, react-router v6, chart.js 4 |
 | Backend | Spring Boot 3.4, Java 25 |
 | Real-time | STOMP over SockJS (WebSocket) |
-| Build | Gradle 8.14, Vite 5 |
+| Build | Gradle 8.14, Vite 8 |
 | CI | GitHub Actions |
 | Hosting | Railway |
 
@@ -49,9 +49,12 @@ java -jar planningpoker-api/build/libs/planningpoker-api-*.jar
 ## Testing
 
 ```bash
-# Backend unit tests
+# Backend unit tests (JUnit 5 + Mockito)
 ./gradlew planningpoker-api:test
 
-# E2E tests (requires backend running on port 9000)
+# Frontend unit tests (Vitest + @testing-library/react)
+cd planningpoker-web && npx vitest run
+
+# E2E tests (Playwright; spins up backend + dev server automatically)
 cd planningpoker-web && npx playwright test
 ```
