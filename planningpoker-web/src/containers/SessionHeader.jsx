@@ -12,9 +12,7 @@ export default function SessionHeader() {
   const playerName = useSelector((state) => state.game.playerName)
   const isAdmin = useSelector((state) => state.game.isAdmin)
   const currentLabel = useSelector((state) => state.game.currentLabel)
-  const results = useSelector((state) => state.results)
   const rounds = useSelector((state) => state.rounds)
-  const voted = useSelector((state) => state.voted)
 
   const [labelInput, setLabelInput] = useState(currentLabel)
   const [lastBroadcastLabel, setLastBroadcastLabel] = useState(currentLabel)
@@ -73,7 +71,6 @@ export default function SessionHeader() {
   }
 
   const currentRound = rounds.length + 1
-  const revealed = voted && results.length > 0
 
   return (
     <Box sx={{ mb: 2 }}>
@@ -89,7 +86,6 @@ export default function SessionHeader() {
         }}
       >
         Round {currentRound}
-        {revealed && ' · Revealed'}
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minHeight: 40 }}>
         <Box sx={{ flex: 1 }}>

@@ -47,7 +47,7 @@ describe('SessionHeader container', () => {
     expect(screen.queryByText(/Revealed/)).not.toBeInTheDocument()
   })
 
-  it('appends "· Revealed" once votes are revealed', () => {
+  it('keeps the eyebrow as just "Round N" once votes are revealed (no Revealed suffix)', () => {
     renderWithStore(<SessionHeader />, {
       preloadedState: baseState({
         voted: true,
@@ -55,7 +55,7 @@ describe('SessionHeader container', () => {
       }),
     })
     expect(screen.getByText(/Round 1/)).toBeInTheDocument()
-    expect(screen.getByText(/Revealed/)).toBeInTheDocument()
+    expect(screen.queryByText(/Revealed/)).not.toBeInTheDocument()
   })
 
   it('reflects completed rounds in the round number', () => {
