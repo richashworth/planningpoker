@@ -10,6 +10,8 @@ import {
   vote,
   resetSession,
   refresh,
+  setConsensusOverride,
+  consensusOverrideUpdated,
   CREATE_GAME,
   JOIN_GAME,
   VOTE,
@@ -19,6 +21,8 @@ import {
   LABEL_UPDATED,
   USERS_UPDATED,
   ROUNDS_REPLACE,
+  SET_CONSENSUS_OVERRIDE,
+  CONSENSUS_OVERRIDE_UPDATED,
 } from '../index'
 
 async function runThunkAsync(thunk) {
@@ -228,5 +232,63 @@ describe('refresh', () => {
     const dispatched = await runThunkAsync(refresh('abc12345', 'alice'))
 
     expect(dispatched.find((a) => a.type === ROUNDS_REPLACE)).toBeUndefined()
+  })
+})
+
+describe('consensusOverrideUpdated', () => {
+  it('returns a CONSENSUS_OVERRIDE_UPDATED action with value and round', () => {
+    const action = consensusOverrideUpdated({ value: '8', round: 4 })
+    expect(action.type).toBe(CONSENSUS_OVERRIDE_UPDATED)
+    expect(action.payload).toEqual({ value: '8', round: 4 })
+  })
+
+  it('coerces undefined value to null', () => {
+    const action = consensusOverrideUpdated({ value: undefined, round: 1 })
+    expect(action.payload.value).toBeNull()
+  })
+})
+
+describe('setConsensusOverride', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('POSTs to /setConsensus with userName, sessionId, and value', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: {} })
+
+    const dispatched = await runThunkAsync(setConsensusOverride('alice', 'abc12345', '8'))
+
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringMatching(/\/setConsensus$/),
+      expect.anything(),
+    )
+    const [, params] = axios.post.mock.calls[0]
+    expect(params.get('userName')).toBe('alice')
+    expect(params.get('sessionId')).toBe('abc12345')
+    expect(params.get('value')).toBe('8')
+    expect(dispatched).toHaveLength(1)
+    expect(dispatched[0].type).toBe(SET_CONSENSUS_OVERRIDE)
+    expect(dispatched[0].error).toBeFalsy()
+  })
+
+  it('omits the value param when null/empty (clears the override)', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: {} })
+
+    await runThunkAsync(setConsensusOverride('alice', 'abc12345', null))
+    const [, params] = axios.post.mock.calls[0]
+    expect(params.has('value')).toBe(false)
+  })
+
+  it('dispatches error and show-error on failure', async () => {
+    axios.post = vi.fn().mockRejectedValue({
+      response: { data: { error: 'only the host can perform this action' } },
+    })
+
+    const dispatched = await runThunkAsync(setConsensusOverride('mallory', 'abc12345', '8'))
+
+    const action = dispatched.find((a) => a.type === SET_CONSENSUS_OVERRIDE)
+    expect(action.error).toBe(true)
+    const errorAction = dispatched.find((a) => a.type === 'show-error')
+    expect(errorAction.payload).toBe('only the host can perform this action')
   })
 })
