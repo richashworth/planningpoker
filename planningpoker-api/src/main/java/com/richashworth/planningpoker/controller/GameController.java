@@ -241,16 +241,17 @@ public class GameController {
   }
 
   /**
-   * Snapshots the current round's estimates into the session's completed-rounds history (if any
-   * votes were cast), clears the current estimates, and increments the round counter. Broadcasts
-   * {@code ROUND_COMPLETED_MESSAGE} (when a snapshot was taken) followed by {@code RESET_MESSAGE}
-   * so every participant's client converges on the same history and returns to the voting view.
-   * Currently any session member can trigger a reset; host-only enforcement is not applied here.
+   * Host-only action that snapshots the current round's estimates into the session's
+   * completed-rounds history (if any votes were cast), clears the current estimates, and increments
+   * the round counter. Broadcasts {@code ROUND_COMPLETED_MESSAGE} (when a snapshot was taken)
+   * followed by {@code RESET_MESSAGE} so every participant's client converges on the same history
+   * and returns to the voting view.
    *
    * <p>The optional {@code consensus} parameter lets the host supply an override (e.g. from the
    * consensus card rail); if omitted, the server falls back to the mode of the captured estimates.
    *
    * @throws IllegalArgumentException if the session is not active or the user is not a member.
+   * @throws HostActionException if the caller is not the host.
    */
   @PostMapping("reset")
   public ResetResponse reset(
@@ -261,6 +262,9 @@ public class GameController {
     Round snapshot = null;
     synchronized (sessionManager) {
       validateSessionMembership(sessionId, userName);
+      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+        throw new HostActionException("only the host can perform this action");
+      }
       logger.info(
           "host {} reset session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
       List<Estimate> votes = sessionManager.getResults(sessionId);
