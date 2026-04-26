@@ -13,14 +13,11 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
   const isAdmin = useSelector((state) => state.game.isAdmin)
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
-  const currentLabel = useSelector((state) => state.game.currentLabel)
   const results = useSelector((state) => state.results)
-  const rounds = useSelector((state) => state.rounds)
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
 
   const autoConsensus = calcConsensus(results)
   const displayConsensus = consensusOverride || autoConsensus
-  const totalRounds = rounds.length + (results.length > 0 ? 1 : 0)
 
   const handleNextItem = () => {
     const consensus = consensusOverride || calcConsensus(results) || ''
@@ -30,35 +27,6 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
 
   return (
     <Box>
-      <Typography
-        component="h2"
-        sx={{
-          fontSize: '0.6875rem',
-          fontWeight: 600,
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
-          color: 'primary.main',
-          mb: 0.5,
-        }}
-      >
-        {totalRounds > 0 ? `Round ${totalRounds}` : 'Results'}
-        {results.length > 0 && ' · Revealed'}
-      </Typography>
-      {currentLabel && (
-        <Typography
-          sx={{
-            fontSize: '1.25rem',
-            fontWeight: 600,
-            letterSpacing: '-0.01em',
-            color: 'text.primary',
-            lineHeight: 1.3,
-            wordBreak: 'break-word',
-            mb: 2,
-          }}
-        >
-          {currentLabel}
-        </Typography>
-      )}
       {isAdmin && (
         <Box
           sx={{

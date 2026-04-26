@@ -107,9 +107,10 @@ test.describe('Session Labels', () => {
       await hostPage.getByText('5', { exact: true }).click()
       await playerPage.getByText('8', { exact: true }).click()
 
-      // Both should see results with label
+      // Both should see results with label. Host's label lives in the
+      // (still-editable) input; non-host sees it as static text.
       await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
-      await expect(hostPage.getByText('Sprint 42')).toBeVisible()
+      await expect(hostPage.getByPlaceholder('Item label (optional)')).toHaveValue('Sprint 42')
       await expect(playerPage.getByText('Sprint 42')).toBeVisible({
         timeout: 15000,
       })

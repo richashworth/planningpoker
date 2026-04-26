@@ -92,45 +92,4 @@ describe('Vote container', () => {
 
     expect(axios.post).toHaveBeenCalledWith(expect.stringMatching(/\/vote$/), expect.anything())
   })
-
-  it('shows the label input only for the host (isAdmin)', () => {
-    renderWithStore(<Vote />, {
-      preloadedState: baseState({ game: { isAdmin: false, currentLabel: 'Story X' } }),
-    })
-    expect(screen.queryByPlaceholderText('Item label (optional)')).not.toBeInTheDocument()
-    expect(screen.getByText('Story X')).toBeInTheDocument()
-  })
-
-  it('renders an editable label input for the host', () => {
-    renderWithStore(<Vote />, {
-      preloadedState: baseState({ game: { isAdmin: true, currentLabel: '' } }),
-    })
-    expect(screen.getByPlaceholderText('Item label (optional)')).toBeInTheDocument()
-  })
-
-  it('debounces host label edits into a setLabel POST', async () => {
-    vi.useFakeTimers()
-    try {
-      renderWithStore(<Vote />, {
-        preloadedState: baseState({ game: { isAdmin: true, currentLabel: '' } }),
-      })
-      const input = screen.getByPlaceholderText('Item label (optional)')
-
-      await act(async () => {
-        fireEvent.change(input, { target: { value: 'New story' } })
-      })
-      expect(axios.post).not.toHaveBeenCalled()
-
-      await act(async () => {
-        vi.advanceTimersByTime(1000)
-      })
-
-      expect(axios.post).toHaveBeenCalledWith(
-        expect.stringMatching(/\/setLabel$/),
-        expect.anything(),
-      )
-    } finally {
-      vi.useRealTimers()
-    }
-  })
 })
