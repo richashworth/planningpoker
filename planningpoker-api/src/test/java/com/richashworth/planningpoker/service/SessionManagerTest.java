@@ -46,13 +46,9 @@ class SessionManagerTest {
 
   @Test
   void testCreateSessionRejectsCollisions() {
-    // Creating many sessions should never produce duplicates
     for (int i = 0; i < 100; i++) {
       sessionManager.createSession();
     }
-    // All sessions are active (no collisions lost any)
-    // If there were a collision, the loop in createSession retries,
-    // so we just verify we got 100 distinct active sessions
   }
 
   @Test
@@ -231,20 +227,12 @@ class SessionManagerTest {
 
     sessionManager.evictIdleSessions();
 
-    // activeSessions
     assertFalse(sessionManager.isSessionActive(sessionId));
-    // sessionEstimates
     assertTrue(sessionManager.getResults(sessionId).isEmpty());
-    // sessionUsers
     assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
-    // lastActivity — entry removed, so touching again would re-add but map should not contain old
-    // entry
     assertFalse(lastActivity.containsKey(sessionId));
-    // sessionLegalValues
     assertTrue(sessionManager.getSessionLegalValues(sessionId).isEmpty());
-    // sessionSchemeConfigs
     assertNull(sessionManager.getSessionSchemeConfig(sessionId));
-    // sessionHosts
     assertNull(sessionManager.getHost(sessionId));
   }
 
@@ -254,7 +242,6 @@ class SessionManagerTest {
     sessionManager.registerUser("Alice", activeSession);
     sessionManager.registerEstimate(activeSession, new Estimate("Alice", "3"));
 
-    // Do NOT backdate — session is active
     sessionManager.evictIdleSessions();
 
     assertTrue(sessionManager.isSessionActive(activeSession));
@@ -279,11 +266,9 @@ class SessionManagerTest {
 
     sessionManager.evictIdleSessions();
 
-    // Idle session is gone
     assertFalse(sessionManager.isSessionActive(idleSession));
     assertTrue(sessionManager.getSessionUsers(idleSession).isEmpty());
 
-    // Active session is fully intact
     assertTrue(sessionManager.isSessionActive(activeSession));
     assertEquals(List.of("Alice"), sessionManager.getSessionUsers(activeSession));
     assertEquals("Alice", sessionManager.getHost(activeSession));
@@ -291,8 +276,6 @@ class SessionManagerTest {
 
   @Test
   void testMaxSessionsLimit() {
-    // We can't easily create 100,000 sessions in a unit test, but we can verify the
-    // constant is set correctly
     assertEquals(100_000, SessionManager.MAX_SESSIONS);
   }
 
@@ -553,7 +536,6 @@ class SessionManagerTest {
     List<String> allSessions = new ArrayList<>();
     List<String> idleSessions = new ArrayList<>();
 
-    // Create 10 sessions each with one user
     for (int i = 0; i < sessionCount; i++) {
       String sessionId = sessionManager.createSession();
       sessionManager.registerUser("User" + i, sessionId);
@@ -575,7 +557,6 @@ class SessionManagerTest {
 
     List<String> activeSessions = allSessions.subList(5, sessionCount);
 
-    // Launch eviction thread
     CountDownLatch evictionStart = new CountDownLatch(1);
     CountDownLatch evictionDone = new CountDownLatch(1);
     Thread evictionThread =
@@ -621,7 +602,7 @@ class SessionManagerTest {
           });
     }
 
-    evictionStart.countDown(); // ensure eviction starts
+    evictionStart.countDown();
     readers.shutdown();
     assertTrue(readers.awaitTermination(15, TimeUnit.SECONDS));
     evictionDone.await(10, TimeUnit.SECONDS);

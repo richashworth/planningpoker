@@ -46,7 +46,6 @@ describe('ResultsTable container', () => {
         users: ['alice', 'bob'],
       }),
     })
-    // Bob should appear as a non-voter
     expect(screen.getByText('Bob')).toBeInTheDocument()
   })
 })

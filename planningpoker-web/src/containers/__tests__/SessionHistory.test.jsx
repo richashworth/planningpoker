@@ -69,7 +69,6 @@ describe('SessionHistory container', () => {
         results: [{ userName: 'alice', estimateValue: '3' }],
       }),
     })
-    // No completed rounds yet → non-collapsible caption, but export is still available
     expect(screen.getByText(/Session history · 1 round/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Export CSV/ })).toBeInTheDocument()
   })

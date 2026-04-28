@@ -43,7 +43,6 @@ function renderHeader(state = preloaded()) {
 describe('Header container', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Writable clipboard stub
     Object.defineProperty(navigator, 'clipboard', {
       value: { writeText: vi.fn(() => Promise.resolve()) },
       configurable: true,
@@ -63,8 +62,8 @@ describe('Header container', () => {
   it('writes the session id to the clipboard when the copy icon is clicked', async () => {
     renderHeader()
 
-    // The Chip's delete icon is the copy control — it has no accessible name but
-    // sits inside a tooltip.
+    // The Chip's delete icon is the copy control; it has no accessible name,
+    // so reach for it via the chip wrapper.
     const chip = screen.getByText(/Session ID:/).closest('.MuiChip-root')
     const copyButton = chip.querySelector('.MuiChip-deleteIcon')
     await act(async () => {
