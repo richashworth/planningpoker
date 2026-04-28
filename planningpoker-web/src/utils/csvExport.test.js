@@ -93,18 +93,15 @@ describe('generateCsv', () => {
     ]
     const csv = generateCsv(round, ['Alice'])
     const lines = csv.split('\n')
-    // Should be wrapped and start with ' prefix
     expect(lines[1].startsWith('"\'=SUM(A1)"') || lines[1].startsWith("'=SUM(A1)")).toBe(true)
   })
 })
 
 describe('downloadCsv', () => {
   beforeEach(() => {
-    // Mock URL.createObjectURL and URL.revokeObjectURL
     globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
     globalThis.URL.revokeObjectURL = vi.fn()
 
-    // Mock document.createElement and document.body
     const mockLink = {
       href: '',
       download: '',

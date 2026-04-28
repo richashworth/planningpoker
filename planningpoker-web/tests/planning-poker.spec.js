@@ -107,20 +107,17 @@ test.describe('Dark/Light Mode', () => {
     const LIGHT_BG = 'rgb(248, 250, 252)'
     const toggle = page.getByRole('button', { name: 'Toggle dark mode' })
 
-    // Default with dark OS preference is dark mode
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       DARK_BG,
     )
 
-    // Toggle to light mode
     await toggle.click()
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
       LIGHT_BG,
     )
 
-    // Toggle back to dark mode
     await toggle.click()
     await page.waitForFunction(
       (expected) => getComputedStyle(document.body).backgroundColor === expected,
@@ -199,12 +196,11 @@ test.describe('Multi-User Flows', () => {
       await route.continue()
     })
 
-    // Bob logs himself out
     await playerPage.getByRole('button', { name: /Bob/i }).click()
     await playerPage.getByRole('menuitem', { name: 'Log out' }).click()
     await expect(playerPage).toHaveURL('/')
 
-    // No "removed by the host" toast should appear, immediately or after a beat
+    // No "removed by the host" toast should appear, even after a small delay
     await expect(playerPage.getByText(/removed from the session by the host/i)).not.toBeVisible()
     await playerPage.waitForTimeout(500)
     await expect(playerPage.getByText(/removed from the session by the host/i)).not.toBeVisible()
@@ -302,7 +298,6 @@ test.describe('Multi-User Flows', () => {
     const p3Page = await p3Ctx.newPage()
     await joinGame(p3Page, 'Charlie', sessionId)
 
-    // All vote (stagger slightly to avoid race)
     await hostPage.getByText('5', { exact: true }).click()
     await p2Page.getByText('8', { exact: true }).click()
     await p3Page.getByText('5', { exact: true }).click()

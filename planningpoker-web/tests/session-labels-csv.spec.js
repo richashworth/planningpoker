@@ -63,7 +63,6 @@ test.describe('Session Labels', () => {
       // Non-host should NOT have a label input
       await expect(playerPage.getByPlaceholder('Item label (optional)')).not.toBeVisible()
 
-      // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host types a label and presses Enter to commit
@@ -91,7 +90,6 @@ test.describe('Session Labels', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host opens the banner, sets a label and commits with Enter
@@ -130,7 +128,6 @@ test.describe('Session Labels', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Host opens banner, sets label and commits with Enter
@@ -168,15 +165,13 @@ test.describe('Session Labels', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       const labelInput = hostPage.getByPlaceholder('Item label (optional)')
 
-      // Host types — do not yet commit. Non-host should NOT see it within debounce window.
       await labelInput.fill('Deliberate')
-
-      // Commit explicitly with Enter (deterministic, faster than debounce)
+      // Commit explicitly with Enter; deterministic and faster than the
+      // typing-debounce broadcast.
       await labelInput.press('Enter')
       await expect(playerPage.getByText('Deliberate')).toBeVisible({
         timeout: 15000,
@@ -197,7 +192,6 @@ test.describe('Session Labels', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       const labelInput = hostPage.getByPlaceholder('Item label (optional)')
@@ -226,7 +220,6 @@ test.describe('Session Labels', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       const labelInput = hostPage.getByPlaceholder('Item label (optional)')
@@ -353,7 +346,6 @@ test.describe('CSV Export', () => {
       const playerPage = await playerCtx.newPage()
       await joinGame(playerPage, 'Bob', sessionId)
 
-      // Wait for player WebSocket to deliver USERS_MESSAGE (host name appears in users list)
       await waitForWsReady(playerPage, sessionId, 'Alice')
 
       // Set label via banner → Enter commit

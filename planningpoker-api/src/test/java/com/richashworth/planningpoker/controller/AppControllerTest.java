@@ -10,8 +10,6 @@ class AppControllerTest {
 
   @Test
   void testGetAppVersionReturnsDevWhenNoManifest() {
-    // In test runs there is no MANIFEST.MF Implementation-Version attribute,
-    // so the controller falls back to "dev".
     String version = appController.getAppVersion();
     assertEquals("dev", version);
   }
