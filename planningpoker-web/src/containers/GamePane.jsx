@@ -23,8 +23,9 @@ export default function GamePane({ connected }) {
   const autoConsensus = calcConsensus(results)
   const displayConsensus = consensusOverride || autoConsensus
 
-  // Dedup the reveal announcement off the voted state transition (not raw WS
-  // message arrival) so the server's burst of duplicate broadcasts is absorbed.
+  // Reveal announcement: fire once per voted false→true transition.
+  // Dedup is driven by the voted state transition, not raw WS message arrival,
+  // so MessagingUtils burst (10ms/50ms/150ms/500ms/2s/5s) is naturally handled.
   useEffect(() => {
     if (voted && !announcedForRevealRef.current) {
       setAnnouncement(`Votes revealed: ${results.length} of ${users.length} players voted`)
@@ -36,14 +37,17 @@ export default function GamePane({ connected }) {
     }
   }, [voted, results.length, users.length])
 
-  // First consensus announcement is deferred 1500ms so screen readers finish
-  // reading the reveal text before it gets overwritten; subsequent changes use
-  // a 750ms trailing-edge debounce.
+  // Consensus announcement: first value deferred 1500ms (to avoid overwriting reveal
+  // announcement in screen readers), subsequent changes debounced 750ms trailing edge.
   useEffect(() => {
     if (!voted) return
     if (!displayConsensus) return
     if (displayConsensus === lastAnnouncedConsensusRef.current) return
 
+    // Both first and subsequent announcements go through debounce to avoid
+    // overwriting the reveal announcement that fires on the same render cycle.
+    // First: 1500ms (lets screen readers announce reveal first).
+    // Subsequent: 750ms trailing edge.
     const delay = lastAnnouncedConsensusRef.current === null ? 1500 : 750
 
     if (consensusDebounceRef.current) clearTimeout(consensusDebounceRef.current)

@@ -9,6 +9,7 @@ export default function Logo({ size = 32, sx, ...props }) {
       sx={{ width: `${size}px`, height: `${size}px`, flexShrink: 0, ...sx }}
       {...props}
     >
+      {/* Back card */}
       <g transform="rotate(12, 16, 16)">
         <rect
           x="7"
@@ -22,6 +23,7 @@ export default function Logo({ size = 32, sx, ...props }) {
           strokeOpacity="0.4"
         />
       </g>
+      {/* Front card */}
       <g transform="rotate(-5, 16, 16)">
         <rect
           x="7"
@@ -34,6 +36,7 @@ export default function Logo({ size = 32, sx, ...props }) {
           strokeWidth="0.8"
           strokeOpacity="0.7"
         />
+        {/* Corner rank PP */}
         <text
           x="10"
           y="12.5"
@@ -45,6 +48,7 @@ export default function Logo({ size = 32, sx, ...props }) {
         >
           PP
         </text>
+        {/* Nautilus spiral — counter-clockwise, tapering */}
         <path
           d="M23,25 C23,20 21,16 17,15 C13,14 11,17 11,20 C11,23 13,24.5 15,24.5"
           stroke="white"

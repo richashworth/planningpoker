@@ -148,6 +148,7 @@ class SchemeTypeTest {
 
   @Test
   void testResolveCustomWithUnsureAlreadyIncluded() {
+    // If custom values already contain "?", enabling the toggle must not add a duplicate
     List<String> values = SchemeType.resolveValues("custom", "S,M,L,?", true);
     assertEquals(List.of("S", "M", "L", "?"), values);
     assertEquals(1, values.stream().filter("?"::equals).count());

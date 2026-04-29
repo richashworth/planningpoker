@@ -58,6 +58,8 @@ public class VoteController {
           LogSafeIds.hash(userName),
           LogSafeIds.hash(sessionId),
           LogSafeIds.hash(estimateValue));
+      // registerEstimate is an upsert: it replaces any prior estimate this user already cast in
+      // the current round. See SessionManager#registerEstimate.
       sessionManager.registerEstimate(sessionId, new Estimate(userName, estimateValue));
       round = sessionManager.getRound(sessionId);
       results = sessionManager.getResults(sessionId);

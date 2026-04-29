@@ -6,6 +6,7 @@ import VoteReducer from './reducer_vote'
 import NotificationReducer from './reducer_notification'
 import RoundsReducer from './reducer_rounds'
 
+//keys define what pieces of state each reducer manages
 const rootReducer = combineReducers({
   game: GameReducer,
   results: ResultsReducer,
