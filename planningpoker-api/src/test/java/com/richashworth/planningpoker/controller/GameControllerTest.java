@@ -204,7 +204,7 @@ class GameControllerTest extends AbstractControllerTest {
     Round stored = captor.getValue();
     assertEquals(2, stored.round());
     assertEquals("Login page", stored.label());
-    assertEquals("8", stored.consensus()); // explicit override preferred over mode
+    assertEquals("8", stored.consensus());
     assertEquals(votes, stored.votes());
     assertNotNull(stored.timestamp());
     verify(messagingUtils).sendRoundCompletedMessage(SESSION_ID, stored);

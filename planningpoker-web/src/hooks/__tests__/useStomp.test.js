@@ -1,30 +1,9 @@
 // @vitest-environment jsdom
-/**
- * useStomp hook tests.
- *
- * Mounts the real hook via `renderHook` from @testing-library/react with
- * @stomp/stompjs and sockjs-client mocked at module level. Asserts on the
- * mocked Client constructor calls, activate/deactivate, subscribe per topic,
- * and the onMessage JSON-parse + dispatch path.
- *
- * Covered:
- *   - Client is NOT constructed when url/topics are empty
- *   - client.activate() is called on mount
- *   - onConnect subscribes to every requested topic
- *   - Incoming STOMP message is JSON-parsed and forwarded to onMessage
- *   - client.deactivate() is called on cleanup (when active)
- *   - deactivate is NOT called when client is already inactive
- *   - connected state transitions for connect/disconnect/error/close
- *   - disconnect/error before initial connect is ignored
- *   - reconnect resubscribes to all topics
- *   - latest onMessage callback is used (ref-tracked, not re-mounted)
- */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 
-// ---------------------------------------------------------------------------
-// Module-level mocks — declared via vi.mock so they're hoisted before imports.
-// ---------------------------------------------------------------------------
+// vi.mock calls are hoisted above imports, so these refs are populated by the
+// time `import useStomp` runs.
 let lastClientConfig = null
 let lastClientInstance = null
 
@@ -51,7 +30,7 @@ import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import useStomp from '../useStomp'
 
-// Stable topics arrays so we don't trigger the [url, topics] effect via referential changes.
+// Stable references so the [url, topics] effect doesn't re-fire on rerender.
 const ONE_TOPIC = ['/topic/results/abc']
 const TWO_TOPICS = ['/topic/results/abc', '/topic/users/abc']
 
@@ -91,7 +70,6 @@ describe('useStomp — STOMP client wiring', () => {
     )
     expect(Client).toHaveBeenCalledTimes(1)
     expect(lastClientInstance.activate).toHaveBeenCalledOnce()
-    // Invoke the webSocketFactory the hook passed in, to confirm SockJS is wired.
     lastClientConfig.webSocketFactory()
     expect(SockJS).toHaveBeenCalledWith('http://localhost:9000/stomp')
   })
