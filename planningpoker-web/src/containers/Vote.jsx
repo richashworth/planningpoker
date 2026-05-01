@@ -74,7 +74,6 @@ export default function Vote() {
           gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
           gap: 3,
           alignItems: 'start',
-          minHeight: 300,
         }}
       >
         <Box>
