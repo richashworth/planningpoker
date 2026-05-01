@@ -665,6 +665,83 @@ class SessionManagerTest {
   }
 
   @Test
+  void testGetConsensusOverrideStartsNull() {
+    String sessionId = sessionManager.createSession();
+    assertNull(sessionManager.getConsensusOverride(sessionId));
+  }
+
+  @Test
+  void testGetConsensusRoundStartsAtZero() {
+    String sessionId = sessionManager.createSession();
+    assertEquals(0L, sessionManager.getConsensusRound(sessionId));
+  }
+
+  @Test
+  void testGetConsensusRoundForUnknownSessionReturnsZero() {
+    assertEquals(0L, sessionManager.getConsensusRound("nonexistent"));
+  }
+
+  @Test
+  void testSetConsensusOverrideStoresAndIncrementsRound() {
+    String sessionId = sessionManager.createSession();
+    long round = sessionManager.setConsensusOverride(sessionId, "8");
+    assertEquals(1L, round);
+    assertEquals("8", sessionManager.getConsensusOverride(sessionId));
+    assertEquals(1L, sessionManager.getConsensusRound(sessionId));
+  }
+
+  @Test
+  void testSetConsensusOverrideEachCallIncrementsRound() {
+    String sessionId = sessionManager.createSession();
+    assertEquals(1L, sessionManager.setConsensusOverride(sessionId, "5"));
+    assertEquals(2L, sessionManager.setConsensusOverride(sessionId, "8"));
+    assertEquals(3L, sessionManager.setConsensusOverride(sessionId, null));
+    assertEquals(4L, sessionManager.setConsensusOverride(sessionId, "13"));
+  }
+
+  @Test
+  void testSetConsensusOverrideNullClearsValue() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.setConsensusOverride(sessionId, "5");
+    sessionManager.setConsensusOverride(sessionId, null);
+    assertNull(sessionManager.getConsensusOverride(sessionId));
+  }
+
+  @Test
+  void testResetSessionClearsConsensusOverride() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.setConsensusOverride(sessionId, "8");
+    sessionManager.resetSession(sessionId);
+    assertNull(sessionManager.getConsensusOverride(sessionId));
+  }
+
+  @Test
+  void testClearSessionsWipesConsensus() {
+    String sessionId = sessionManager.createSession();
+    sessionManager.setConsensusOverride(sessionId, "5");
+    sessionManager.clearSessions();
+    assertNull(sessionManager.getConsensusOverride(sessionId));
+    assertEquals(0L, sessionManager.getConsensusRound(sessionId));
+  }
+
+  @Test
+  void testEvictIdleSessionsWipesConsensus() throws Exception {
+    String idleSession = sessionManager.createSession();
+    sessionManager.setConsensusOverride(idleSession, "5");
+
+    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+    lastActivityField.setAccessible(true);
+    @SuppressWarnings("unchecked")
+    ConcurrentHashMap<String, Instant> lastActivity =
+        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
+    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+
+    sessionManager.evictIdleSessions();
+    assertNull(sessionManager.getConsensusOverride(idleSession));
+    assertEquals(0L, sessionManager.getConsensusRound(idleSession));
+  }
+
+  @Test
   void testEvictIdleSessionsWipesRounds() throws Exception {
     String idleSession = sessionManager.createSession();
     sessionManager.incrementAndGetRound(idleSession);

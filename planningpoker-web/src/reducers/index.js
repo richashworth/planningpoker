@@ -5,6 +5,7 @@ import UsersReducer from './reducer_users'
 import VoteReducer from './reducer_vote'
 import NotificationReducer from './reducer_notification'
 import RoundsReducer from './reducer_rounds'
+import ConsensusReducer from './reducer_consensus'
 
 const rootReducer = combineReducers({
   game: GameReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   voted: VoteReducer,
   notification: NotificationReducer,
   rounds: RoundsReducer,
+  consensus: ConsensusReducer,
 })
 
 export default rootReducer

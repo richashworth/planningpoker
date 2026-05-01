@@ -51,6 +51,7 @@ function preloadedState({ clientRound = 3, voted = false } = {}) {
     voted,
     notification: { error: null },
     rounds: [],
+    consensus: { value: null, round: 0 },
   }
 }
 
@@ -75,10 +76,14 @@ beforeEach(() => {
 afterEach(() => cleanup())
 
 describe('PlayGame — useStomp wiring', () => {
-  it('subscribes to results and users topics for the active session', () => {
+  it('subscribes to results, users, and consensus topics for the active session', () => {
     mountPlayGame()
     expect(useStomp).toHaveBeenCalled()
-    expect(stompCapture.topics).toEqual(['/topic/results/abc12345', '/topic/users/abc12345'])
+    expect(stompCapture.topics).toEqual([
+      '/topic/results/abc12345',
+      '/topic/users/abc12345',
+      '/topic/consensus/abc12345',
+    ])
     expect(stompCapture.url).toMatch(/\/stomp$/)
     expect(typeof stompCapture.onMessage).toBe('function')
   })
@@ -258,6 +263,52 @@ describe('PlayGame — epoch message routing', () => {
 
     expect(store.getState().users).toEqual(['alice', 'bob'])
     expect(store.getState().game.host).toBe('alice')
+  })
+
+  it('updates consensus on CONSENSUS_OVERRIDE_MESSAGE with newer round', () => {
+    const { store } = mountPlayGame()
+
+    act(() => {
+      stompCapture.onMessage({
+        type: 'CONSENSUS_OVERRIDE_MESSAGE',
+        payload: { value: '8', round: 1 },
+      })
+    })
+
+    expect(store.getState().consensus).toEqual({ value: '8', round: 1 })
+  })
+
+  it('ignores CONSENSUS_OVERRIDE_MESSAGE with stale round', () => {
+    const { store } = mountPlayGame()
+
+    act(() => {
+      stompCapture.onMessage({
+        type: 'CONSENSUS_OVERRIDE_MESSAGE',
+        payload: { value: '8', round: 5 },
+      })
+    })
+    act(() => {
+      stompCapture.onMessage({
+        type: 'CONSENSUS_OVERRIDE_MESSAGE',
+        payload: { value: '3', round: 3 },
+      })
+    })
+
+    expect(store.getState().consensus).toEqual({ value: '8', round: 5 })
+  })
+
+  it('drops CONSENSUS_OVERRIDE_MESSAGE without a numeric round', () => {
+    const { store } = mountPlayGame()
+    const before = store.getState().consensus
+
+    act(() => {
+      stompCapture.onMessage({
+        type: 'CONSENSUS_OVERRIDE_MESSAGE',
+        payload: { value: '8' },
+      })
+    })
+
+    expect(store.getState().consensus).toBe(before)
   })
 
   it('ignores unknown message types without throwing', () => {

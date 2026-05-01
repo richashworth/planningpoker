@@ -12,8 +12,8 @@ export default function GamePane({ connected }) {
   const voted = useSelector((state) => state.voted)
   const results = useSelector((state) => state.results)
   const users = useSelector((state) => state.users)
+  const consensusOverride = useSelector((state) => state.consensus.value)
 
-  const [consensusOverride, setConsensusOverride] = useState(null)
   const [announcement, setAnnouncement] = useState('')
   const announcedForRevealRef = useRef(false)
   const consensusDebounceRef = useRef(null)
@@ -86,10 +86,7 @@ export default function GamePane({ connected }) {
       <Box>
         <SessionHeader />
         {voted ? (
-          <Results
-            consensusOverride={consensusOverride}
-            setConsensusOverride={setConsensusOverride}
-          />
+          <Results />
         ) : (
           <Vote consensusOverride={consensusOverride} />
         )}

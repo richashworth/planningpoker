@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,10 @@ public class SessionManager {
   private final ConcurrentHashMap<String, AtomicInteger> sessionRounds = new ConcurrentHashMap<>();
   private final ListMultimap<String, Round> sessionCompletedRounds =
       Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
+  private final ConcurrentHashMap<String, String> sessionConsensusOverrides =
+      new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, AtomicLong> sessionConsensusRounds =
+      new ConcurrentHashMap<>();
 
   public boolean isSessionActive(final String sessionId) {
     return activeSessions.contains(sessionId);
@@ -70,6 +75,7 @@ public class SessionManager {
     sessionLegalValues.put(sessionId, legal);
     sessionSchemeConfigs.put(sessionId, config);
     sessionRounds.put(sessionId, new AtomicInteger(0));
+    sessionConsensusRounds.put(sessionId, new AtomicLong(0));
     touchSession(sessionId);
     return sessionId;
   }
@@ -117,6 +123,40 @@ public class SessionManager {
 
   public String getLabel(String sessionId) {
     return sessionLabels.getOrDefault(sessionId, "");
+  }
+
+  /**
+   * Returns the host's locked-in consensus value for this session, or {@code null} if none has been
+   * set (or it was cleared by reset).
+   */
+  public String getConsensusOverride(String sessionId) {
+    return sessionConsensusOverrides.get(sessionId);
+  }
+
+  /**
+   * Returns the monotonic consensus round counter for this session. Each {@link
+   * #setConsensusOverride(String, String)} call increments and returns a strictly larger value, so
+   * clients can ignore out-of-order broadcasts.
+   */
+  public long getConsensusRound(String sessionId) {
+    AtomicLong round = sessionConsensusRounds.get(sessionId);
+    return round == null ? 0L : round.get();
+  }
+
+  /**
+   * Atomically updates the consensus override (a {@code null} value clears it) and increments the
+   * round counter. Returns the new round so callers can include it in the broadcast envelope.
+   */
+  public long setConsensusOverride(String sessionId, String value) {
+    if (value == null) {
+      sessionConsensusOverrides.remove(sessionId);
+    } else {
+      sessionConsensusOverrides.put(sessionId, value);
+    }
+    long newRound =
+        sessionConsensusRounds.computeIfAbsent(sessionId, k -> new AtomicLong(0)).incrementAndGet();
+    touchSession(sessionId);
+    return newRound;
   }
 
   public void promoteHost(String sessionId, String targetUser) {
@@ -167,11 +207,14 @@ public class SessionManager {
     sessionLabels.clear();
     sessionRounds.clear();
     sessionCompletedRounds.clear();
+    sessionConsensusOverrides.clear();
+    sessionConsensusRounds.clear();
   }
 
   public void resetSession(final String sessionId) {
     sessionEstimates.removeAll(sessionId);
     sessionLabels.remove(sessionId);
+    sessionConsensusOverrides.remove(sessionId);
     touchSession(sessionId);
   }
 
@@ -234,6 +277,8 @@ public class SessionManager {
       sessionLabels.remove(sessionId);
       sessionRounds.remove(sessionId);
       sessionCompletedRounds.removeAll(sessionId);
+      sessionConsensusOverrides.remove(sessionId);
+      sessionConsensusRounds.remove(sessionId);
     }
     if (!toEvict.isEmpty()) {
       logger.info("Evicted {} idle session(s)", toEvict.size());

@@ -4,7 +4,44 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip } fro
 import { Bar } from 'react-chartjs-2'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip)
 
-export default function ResultsChart() {
+const DEFAULT_BG = 'rgba(102, 126, 234, 0.35)'
+const DEFAULT_BORDER = 'rgba(102, 126, 234, 0.7)'
+const DEFAULT_HOVER_BG = 'rgba(102, 126, 234, 0.55)'
+const HIGHLIGHT_BG = 'rgba(102, 126, 234, 0.85)'
+const HIGHLIGHT_BORDER = 'rgba(102, 126, 234, 1)'
+const HIGHLIGHT_HOVER_BG = 'rgba(102, 126, 234, 0.95)'
+
+// Draws a stroked circle around the consensus tick label when that estimate
+// has zero votes — the bar already carries the highlight when votes exist,
+// so we only ring the tick when there's no bar to color.
+const consensusAxisHighlightPlugin = {
+  id: 'consensusAxisHighlight',
+  afterDraw(chart, _args, opts) {
+    if (!opts) return
+    const { consensus, legalEstimates, aggregateData } = opts
+    if (consensus == null) return
+    const idx = legalEstimates.indexOf(consensus)
+    if (idx === -1 || aggregateData[idx] !== 0) return
+
+    const xScale = chart.scales.x
+    if (!xScale) return
+    const xCenter = xScale.getPixelForValue(idx)
+    // Tick labels sit below the axis line; aim for the vertical centre of
+    // the label band rather than the axis line itself.
+    const yCenter = xScale.top + xScale.height * 0.55
+
+    const ctx = chart.ctx
+    ctx.save()
+    ctx.strokeStyle = HIGHLIGHT_BORDER
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.arc(xCenter, yCenter, 13, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.restore()
+  },
+}
+
+export default function ResultsChart({ consensus = null }) {
   const results = useSelector((state) => state.results)
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
   const theme = useTheme()
@@ -15,11 +52,28 @@ export default function ResultsChart() {
   const tickColor = theme.palette.text.secondary
   const gridColor = theme.palette.divider
 
+  const isHighlighted = (label) => consensus != null && label === consensus
+  const backgroundColor = legalEstimates.map((l) => (isHighlighted(l) ? HIGHLIGHT_BG : DEFAULT_BG))
+  const borderColor = legalEstimates.map((l) =>
+    isHighlighted(l) ? HIGHLIGHT_BORDER : DEFAULT_BORDER,
+  )
+  const hoverBackgroundColor = legalEstimates.map((l) =>
+    isHighlighted(l) ? HIGHLIGHT_HOVER_BG : DEFAULT_HOVER_BG,
+  )
+  const borderWidth = legalEstimates.map((l) => (isHighlighted(l) ? 2 : 1))
+
+  // Always highlight the consensus tick label so the axis stays in sync with
+  // the bar, even when the bar happens to have zero votes (no fill to see).
+  const isConsensusTick = (idx) => isHighlighted(legalEstimates[idx])
+  const xTickColor = (ctx) => (isConsensusTick(ctx.index) ? HIGHLIGHT_BORDER : tickColor)
+  const xTickFont = (ctx) => (isConsensusTick(ctx.index) ? { weight: 'bold' } : {})
+
   const options = {
     responsive: true,
     plugins: {
       legend: { display: false },
       tooltip: { enabled: false },
+      consensusAxisHighlight: { consensus, legalEstimates, aggregateData },
     },
     scales: {
       y: {
@@ -32,7 +86,7 @@ export default function ResultsChart() {
         border: { color: gridColor },
       },
       x: {
-        ticks: { color: tickColor },
+        ticks: { color: xTickColor, font: xTickFont },
         grid: { color: 'transparent' },
         border: { color: gridColor },
       },
@@ -44,14 +98,14 @@ export default function ResultsChart() {
     datasets: [
       {
         data: aggregateData,
-        backgroundColor: 'rgba(102, 126, 234, 0.35)',
-        borderColor: 'rgba(102, 126, 234, 0.7)',
-        borderWidth: 1,
+        backgroundColor,
+        borderColor,
+        borderWidth,
         borderRadius: 4,
-        hoverBackgroundColor: 'rgba(102, 126, 234, 0.55)',
+        hoverBackgroundColor,
       },
     ],
   }
 
-  return <Bar options={options} data={data} />
+  return <Bar options={options} data={data} plugins={[consensusAxisHighlightPlugin]} />
 }

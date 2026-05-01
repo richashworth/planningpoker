@@ -21,6 +21,9 @@ export const SET_LABEL = 'set-label'
 export const LABEL_UPDATED = 'label-updated'
 export const ROUND_COMPLETED = 'round-completed'
 export const ROUNDS_REPLACE = 'rounds-replace'
+export const SET_CONSENSUS_OVERRIDE = 'set-consensus-override'
+export const CONSENSUS_OVERRIDE_UPDATED = 'consensus-override-updated'
+export const CONSENSUS_OVERRIDE_LOCAL = 'consensus-override-local'
 
 export const showError = (message) => ({ type: 'show-error', payload: message })
 export const clearError = () => ({ type: 'clear-error' })
@@ -58,6 +61,16 @@ export const roundCompleted = (round) => ({ type: ROUND_COMPLETED, payload: roun
 export const roundsReplace = (rounds) => ({ type: ROUNDS_REPLACE, payload: rounds })
 
 export const usersUpdated = (users) => ({ type: USERS_UPDATED, payload: users })
+
+export const consensusOverrideUpdated = ({ value, round }) => ({
+  type: CONSENSUS_OVERRIDE_UPDATED,
+  payload: { value: value ?? null, round },
+})
+
+export const consensusOverrideLocal = (value) => ({
+  type: CONSENSUS_OVERRIDE_LOCAL,
+  payload: { value: value ?? null },
+})
 
 export const kicked = () => ({ type: KICKED })
 
@@ -209,6 +222,26 @@ export function setLabel(userName, sessionId, label) {
     } catch (err) {
       dispatch({ type: SET_LABEL, payload: err, error: true })
       dispatch(showError(err.response?.data?.error || 'Failed to set label'))
+    }
+  }
+}
+
+export function setConsensusOverride(userName, sessionId, value) {
+  return async (dispatch, getState) => {
+    // Optimistically update the value so the click feels instant; the server's
+    // broadcast (with a strictly newer round) is the authoritative reconciler.
+    // On POST failure we revert to the prior value.
+    const prior = getState().consensus?.value ?? null
+    dispatch(consensusOverrideLocal(value))
+    try {
+      const params = { userName, sessionId }
+      if (value != null && value !== '') params.value = value
+      await axios.post(`${API_ROOT_URL}/setConsensus`, new URLSearchParams(params))
+      dispatch({ type: SET_CONSENSUS_OVERRIDE })
+    } catch (err) {
+      dispatch(consensusOverrideLocal(prior))
+      dispatch({ type: SET_CONSENSUS_OVERRIDE, payload: err, error: true })
+      dispatch(showError(err.response?.data?.error || 'Failed to set consensus'))
     }
   }
 }

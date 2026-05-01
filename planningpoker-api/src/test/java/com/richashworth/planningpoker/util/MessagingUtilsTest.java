@@ -130,6 +130,35 @@ class MessagingUtilsTest {
   }
 
   @Test
+  void testSendConsensusMessageEmitsOnce() {
+    when(sessionManager.getConsensusOverride(SESSION_ID)).thenReturn("8");
+    when(sessionManager.getConsensusRound(SESSION_ID)).thenReturn(3L);
+    messagingUtils.sendConsensusMessage(SESSION_ID);
+    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+    verify(template, times(1))
+        .convertAndSend(eq(getTopic(TOPIC_CONSENSUS, SESSION_ID)), captor.capture());
+    verifyNoMoreInteractions(template);
+    String str = captor.getValue().toString();
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("CONSENSUS_OVERRIDE_MESSAGE"), str);
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("value=8"), str);
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("round=3"), str);
+  }
+
+  @Test
+  void testSendConsensusMessageWithNullValue() {
+    when(sessionManager.getConsensusOverride(SESSION_ID)).thenReturn(null);
+    when(sessionManager.getConsensusRound(SESSION_ID)).thenReturn(7L);
+    messagingUtils.sendConsensusMessage(SESSION_ID);
+    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+    verify(template, times(1))
+        .convertAndSend(eq(getTopic(TOPIC_CONSENSUS, SESSION_ID)), captor.capture());
+    String str = captor.getValue().toString();
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("CONSENSUS_OVERRIDE_MESSAGE"), str);
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("value=null"), str);
+    org.junit.jupiter.api.Assertions.assertTrue(str.contains("round=7"), str);
+  }
+
+  @Test
   void testSendRoundCompletedMessageEmitsOnce() {
     Round round =
         new Round(
