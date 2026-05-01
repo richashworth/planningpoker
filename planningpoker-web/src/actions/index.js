@@ -30,6 +30,7 @@ export const voteOptimistic = (playerName, estimateValue) => ({
   payload: { userName: playerName, estimateValue },
 })
 
+// Events
 export const gameCreated = () => ({ type: GAME_CREATED })
 
 export const userRegistered = () => ({ type: USER_REGISTERED })
@@ -61,6 +62,7 @@ export const usersUpdated = (users) => ({ type: USERS_UPDATED, payload: users })
 
 export const kicked = () => ({ type: KICKED })
 
+// User-driven actions (thunks)
 export function createGame(playerName, schemeOptions, onSuccess) {
   return async (dispatch) => {
     try {

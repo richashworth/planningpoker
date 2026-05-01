@@ -97,6 +97,7 @@ class MessagingUtilsTest {
     verify(template, times(1))
         .convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), captor.capture());
     verifyNoMoreInteractions(template);
+    // Reflective check: payload is a Message record with type RESET_MESSAGE and {"round": 7}
     Object sent = captor.getValue();
     String str = sent.toString();
     org.junit.jupiter.api.Assertions.assertTrue(str.contains("RESET_MESSAGE"), str);
