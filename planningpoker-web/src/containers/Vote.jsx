@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { vote, voteOptimistic } from '../actions'
 import UsersTable from './UsersTable'
+import SessionHistory from './SessionHistory'
 
 function cardSx(isSelected, isDisabled) {
   return {
@@ -45,7 +46,7 @@ function cardSx(isSelected, isDisabled) {
   }
 }
 
-export default function Vote() {
+export default function Vote({ consensusOverride = null }) {
   const dispatch = useDispatch()
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
@@ -76,7 +77,7 @@ export default function Vote() {
           alignItems: 'start',
         }}
       >
-        <Box>
+        <Box sx={{ minWidth: 0 }}>
           <Box
             sx={{
               display: 'grid',
@@ -106,6 +107,7 @@ export default function Vote() {
               </Box>
             ))}
           </Box>
+          <SessionHistory consensusOverride={consensusOverride} />
         </Box>
         <UsersTable heading="Players" />
       </Box>
