@@ -12,7 +12,10 @@ import { generateCsv, downloadCsv } from '../utils/csvExport'
 const fmtTime = (iso) =>
   new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
 
-export default function SessionHistory({ consensusOverride = null }) {
+// includeInflight=true treats the live round as part of history (results screen, post-reveal).
+// On the voting screen, leave it false so the current round never feeds the count or the CSV
+// export — otherwise Export CSV would leak votes before reveal.
+export default function SessionHistory({ consensusOverride = null, includeInflight = false }) {
   const sessionId = useSelector((state) => state.game.sessionId)
   const currentLabel = useSelector((state) => state.game.currentLabel)
   const rounds = useSelector((state) => state.rounds)
@@ -21,9 +24,11 @@ export default function SessionHistory({ consensusOverride = null }) {
   const voted = useSelector((state) => state.voted)
   const [historyOpen, setHistoryOpen] = useState(false)
 
-  if (rounds.length === 0) return null
+  const hasInflightRound = includeInflight && voted && results.length > 0
+  const hasAnyHistory = rounds.length > 0 || hasInflightRound
+  const totalRounds = rounds.length + (hasInflightRound ? 1 : 0)
 
-  const hasInflightRound = voted && results.length > 0
+  if (!hasAnyHistory) return null
 
   const handleExportCsv = () => {
     const allRounds = [...rounds]
@@ -59,26 +64,40 @@ export default function SessionHistory({ consensusOverride = null }) {
           bgcolor: 'background.paper',
         }}
       >
-        <Button
-          variant="text"
-          onClick={() => setHistoryOpen((v) => !v)}
-          aria-expanded={historyOpen}
-          startIcon={historyOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-          sx={{
-            color: 'text.primary',
-            fontSize: '0.8125rem',
-            fontWeight: 600,
-            p: 0,
-            minWidth: 0,
-            '&:hover': { bgcolor: 'transparent' },
-            '& .MuiButton-startIcon': { mr: 0.75 },
-          }}
-        >
-          {historyOpen ? 'Hide' : 'Show'} session history
-          <Box component="span" sx={{ color: 'text.disabled', fontWeight: 500, ml: 0.75 }}>
-            · {rounds.length} completed {rounds.length === 1 ? 'round' : 'rounds'}
-          </Box>
-        </Button>
+        {rounds.length > 0 ? (
+          <Button
+            variant="text"
+            onClick={() => setHistoryOpen((v) => !v)}
+            aria-expanded={historyOpen}
+            startIcon={historyOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+            sx={{
+              color: 'text.primary',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              p: 0,
+              minWidth: 0,
+              '&:hover': { bgcolor: 'transparent' },
+              '& .MuiButton-startIcon': { mr: 0.75 },
+            }}
+          >
+            {historyOpen ? 'Hide' : 'Show'} session history
+            <Box component="span" sx={{ color: 'text.disabled', fontWeight: 500, ml: 0.75 }}>
+              · {rounds.length} completed {rounds.length === 1 ? 'round' : 'rounds'}
+            </Box>
+          </Button>
+        ) : (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              fontSize: '0.7rem',
+            }}
+          >
+            Session history · {totalRounds} {totalRounds === 1 ? 'round' : 'rounds'}
+          </Typography>
+        )}
         <Button
           variant="outlined"
           size="small"

@@ -101,7 +101,7 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           >
             <ResultsChart />
           </Box>
-          <SessionHistory consensusOverride={consensusOverride} />
+          <SessionHistory consensusOverride={consensusOverride} includeInflight />
         </Box>
         <ResultsTable />
       </Box>
