@@ -62,16 +62,14 @@ describe('SessionHistory container', () => {
     expect(screen.getByRole('button', { name: /Export CSV/ })).toBeInTheDocument()
   })
 
-  it('renders on the results screen while votes are revealed (no prior rounds)', () => {
-    renderWithStore(<SessionHistory />, {
+  it('renders nothing during round 1 while votes are in-flight (no completed rounds yet)', () => {
+    const { container } = renderWithStore(<SessionHistory />, {
       preloadedState: baseState({
         voted: true,
         results: [{ userName: 'alice', estimateValue: '3' }],
       }),
     })
-    // No completed rounds yet → non-collapsible caption, but export is still available
-    expect(screen.getByText(/Session history · 1 round/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Export CSV/ })).toBeInTheDocument()
+    expect(container.firstChild).toBeNull()
   })
 
   it('is visible to non-host players with history', () => {
@@ -134,6 +132,7 @@ describe('SessionHistory container', () => {
     renderWithStore(<SessionHistory consensusOverride="13" />, {
       preloadedState: baseState({
         voted: true,
+        rounds: [completedRound],
         results: [
           { userName: 'alice', estimateValue: '5' },
           { userName: 'bob', estimateValue: '8' },
@@ -146,7 +145,8 @@ describe('SessionHistory container', () => {
     })
 
     const [roundsArg] = generateCsv.mock.calls[0]
-    expect(roundsArg[0].consensus).toBe('13')
+    expect(roundsArg).toHaveLength(2)
+    expect(roundsArg[1].consensus).toBe('13')
   })
 
   it('includes historical voters who have since left the session', async () => {

@@ -21,11 +21,9 @@ export default function SessionHistory({ consensusOverride = null }) {
   const voted = useSelector((state) => state.voted)
   const [historyOpen, setHistoryOpen] = useState(false)
 
-  const hasInflightRound = voted && results.length > 0
-  const hasAnyHistory = rounds.length > 0 || hasInflightRound
-  const totalRounds = rounds.length + (hasInflightRound ? 1 : 0)
+  if (rounds.length === 0) return null
 
-  if (!hasAnyHistory) return null
+  const hasInflightRound = voted && results.length > 0
 
   const handleExportCsv = () => {
     const allRounds = [...rounds]
@@ -61,40 +59,26 @@ export default function SessionHistory({ consensusOverride = null }) {
           bgcolor: 'background.paper',
         }}
       >
-        {rounds.length > 0 ? (
-          <Button
-            variant="text"
-            onClick={() => setHistoryOpen((v) => !v)}
-            aria-expanded={historyOpen}
-            startIcon={historyOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-            sx={{
-              color: 'text.primary',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              p: 0,
-              minWidth: 0,
-              '&:hover': { bgcolor: 'transparent' },
-              '& .MuiButton-startIcon': { mr: 0.75 },
-            }}
-          >
-            {historyOpen ? 'Hide' : 'Show'} session history
-            <Box component="span" sx={{ color: 'text.disabled', fontWeight: 500, ml: 0.75 }}>
-              · {rounds.length} completed {rounds.length === 1 ? 'round' : 'rounds'}
-            </Box>
-          </Button>
-        ) : (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              fontSize: '0.7rem',
-            }}
-          >
-            Session history · {totalRounds} {totalRounds === 1 ? 'round' : 'rounds'}
-          </Typography>
-        )}
+        <Button
+          variant="text"
+          onClick={() => setHistoryOpen((v) => !v)}
+          aria-expanded={historyOpen}
+          startIcon={historyOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+          sx={{
+            color: 'text.primary',
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            p: 0,
+            minWidth: 0,
+            '&:hover': { bgcolor: 'transparent' },
+            '& .MuiButton-startIcon': { mr: 0.75 },
+          }}
+        >
+          {historyOpen ? 'Hide' : 'Show'} session history
+          <Box component="span" sx={{ color: 'text.disabled', fontWeight: 500, ml: 0.75 }}>
+            · {rounds.length} completed {rounds.length === 1 ? 'round' : 'rounds'}
+          </Box>
+        </Button>
         <Button
           variant="outlined"
           size="small"
