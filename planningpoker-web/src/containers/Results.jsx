@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
@@ -67,15 +66,6 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
             >
               Next Item
             </Button>
-            {autoConsensus && (
-              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.75rem' }}>
-                Suggested:{' '}
-                <Box component="strong" sx={{ color: 'text.primary' }}>
-                  {autoConsensus}
-                </Box>{' '}
-                (mode)
-              </Typography>
-            )}
           </Box>
         </Box>
       )}
