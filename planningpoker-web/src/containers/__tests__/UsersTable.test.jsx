@@ -57,7 +57,6 @@ describe('UsersTable container', () => {
     renderWithStore(<UsersTable heading="Players" />, {
       preloadedState: state({ playerName: 'alice', host: 'alice', users: ['alice', 'bob'] }),
     })
-    // One transfer button and one kick button — for bob
     const transferButtons = screen
       .getAllByRole('button')
       .filter((b) => b.querySelector('[data-testid="SwapHorizRoundedIcon"]'))

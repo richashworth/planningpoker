@@ -5,13 +5,12 @@ import SockJS from 'sockjs-client'
 export default function useStomp({ url, topics, onMessage }) {
   const onMessageRef = useRef(onMessage)
   onMessageRef.current = onMessage
-  const [connected, setConnected] = useState(null) // null = not yet attempted
+  const [connected, setConnected] = useState(null) // null = not yet attempted; false = banner shown
   const hasConnected = useRef(false)
 
   useEffect(() => {
     if (!url || !topics || topics.length === 0) return
 
-    // If not connected after 5s, show the banner
     const timeout = setTimeout(() => {
       if (!hasConnected.current) setConnected(false)
     }, 5000)

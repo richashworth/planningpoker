@@ -83,7 +83,7 @@ class VotingAndResetConcurrencyTest {
 
     int initialRound = sessionManager.getRound(sessionId);
     List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
-    String legal = legalValues.get(0); // any legal value is fine
+    String legal = legalValues.get(0);
 
     CountDownLatch start = new CountDownLatch(1);
     ExecutorService pool = Executors.newFixedThreadPool(memberCount + 1);

@@ -53,11 +53,8 @@ describe('results reducer', () => {
     expect(reducer([], action)).toEqual([{ userName: 'alice', estimateValue: '5' }])
   })
 
-  // Regression test for the asymmetric optimistic-revert (issue #117). When
-  // VOTE rejects after VOTE_OPTIMISTIC has populated the user's row, the
-  // optimistic entry must be removed so the UI doesn't keep showing a vote
-  // the server never accepted. This test depends on the reducer change in
-  // PR #117; it will fail on master until that PR merges.
+  // Regression: a VOTE rejection after VOTE_OPTIMISTIC must drop the optimistic
+  // row so the UI doesn't keep showing a vote the server never accepted.
   it('removes optimistic entry when VOTE rejects (asymmetric revert)', () => {
     const optimistic = reducer([], {
       type: VOTE_OPTIMISTIC,

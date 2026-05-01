@@ -1,5 +1,4 @@
 export const API_ROOT_URL = ''
-// export const API_ROOT_URL = 'http://localhost:9000';
 
 export const SCHEME_VALUES = {
   fibonacci: ['1', '2', '3', '5', '8', '13'],
