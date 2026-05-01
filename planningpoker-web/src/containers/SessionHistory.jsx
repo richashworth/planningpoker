@@ -120,7 +120,7 @@ export default function SessionHistory({ consensusOverride = null }) {
               key={i}
               sx={{
                 display: 'grid',
-                gridTemplateColumns: 'auto 1fr auto auto',
+                gridTemplateColumns: 'auto 1fr auto minmax(40px, max-content)',
                 alignItems: 'center',
                 gap: 1.5,
                 px: 1.75,
