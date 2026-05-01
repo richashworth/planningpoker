@@ -73,12 +73,17 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
-          gap: 3,
+          gridTemplateAreas: {
+            xs: `"chart" "votes" "history"`,
+            md: `"chart votes" "history votes"`,
+          },
+          columnGap: 3,
+          rowGap: { xs: 3, md: 0 },
           alignItems: 'start',
           minHeight: 300,
         }}
       >
-        <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ gridArea: 'chart', minWidth: 0 }}>
           <Box
             sx={{
               bgcolor: 'background.paper',
@@ -91,9 +96,13 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           >
             <ResultsChart />
           </Box>
+        </Box>
+        <Box sx={{ gridArea: 'votes' }}>
+          <ResultsTable />
+        </Box>
+        <Box sx={{ gridArea: 'history', minWidth: 0 }}>
           <SessionHistory consensusOverride={consensusOverride} includeInflight />
         </Box>
-        <ResultsTable />
       </Box>
     </Box>
   )

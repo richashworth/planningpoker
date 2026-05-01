@@ -73,11 +73,16 @@ export default function Vote({ consensusOverride = null }) {
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
-          gap: 3,
+          gridTemplateAreas: {
+            xs: `"cards" "players" "history"`,
+            md: `"cards players" "history players"`,
+          },
+          columnGap: 3,
+          rowGap: { xs: 3, md: 0 },
           alignItems: 'start',
         }}
       >
-        <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ gridArea: 'cards', minWidth: 0 }}>
           <Box
             sx={{
               display: 'grid',
@@ -107,9 +112,13 @@ export default function Vote({ consensusOverride = null }) {
               </Box>
             ))}
           </Box>
+        </Box>
+        <Box sx={{ gridArea: 'players' }}>
+          <UsersTable heading="Players" />
+        </Box>
+        <Box sx={{ gridArea: 'history', minWidth: 0 }}>
           <SessionHistory consensusOverride={consensusOverride} />
         </Box>
-        <UsersTable heading="Players" />
       </Box>
     </Box>
   )
