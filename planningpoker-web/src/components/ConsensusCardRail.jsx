@@ -13,7 +13,7 @@ export default function ConsensusCardRail({ legalEstimates, results, value, onCh
         variant="body2"
         sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '0.8rem', mb: 1 }}
       >
-        Lock in the estimate
+        Set consensus
       </Typography>
       <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', pt: 0.75, pr: 0.75 }}>
         {legalEstimates.map((v) => {

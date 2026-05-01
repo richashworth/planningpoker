@@ -12,7 +12,10 @@ import { generateCsv, downloadCsv } from '../utils/csvExport'
 const fmtTime = (iso) =>
   new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
 
-export default function SessionHistory({ consensusOverride = null }) {
+// includeInflight=true treats the live round as part of history (results screen, post-reveal).
+// On the voting screen, leave it false so the current round never feeds the count or the CSV
+// export — otherwise Export CSV would leak votes before reveal.
+export default function SessionHistory({ consensusOverride = null, includeInflight = false }) {
   const sessionId = useSelector((state) => state.game.sessionId)
   const currentLabel = useSelector((state) => state.game.currentLabel)
   const rounds = useSelector((state) => state.rounds)
@@ -21,7 +24,7 @@ export default function SessionHistory({ consensusOverride = null }) {
   const voted = useSelector((state) => state.voted)
   const [historyOpen, setHistoryOpen] = useState(false)
 
-  const hasInflightRound = voted && results.length > 0
+  const hasInflightRound = includeInflight && voted && results.length > 0
   const hasAnyHistory = rounds.length > 0 || hasInflightRound
   const totalRounds = rounds.length + (hasInflightRound ? 1 : 0)
 

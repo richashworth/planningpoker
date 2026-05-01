@@ -263,12 +263,12 @@ test.describe('Consensus', () => {
       await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
       // Host sees the card-rail picker with "5" pre-selected (mode); non-host sees nothing
-      await expect(hostPage.getByText('Lock in the estimate')).toBeVisible()
+      await expect(hostPage.getByText('Set consensus')).toBeVisible()
       await expect(hostPage.getByRole('button', { name: /^Set consensus to 5/ })).toHaveAttribute(
         'aria-pressed',
         'true',
       )
-      await expect(playerPage.getByText('Lock in the estimate')).toHaveCount(0)
+      await expect(playerPage.getByText('Set consensus')).toHaveCount(0)
     } finally {
       await hostCtx.close()
       await playerCtx.close()

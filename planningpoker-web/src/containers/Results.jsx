@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
@@ -67,15 +66,6 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
             >
               Next Item
             </Button>
-            {autoConsensus && (
-              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.75rem' }}>
-                Suggested:{' '}
-                <Box component="strong" sx={{ color: 'text.primary' }}>
-                  {autoConsensus}
-                </Box>{' '}
-                (mode)
-              </Typography>
-            )}
           </Box>
         </Box>
       )}
@@ -83,12 +73,17 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
-          gap: 3,
+          gridTemplateAreas: {
+            xs: `"chart" "votes" "history"`,
+            md: `"chart votes" "history votes"`,
+          },
+          columnGap: 3,
+          rowGap: { xs: 3, md: 0 },
           alignItems: 'start',
           minHeight: 300,
         }}
       >
-        <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ gridArea: 'chart', minWidth: 0 }}>
           <Box
             sx={{
               bgcolor: 'background.paper',
@@ -101,9 +96,13 @@ export default function Results({ consensusOverride, setConsensusOverride }) {
           >
             <ResultsChart />
           </Box>
-          <SessionHistory consensusOverride={consensusOverride} />
         </Box>
-        <ResultsTable />
+        <Box sx={{ gridArea: 'votes' }}>
+          <ResultsTable />
+        </Box>
+        <Box sx={{ gridArea: 'history', minWidth: 0 }}>
+          <SessionHistory consensusOverride={consensusOverride} includeInflight />
+        </Box>
       </Box>
     </Box>
   )

@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { vote, voteOptimistic } from '../actions'
 import UsersTable from './UsersTable'
+import SessionHistory from './SessionHistory'
 
 function cardSx(isSelected, isDisabled) {
   return {
@@ -45,7 +46,7 @@ function cardSx(isSelected, isDisabled) {
   }
 }
 
-export default function Vote() {
+export default function Vote({ consensusOverride = null }) {
   const dispatch = useDispatch()
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
@@ -72,12 +73,16 @@ export default function Vote() {
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1fr 240px' },
-          gap: 3,
+          gridTemplateAreas: {
+            xs: `"cards" "players" "history"`,
+            md: `"cards players" "history players"`,
+          },
+          columnGap: 3,
+          rowGap: { xs: 3, md: 0 },
           alignItems: 'start',
-          minHeight: 300,
         }}
       >
-        <Box>
+        <Box sx={{ gridArea: 'cards', minWidth: 0 }}>
           <Box
             sx={{
               display: 'grid',
@@ -108,7 +113,12 @@ export default function Vote() {
             ))}
           </Box>
         </Box>
-        <UsersTable heading="Players" />
+        <Box sx={{ gridArea: 'players' }}>
+          <UsersTable heading="Players" />
+        </Box>
+        <Box sx={{ gridArea: 'history', minWidth: 0 }}>
+          <SessionHistory consensusOverride={consensusOverride} />
+        </Box>
       </Box>
     </Box>
   )
