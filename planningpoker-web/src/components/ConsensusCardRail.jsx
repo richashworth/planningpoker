@@ -8,14 +8,28 @@ export default function ConsensusCardRail({ legalEstimates, results, value, onCh
   }
 
   return (
-    <Box sx={{ minWidth: 0, pt: 1 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 1.5,
+        pt: 1,
+      }}
+    >
       <Typography
-        variant="body2"
-        sx={{ color: 'text.secondary', fontWeight: 500, fontSize: '0.8rem', mb: 1 }}
+        variant="caption"
+        sx={{
+          color: 'text.disabled',
+          fontWeight: 700,
+          fontSize: '0.7rem',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        }}
       >
-        Lock in the estimate
+        Consensus
       </Typography>
-      <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', pt: 0.75, pr: 0.75 }}>
+      <Box sx={{ display: 'inline-flex', flexWrap: 'wrap', gap: 0.75 }}>
         {legalEstimates.map((v) => {
           const n = counts[v] || 0
           const selected = v === value
@@ -29,31 +43,29 @@ export default function ConsensusCardRail({ legalEstimates, results, value, onCh
               aria-pressed={selected}
               onClick={() => onChange(v)}
               sx={{
-                position: 'relative',
-                width: 44,
-                height: 58,
-                p: 0,
-                borderRadius: '6px',
-                border: '1.5px solid',
+                height: 32,
+                minWidth: 44,
+                px: 1.5,
+                borderRadius: '16px',
+                border: '1px solid',
                 borderColor: selected ? 'primary.main' : 'divider',
-                bgcolor: selected ? 'primary.main' : voted ? 'background.paper' : 'transparent',
-                color: selected ? '#fff' : voted ? 'text.primary' : 'text.disabled',
+                bgcolor: selected ? 'primary.main' : 'background.paper',
+                color: selected ? 'primary.contrastText' : 'text.primary',
                 fontFamily: 'inherit',
-                fontSize: '1rem',
-                fontWeight: 700,
+                fontSize: '0.8125rem',
+                fontWeight: 600,
                 fontVariantNumeric: 'tabular-nums',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                transform: selected ? 'translateY(-2px)' : 'translateY(0)',
-                boxShadow: selected
-                  ? '0 4px 12px rgba(102,126,234,0.35)'
-                  : voted
-                    ? '0 1px 2px rgba(0,0,0,0.08)'
-                    : 'none',
-                opacity: !voted && !selected ? 0.45 : 1,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.5,
+                opacity: !selected && !voted ? 0.55 : 1,
                 '&:hover': {
-                  borderColor: 'primary.main',
                   opacity: 1,
+                  borderColor: 'primary.main',
+                  color: selected ? 'primary.contrastText' : 'primary.main',
                 },
                 '&:focus-visible': {
                   outline: '2px solid',
@@ -62,32 +74,18 @@ export default function ConsensusCardRail({ legalEstimates, results, value, onCh
                 },
               }}
             >
-              {v}
-              {n > 0 && (
+              <Box component="span">{v}</Box>
+              {voted && (
                 <Box
                   component="span"
                   aria-hidden
                   sx={{
-                    position: 'absolute',
-                    top: -7,
-                    right: -7,
-                    minWidth: 18,
-                    height: 18,
-                    px: '5px',
-                    borderRadius: '999px',
-                    bgcolor: selected ? 'background.paper' : 'primary.main',
-                    color: selected ? 'primary.main' : '#fff',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid',
-                    borderColor: 'background.paper',
-                    lineHeight: 1,
+                    fontSize: '0.6875rem',
+                    fontWeight: 500,
+                    color: selected ? 'rgba(255,255,255,0.85)' : 'text.disabled',
                   }}
                 >
-                  {n}
+                  ·{n}
                 </Box>
               )}
             </Box>
