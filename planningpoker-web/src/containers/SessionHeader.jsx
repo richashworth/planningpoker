@@ -16,14 +16,18 @@ export default function SessionHeader() {
 
   const [labelInput, setLabelInput] = useState(currentLabel)
   const [lastBroadcastLabel, setLastBroadcastLabel] = useState(currentLabel)
+  const [prevCurrentLabel, setPrevCurrentLabel] = useState(currentLabel)
   const [justSaved, setJustSaved] = useState(false)
   const debounceTimerRef = useRef(null)
   const savedTimerRef = useRef(null)
 
-  useEffect(() => {
+  // Resync local input when an external change to currentLabel arrives (e.g., another host updated it).
+  // Setting state during render is the supported React pattern for prop-derived state.
+  if (currentLabel !== prevCurrentLabel) {
+    setPrevCurrentLabel(currentLabel)
     setLabelInput(currentLabel)
     setLastBroadcastLabel(currentLabel)
-  }, [currentLabel])
+  }
 
   useEffect(() => {
     return () => {
