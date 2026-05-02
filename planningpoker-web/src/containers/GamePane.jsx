@@ -85,11 +85,7 @@ export default function GamePane({ connected }) {
       <LiveAnnouncer message={announcement} />
       <Box>
         <SessionHeader />
-        {voted ? (
-          <Results />
-        ) : (
-          <Vote consensusOverride={consensusOverride} />
-        )}
+        {voted ? <Results /> : <Vote consensusOverride={consensusOverride} />}
       </Box>
     </>
   )
