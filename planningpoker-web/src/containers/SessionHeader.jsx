@@ -103,18 +103,20 @@ export default function SessionHeader() {
               onChange={handleLabelChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              inputProps={{ maxLength: 100 }}
-              InputProps={{
-                endAdornment: justSaved ? (
-                  <InputAdornment position="end">
-                    <Typography
-                      variant="caption"
-                      sx={{ color: 'success.main', whiteSpace: 'nowrap' }}
-                    >
-                      ✓ Saved
-                    </Typography>
-                  </InputAdornment>
-                ) : null,
+              slotProps={{
+                htmlInput: { maxLength: 100 },
+                input: {
+                  endAdornment: justSaved ? (
+                    <InputAdornment position="end">
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'success.main', whiteSpace: 'nowrap' }}
+                      >
+                        ✓ Saved
+                      </Typography>
+                    </InputAdornment>
+                  ) : null,
+                },
               }}
             />
           ) : (
