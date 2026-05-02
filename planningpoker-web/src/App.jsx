@@ -38,7 +38,7 @@ function AppInner({ theme, toggleColorMode, mode }) {
     <ColorModeContext.Provider value={{ toggleColorMode, mode }}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Header />
             <Toolbar />

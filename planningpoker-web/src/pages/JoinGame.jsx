@@ -56,7 +56,7 @@ export default function JoinGame() {
               fullWidth
               sx={{ mb: 2.5 }}
               helperText="8-character session ID"
-              inputProps={{ maxLength: 8 }}
+              slotProps={{ htmlInput: { maxLength: 8 } }}
             />
             <Button
               type="submit"
