@@ -4,7 +4,9 @@ import SockJS from 'sockjs-client'
 
 export default function useStomp({ url, topics, onMessage }) {
   const onMessageRef = useRef(onMessage)
-  onMessageRef.current = onMessage
+  useEffect(() => {
+    onMessageRef.current = onMessage
+  }, [onMessage])
   const [connected, setConnected] = useState(null) // null = not yet attempted; false = banner shown
   const hasConnected = useRef(false)
 

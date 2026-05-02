@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -7,15 +7,11 @@ import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 
 export default function Welcome() {
-  const [toast, setToast] = useState('')
-
-  useEffect(() => {
+  const [toast, setToast] = useState(() => {
     const msg = sessionStorage.getItem('pp-kicked-message')
-    if (msg) {
-      setToast(msg)
-      sessionStorage.removeItem('pp-kicked-message')
-    }
-  }, [])
+    if (msg) sessionStorage.removeItem('pp-kicked-message')
+    return msg || ''
+  })
 
   return (
     <Box
