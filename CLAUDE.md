@@ -48,13 +48,13 @@ java -jar planningpoker-api/build/libs/planningpoker-api-*.jar
 
 ## Architecture
 
-Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planningpoker-api` (Spring Boot 3.4 backend). In production, the frontend is packaged as a JAR containing static files under `META-INF/resources/`, which the API includes as a dependency so Spring Boot serves everything from a single fat JAR.
+Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planningpoker-api` (Spring Boot 3.4 backend). In production, the frontend is packaged as a JAR containing static files under `META-INF/resources/`, which the API includes as a dependency so Spring Boot serves everything from a single fat JAR.
 
 ### Frontend Stack
 
-- **React 18** with functional components and hooks
+- **React 19** with functional components and hooks
 - **MUI v9** with custom dark/light theme (toggle in header)
-- **Redux 5** + `@reduxjs/toolkit` 2.x + react-redux 8 (`useSelector`/`useDispatch`)
+- **Redux 5** + `@reduxjs/toolkit` 2.x + react-redux 9 (`useSelector`/`useDispatch`)
 - **react-router-dom v6** (`Routes`, `useNavigate`)
 - **chart.js 4** + react-chartjs-2 v5 for results bar chart
 - **@stomp/stompjs** via custom `useStomp` hook for WebSocket
@@ -93,7 +93,7 @@ Two-module Gradle project: `planningpoker-web` (React 18 frontend) and `planning
 
 - **Backend unit tests:** JUnit 5 + Mockito, run with `./gradlew planningpoker-api:test`
 - **E2E tests:** Playwright (chromium), 43 tests across `planning-poker.spec.js`, `session-labels-csv.spec.js`, and `epoch-flicker.spec.js`. Run with `cd planningpoker-web && npx playwright test` (Playwright config spins up backend + dev server automatically)
-- **CI:** GitHub Actions runs three jobs on every push to master and every PR: `lint` (ESLint + Prettier check + `spotlessCheck`) → `unit-tests` → `e2e-tests`. Both test jobs require lint to pass.
+- **CI:** GitHub Actions runs six jobs on every push to master and every PR: `lint` (ESLint + Prettier check + `spotlessCheck`) → `build-web` → `unit-tests` + `e2e-tests` + `docker-build` (parallel) → `release` (semantic-release on master only). Test jobs require `build-web` to pass; `docker-build` only requires `lint`.
 
 ## Deployment
 
@@ -111,7 +111,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 
 ### Constraints
 
-- **Tech stack**: Spring Boot 3.4 + Java 25 backend, React 18 + MUI v9 + Redux 5 + RTK frontend — no new frameworks
+- **Tech stack**: Spring Boot 3.4 + Java 25 backend, React 19 + MUI v9 + Redux 5 + RTK frontend — no new frameworks
 - **In-memory state**: No database — all session state lives in `SessionManager` and is ephemeral
 - **No authentication**: users are identified by name within a session; the 8-char session ID is the only access control
 
@@ -127,12 +127,12 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - npm (frontend) - `planningpoker-web/package-lock.json` present (lockfile committed)
 - Gradle 8.14 (backend/build orchestration) - wrapper at `gradlew`
 ## Frameworks
-- React 18.2 - Frontend UI framework (`planningpoker-web/src/`)
+- React 19.2 - Frontend UI framework (`planningpoker-web/src/`)
 - Spring Boot 3.4.4 - Backend application framework (`planningpoker-api/`)
 - MUI v9 (`@mui/material` ^9.0.0) - Component library with custom theme
 - `@emotion/react` ^11.11.0 and `@emotion/styled` ^11.11.0 - CSS-in-JS (required by MUI)
 - Redux 5.0.1 + `@reduxjs/toolkit` 2.11.2 - Global state store wired via `configureStore` in `planningpoker-web/src/App.jsx`
-- react-redux 8.1.0 - React bindings (`useSelector`/`useDispatch`)
+- react-redux 9.2 - React bindings (`useSelector`/`useDispatch`)
 - Async actions are plain thunks (RTK's default middleware includes `redux-thunk`); no extra promise middleware
 - react-router-dom 6.20 - Client-side routing (`planningpoker-web/src/App.jsx`)
 - chart.js 4.4 + react-chartjs-2 5.2 - Results bar chart (`planningpoker-web/src/containers/ResultsChart.jsx`)
