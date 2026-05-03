@@ -32,8 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * <p>Note: tests in this file assert <i>spec</i> behaviour. Where the current backend diverges from
  * the spec (issues #110, #111) we use only operations that match current behaviour, so these tests
- * pass against today's code. The spec-only behaviour is exercised in {@link
- * VotingAndResetSpecRegressionTest}.
+ * pass against today's code.
  */
 class VotingAndResetStateTransitionTest {
 
