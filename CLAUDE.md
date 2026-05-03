@@ -48,7 +48,7 @@ java -jar planningpoker-api/build/libs/planningpoker-api-*.jar
 
 ## Architecture
 
-Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planningpoker-api` (Spring Boot 3.4 backend). In production, the frontend is packaged as a JAR containing static files under `META-INF/resources/`, which the API includes as a dependency so Spring Boot serves everything from a single fat JAR.
+Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planningpoker-api` (Spring Boot 4.0 backend). In production, the frontend is packaged as a JAR containing static files under `META-INF/resources/`, which the API includes as a dependency so Spring Boot serves everything from a single fat JAR.
 
 ### Frontend Stack
 
@@ -68,7 +68,7 @@ Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planning
 
 ### Backend
 
-- **Spring Boot 3.4** with Java 25
+- **Spring Boot 4.0** with Java 25
 - **State management:** All session state is in-memory (synchronized Guava `ListMultimap`). Session IDs are random 8-char UUID prefixes. A scheduled task (`ClearSessionsTask`) periodically clears all sessions.
 - **SPA routing:** `SpaWebConfig` forwards unknown routes to `index.html` so client-side routing works on page refresh.
 - **State sync:** After a mutation, `MessagingUtils.sendResultsMessage()` / `sendUsersMessage()` publishes a single typed `Message` envelope to the relevant `/topic/...`. Clients reconcile via a monotonic `round` (epoch) counter: a newer round replaces state, an equal round unions results, older rounds are ignored — so duplicate or out-of-order broadcasts are idempotent.
@@ -111,7 +111,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 
 ### Constraints
 
-- **Tech stack**: Spring Boot 3.4 + Java 25 backend, React 19 + MUI v9 + Redux 5 + RTK frontend — no new frameworks
+- **Tech stack**: Spring Boot 4.0 + Java 25 backend, React 19 + MUI v9 + Redux 5 + RTK frontend — no new frameworks
 - **In-memory state**: No database — all session state lives in `SessionManager` and is ephemeral
 - **No authentication**: users are identified by name within a session; the 8-char session ID is the only access control
 
@@ -122,13 +122,13 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - Java 25 - Backend source (`planningpoker-api/src/main/java/**/*.java`)
 - HTML - SPA entry point (`planningpoker-web/index.html`)
 ## Runtime
-- Node.js 22 (frontend build, dev server, CI)
-- JVM 21 via Eclipse Temurin (backend runtime)
+- Node.js 22 (CI, dev server) / 25 (Docker frontend build stage) — note the inconsistency: CI builds on Node 22 while the production Docker image uses Node 25
+- JDK 25 via Eclipse Temurin (backend runtime; CI, Docker, and local toolchain all on 25)
 - npm (frontend) - `planningpoker-web/package-lock.json` present (lockfile committed)
 - Gradle 8.14 (backend/build orchestration) - wrapper at `gradlew`
 ## Frameworks
 - React 19.2 - Frontend UI framework (`planningpoker-web/src/`)
-- Spring Boot 3.4.4 - Backend application framework (`planningpoker-api/`)
+- Spring Boot 4.0.6 - Backend application framework (`planningpoker-api/`)
 - MUI v9 (`@mui/material` ^9.0.0) - Component library with custom theme
 - `@emotion/react` ^11.11.0 and `@emotion/styled` ^11.11.0 - CSS-in-JS (required by MUI)
 - Redux 5.0.1 + `@reduxjs/toolkit` 2.11.2 - Global state store wired via `configureStore` in `planningpoker-web/src/App.jsx`
@@ -139,18 +139,17 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - `@stomp/stompjs` 7.0 - STOMP over WebSocket client
 - sockjs-client 1.6.1 - SockJS transport fallback
 - Both consumed via custom `useStomp` hook at `planningpoker-web/src/hooks/useStomp.js`
-- axios 1.7 - REST API calls (`planningpoker-web/src/actions/index.js`)
+- axios 1.15 - REST API calls (`planningpoker-web/src/actions/index.js`)
 - Vitest 4.1 - Frontend unit test runner (config in `planningpoker-web/vite.config.js`)
 - `@playwright/test` 1.59 - E2E tests (config at `planningpoker-web/playwright.config.js`)
-- JUnit 5.11 - Backend unit tests
-- Mockito 5.15 - Backend mocking
+- JUnit 6.0 (`junit-bom:6.0.3`) - Backend unit tests
+- Mockito 5.23 - Backend mocking
 - Vite 8.0 + `@vitejs/plugin-react` 6.0 - Frontend build and dev server (`planningpoker-web/vite.config.js`)
 - Gradle 8.14 - Backend build and packaging (`build.gradle`, `planningpoker-api/build.gradle`)
 - JaCoCo - Backend code coverage reporting (configured in `planningpoker-api/build.gradle`)
-- Lombok 1.18.36 - Java boilerplate reduction (annotation processor)
 - Spring Boot DevTools - Live reload in development
 ## Key Dependencies
-- `com.google.guava:guava:33.4.0-jre` - Synchronized `ListMultimap` used for all session/user/estimate storage in `planningpoker-api/src/main/java/com/richashworth/planningpoker/service/SessionManager.java`
+- `com.google.guava:guava:33.6.0-jre` - Synchronized `ListMultimap` used for all session/user/estimate storage in `planningpoker-api/src/main/java/com/richashworth/planningpoker/service/SessionManager.java`
 - `org.apache.commons:commons-lang3:3.17.0` - Utility methods (backend)
 - `org.springframework.boot:spring-boot-starter-websocket` - STOMP WebSocket broker
 - `org.springframework.boot:spring-boot-starter-actuator` - Health check endpoint at `/actuator/health`
@@ -257,12 +256,12 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - Used by: All containers via `useSelector`
 - Purpose: Redux action creators; REST calls are initiated here using axios
 - Location: `planningpoker-web/src/actions/index.js`
-- Contains: `createGame`, `joinGame`, `leaveGame`, `vote`, `resetSession`, `kickUser`, `promoteUser`, `setLabel`, `refresh`; plus event creators `usersUpdated`, `resultsReplace`, `resultsUnion`, `labelUpdated`, `userLeftReceived`, `kicked`
+- Contains: `createGame`, `joinGame`, `leaveGame`, `vote`, `resetSession`, `kickUser`, `promoteUser`, `setLabel`, `setConsensusOverride`, `refresh`; plus event creators `usersUpdated`, `resultsReplace`, `resultsUnion`, `labelUpdated`, `userLeftReceived`, `kicked`, `roundCompleted`, `roundsReplace`, `consensusOverrideUpdated`, `consensusOverrideLocal`
 - Depends on: axios, `API_ROOT_URL` from `planningpoker-web/src/config/Constants.js`
 - Used by: Containers and pages that dispatch actions
 - Purpose: REST endpoint handlers; validate input, delegate to service, trigger WebSocket push
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/controller/`
-- Contains: `GameController.java` (session lifecycle + user/host management: create, join, logout, kick, promote, reset, setLabel, refresh), `VoteController.java` (vote submission), `AppController.java` (version endpoint), `ErrorHandler.java` (global exception handling), `HostActionException.java` (403 for host-only actions)
+- Contains: `GameController.java` (session lifecycle + user/host management: create, join, logout, kick, promote, reset, setLabel, setConsensus, refresh), `VoteController.java` (vote submission), `AppController.java` (version endpoint), `ErrorHandler.java` (global exception handling), `HostActionException.java` (403 for host-only actions)
 - Depends on: `SessionManager`, `MessagingUtils`
 - Used by: Spring MVC dispatcher
 - Purpose: Single stateful service holding all in-memory session data
@@ -272,7 +271,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - Used by: All controllers, `MessagingUtils`, `ClearSessionsTask`
 - Purpose: Push updated state to all subscribers after mutations
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/util/MessagingUtils.java`
-- Contains: `sendResultsMessage()`, `sendUsersMessage()`, `sendResetMessage()`, `sendUserLeftMessage()` — each wraps the payload in a typed `Message` envelope (`RESULTS_MESSAGE` / `USERS_MESSAGE` / `RESET_MESSAGE` / `USER_LEFT_MESSAGE`) and publishes once to `/topic/results/{id}` or `/topic/users/{id}`
+- Contains: `sendResultsMessage()`, `sendUsersMessage()`, `sendResetMessage()`, `sendUserLeftMessage()`, `sendRoundCompletedMessage()`, `sendConsensusMessage()` — each wraps the payload in a typed `Message` envelope (`RESULTS_MESSAGE` / `USERS_MESSAGE` / `RESET_MESSAGE` / `USER_LEFT_MESSAGE` / `ROUND_COMPLETED_MESSAGE` / `CONSENSUS_OVERRIDE_MESSAGE`) and publishes once to `/topic/results/{id}`, `/topic/users/{id}`, or `/topic/consensus/{id}`
 - Depends on: `SimpMessagingTemplate`, `SessionManager`
 - Used by: All controllers after state mutations
 - Purpose: Spring configuration classes
@@ -307,7 +306,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - `/join` → `JoinGame.jsx` (username + session ID input, joins session)
 - `/game` → `PlayGame.jsx` (voting and results view; redirects to `/` if not registered)
 ## Error Handling
-- Backend: `@ControllerAdvice` in `planningpoker-api/src/main/java/com/richashworth/planningpoker/controller/ErrorHandler.java` handles `IllegalArgumentException` → 400, all others → 500
+- Backend: `@ControllerAdvice` in `planningpoker-api/src/main/java/com/richashworth/planningpoker/controller/ErrorHandler.java` handles `IllegalArgumentException` → 400, `HostActionException` → 403, all others → 500
 - Frontend: axios `.catch()` in action creators; optimistic updates in `reducer_results.js` guard against `action.error`
 - WebSocket: `useStomp` sets `connected: false` on disconnect, triggering a "Reconnecting..." banner in `GamePane.jsx`
 - Fallback: If WebSocket results don't arrive within 8s after a vote, `PlayGame.jsx` calls `GET /refresh` to trigger a re-broadcast
