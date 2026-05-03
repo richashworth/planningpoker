@@ -8,7 +8,10 @@ import SessionHistory from './SessionHistory'
 
 function cardSx(isSelected, isDisabled) {
   return {
-    aspectRatio: '3 / 4',
+    minWidth: 80,
+    minHeight: 107,
+    px: 1.5,
+    whiteSpace: 'nowrap',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -85,8 +88,8 @@ export default function Vote({ consensusOverride = null }) {
         <Box sx={{ gridArea: 'cards', minWidth: 0 }}>
           <Box
             sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+              display: 'flex',
+              flexWrap: 'wrap',
               gap: 0.75,
             }}
           >

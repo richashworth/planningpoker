@@ -30,9 +30,11 @@ export default function ConsensusCardRail({ legalEstimates, results, value, onCh
               onClick={() => onChange(v)}
               sx={{
                 position: 'relative',
-                width: 44,
-                height: 58,
-                p: 0,
+                minWidth: 44,
+                minHeight: 58,
+                px: 1,
+                py: 0,
+                whiteSpace: 'nowrap',
                 borderRadius: '6px',
                 border: '1.5px solid',
                 borderColor: selected ? 'primary.main' : 'divider',
