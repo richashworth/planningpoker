@@ -25,16 +25,8 @@ public class VoteController {
     this.messagingUtils = messagingUtils;
   }
 
-  /**
-   * Registers a vote for {@code userName} in {@code sessionId}. Re-voting within the same round
-   * replaces the prior estimate (matching the spec's {@code UpdateVote} action — see {@code
-   * specs/VotingAndReset.tla}). Subsequent rounds are tracked via {@code
-   * SessionManager#incrementAndGetRound}. Broadcasts the updated results to {@code
-   * /topic/results/{sessionId}} after the write.
-   *
-   * @throws IllegalArgumentException if the estimate is not in the session's legal values, the
-   *     session is inactive, or the user is not a member of the session.
-   */
+  // Re-voting in the same round replaces the prior estimate (spec UpdateVote,
+  // specs/VotingAndReset.tla).
   @PostMapping("vote")
   public VoteResponse vote(
       @RequestParam(name = "sessionId") final String sessionId,

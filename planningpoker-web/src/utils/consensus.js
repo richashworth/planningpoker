@@ -1,10 +1,3 @@
-/**
- * Calculate the consensus (mode) from an array of vote results.
- * On tie, picks the value that comes first alphabetically.
- *
- * @param {Array<{userName: string, estimateValue: string}>} results
- * @returns {string|null} The mode value, or null if results is empty.
- */
 export function calcConsensus(results) {
   if (!results || results.length === 0) return null
 
@@ -21,14 +14,6 @@ export function calcConsensus(results) {
   return candidates[0]
 }
 
-/**
- * Calculate statistics from an array of vote results.
- * For numeric schemes: returns mode, min, max, and population variance (2dp).
- * For non-numeric schemes: returns only mode; min, max, variance are null.
- *
- * @param {Array<{estimateValue: string}>} results
- * @returns {{ mode: string|null, min: string|null, max: string|null, variance: string|null }}
- */
 export function calcStats(results) {
   if (!results || results.length === 0) {
     return { mode: null, min: null, max: null, variance: null }

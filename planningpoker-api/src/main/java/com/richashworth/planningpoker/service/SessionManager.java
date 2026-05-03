@@ -116,10 +116,6 @@ public class SessionManager {
     return sessionLabels.getOrDefault(sessionId, "");
   }
 
-  /**
-   * Returns the host's locked-in consensus value for this session, or {@code null} if none has been
-   * set (or it was cleared by reset).
-   */
   public String getConsensusOverride(String sessionId) {
     return sessionConsensusOverrides.get(sessionId);
   }
@@ -134,10 +130,6 @@ public class SessionManager {
     return round == null ? 0L : round.get();
   }
 
-  /**
-   * Atomically updates the consensus override (a {@code null} value clears it) and increments the
-   * round counter. Returns the new round so callers can include it in the broadcast envelope.
-   */
   public long setConsensusOverride(String sessionId, String value) {
     if (value == null) {
       sessionConsensusOverrides.remove(sessionId);
@@ -159,13 +151,7 @@ public class SessionManager {
     touchSession(sessionId);
   }
 
-  /**
-   * Registers an estimate for a user in the given session, replacing any prior estimate the same
-   * user submitted in the current round. The replace + put is performed atomically against the
-   * synchronized multimap so concurrent callers cannot observe a transient state with both the old
-   * and new values, nor with neither. Matches users case-insensitively, mirroring {@link
-   * #removeUser(String, String)}.
-   */
+  // Replaces any prior estimate from the same user in the current round (case-insensitive match).
   public void registerEstimate(final String sessionId, final Estimate estimate) {
     // synchronized(sessionEstimates) is the documented way to make a compound operation atomic on
     // a Multimaps.synchronizedListMultimap — the per-method locks alone are not sufficient.
@@ -217,12 +203,9 @@ public class SessionManager {
 
   public synchronized void removeUser(String userName, String sessionId) {
     sessionUsers.get(sessionId).removeIf(u -> u.equalsIgnoreCase(userName));
-    // Match registerEstimate's locking discipline: iteration on a
-    // Multimaps.synchronizedListMultimap
-    // requires holding the multimap's own monitor. Without this, a concurrent registerEstimate
-    // (which
-    // holds only sessionEstimates) can mutate the map mid-iteration, throwing CME or producing a
-    // partial removal.
+    // Iterating a Multimaps.synchronizedListMultimap requires holding the multimap's own monitor
+    // (matches registerEstimate). Without it, a concurrent registerEstimate can mutate the map
+    // mid-iteration, throwing CME or producing a partial removal.
     synchronized (sessionEstimates) {
       sessionEstimates
           .entries()
