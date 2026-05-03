@@ -1,4 +1,5 @@
 import TextField from '@mui/material/TextField'
+import { USERNAME_PATTERN } from '../config/Constants'
 
 export default function NameInput({ playerName, onPlayerNameInputChange }) {
   return (
@@ -11,7 +12,7 @@ export default function NameInput({ playerName, onPlayerNameInputChange }) {
       fullWidth
       slotProps={{
         htmlInput: {
-          pattern: '[a-zA-Z0-9 _\\-]{3,20}',
+          pattern: USERNAME_PATTERN,
           title: 'Name must be 3-20 characters: letters, numbers, spaces, hyphens, or underscores',
         },
       }}
