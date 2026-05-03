@@ -8,6 +8,7 @@ import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +34,25 @@ class SessionManagerTest {
   /** Default-scheme session helper — replaces the now-removed no-arg createSession overload. */
   private String createSession() {
     return sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
+  }
+
+  /**
+   * Backdates the {@code lastActivity} entry for {@code sessionId} so {@code evictIdleSessions}
+   * will sweep it. Replaces eight copies of the same reflection boilerplate.
+   */
+  private void backdateSession(String sessionId, Duration age) throws Exception {
+    lastActivityMap().put(sessionId, Instant.now().minus(age));
+  }
+
+  /**
+   * Returns the inner {@code lastActivity} map via reflection — used by {@link #backdateSession}
+   * and by the one test that asserts on map cleanup directly.
+   */
+  @SuppressWarnings("unchecked")
+  private ConcurrentHashMap<String, Instant> lastActivityMap() throws Exception {
+    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
+    lastActivityField.setAccessible(true);
+    return (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
   }
 
   @Test
@@ -198,13 +218,7 @@ class SessionManagerTest {
     sessionManager.registerUser("Bob", idleSession);
     sessionManager.registerEstimate(idleSession, new Estimate("Bob", "3"));
 
-    // Use reflection to backdate the idle session's lastActivity to 25 hours ago
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+    backdateSession(idleSession, Duration.ofHours(25));
 
     sessionManager.evictIdleSessions();
 
@@ -217,25 +231,19 @@ class SessionManagerTest {
   }
 
   @Test
-  void testEvictIdleSessionsClearsAllSevenMaps() throws Exception {
+  void testEvictIdleSessionsClearsAllSessionMaps() throws Exception {
     String sessionId = sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
 
-    // Backdate lastActivity to 25 hours ago
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-    lastActivity.put(sessionId, Instant.now().minusSeconds(25 * 60 * 60));
+    backdateSession(sessionId, Duration.ofHours(25));
 
     sessionManager.evictIdleSessions();
 
     assertFalse(sessionManager.isSessionActive(sessionId));
     assertTrue(sessionManager.getResults(sessionId).isEmpty());
     assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
-    assertFalse(lastActivity.containsKey(sessionId));
+    assertFalse(lastActivityMap().containsKey(sessionId));
     assertTrue(sessionManager.getSessionLegalValues(sessionId).isEmpty());
     assertNull(sessionManager.getSessionSchemeConfig(sessionId));
     assertNull(sessionManager.getHost(sessionId));
@@ -262,12 +270,7 @@ class SessionManagerTest {
     String idleSession = createSession();
     sessionManager.registerUser("Bob", idleSession);
 
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+    backdateSession(idleSession, Duration.ofHours(25));
 
     sessionManager.evictIdleSessions();
 
@@ -340,13 +343,7 @@ class SessionManagerTest {
     String activeSession = sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
     String idleSession = sessionManager.createSession(new SchemeConfig("tshirt", null, false));
 
-    // Backdate lastActivity for idle session
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+    backdateSession(idleSession, Duration.ofHours(25));
 
     sessionManager.evictIdleSessions();
 
@@ -413,13 +410,7 @@ class SessionManagerTest {
     String idleSession = createSession();
     sessionManager.registerUser("Bob", idleSession);
 
-    // Backdate lastActivity for idle session
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+    backdateSession(idleSession, Duration.ofHours(25));
 
     sessionManager.evictIdleSessions();
 
@@ -539,15 +530,9 @@ class SessionManagerTest {
     }
 
     // Backdate the first 5 sessions to be idle (25 hours ago)
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-
     for (int i = 0; i < 5; i++) {
       String idleSessionId = allSessions.get(i);
-      lastActivity.put(idleSessionId, Instant.now().minusSeconds(25 * 60 * 60));
+      backdateSession(idleSessionId, Duration.ofHours(25));
       idleSessions.add(idleSessionId);
     }
 
@@ -725,12 +710,7 @@ class SessionManagerTest {
     String idleSession = createSession();
     sessionManager.setConsensusOverride(idleSession, "5");
 
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+    backdateSession(idleSession, Duration.ofHours(25));
 
     sessionManager.evictIdleSessions();
     assertNull(sessionManager.getConsensusOverride(idleSession));
@@ -743,12 +723,7 @@ class SessionManagerTest {
     sessionManager.incrementAndGetRound(idleSession);
     sessionManager.incrementAndGetRound(idleSession);
 
-    Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
-    lastActivityField.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    ConcurrentHashMap<String, Instant> lastActivity =
-        (ConcurrentHashMap<String, Instant>) lastActivityField.get(sessionManager);
-    lastActivity.put(idleSession, Instant.now().minusSeconds(25 * 60 * 60));
+    backdateSession(idleSession, Duration.ofHours(25));
 
     sessionManager.evictIdleSessions();
     assertEquals(0, sessionManager.getRound(idleSession));

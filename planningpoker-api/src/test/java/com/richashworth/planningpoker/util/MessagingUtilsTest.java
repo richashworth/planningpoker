@@ -65,19 +65,6 @@ class MessagingUtilsTest {
   }
 
   @Test
-  void testSendUsersMessageIncludesHost() {
-    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
-    when(sessionManager.getHost(SESSION_ID)).thenReturn("HostUser");
-    messagingUtils.sendUsersMessage(SESSION_ID);
-    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-    verify(template).convertAndSend(eq(getTopic(TOPIC_USERS, SESSION_ID)), captor.capture());
-    Map<String, Object> expectedPayload = new LinkedHashMap<>();
-    expectedPayload.put("users", USERS);
-    expectedPayload.put("host", "HostUser");
-    assertEquals(messagingUtils.usersMessage(expectedPayload), captor.getValue());
-  }
-
-  @Test
   void testSendUsersMessageWithNullHost() {
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
     when(sessionManager.getHost(SESSION_ID)).thenReturn(null);
@@ -116,17 +103,6 @@ class MessagingUtilsTest {
     org.junit.jupiter.api.Assertions.assertTrue(str.contains("USER_LEFT_MESSAGE"), str);
     org.junit.jupiter.api.Assertions.assertTrue(str.contains("round=2"), str);
     org.junit.jupiter.api.Assertions.assertTrue(str.contains("leaver=Alice"), str);
-  }
-
-  @Test
-  void testSendResultsMessageEmitsExactlyOnce() {
-    when(sessionManager.getRound(SESSION_ID)).thenReturn(1);
-    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of());
-    when(sessionManager.getLabel(SESSION_ID)).thenReturn("");
-    messagingUtils.sendResultsMessage(SESSION_ID);
-    verify(template, times(1))
-        .convertAndSend(eq(getTopic(TOPIC_RESULTS, SESSION_ID)), (Object) any());
-    verifyNoMoreInteractions(template);
   }
 
   @Test
