@@ -84,7 +84,7 @@ Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planning
 
 ## Validation Rules
 
-- Usernames: 3-20 chars, alphanumeric + spaces/hyphens/underscores only
+- Usernames: 2-20 chars, alphanumeric + spaces/hyphens/underscores only
 - Vote values: server-side whitelist derived from the session's `SchemeConfig` via `SessionManager.getSessionLegalValues`
 - Session membership required for voting, resetting, and logging out
 - No authentication — users are identified by name within a session

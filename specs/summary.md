@@ -28,7 +28,7 @@
 ### Transitions
 - **Session: (new) -> active**
   - Trigger: createSession API call
-  - Guard: valid username (3-20 chars, alphanumeric + spaces/hyphens/underscores)
+  - Guard: valid username (2-20 chars, alphanumeric + spaces/hyphens/underscores)
 
 - **Session: active -> cleared**
   - Trigger: ClearSessionsTask fires

@@ -19,10 +19,12 @@ export default function JoinGame() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const isNameValid = USERNAME_REGEX.test(playerName)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (submitting) return
-    if (!USERNAME_REGEX.test(playerName)) return
+    if (!isNameValid) return
     setSubmitting(true)
     try {
       await dispatch(
@@ -64,7 +66,7 @@ export default function JoinGame() {
               fullWidth
               size="large"
               disableElevation
-              disabled={submitting}
+              disabled={!isNameValid || submitting}
             >
               {submitting ? <CircularProgress size={20} sx={{ mr: 1 }} /> : null}
               Join Game

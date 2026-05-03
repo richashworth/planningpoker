@@ -57,10 +57,12 @@ export default function CreateGame() {
     return msg === '' || msg === 'Duplicate values removed'
   }
 
+  const isNameValid = USERNAME_REGEX.test(playerName)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (submitting) return
-    if (!USERNAME_REGEX.test(playerName)) return
+    if (!isNameValid) return
     if (!isCustomValid()) return
     setSubmitting(true)
     try {
@@ -175,7 +177,7 @@ export default function CreateGame() {
               fullWidth
               size="large"
               disableElevation
-              disabled={!isCustomValid() || submitting}
+              disabled={!isNameValid || !isCustomValid() || submitting}
             >
               {submitting ? <CircularProgress size={20} sx={{ mr: 1 }} /> : null}
               Start Game
