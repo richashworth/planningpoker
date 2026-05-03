@@ -51,14 +51,10 @@ export default function CreateGame() {
 
   const isCustomValid = () => {
     if (schemeType !== 'custom') return true
-    const values = customValues
-      .split(',')
-      .map((v) => v.trim())
-      .filter((v) => v.length > 0)
-    const unique = [...new Set(values)]
-    if (unique.length < 2 || unique.length > 20) return false
-    if (unique.find((v) => v.length > 10)) return false
-    return true
+    const msg = validateCustomValues(customValues)
+    // 'Duplicate values removed' is informational — duplicates are deduped silently,
+    // so submission stays allowed (matches existing behaviour).
+    return msg === '' || msg === 'Duplicate values removed'
   }
 
   const handleSubmit = async (e) => {
