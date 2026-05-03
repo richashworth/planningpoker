@@ -38,8 +38,7 @@ export default function Results() {
   }
 
   const handleConsensusChange = (v) => {
-    // Clicking the auto-consensus card clears the override (server broadcasts null,value);
-    // clicking a different card sets that value as the locked-in consensus.
+    // Clicking the auto-consensus card clears the override; clicking another card locks that value in.
     const next = v === autoConsensus ? null : v
     dispatch(setConsensusOverride(playerName, sessionId, next))
   }

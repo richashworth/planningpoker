@@ -11,7 +11,6 @@ export const RESULTS_UNION = 'results-union'
 export const USER_LEFT_RECEIVED = 'user-left-received'
 export const USERS_UPDATED = 'users-updated'
 export const USER_REGISTERED = 'user-registered'
-export const HOST_UPDATED = 'host-updated'
 export const KICK_USER = 'kick-user'
 export const PROMOTE_USER = 'promote-user'
 export const KICKED = 'kicked'
@@ -74,25 +73,6 @@ export const consensusOverrideLocal = (value) => ({
 
 export const kicked = () => ({ type: KICKED })
 
-// Shared POST + dispatch helper. Wraps the axios call, dispatches a typed
-// success or error action, and routes the server's error message (or a
-// fallback) through showError. Each thunk that posts to a mutation endpoint
-// flows through here so the success/error envelope shape stays consistent.
-//
-// Options:
-//   url                - path appended to API_ROOT_URL
-//   params             - object encoded as URLSearchParams (form POST). Used
-//                        when `body` is omitted.
-//   body               - raw request body sent as-is (for JSON endpoints).
-//   type               - action type dispatched on both success and failure.
-//   meta               - meta object included on the dispatched action.
-//   fallbackError      - showError message when the server didn't supply one.
-//   omitSuccessPayload - dispatch `{ type }` only on success (no payload/meta).
-//                        Matches existing thunks that don't carry success data.
-//   onSuccess          - called after the success dispatch, with response data.
-//   onError            - called before the standard error dispatches, with the
-//                        caught error. Lets a thunk run revert logic before the
-//                        error/showError actions fire (preserves dispatch order).
 async function postForm(dispatch, opts) {
   const {
     url,
