@@ -193,16 +193,7 @@ public class GameController {
       @RequestParam(name = "sessionId") final String sessionId) {
     boolean targetHadVote;
     synchronized (sessionManager) {
-      validateSessionMembership(sessionId, userName);
-      if (userName.equalsIgnoreCase(targetUser)) {
-        throw new IllegalArgumentException("cannot kick yourself");
-      }
-      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
-        throw new HostActionException("only the host can perform this action");
-      }
-      if (!containsIgnoreCase(sessionManager.getSessionUsers(sessionId), targetUser)) {
-        throw new IllegalArgumentException("target user is not a member of this session");
-      }
+      requireHostActingOnOther(sessionId, userName, targetUser, "kick");
       targetHadVote = containsUserEstimate(sessionManager.getResults(sessionId), targetUser);
       sessionManager.removeUser(targetUser, sessionId);
       logger.info(
@@ -231,13 +222,7 @@ public class GameController {
       @RequestParam(name = "targetUser") final String targetUser,
       @RequestParam(name = "sessionId") final String sessionId) {
     synchronized (sessionManager) {
-      validateSessionMembership(sessionId, userName);
-      if (userName.equalsIgnoreCase(targetUser)) {
-        throw new IllegalArgumentException("cannot promote yourself");
-      }
-      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
-        throw new HostActionException("only the host can perform this action");
-      }
+      requireHostActingOnOther(sessionId, userName, targetUser, "promote");
       sessionManager.promoteHost(sessionId, targetUser);
       logger.info(
           "host {} promoted user {} in session {}",
@@ -269,10 +254,7 @@ public class GameController {
     int newRound;
     Round snapshot = null;
     synchronized (sessionManager) {
-      validateSessionMembership(sessionId, userName);
-      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
-        throw new HostActionException("only the host can perform this action");
-      }
+      requireHost(sessionId, userName);
       logger.info(
           "host {} reset session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
       List<Estimate> votes = sessionManager.getResults(sessionId);
@@ -330,10 +312,7 @@ public class GameController {
       @RequestParam(name = "value", required = false) final String value) {
     String normalised = (value == null || value.isBlank()) ? null : value;
     synchronized (sessionManager) {
-      validateSessionMembership(sessionId, userName);
-      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
-        throw new HostActionException("only the host can perform this action");
-      }
+      requireHost(sessionId, userName);
       sessionManager.setConsensusOverride(sessionId, normalised);
       logger.debug(
           "host {} set consensus override in session {}",
@@ -362,10 +341,7 @@ public class GameController {
     }
     String sanitized = label == null ? "" : label.replaceAll("[\\p{Cntrl}]", "");
     synchronized (sessionManager) {
-      validateSessionMembership(sessionId, userName);
-      if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
-        throw new HostActionException("only the host can perform this action");
-      }
+      requireHost(sessionId, userName);
       sessionManager.setLabel(sessionId, sanitized);
       logger.debug(
           "host {} set label in session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
@@ -405,6 +381,45 @@ public class GameController {
     }
     if (!containsIgnoreCase(sessionManager.getSessionUsers(sessionId), userName)) {
       throw new IllegalArgumentException("user is not a member of this session");
+    }
+  }
+
+  /**
+   * Validates that {@code userName} is a member of {@code sessionId} and is the session's host.
+   * Membership is checked first so a non-member never sees a host-only error.
+   *
+   * @throws IllegalArgumentException if the session is not active or the user is not a member.
+   * @throws HostActionException if the user is not the session's host.
+   */
+  private void requireHost(String sessionId, String userName) {
+    validateSessionMembership(sessionId, userName);
+    if (!userName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+      throw new HostActionException("only the host can perform this action");
+    }
+  }
+
+  /**
+   * Validates that {@code hostName} is the host acting on a different session member. The check
+   * order — membership, self-action guard, host check, target membership — is preserved by callers;
+   * tests rely on this ordering.
+   *
+   * @param verb action name used in the self-action error message (e.g. {@code "kick"}, {@code
+   *     "promote"}).
+   * @throws IllegalArgumentException if the session is not active, the caller is not a member, the
+   *     caller targets themselves, or the target is not a member.
+   * @throws HostActionException if the caller is not the session's host.
+   */
+  private void requireHostActingOnOther(
+      String sessionId, String hostName, String targetUser, String verb) {
+    validateSessionMembership(sessionId, hostName);
+    if (hostName.equalsIgnoreCase(targetUser)) {
+      throw new IllegalArgumentException("cannot " + verb + " yourself");
+    }
+    if (!hostName.equalsIgnoreCase(sessionManager.getHost(sessionId))) {
+      throw new HostActionException("only the host can perform this action");
+    }
+    if (!containsIgnoreCase(sessionManager.getSessionUsers(sessionId), targetUser)) {
+      throw new IllegalArgumentException("target user is not a member of this session");
     }
   }
 }
