@@ -8,12 +8,18 @@ RUN npm run build
 
 # Stage 2: Build backend
 FROM eclipse-temurin:25-jdk AS backend
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY gradle/ gradle/
 COPY gradlew settings.gradle build.gradle ./
 COPY planningpoker-api/ planningpoker-api/
 COPY planningpoker-web/build.gradle planningpoker-web/build.gradle
 COPY --from=frontend /app/planningpoker-web/build/ planningpoker-web/build/
+# .git lets planningpoker-api/build.gradle resolve the version from the
+# latest git tag at build time. Public repo — .git contents are public.
+# Not carried into the runtime stage below.
+COPY .git/ .git/
 RUN mkdir -p planningpoker-web/dist/libs
 RUN chmod +x gradlew && ./gradlew planningpoker-web:jar --no-daemon
 RUN ./gradlew planningpoker-api:bootJar --no-daemon
