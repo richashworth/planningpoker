@@ -1,10 +1,13 @@
 export const API_ROOT_URL = ''
 
 // Username constraint shared by NameInput's HTML pattern attribute and the
-// JS-side guard in CreateGame/JoinGame. 3-20 chars: letters, digits, spaces,
+// JS-side guard in CreateGame/JoinGame. 2-20 chars: letters, digits, spaces,
 // hyphens, underscores. The anchored RegExp is derived from the same source.
-export const USERNAME_PATTERN = '[a-zA-Z0-9 _-]{3,20}'
+export const USERNAME_MIN = 2
+export const USERNAME_MAX = 20
+export const USERNAME_PATTERN = `[a-zA-Z0-9 _-]{${USERNAME_MIN},${USERNAME_MAX}}`
 export const USERNAME_REGEX = new RegExp(`^${USERNAME_PATTERN}$`)
+export const USERNAME_HELPER = `${USERNAME_MIN}-${USERNAME_MAX} characters: letters, numbers, spaces, hyphens, underscores`
 
 export const SCHEME_VALUES = {
   fibonacci: ['1', '2', '3', '5', '8', '13'],

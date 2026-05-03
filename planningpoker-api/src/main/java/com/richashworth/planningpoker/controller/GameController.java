@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameController {
 
   private static final int MAX_USERNAME_LENGTH = 20;
-  private static final int MIN_USERNAME_LENGTH = 3;
+  private static final int MIN_USERNAME_LENGTH = 2;
   private static final String USERNAME_PATTERN = "^[a-zA-Z0-9 _-]+$";
 
   private final Logger logger = LoggerFactory.getLogger(getClass());

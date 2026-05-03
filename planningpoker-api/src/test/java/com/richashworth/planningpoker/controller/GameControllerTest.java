@@ -276,7 +276,7 @@ class GameControllerTest extends AbstractControllerTest {
 
   @Test
   void testCreateSessionRejectsShortName() {
-    CreateSessionRequest request = new CreateSessionRequest("AB", null, null, null);
+    CreateSessionRequest request = new CreateSessionRequest("A", null, null, null);
     assertThrows(IllegalArgumentException.class, () -> gameController.createSession(request));
   }
 
