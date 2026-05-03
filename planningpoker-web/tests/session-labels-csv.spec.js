@@ -155,7 +155,7 @@ test.describe('Session Labels', () => {
     }
   })
 
-  test('label broadcasts to non-host on Enter key', async ({ browser }) => {
+  test('Enter key in label input broadcasts label to non-host', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const playerCtx = await browser.newContext()
     try {
@@ -174,34 +174,6 @@ test.describe('Session Labels', () => {
       // typing-debounce broadcast.
       await labelInput.press('Enter')
       await expect(playerPage.getByText('Deliberate')).toBeVisible({
-        timeout: 15000,
-      })
-    } finally {
-      await hostCtx.close()
-      await playerCtx.close()
-    }
-  })
-
-  test('Enter key in label input broadcasts label', async ({ browser }) => {
-    const hostCtx = await browser.newContext()
-    const playerCtx = await browser.newContext()
-    try {
-      const hostPage = await hostCtx.newPage()
-      const sessionId = await hostGame(hostPage, 'Alice')
-
-      const playerPage = await playerCtx.newPage()
-      await joinGame(playerPage, 'Bob', sessionId)
-
-      await waitForWsReady(playerPage, sessionId, 'Alice')
-
-      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
-
-      // Host types and presses Enter to submit
-      await labelInput.fill('Via Enter')
-      await labelInput.press('Enter')
-
-      // Non-host should see the label via WebSocket
-      await expect(playerPage.getByText('Via Enter')).toBeVisible({
         timeout: 15000,
       })
     } finally {

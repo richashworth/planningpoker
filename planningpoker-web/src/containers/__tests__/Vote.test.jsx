@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { screen, fireEvent, act, cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
+import { configureStore } from '@reduxjs/toolkit'
 
 vi.mock('axios', () => ({
   default: {
@@ -13,6 +14,28 @@ vi.mock('axios', () => ({
 import axios from 'axios'
 import Vote from '../Vote'
 import { renderWithStore } from '../../testUtils/renderWithStore'
+import gameReducer from '../../reducers/reducer_game'
+import resultsReducer from '../../reducers/reducer_results'
+import usersReducer from '../../reducers/reducer_users'
+import voteReducer from '../../reducers/reducer_vote'
+import notificationReducer from '../../reducers/reducer_notification'
+import roundsReducer from '../../reducers/reducer_rounds'
+import consensusReducer from '../../reducers/reducer_consensus'
+
+function buildStore(preloadedState) {
+  return configureStore({
+    reducer: {
+      game: gameReducer,
+      results: resultsReducer,
+      users: usersReducer,
+      voted: voteReducer,
+      notification: notificationReducer,
+      rounds: roundsReducer,
+      consensus: consensusReducer,
+    },
+    preloadedState,
+  })
+}
 
 function baseState(overrides = {}) {
   return {
@@ -91,5 +114,33 @@ describe('Vote container', () => {
     })
 
     expect(axios.post).toHaveBeenCalledWith(expect.stringMatching(/\/vote$/), expect.anything())
+  })
+
+  it('dispatches voteOptimistic synchronously before the vote thunk', async () => {
+    // Pre-spy on dispatch so Vote's first render captures the spy via
+    // useDispatch (which reads store.dispatch each render, and the component
+    // holds the captured reference for subsequent event handlers).
+    const store = buildStore(baseState())
+    const dispatchSpy = vi.spyOn(store, 'dispatch')
+    renderWithStore(<Vote />, { store })
+
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText('Vote 5'))
+    })
+
+    // doVote fires `voteOptimistic` (plain action) and then `vote` (thunk fn)
+    // through the same dispatch. The spy records both top-level calls;
+    // confirm the optimistic action lands before the thunk.
+    const calls = dispatchSpy.mock.calls.map(([arg]) => arg)
+    const optimisticIdx = calls.findIndex(
+      (a) => a && typeof a === 'object' && a.type === 'vote-optimistic',
+    )
+    const thunkIdx = calls.findIndex((a) => typeof a === 'function')
+
+    expect(optimisticIdx).toBeGreaterThanOrEqual(0)
+    expect(thunkIdx).toBeGreaterThan(optimisticIdx)
+    expect(calls[optimisticIdx].payload).toEqual({ userName: 'alice', estimateValue: '5' })
+
+    dispatchSpy.mockRestore()
   })
 })
