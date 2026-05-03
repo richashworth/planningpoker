@@ -10,6 +10,7 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import { joinGame, userRegistered } from '../actions'
 import NameInput from '../components/NameInput'
+import { USERNAME_REGEX } from '../config/Constants'
 
 export default function JoinGame() {
   const [playerName, setPlayerName] = useState('')
@@ -21,8 +22,7 @@ export default function JoinGame() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (submitting) return
-    const nameRegex = /^[a-zA-Z0-9 _-]{3,20}$/
-    if (!nameRegex.test(playerName)) return
+    if (!USERNAME_REGEX.test(playerName)) return
     setSubmitting(true)
     try {
       await dispatch(

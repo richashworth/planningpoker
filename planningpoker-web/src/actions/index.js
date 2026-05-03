@@ -74,22 +74,69 @@ export const consensusOverrideLocal = (value) => ({
 
 export const kicked = () => ({ type: KICKED })
 
+// Shared POST + dispatch helper. Wraps the axios call, dispatches a typed
+// success or error action, and routes the server's error message (or a
+// fallback) through showError. Each thunk that posts to a mutation endpoint
+// flows through here so the success/error envelope shape stays consistent.
+//
+// Options:
+//   url                - path appended to API_ROOT_URL
+//   params             - object encoded as URLSearchParams (form POST). Used
+//                        when `body` is omitted.
+//   body               - raw request body sent as-is (for JSON endpoints).
+//   type               - action type dispatched on both success and failure.
+//   meta               - meta object included on the dispatched action.
+//   fallbackError      - showError message when the server didn't supply one.
+//   omitSuccessPayload - dispatch `{ type }` only on success (no payload/meta).
+//                        Matches existing thunks that don't carry success data.
+//   onSuccess          - called after the success dispatch, with response data.
+//   onError            - called before the standard error dispatches, with the
+//                        caught error. Lets a thunk run revert logic before the
+//                        error/showError actions fire (preserves dispatch order).
+async function postForm(dispatch, opts) {
+  const {
+    url,
+    params,
+    body,
+    type,
+    meta,
+    fallbackError,
+    omitSuccessPayload = false,
+    onSuccess,
+    onError,
+  } = opts
+  const metaPart = meta ? { meta } : {}
+  try {
+    const requestBody = body !== undefined ? body : new URLSearchParams(params)
+    const { data } = await axios.post(`${API_ROOT_URL}${url}`, requestBody)
+    dispatch(omitSuccessPayload ? { type } : { type, payload: data, ...metaPart })
+    if (onSuccess) onSuccess(data)
+    return { data, error: null }
+  } catch (err) {
+    if (onError) onError(err)
+    dispatch({ type, payload: err, error: true, ...metaPart })
+    dispatch(showError(err.response?.data?.error || fallbackError))
+    return { data: null, error: err }
+  }
+}
+
 export function createGame(playerName, schemeOptions, onSuccess) {
   return async (dispatch) => {
-    try {
-      const body = {
+    await postForm(dispatch, {
+      url: '/createSession',
+      body: {
         userName: playerName,
         schemeType: schemeOptions.schemeType,
         customValues: schemeOptions.customValues,
         includeUnsure: schemeOptions.includeUnsure,
-      }
-      const { data } = await axios.post(`${API_ROOT_URL}/createSession`, body)
-      dispatch({ type: CREATE_GAME, payload: data, meta: { userName: playerName } })
-      if (onSuccess) onSuccess()
-    } catch (err) {
-      dispatch({ type: CREATE_GAME, payload: err, error: true, meta: { userName: playerName } })
-      dispatch(showError(err.response?.data?.error || 'Failed to create session'))
-    }
+      },
+      type: CREATE_GAME,
+      meta: { userName: playerName },
+      fallbackError: 'Failed to create session',
+      onSuccess: () => {
+        if (onSuccess) onSuccess()
+      },
+    })
   }
 }
 
@@ -112,86 +159,63 @@ export function leaveGame(playerName, sessionId, onSuccess) {
 
 export function joinGame(playerName, sessionId, onSuccess) {
   return async (dispatch) => {
-    try {
-      const { data } = await axios.post(
-        `${API_ROOT_URL}/joinSession`,
-        new URLSearchParams({ userName: playerName, sessionId }),
-      )
-      dispatch({ type: JOIN_GAME, payload: data, meta: { userName: playerName, sessionId } })
-      if (onSuccess) onSuccess()
-    } catch (err) {
-      dispatch({
-        type: JOIN_GAME,
-        payload: err,
-        error: true,
-        meta: { userName: playerName, sessionId },
-      })
-      dispatch(showError(err.response?.data?.error || 'Failed to join session'))
-    }
+    await postForm(dispatch, {
+      url: '/joinSession',
+      params: { userName: playerName, sessionId },
+      type: JOIN_GAME,
+      meta: { userName: playerName, sessionId },
+      fallbackError: 'Failed to join session',
+      onSuccess: () => {
+        if (onSuccess) onSuccess()
+      },
+    })
   }
 }
 
 export function vote(playerName, sessionId, estimateValue) {
   return async (dispatch) => {
-    try {
-      const { data } = await axios.post(
-        `${API_ROOT_URL}/vote`,
-        new URLSearchParams({ userName: playerName, sessionId, estimateValue }),
-      )
-      dispatch({ type: VOTE, payload: data, meta: { userName: playerName, estimateValue } })
-    } catch (err) {
-      dispatch({
-        type: VOTE,
-        payload: err,
-        error: true,
-        meta: { userName: playerName, estimateValue },
-      })
-      dispatch(showError(err.response?.data?.error || 'Failed to submit vote'))
-    }
+    await postForm(dispatch, {
+      url: '/vote',
+      params: { userName: playerName, sessionId, estimateValue },
+      type: VOTE,
+      meta: { userName: playerName, estimateValue },
+      fallbackError: 'Failed to submit vote',
+    })
   }
 }
 
 export function resetSession(playerName, sessionId, consensus) {
   return async (dispatch) => {
-    try {
-      const params = { sessionId, userName: playerName }
-      if (consensus != null && consensus !== '') params.consensus = consensus
-      const { data } = await axios.post(`${API_ROOT_URL}/reset`, new URLSearchParams(params))
-      dispatch({ type: RESET_SESSION, payload: data })
-    } catch (err) {
-      dispatch({ type: RESET_SESSION, payload: err, error: true })
-      dispatch(showError(err.response?.data?.error || 'Failed to reset session'))
-    }
+    const params = { sessionId, userName: playerName }
+    if (consensus != null && consensus !== '') params.consensus = consensus
+    await postForm(dispatch, {
+      url: '/reset',
+      params,
+      type: RESET_SESSION,
+      fallbackError: 'Failed to reset session',
+    })
   }
 }
 
 export function kickUser(userName, targetUser, sessionId) {
   return async (dispatch) => {
-    try {
-      const { data } = await axios.post(
-        `${API_ROOT_URL}/kick`,
-        new URLSearchParams({ userName, targetUser, sessionId }),
-      )
-      dispatch({ type: KICK_USER, payload: data })
-    } catch (err) {
-      dispatch({ type: KICK_USER, payload: err, error: true })
-      dispatch(showError(err.response?.data?.error || 'Failed to kick user'))
-    }
+    await postForm(dispatch, {
+      url: '/kick',
+      params: { userName, targetUser, sessionId },
+      type: KICK_USER,
+      fallbackError: 'Failed to kick user',
+    })
   }
 }
 
 export function promoteUser(userName, targetUser, sessionId) {
   return async (dispatch) => {
-    try {
-      const { data } = await axios.post(
-        `${API_ROOT_URL}/promote`,
-        new URLSearchParams({ userName, targetUser, sessionId }),
-      )
-      dispatch({ type: PROMOTE_USER, payload: data })
-    } catch (err) {
-      dispatch({ type: PROMOTE_USER, payload: err, error: true })
-      dispatch(showError(err.response?.data?.error || 'Failed to promote user'))
-    }
+    await postForm(dispatch, {
+      url: '/promote',
+      params: { userName, targetUser, sessionId },
+      type: PROMOTE_USER,
+      fallbackError: 'Failed to promote user',
+    })
   }
 }
 
@@ -213,16 +237,13 @@ export function refresh(sessionId, playerName) {
 
 export function setLabel(userName, sessionId, label) {
   return async (dispatch) => {
-    try {
-      await axios.post(
-        `${API_ROOT_URL}/setLabel`,
-        new URLSearchParams({ userName, sessionId, label }),
-      )
-      dispatch({ type: SET_LABEL })
-    } catch (err) {
-      dispatch({ type: SET_LABEL, payload: err, error: true })
-      dispatch(showError(err.response?.data?.error || 'Failed to set label'))
-    }
+    await postForm(dispatch, {
+      url: '/setLabel',
+      params: { userName, sessionId, label },
+      type: SET_LABEL,
+      fallbackError: 'Failed to set label',
+      omitSuccessPayload: true,
+    })
   }
 }
 
@@ -230,18 +251,18 @@ export function setConsensusOverride(userName, sessionId, value) {
   return async (dispatch, getState) => {
     // Optimistically update the value so the click feels instant; the server's
     // broadcast (with a strictly newer round) is the authoritative reconciler.
-    // On POST failure we revert to the prior value.
+    // On POST failure we revert to the prior value before the error dispatches.
     const prior = getState().consensus?.value ?? null
     dispatch(consensusOverrideLocal(value))
-    try {
-      const params = { userName, sessionId }
-      if (value != null && value !== '') params.value = value
-      await axios.post(`${API_ROOT_URL}/setConsensus`, new URLSearchParams(params))
-      dispatch({ type: SET_CONSENSUS_OVERRIDE })
-    } catch (err) {
-      dispatch(consensusOverrideLocal(prior))
-      dispatch({ type: SET_CONSENSUS_OVERRIDE, payload: err, error: true })
-      dispatch(showError(err.response?.data?.error || 'Failed to set consensus'))
-    }
+    const params = { userName, sessionId }
+    if (value != null && value !== '') params.value = value
+    await postForm(dispatch, {
+      url: '/setConsensus',
+      params,
+      type: SET_CONSENSUS_OVERRIDE,
+      fallbackError: 'Failed to set consensus',
+      omitSuccessPayload: true,
+      onError: () => dispatch(consensusOverrideLocal(prior)),
+    })
   }
 }

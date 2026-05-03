@@ -13,7 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { createGame, gameCreated } from '../actions'
 import NameInput from '../components/NameInput'
 import SchemeTile from '../components/SchemeTile'
-import { SCHEME_VALUES, SCHEME_METADATA, SCHEME_ORDER } from '../config/Constants'
+import { SCHEME_VALUES, SCHEME_METADATA, SCHEME_ORDER, USERNAME_REGEX } from '../config/Constants'
 
 function validateCustomValues(input) {
   const values = input
@@ -60,8 +60,7 @@ export default function CreateGame() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (submitting) return
-    const nameRegex = /^[a-zA-Z0-9 _-]{3,20}$/
-    if (!nameRegex.test(playerName)) return
+    if (!USERNAME_REGEX.test(playerName)) return
     if (!isCustomValid()) return
     setSubmitting(true)
     try {
