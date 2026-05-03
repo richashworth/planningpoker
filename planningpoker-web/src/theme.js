@@ -51,6 +51,9 @@ export const darkTheme = createTheme({
     divider: '#2e2e33',
     success: { main: '#22c55e' },
     error: { main: '#ef4444' },
+    chart: {
+      barMuted: 'rgba(102, 126, 234, 0.45)',
+    },
   },
   components: {
     ...shared.components,
@@ -85,6 +88,9 @@ export const lightTheme = createTheme({
     divider: '#e4e4e7',
     success: { main: '#16a34a' },
     error: { main: '#dc2626' },
+    chart: {
+      barMuted: '#c5cdf5',
+    },
   },
   components: {
     ...shared.components,

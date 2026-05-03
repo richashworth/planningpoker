@@ -4,39 +4,48 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip } fro
 import { Bar } from 'react-chartjs-2'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip)
 
-const DEFAULT_BG = 'rgba(102, 126, 234, 0.35)'
-const DEFAULT_BORDER = 'rgba(102, 126, 234, 0.7)'
-const DEFAULT_HOVER_BG = 'rgba(102, 126, 234, 0.55)'
-const HIGHLIGHT_BG = 'rgba(102, 126, 234, 0.85)'
-const HIGHLIGHT_BORDER = 'rgba(102, 126, 234, 1)'
-const HIGHLIGHT_HOVER_BG = 'rgba(102, 126, 234, 0.95)'
-
-// Draws a stroked circle around the consensus tick label when that estimate
-// has zero votes — the bar already carries the highlight when votes exist,
-// so we only ring the tick when there's no bar to color.
-const consensusAxisHighlightPlugin = {
-  id: 'consensusAxisHighlight',
+// Solid pill behind the consensus tick label, label re-drawn in white on top.
+const consensusAxisPillPlugin = {
+  id: 'consensusAxisPill',
   afterDraw(chart, _args, opts) {
     if (!opts) return
-    const { consensus, legalEstimates, aggregateData } = opts
+    const { consensus, legalEstimates, pillBg, pillFg } = opts
     if (consensus == null) return
     const idx = legalEstimates.indexOf(consensus)
-    if (idx === -1 || aggregateData[idx] !== 0) return
+    if (idx === -1) return
 
     const xScale = chart.scales.x
     if (!xScale) return
-    const xCenter = xScale.getPixelForValue(idx)
-    // Tick labels sit below the axis line; aim for the vertical centre of
-    // the label band rather than the axis line itself.
-    const yCenter = xScale.top + xScale.height * 0.55
-
     const ctx = chart.ctx
+
+    const label = String(consensus)
+    const fontSize = 12
+    const padX = 10
+    const padY = 3
+
     ctx.save()
-    ctx.strokeStyle = HIGHLIGHT_BORDER
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.arc(xCenter, yCenter, 13, 0, Math.PI * 2)
-    ctx.stroke()
+    const fontFamily = (chart.canvas && getComputedStyle(chart.canvas).fontFamily) || 'sans-serif'
+    ctx.font = `700 ${fontSize}px ${fontFamily}`
+    const textWidth = ctx.measureText(label).width
+    const pillW = textWidth + padX * 2
+    const pillH = fontSize + padY * 2
+
+    const cx = xScale.getPixelForValue(idx)
+    const cy = xScale.top + xScale.height * 0.55
+
+    ctx.fillStyle = pillBg
+    if (typeof ctx.roundRect === 'function') {
+      ctx.beginPath()
+      ctx.roundRect(cx - pillW / 2, cy - pillH / 2, pillW, pillH, 999)
+      ctx.fill()
+    } else {
+      ctx.fillRect(cx - pillW / 2, cy - pillH / 2, pillW, pillH)
+    }
+
+    ctx.fillStyle = pillFg
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(label, cx, cy)
     ctx.restore()
   },
 }
@@ -51,29 +60,30 @@ export default function ResultsChart({ consensus = null }) {
 
   const tickColor = theme.palette.text.secondary
   const gridColor = theme.palette.divider
+  const barColor = theme.palette.primary.main
+  const barMutedColor = theme.palette.chart.barMuted
 
   const isHighlighted = (label) => consensus != null && label === consensus
-  const backgroundColor = legalEstimates.map((l) => (isHighlighted(l) ? HIGHLIGHT_BG : DEFAULT_BG))
-  const borderColor = legalEstimates.map((l) =>
-    isHighlighted(l) ? HIGHLIGHT_BORDER : DEFAULT_BORDER,
-  )
-  const hoverBackgroundColor = legalEstimates.map((l) =>
-    isHighlighted(l) ? HIGHLIGHT_HOVER_BG : DEFAULT_HOVER_BG,
-  )
-  const borderWidth = legalEstimates.map((l) => (isHighlighted(l) ? 2 : 1))
+  const backgroundColor = legalEstimates.map((l) => (isHighlighted(l) ? barColor : barMutedColor))
+  const borderColor = backgroundColor
+  const borderWidth = legalEstimates.map(() => 0)
+  const hoverBackgroundColor = backgroundColor
 
-  // Always highlight the consensus tick label so the axis stays in sync with
-  // the bar, even when the bar happens to have zero votes (no fill to see).
-  const isConsensusTick = (idx) => isHighlighted(legalEstimates[idx])
-  const xTickColor = (ctx) => (isConsensusTick(ctx.index) ? HIGHLIGHT_BORDER : tickColor)
-  const xTickFont = (ctx) => (isConsensusTick(ctx.index) ? { weight: 'bold' } : {})
+  // Hide the underlying tick label for the consensus index — the axis-pill
+  // plugin re-draws it in white on top, and we don't want kerning bleed.
+  const xTickColor = (ctx) => (isHighlighted(legalEstimates[ctx.index]) ? 'transparent' : tickColor)
 
   const options = {
     responsive: true,
     plugins: {
       legend: { display: false },
       tooltip: { enabled: false },
-      consensusAxisHighlight: { consensus, legalEstimates, aggregateData },
+      consensusAxisPill: {
+        consensus,
+        legalEstimates,
+        pillBg: theme.palette.primary.main,
+        pillFg: '#fff',
+      },
     },
     scales: {
       y: {
@@ -86,7 +96,7 @@ export default function ResultsChart({ consensus = null }) {
         border: { color: gridColor },
       },
       x: {
-        ticks: { color: xTickColor, font: xTickFont },
+        ticks: { color: xTickColor, font: { size: 12, weight: 500 } },
         grid: { color: 'transparent' },
         border: { color: gridColor },
       },
@@ -107,5 +117,5 @@ export default function ResultsChart({ consensus = null }) {
     ],
   }
 
-  return <Bar options={options} data={data} plugins={[consensusAxisHighlightPlugin]} />
+  return <Bar options={options} data={data} plugins={[consensusAxisPillPlugin]} />
 }

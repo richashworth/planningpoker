@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { screen, fireEvent, act, cleanup } from '@testing-library/react'
+import { screen, fireEvent, act, cleanup, within } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 
 vi.mock('axios', () => ({
@@ -101,5 +101,37 @@ describe('Results container', () => {
 
     const [, params] = axios.post.mock.calls.find(([url]) => /\/setConsensus$/.test(url))
     expect(params.has('value')).toBe(false)
+  })
+
+  it('renders the chart header summary with the consensus value and vote ratio', () => {
+    renderWithStore(<Results />, { preloadedState: baseState() })
+    const headerRow = screen.getByText('Distribution').parentElement
+    expect(headerRow).toBeInTheDocument()
+    expect(within(headerRow).getByText('Consensus')).toBeInTheDocument()
+    expect(within(headerRow).getByText('5')).toBeInTheDocument()
+    expect(within(headerRow).getByText('2 votes')).toBeInTheDocument()
+  })
+
+  it('shows "no votes" in the header when the consensus has zero votes', () => {
+    renderWithStore(<Results />, {
+      preloadedState: baseState({ consensus: { value: '8', round: 0 } }),
+    })
+    const headerRow = screen.getByText('Distribution').parentElement
+    expect(within(headerRow).getByText('Consensus')).toBeInTheDocument()
+    expect(within(headerRow).getByText('8')).toBeInTheDocument()
+    expect(within(headerRow).getByText('no votes')).toBeInTheDocument()
+  })
+
+  it('hides the chart header summary when no consensus exists yet', () => {
+    renderWithStore(<Results />, {
+      preloadedState: baseState({
+        results: [],
+        users: [],
+        voted: false,
+        consensus: { value: null, round: 0 },
+      }),
+    })
+    expect(screen.queryByText('Distribution')).not.toBeInTheDocument()
+    expect(screen.queryByText('Consensus')).not.toBeInTheDocument()
   })
 })

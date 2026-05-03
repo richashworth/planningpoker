@@ -1,7 +1,7 @@
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import { render } from '@testing-library/react'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { ThemeProvider } from '@mui/material/styles'
 
 import gameReducer from '../reducers/reducer_game'
 import resultsReducer from '../reducers/reducer_results'
@@ -10,8 +10,7 @@ import voteReducer from '../reducers/reducer_vote'
 import notificationReducer from '../reducers/reducer_notification'
 import roundsReducer from '../reducers/reducer_rounds'
 import consensusReducer from '../reducers/reducer_consensus'
-
-const theme = createTheme()
+import { lightTheme as theme } from '../theme'
 
 export function renderWithStore(ui, { preloadedState = {}, store, ...options } = {}) {
   const realStore =
