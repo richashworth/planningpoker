@@ -65,6 +65,7 @@ export default function Header() {
             display: { xs: 'none', sm: 'block' },
             fontWeight: 500,
             fontFamily: '"Lobster", cursive',
+            fontSize: '2rem',
             letterSpacing: 'normal',
             color: '#fff',
           }}
