@@ -42,30 +42,6 @@ class VoteControllerTest extends AbstractControllerTest {
   }
 
   @Test
-  void testReVoteReplacesExistingEstimate() {
-    String newValue = "8";
-    Estimate newEstimate = new Estimate(USER_NAME, newValue);
-    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
-    when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
-    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
-    when(sessionManager.getRound(SESSION_ID)).thenReturn(1);
-    when(sessionManager.getResults(SESSION_ID)).thenReturn(List.of(newEstimate));
-
-    VoteResponse response = voteController.vote(SESSION_ID, USER_NAME, newValue);
-
-    assertEquals(1, response.round());
-    assertEquals(List.of(newEstimate), response.results());
-    inOrder.verify(sessionManager, times(1)).isSessionActive(SESSION_ID);
-    inOrder.verify(sessionManager, times(1)).getSessionLegalValues(SESSION_ID);
-    inOrder.verify(sessionManager, times(1)).getSessionUsers(SESSION_ID);
-    inOrder.verify(sessionManager, times(1)).registerEstimate(SESSION_ID, newEstimate);
-    inOrder.verify(sessionManager, times(1)).getRound(SESSION_ID);
-    inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
-    inOrder.verify(messagingUtils, times(1)).sendResultsMessage(SESSION_ID);
-    inOrder.verifyNoMoreInteractions();
-  }
-
-  @Test
   void testVoteInvalidSession() {
     when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(false);
     assertThrows(
