@@ -7,6 +7,10 @@
     ["@semantic-release/exec", {
       "prepareCmd": "sed -i 's/^version=.*/version=${nextRelease.version}/' planningpoker-api/gradle.properties && cd planningpoker-web && npm run build && cd .. && ./gradlew planningpoker-web:jar --no-daemon && ./gradlew planningpoker-api:bootJar --no-daemon"
     }],
+    ["@semantic-release/git", {
+      "assets": ["planningpoker-api/gradle.properties"],
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+    }],
     ["@semantic-release/github", {
       "assets": [
         {"path": "planningpoker-api/build/libs/planningpoker-api-*.jar", "label": "planningpoker.jar"}
