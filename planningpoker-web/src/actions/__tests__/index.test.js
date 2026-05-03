@@ -7,13 +7,18 @@ import {
   voteOptimistic,
   createGame,
   joinGame,
+  leaveGame,
   vote,
   resetSession,
   refresh,
+  kickUser,
+  promoteUser,
+  setLabel,
   setConsensusOverride,
   consensusOverrideUpdated,
   CREATE_GAME,
   JOIN_GAME,
+  LEAVE_GAME,
   VOTE,
   VOTE_OPTIMISTIC,
   RESET_SESSION,
@@ -21,6 +26,9 @@ import {
   LABEL_UPDATED,
   USERS_UPDATED,
   ROUNDS_REPLACE,
+  KICK_USER,
+  PROMOTE_USER,
+  SET_LABEL,
   SET_CONSENSUS_OVERRIDE,
   CONSENSUS_OVERRIDE_UPDATED,
   CONSENSUS_OVERRIDE_LOCAL,
@@ -312,5 +320,152 @@ describe('setConsensusOverride', () => {
     expect(action.error).toBe(true)
     const errorAction = dispatched.find((a) => a.type === 'show-error')
     expect(errorAction.payload).toBe('only the host can perform this action')
+  })
+})
+
+describe('kickUser', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('POSTs userName/targetUser/sessionId and dispatches KICK_USER on success', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: { ok: true } })
+
+    const dispatched = await runThunkAsync(kickUser('alice', 'bob', 'abc12345'))
+
+    expect(dispatched).toHaveLength(1)
+    expect(dispatched[0].type).toBe(KICK_USER)
+    expect(dispatched[0].payload).toEqual({ ok: true })
+    expect(dispatched[0].error).toBeFalsy()
+
+    const [, params] = axios.post.mock.calls[0]
+    expect(params.get('userName')).toBe('alice')
+    expect(params.get('targetUser')).toBe('bob')
+    expect(params.get('sessionId')).toBe('abc12345')
+  })
+
+  it('dispatches KICK_USER with error:true and show-error on failure', async () => {
+    axios.post = vi.fn().mockRejectedValue({
+      response: { data: { error: 'only the host can perform this action' } },
+    })
+
+    const dispatched = await runThunkAsync(kickUser('mallory', 'bob', 'abc12345'))
+
+    expect(dispatched).toHaveLength(2)
+    const errAction = dispatched.find((a) => a.type === KICK_USER)
+    expect(errAction).toBeDefined()
+    expect(errAction.error).toBe(true)
+    expect(dispatched.find((a) => a.type === 'show-error').payload).toBe(
+      'only the host can perform this action',
+    )
+  })
+})
+
+describe('promoteUser', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('POSTs userName/targetUser/sessionId and dispatches PROMOTE_USER on success', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: { newHost: 'bob' } })
+
+    const dispatched = await runThunkAsync(promoteUser('alice', 'bob', 'abc12345'))
+
+    expect(dispatched).toHaveLength(1)
+    expect(dispatched[0].type).toBe(PROMOTE_USER)
+    expect(dispatched[0].payload).toEqual({ newHost: 'bob' })
+    expect(dispatched[0].error).toBeFalsy()
+
+    const [, params] = axios.post.mock.calls[0]
+    expect(params.get('userName')).toBe('alice')
+    expect(params.get('targetUser')).toBe('bob')
+    expect(params.get('sessionId')).toBe('abc12345')
+  })
+
+  it('dispatches PROMOTE_USER with error:true and show-error on failure', async () => {
+    axios.post = vi.fn().mockRejectedValue({
+      response: { data: { error: 'target not in session' } },
+    })
+
+    const dispatched = await runThunkAsync(promoteUser('alice', 'ghost', 'abc12345'))
+
+    const errAction = dispatched.find((a) => a.type === PROMOTE_USER)
+    expect(errAction.error).toBe(true)
+    expect(dispatched.find((a) => a.type === 'show-error').payload).toBe('target not in session')
+  })
+})
+
+describe('setLabel', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('POSTs userName/sessionId/label and dispatches a bare SET_LABEL on success', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: {} })
+
+    const dispatched = await runThunkAsync(setLabel('alice', 'abc12345', 'Sprint 1'))
+
+    // Helper's omitSuccessPayload path: type only, no payload/meta.
+    expect(dispatched).toHaveLength(1)
+    expect(dispatched[0]).toEqual({ type: SET_LABEL })
+
+    const [, params] = axios.post.mock.calls[0]
+    expect(params.get('userName')).toBe('alice')
+    expect(params.get('sessionId')).toBe('abc12345')
+    expect(params.get('label')).toBe('Sprint 1')
+  })
+
+  it('dispatches SET_LABEL with error:true and show-error on failure', async () => {
+    axios.post = vi.fn().mockRejectedValue({
+      response: { data: { error: 'only the host can perform this action' } },
+    })
+
+    const dispatched = await runThunkAsync(setLabel('mallory', 'abc12345', 'x'))
+
+    const errAction = dispatched.find((a) => a.type === SET_LABEL)
+    expect(errAction.error).toBe(true)
+    expect(dispatched.find((a) => a.type === 'show-error').payload).toBe(
+      'only the host can perform this action',
+    )
+  })
+})
+
+describe('leaveGame', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('dispatches LEAVE_GAME first, POSTs /logout, then calls onSuccess', async () => {
+    axios.post = vi.fn().mockResolvedValue({ data: {} })
+    const onSuccess = vi.fn()
+
+    const dispatched = await runThunkAsync(leaveGame('alice', 'abc12345', onSuccess))
+
+    // LEAVE_GAME is dispatched eagerly so the broadcast that follows logout
+    // can't trip PlayGame's kick-detection effect.
+    expect(dispatched[0]).toEqual({ type: LEAVE_GAME })
+
+    const [url, params] = axios.post.mock.calls[0]
+    expect(url).toMatch(/\/logout$/)
+    expect(params.get('userName')).toBe('alice')
+    expect(params.get('sessionId')).toBe('abc12345')
+
+    expect(onSuccess).toHaveBeenCalledOnce()
+  })
+
+  it('still calls onSuccess when /logout fails (failure is logged, not dispatched)', async () => {
+    axios.post = vi.fn().mockRejectedValue(new Error('boom'))
+    const onSuccess = vi.fn()
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    const dispatched = await runThunkAsync(leaveGame('alice', 'abc12345', onSuccess))
+
+    expect(dispatched[0]).toEqual({ type: LEAVE_GAME })
+    // No additional error dispatch — leaveGame logs and returns silently.
+    expect(dispatched).toHaveLength(1)
+    expect(onSuccess).toHaveBeenCalledOnce()
+    expect(consoleSpy).toHaveBeenCalled()
+
+    consoleSpy.mockRestore()
   })
 })
