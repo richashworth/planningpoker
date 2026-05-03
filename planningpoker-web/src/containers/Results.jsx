@@ -34,8 +34,7 @@ export default function Results() {
     : 0
 
   const handleNextItem = () => {
-    const consensus = consensusOverride || calcConsensus(results) || ''
-    dispatch(resetSession(playerName, sessionId, consensus))
+    dispatch(resetSession(playerName, sessionId, displayConsensus || ''))
   }
 
   const handleConsensusChange = (v) => {

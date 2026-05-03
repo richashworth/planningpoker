@@ -26,38 +26,34 @@ const initialGameState = {
   clientRound: 0,
 }
 
+function applySessionPayload(state, action) {
+  // sessionId comes from payload on CREATE_GAME (server-issued) and from meta on
+  // JOIN_GAME (client-supplied); everything else is identical between the two cases.
+  return {
+    ...state,
+    playerName: action.meta.userName,
+    sessionId: action.payload.sessionId ?? action.meta.sessionId,
+    legalEstimates: action.payload.values,
+    schemeType: action.payload.schemeType,
+    includeUnsure: action.payload.includeUnsure,
+    host: action.payload.host || '',
+    clientRound: action.payload.round ?? 0,
+    currentLabel: action.payload.label || '',
+  }
+}
+
 export default function (state = initialGameState, action) {
   switch (action.type) {
     case CREATE_GAME:
       if (action.error) return state
-      return {
-        ...state,
-        playerName: action.meta.userName,
-        sessionId: action.payload.sessionId,
-        legalEstimates: action.payload.values,
-        schemeType: action.payload.schemeType,
-        includeUnsure: action.payload.includeUnsure,
-        host: action.payload.host || '',
-        clientRound: action.payload.round ?? 0,
-        currentLabel: action.payload.label || '',
-      }
+      return applySessionPayload(state, action)
     case GAME_CREATED:
       return { ...state, isAdmin: true, isRegistered: true }
     case USER_REGISTERED:
       return { ...state, isRegistered: true }
     case JOIN_GAME:
       if (action.error) return state
-      return {
-        ...state,
-        playerName: action.meta.userName,
-        sessionId: action.meta.sessionId,
-        legalEstimates: action.payload.values,
-        schemeType: action.payload.schemeType,
-        includeUnsure: action.payload.includeUnsure,
-        host: action.payload.host || '',
-        clientRound: action.payload.round ?? 0,
-        currentLabel: action.payload.label || '',
-      }
+      return applySessionPayload(state, action)
     case USERS_UPDATED:
       return { ...state, host: action.payload.host || '' }
     case LABEL_UPDATED:
