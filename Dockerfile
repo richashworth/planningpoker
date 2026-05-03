@@ -1,33 +1,26 @@
-# Stage 1: Build frontend
-FROM node:25-alpine AS frontend
-WORKDIR /app/planningpoker-web
-COPY planningpoker-web/package.json planningpoker-web/package-lock.json ./
-RUN npm ci
-COPY planningpoker-web/ ./
-RUN npm run build
-
-# Stage 2: Build backend
-FROM eclipse-temurin:25-jdk AS backend
-RUN apt-get update && apt-get install -y --no-install-recommends git \
-    && rm -rf /var/lib/apt/lists/*
-WORKDIR /app
-COPY gradle/ gradle/
-COPY gradlew settings.gradle build.gradle ./
-COPY planningpoker-api/ planningpoker-api/
-COPY planningpoker-web/build.gradle planningpoker-web/build.gradle
-COPY --from=frontend /app/planningpoker-web/build/ planningpoker-web/build/
-# .git lets planningpoker-api/build.gradle resolve the version from the
-# latest git tag at build time. Public repo — .git contents are public.
-# Not carried into the runtime stage below.
-COPY .git/ .git/
-RUN mkdir -p planningpoker-web/dist/libs
-RUN chmod +x gradlew && ./gradlew planningpoker-web:jar --no-daemon
-RUN ./gradlew planningpoker-api:bootJar --no-daemon
-
-# Stage 3: Runtime
+# Single-stage: pull the JAR that semantic-release already built and uploaded
+# to the latest GitHub release, instead of recompiling from source.
+#
+# Filter by asset *label* ("planningpoker.jar") rather than asset name —
+# semantic-release uploads with the version-suffixed filename
+# (planningpoker-api-X.Y.Z.jar) but applies the stable label, so this works
+# for every release v2.7.0+ without needing a transition.
+#
+# RAILWAY_GIT_COMMIT_SHA is auto-injected by Railway and busts the Docker
+# layer cache on every master commit, ensuring we re-fetch when a new
+# release lands.
 FROM eclipse-temurin:25-jre
-RUN addgroup --system app && adduser --system --ingroup app app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates jq \
+    && rm -rf /var/lib/apt/lists/* \
+    && addgroup --system app && adduser --system --ingroup app app
 WORKDIR /app
-COPY --from=backend /app/planningpoker-api/build/libs/planningpoker-*.jar app.jar
+ARG RAILWAY_GIT_COMMIT_SHA=local
+RUN echo "fetching latest planningpoker.jar for ${RAILWAY_GIT_COMMIT_SHA}" \
+    && URL=$(curl -fsSL "https://api.github.com/repos/richashworth/planningpoker/releases/latest" \
+              | jq -er '.assets[] | select(.label == "planningpoker.jar") | .browser_download_url') \
+    && echo "downloading $URL" \
+    && curl -fsSL "$URL" -o app.jar \
+    && chown app:app app.jar
 USER app
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]

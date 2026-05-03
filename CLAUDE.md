@@ -97,9 +97,11 @@ Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planning
 
 ## Deployment
 
-Deployed to Railway via multi-stage Dockerfile (`node:25-alpine` for frontend build, `eclipse-temurin:25-jdk` for backend build, `eclipse-temurin:25-jre` for runtime). Railway config in `railway.toml`. The app reads `$PORT` env var (defaults to 9000). Health check at `/actuator/health`.
+Deployed to Railway via a single-stage Dockerfile (`eclipse-temurin:25-jre`). Railway does **not** rebuild the JAR — instead the Dockerfile fetches the fat JAR semantic-release already produced and attached to the latest GitHub release (filtered by asset *label* `planningpoker.jar`, so the URL is stable across versions). Railway config in `railway.toml`. The app reads `$PORT` env var (defaults to 9000). Health check at `/actuator/health`.
 
-**Automated releases:** semantic-release runs after every green master push. Conventional commit prefixes drive version bumps: `fix:` → patch, `feat:` → minor, `BREAKING CHANGE` footer → major. `chore:`/`docs:`/`test:` commits produce no release. On release, the fat JAR is attached as an asset to the GitHub release and a `v{version}` tag is pushed. Config in `.releaserc.json`.
+**Automated releases:** semantic-release runs after every green master push. Conventional commit prefixes drive version bumps: `fix:` → patch, `feat:` → minor, `BREAKING CHANGE` footer → major. `chore:`/`docs:`/`test:` commits produce no release. On release, the fat JAR is built once in CI (with `-PreleaseVersion=` overriding the version stamped into the manifest), attached as an asset to the GitHub release, and a `v{version}` tag is pushed. Config in `.releaserc.json`.
+
+**Version race:** Railway redeploys on master pushes; semantic-release publishes the new release in parallel. Railway typically clones before the new release finishes uploading, so `/version` is at most one release behind the latest tag. Configuring Railway to redeploy on tag push (or accepting the ~1-release lag) is the trade-off chosen here in exchange for not needing a PAT or GitHub App to bypass branch protection.
 
 Live at: https://planning-poker.up.railway.app
 
@@ -170,7 +172,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - JDK 25 (Eclipse Temurin recommended)
 - Backend on port 9000; frontend dev server on port 3000 (proxies API calls to 9000)
 - Deployed as single fat JAR: `planningpoker-api/build/libs/planningpoker-*.jar`
-- Docker: multi-stage build (`node:25-alpine` for frontend, `eclipse-temurin:25-jdk` for backend build, `eclipse-temurin:25-jre` for runtime)
+- Docker: single-stage runtime (`eclipse-temurin:25-jre`); the fat JAR is fetched from the latest GitHub release rather than rebuilt
 - Health check: `GET /actuator/health`
 
 ## Conventions
