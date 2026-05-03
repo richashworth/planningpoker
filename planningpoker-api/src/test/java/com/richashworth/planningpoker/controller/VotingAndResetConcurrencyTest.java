@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import com.richashworth.planningpoker.model.CreateSessionRequest;
 import com.richashworth.planningpoker.model.Estimate;
 import com.richashworth.planningpoker.model.Round;
+import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SessionResponse;
 import com.richashworth.planningpoker.service.SessionManager;
 import com.richashworth.planningpoker.util.MessagingUtils;
@@ -271,7 +272,7 @@ class VotingAndResetConcurrencyTest {
   @Test
   void testConcurrentRegisterEstimateAndRemoveUserMaintainsInvariants()
       throws InterruptedException {
-    String sessionId = sessionManager.createSession();
+    String sessionId = sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
     int memberCount = 60;
     List<String> voters = new ArrayList<>();
     List<String> leavers = new ArrayList<>();

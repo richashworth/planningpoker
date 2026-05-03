@@ -49,10 +49,6 @@ public class SessionManager {
     return activeSessions.contains(sessionId);
   }
 
-  public synchronized String createSession() {
-    return createSession(new SchemeConfig("fibonacci", null, true));
-  }
-
   public synchronized String createSession(SchemeConfig config) {
     if (activeSessions.size() >= MAX_SESSIONS) {
       throw new IllegalStateException("Too many active sessions");
@@ -111,13 +107,8 @@ public class SessionManager {
     return sessionHosts.get(sessionId);
   }
 
-  public void setHost(String sessionId, String userName) {
-    sessionHosts.put(sessionId, userName);
-  }
-
   public void setLabel(String sessionId, String label) {
-    String trimmed = label == null ? "" : label.substring(0, Math.min(label.length(), 100));
-    sessionLabels.put(sessionId, trimmed);
+    sessionLabels.put(sessionId, label == null ? "" : label);
     touchSession(sessionId);
   }
 
