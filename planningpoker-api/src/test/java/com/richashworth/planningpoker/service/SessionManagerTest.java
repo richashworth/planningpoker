@@ -30,30 +30,35 @@ class SessionManagerTest {
     sessionManager = new SessionManager();
   }
 
+  /** Default-scheme session helper — replaces the now-removed no-arg createSession overload. */
+  private String createSession() {
+    return sessionManager.createSession(new SchemeConfig("fibonacci", null, true));
+  }
+
   @Test
   void testIsSessionActive() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     assertTrue(sessionManager.isSessionActive(sessionId));
     assertFalse(sessionManager.isSessionActive("nonexistent"));
   }
 
   @Test
   void testSessionIdsAreUnique() {
-    String session1 = sessionManager.createSession();
-    String session2 = sessionManager.createSession();
+    String session1 = createSession();
+    String session2 = createSession();
     assertNotEquals(session1, session2);
   }
 
   @Test
   void testCreateSessionRejectsCollisions() {
     for (int i = 0; i < 100; i++) {
-      sessionManager.createSession();
+      createSession();
     }
   }
 
   @Test
   void testGetResults() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     final Estimate estimate = new Estimate("Rich A", "5");
     sessionManager.registerEstimate(sessionId, estimate);
     final List<Estimate> results = sessionManager.getResults(sessionId);
@@ -66,7 +71,7 @@ class SessionManagerTest {
    */
   @Test
   void testRegisterEstimateReplacesExistingForSameUser() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "8"));
 
@@ -81,7 +86,7 @@ class SessionManagerTest {
    */
   @Test
   void testRegisterEstimateUpsertIsCaseInsensitive() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
     sessionManager.registerEstimate(sessionId, new Estimate("ALICE", "8"));
 
@@ -93,7 +98,7 @@ class SessionManagerTest {
   /** Upsert for one user must not affect estimates from other users in the same session. */
   @Test
   void testRegisterEstimateDoesNotAffectOtherUsers() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
     sessionManager.registerEstimate(sessionId, new Estimate("Bob", "3"));
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "8"));
@@ -106,7 +111,7 @@ class SessionManagerTest {
 
   @Test
   void testGetResultsReturnsDefensiveCopy() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
     List<Estimate> results = sessionManager.getResults(sessionId);
     assertThrows(UnsupportedOperationException.class, () -> results.clear());
@@ -114,7 +119,7 @@ class SessionManagerTest {
 
   @Test
   void testGetSessionUsersReturnsDefensiveCopy() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     List<String> users = sessionManager.getSessionUsers(sessionId);
     assertThrows(UnsupportedOperationException.class, () -> users.clear());
@@ -122,16 +127,16 @@ class SessionManagerTest {
 
   @Test
   void testGetSessionUsers() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     final ArrayList<String> users = Lists.newArrayList("Alice", "Bob", "Marvin");
     registerUsers(sessionId, users);
-    sessionManager.registerUser("Frank Z", sessionManager.createSession());
+    sessionManager.registerUser("Frank Z", createSession());
     assertEquals(users, sessionManager.getSessionUsers(sessionId));
   }
 
   @Test
   void testClearSessions() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.registerUser("Rich", sessionId);
     sessionManager.registerEstimate(sessionId, new Estimate("Rich", "8"));
     sessionManager.clearSessions();
@@ -141,7 +146,7 @@ class SessionManagerTest {
 
   @Test
   void testResetSession() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     final String userName = "Rich";
     sessionManager.registerUser(userName, sessionId);
     sessionManager.registerEstimate(sessionId, new Estimate(userName, "1"));
@@ -152,7 +157,7 @@ class SessionManagerTest {
 
   @Test
   void testAppendAndGetCompletedRounds() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     assertTrue(sessionManager.getCompletedRounds(sessionId).isEmpty());
 
     Round r1 = new Round(1, "A", "5", List.of(new Estimate("Alice", "5")), "2026-04-21T10:00:00Z");
@@ -167,7 +172,7 @@ class SessionManagerTest {
 
   @Test
   void testCompletedRoundsClearedOnClearSessions() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.appendCompletedRound(
         sessionId, new Round(1, "A", "5", List.of(), "2026-04-21T10:00:00Z"));
     sessionManager.clearSessions();
@@ -176,7 +181,7 @@ class SessionManagerTest {
 
   @Test
   void testRemoveUserCleansUpEstimates() {
-    final String sessionId = sessionManager.createSession();
+    final String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.registerEstimate(sessionId, new Estimate("Alice", "5"));
     sessionManager.removeUser("Alice", sessionId);
@@ -186,10 +191,10 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessions() throws Exception {
-    String activeSession = sessionManager.createSession();
+    String activeSession = createSession();
     sessionManager.registerUser("Alice", activeSession);
 
-    String idleSession = sessionManager.createSession();
+    String idleSession = createSession();
     sessionManager.registerUser("Bob", idleSession);
     sessionManager.registerEstimate(idleSession, new Estimate("Bob", "3"));
 
@@ -238,7 +243,7 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessionsDoesNotEvictActiveSession() throws Exception {
-    String activeSession = sessionManager.createSession();
+    String activeSession = createSession();
     sessionManager.registerUser("Alice", activeSession);
     sessionManager.registerEstimate(activeSession, new Estimate("Alice", "3"));
 
@@ -251,10 +256,10 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessionsDoesNotAffectConcurrentActiveSession() throws Exception {
-    String activeSession = sessionManager.createSession();
+    String activeSession = createSession();
     sessionManager.registerUser("Alice", activeSession);
 
-    String idleSession = sessionManager.createSession();
+    String idleSession = createSession();
     sessionManager.registerUser("Bob", idleSession);
 
     Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
@@ -297,7 +302,7 @@ class SessionManagerTest {
 
   @Test
   void testCreateSessionDefaultScheme() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
     List<String> expected = SchemeType.resolveValues("fibonacci", null, true);
     assertEquals(expected, legalValues);
@@ -305,7 +310,7 @@ class SessionManagerTest {
 
   @Test
   void testGetSessionLegalValuesReturnsDefensiveCopy() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
     assertThrows(UnsupportedOperationException.class, legalValues::clear);
   }
@@ -356,7 +361,7 @@ class SessionManagerTest {
 
   @Test
   void testGetHostReturnsCreator() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     assertEquals("Alice", sessionManager.getHost(sessionId));
   }
@@ -368,7 +373,7 @@ class SessionManagerTest {
 
   @Test
   void testHostAutoPromotesOnRemoval() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.registerUser("Bob", sessionId);
     sessionManager.removeUser("Alice", sessionId);
@@ -377,7 +382,7 @@ class SessionManagerTest {
 
   @Test
   void testHostDoesNotChangeWhenNonHostLeaves() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.registerUser("Bob", sessionId);
     sessionManager.removeUser("Bob", sessionId);
@@ -386,24 +391,15 @@ class SessionManagerTest {
 
   @Test
   void testHostNullWhenLastUserLeaves() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.removeUser("Alice", sessionId);
     assertNull(sessionManager.getHost(sessionId));
   }
 
   @Test
-  void testSetHostExplicitly() {
-    String sessionId = sessionManager.createSession();
-    sessionManager.registerUser("Alice", sessionId);
-    sessionManager.registerUser("Bob", sessionId);
-    sessionManager.setHost(sessionId, "Bob");
-    assertEquals("Bob", sessionManager.getHost(sessionId));
-  }
-
-  @Test
   void testClearSessionsCleansHostData() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.clearSessions();
     assertNull(sessionManager.getHost(sessionId));
@@ -411,10 +407,10 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessionsCleansHostData() throws Exception {
-    String activeSession = sessionManager.createSession();
+    String activeSession = createSession();
     sessionManager.registerUser("Alice", activeSession);
 
-    String idleSession = sessionManager.createSession();
+    String idleSession = createSession();
     sessionManager.registerUser("Bob", idleSession);
 
     // Backdate lastActivity for idle session
@@ -433,7 +429,7 @@ class SessionManagerTest {
 
   @Test
   void testHostPromotesToNextByJoinOrder() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.registerUser("Bob", sessionId);
     sessionManager.registerUser("Charlie", sessionId);
@@ -443,7 +439,7 @@ class SessionManagerTest {
 
   @Test
   void testPromoteHost() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("userA", sessionId);
     sessionManager.registerUser("userB", sessionId);
     sessionManager.promoteHost(sessionId, "userB");
@@ -454,7 +450,7 @@ class SessionManagerTest {
 
   @Test
   void testPromoteHostToNonMemberThrows() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("userA", sessionId);
     IllegalArgumentException ex =
         assertThrows(
@@ -464,7 +460,7 @@ class SessionManagerTest {
 
   @Test
   void testPromoteHostPreservesAllUsers() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("userA", sessionId);
     sessionManager.registerUser("userB", sessionId);
     sessionManager.registerUser("userC", sessionId);
@@ -479,7 +475,7 @@ class SessionManagerTest {
 
   @Test
   void testRemoveUserCaseInsensitive() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Bob", sessionId);
     sessionManager.removeUser("bob", sessionId);
     assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
@@ -487,7 +483,7 @@ class SessionManagerTest {
 
   @Test
   void testRemoveUserExactCaseStillWorks() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Bob", sessionId);
     sessionManager.removeUser("Bob", sessionId);
     assertTrue(sessionManager.getSessionUsers(sessionId).isEmpty());
@@ -495,7 +491,7 @@ class SessionManagerTest {
 
   @Test
   void testRemoveUserDoesNotRemoveNonMatchingUser() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.registerUser("Alice", sessionId);
     sessionManager.removeUser("bob", sessionId);
     assertEquals(List.of("Alice"), sessionManager.getSessionUsers(sessionId));
@@ -513,7 +509,7 @@ class SessionManagerTest {
           () -> {
             try {
               startLatch.await();
-              String sessionId = sessionManager.createSession();
+              String sessionId = createSession();
               sessionIds.add(sessionId);
             } catch (InterruptedException e) {
               Thread.currentThread().interrupt();
@@ -537,7 +533,7 @@ class SessionManagerTest {
     List<String> idleSessions = new ArrayList<>();
 
     for (int i = 0; i < sessionCount; i++) {
-      String sessionId = sessionManager.createSession();
+      String sessionId = createSession();
       sessionManager.registerUser("User" + i, sessionId);
       allSessions.add(sessionId);
     }
@@ -639,7 +635,7 @@ class SessionManagerTest {
 
   @Test
   void testGetRoundStartsAtZero() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     assertEquals(0, sessionManager.getRound(sessionId));
   }
 
@@ -650,7 +646,7 @@ class SessionManagerTest {
 
   @Test
   void testIncrementAndGetRound() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     assertEquals(1, sessionManager.incrementAndGetRound(sessionId));
     assertEquals(2, sessionManager.incrementAndGetRound(sessionId));
     assertEquals(2, sessionManager.getRound(sessionId));
@@ -658,7 +654,7 @@ class SessionManagerTest {
 
   @Test
   void testClearSessionsWipesRounds() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.incrementAndGetRound(sessionId);
     sessionManager.clearSessions();
     assertEquals(0, sessionManager.getRound(sessionId));
@@ -666,13 +662,13 @@ class SessionManagerTest {
 
   @Test
   void testGetConsensusOverrideStartsNull() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     assertNull(sessionManager.getConsensusOverride(sessionId));
   }
 
   @Test
   void testGetConsensusRoundStartsAtZero() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     assertEquals(0L, sessionManager.getConsensusRound(sessionId));
   }
 
@@ -683,7 +679,7 @@ class SessionManagerTest {
 
   @Test
   void testSetConsensusOverrideStoresAndIncrementsRound() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     long round = sessionManager.setConsensusOverride(sessionId, "8");
     assertEquals(1L, round);
     assertEquals("8", sessionManager.getConsensusOverride(sessionId));
@@ -692,7 +688,7 @@ class SessionManagerTest {
 
   @Test
   void testSetConsensusOverrideEachCallIncrementsRound() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     assertEquals(1L, sessionManager.setConsensusOverride(sessionId, "5"));
     assertEquals(2L, sessionManager.setConsensusOverride(sessionId, "8"));
     assertEquals(3L, sessionManager.setConsensusOverride(sessionId, null));
@@ -701,7 +697,7 @@ class SessionManagerTest {
 
   @Test
   void testSetConsensusOverrideNullClearsValue() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.setConsensusOverride(sessionId, "5");
     sessionManager.setConsensusOverride(sessionId, null);
     assertNull(sessionManager.getConsensusOverride(sessionId));
@@ -709,7 +705,7 @@ class SessionManagerTest {
 
   @Test
   void testResetSessionClearsConsensusOverride() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.setConsensusOverride(sessionId, "8");
     sessionManager.resetSession(sessionId);
     assertNull(sessionManager.getConsensusOverride(sessionId));
@@ -717,7 +713,7 @@ class SessionManagerTest {
 
   @Test
   void testClearSessionsWipesConsensus() {
-    String sessionId = sessionManager.createSession();
+    String sessionId = createSession();
     sessionManager.setConsensusOverride(sessionId, "5");
     sessionManager.clearSessions();
     assertNull(sessionManager.getConsensusOverride(sessionId));
@@ -726,7 +722,7 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessionsWipesConsensus() throws Exception {
-    String idleSession = sessionManager.createSession();
+    String idleSession = createSession();
     sessionManager.setConsensusOverride(idleSession, "5");
 
     Field lastActivityField = SessionManager.class.getDeclaredField("lastActivity");
@@ -743,7 +739,7 @@ class SessionManagerTest {
 
   @Test
   void testEvictIdleSessionsWipesRounds() throws Exception {
-    String idleSession = sessionManager.createSession();
+    String idleSession = createSession();
     sessionManager.incrementAndGetRound(idleSession);
     sessionManager.incrementAndGetRound(idleSession);
 
