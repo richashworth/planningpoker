@@ -63,9 +63,10 @@ export default function Header() {
           component="div"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            fontWeight: 500,
-            fontFamily: '"Lobster", cursive',
-            letterSpacing: 'normal',
+            fontFamily: '"Manrope", sans-serif',
+            fontSize: '1.75rem',
+            fontWeight: 700,
+            letterSpacing: '-0.01em',
             color: '#fff',
           }}
         >
