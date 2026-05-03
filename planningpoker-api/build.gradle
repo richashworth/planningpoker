@@ -6,6 +6,29 @@ plugins {
     id 'com.diffplug.spotless' version '8.4.0'
 }
 
+// Resolve the version stamped into the JAR manifest, in order of precedence:
+//   1. -PreleaseVersion=X.Y.Z — semantic-release's exec step passes the new
+//      version it's about to publish, so the GitHub release JAR asset gets
+//      the right tag baked in.
+//   2. Latest reachable git tag — Railway and local builds resolve the most
+//      recent release without needing a master commit on every release.
+//   3. gradle.properties `version` — final fallback when neither is set
+//      (e.g. .git isn't in the build context).
+def gitTagVersion = { ->
+    try {
+        def proc = ['git', '-C', rootDir.absolutePath, 'describe', '--tags', '--abbrev=0'].execute()
+        proc.waitForOrKill(5000)
+        if (proc.exitValue() == 0) {
+            return proc.text.trim().replaceFirst(/^v/, '')
+        }
+    } catch (Exception ignored) {
+        // git unavailable — fall through
+    }
+    return null
+}
+def releaseOverride = project.findProperty('releaseVersion')
+version = releaseOverride ?: gitTagVersion() ?: project.version
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
