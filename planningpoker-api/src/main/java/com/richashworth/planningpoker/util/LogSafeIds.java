@@ -8,9 +8,8 @@ import java.security.NoSuchAlgorithmException;
  * Produces short, deterministic, non-reversible identifiers for log correlation. Used instead of
  * raw session IDs or usernames so logs carry no PII.
  *
- * <p>NOTE on reversibility: SHA-256 on an 8-char session ID is theoretically brute-forceable
- * offline, but session IDs are ephemeral (evicted after 24h idle) and contain no user data. This
- * residual risk is explicitly accepted (see phase 13 threat model T-13-04).
+ * <p>SHA-256 truncated to 8 hex chars: collision-tolerant (used for grep, not uniqueness) and
+ * non-reversible against 12-char URL-safe Base64 session IDs (~2⁷² input space).
  */
 public final class LogSafeIds {
 

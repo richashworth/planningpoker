@@ -41,7 +41,7 @@ test.describe('Host a Game', () => {
     await page.getByRole('button', { name: 'Start Game' }).click()
     await expect(page).toHaveURL('/game')
 
-    await expect(page.locator('.MuiChip-label')).toHaveText(/^Session ID: [a-f0-9]{8}$/)
+    await expect(page.locator('.MuiChip-label')).toHaveText(/^Session ID: [A-Za-z0-9_-]{12}$/)
   })
 
   test('host can vote and see results', async ({ page }) => {

@@ -69,7 +69,7 @@ Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planning
 ### Backend
 
 - **Spring Boot 4.0** with Java 25
-- **State management:** All session state is in-memory (synchronized Guava `ListMultimap`). Session IDs are random 8-char UUID prefixes. A scheduled task (`ClearSessionsTask`) periodically clears all sessions.
+- **State management:** All session state is in-memory (synchronized Guava `ListMultimap`). Session IDs are 12-char URL-safe Base64 tokens (9 random bytes from `SecureRandom`). A scheduled task (`ClearSessionsTask`) periodically clears all sessions.
 - **SPA routing:** `SpaWebConfig` forwards unknown routes to `index.html` so client-side routing works on page refresh.
 - **State sync:** After a mutation, `MessagingUtils.sendResultsMessage()` / `sendUsersMessage()` publishes a single typed `Message` envelope to the relevant `/topic/...`. Clients reconcile via a monotonic `round` (epoch) counter: a newer round replaces state, an equal round unions results, older rounds are ignored — so duplicate or out-of-order broadcasts are idempotent.
 
@@ -115,7 +115,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 
 - **Tech stack**: Spring Boot 4.0 + Java 25 backend, React 19 + MUI v9 + Redux 5 + RTK frontend — no new frameworks
 - **In-memory state**: No database — all session state lives in `SessionManager` and is ephemeral
-- **No authentication**: users are identified by name within a session; the 8-char session ID is the only access control
+- **No authentication**: users are identified by name within a session; the 12-char session ID is the only access control
 
 ## Technology Stack
 
