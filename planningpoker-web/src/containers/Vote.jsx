@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { vote, voteOptimistic } from '../actions'
 import UsersTable from './UsersTable'
+import SpectatorsTable from './SpectatorsTable'
 import SessionHistory from './SessionHistory'
 
 function cardSx(isSelected, isDisabled) {
@@ -118,6 +119,7 @@ export default function Vote({ consensusOverride = null }) {
         </Box>
         <Box sx={{ gridArea: 'players' }}>
           <UsersTable heading="Players" />
+          <SpectatorsTable />
         </Box>
         <Box sx={{ gridArea: 'history', minWidth: 0 }}>
           <SessionHistory consensusOverride={consensusOverride} />

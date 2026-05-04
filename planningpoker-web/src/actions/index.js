@@ -109,9 +109,10 @@ export function createGame(playerName, schemeOptions, onSuccess) {
         schemeType: schemeOptions.schemeType,
         customValues: schemeOptions.customValues,
         includeUnsure: schemeOptions.includeUnsure,
+        isSpectator: !!schemeOptions.isSpectator,
       },
       type: CREATE_GAME,
-      meta: { userName: playerName },
+      meta: { userName: playerName, isSpectator: !!schemeOptions.isSpectator },
       fallbackError: 'Failed to create session',
       onSuccess: () => {
         if (onSuccess) onSuccess()
@@ -137,13 +138,13 @@ export function leaveGame(playerName, sessionId, onSuccess) {
   }
 }
 
-export function joinGame(playerName, sessionId, onSuccess) {
+export function joinGame(playerName, sessionId, isSpectator, onSuccess) {
   return async (dispatch) => {
     await postForm(dispatch, {
       url: '/joinSession',
-      params: { userName: playerName, sessionId },
+      params: { userName: playerName, sessionId, isSpectator: !!isSpectator },
       type: JOIN_GAME,
-      meta: { userName: playerName, sessionId },
+      meta: { userName: playerName, sessionId, isSpectator: !!isSpectator },
       fallbackError: 'Failed to join session',
       onSuccess: () => {
         if (onSuccess) onSuccess()
@@ -207,7 +208,14 @@ export function refresh(sessionId, playerName) {
       })
       dispatch(resultsReplace(data.round, data.results, playerName))
       dispatch(labelUpdated(data.label || ''))
-      if (Array.isArray(data.users)) dispatch(usersUpdated({ users: data.users, host: data.host }))
+      if (Array.isArray(data.users))
+        dispatch(
+          usersUpdated({
+            users: data.users,
+            host: data.host,
+            spectators: data.spectators ?? [],
+          }),
+        )
       if (Array.isArray(data.completedRounds)) dispatch(roundsReplace(data.completedRounds))
     } catch (err) {
       console.error('Failed to refresh session state', err)

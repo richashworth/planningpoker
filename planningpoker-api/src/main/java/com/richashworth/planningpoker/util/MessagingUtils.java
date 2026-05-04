@@ -40,6 +40,7 @@ public class MessagingUtils {
     Map<String, Object> payload = new LinkedHashMap<>();
     payload.put("users", sessionManager.getSessionUsers(sessionId));
     payload.put("host", sessionManager.getHost(sessionId));
+    payload.put("spectators", sessionManager.getSessionSpectators(sessionId));
     template.convertAndSend(getTopic(TOPIC_USERS, sessionId), usersMessage(payload));
   }
 

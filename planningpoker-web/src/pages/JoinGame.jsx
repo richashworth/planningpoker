@@ -7,6 +7,8 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import CircularProgress from '@mui/material/CircularProgress'
 import { joinGame, userRegistered } from '../actions'
 import NameInput from '../components/NameInput'
@@ -15,6 +17,7 @@ import { USERNAME_REGEX } from '../config/Constants'
 export default function JoinGame() {
   const [playerName, setPlayerName] = useState('')
   const [sessionId, setSessionId] = useState('')
+  const [isSpectator, setIsSpectator] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -28,7 +31,7 @@ export default function JoinGame() {
     setSubmitting(true)
     try {
       await dispatch(
-        joinGame(playerName, sessionId, () => {
+        joinGame(playerName, sessionId, isSpectator, () => {
           dispatch(userRegistered())
           navigate('/game')
         }),
@@ -56,9 +59,20 @@ export default function JoinGame() {
               onChange={(e) => setSessionId(e.target.value)}
               required
               fullWidth
-              sx={{ mb: 2.5 }}
+              sx={{ mb: 1 }}
               helperText="8-character session ID"
               slotProps={{ htmlInput: { maxLength: 8 } }}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isSpectator}
+                  onChange={(e) => setIsSpectator(e.target.checked)}
+                  size="small"
+                />
+              }
+              label="Join as spectator (don't vote)"
+              sx={{ mb: 2.5 }}
             />
             <Button
               type="submit"

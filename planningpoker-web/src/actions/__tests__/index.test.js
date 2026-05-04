@@ -113,14 +113,27 @@ describe('joinGame', () => {
       .mockResolvedValue({ data: { sessionId: 'abc12345', round: 3, results: [], label: '' } })
     const onSuccess = vi.fn()
 
-    const dispatched = await runThunkAsync(joinGame('Bob', 'abc12345', onSuccess))
+    const dispatched = await runThunkAsync(joinGame('Bob', 'abc12345', false, onSuccess))
 
     expect(dispatched).toHaveLength(1)
     expect(dispatched[0].type).toBe(JOIN_GAME)
     expect(dispatched[0].payload.round).toBe(3)
     expect(dispatched[0].meta.userName).toBe('Bob')
     expect(dispatched[0].meta.sessionId).toBe('abc12345')
+    expect(dispatched[0].meta.isSpectator).toBe(false)
     expect(onSuccess).toHaveBeenCalledOnce()
+  })
+
+  it('passes isSpectator=true through to the request and meta', async () => {
+    axios.post = vi
+      .fn()
+      .mockResolvedValue({ data: { sessionId: 'abc12345', round: 0, results: [], label: '' } })
+
+    const dispatched = await runThunkAsync(joinGame('Bob', 'abc12345', true, () => {}))
+
+    expect(dispatched[0].meta.isSpectator).toBe(true)
+    const body = axios.post.mock.calls[0][1]
+    expect(body.toString()).toContain('isSpectator=true')
   })
 })
 
@@ -221,7 +234,11 @@ describe('refresh', () => {
 
     const usersAction = dispatched.find((a) => a.type === USERS_UPDATED)
     expect(usersAction).toBeDefined()
-    expect(usersAction.payload).toEqual({ users: ['alice', 'bob'], host: 'alice' })
+    expect(usersAction.payload).toEqual({
+      users: ['alice', 'bob'],
+      host: 'alice',
+      spectators: [],
+    })
 
     const roundsAction = dispatched.find((a) => a.type === ROUNDS_REPLACE)
     expect(roundsAction).toBeDefined()

@@ -34,6 +34,7 @@ class VoteControllerTest extends AbstractControllerTest {
     inOrder.verify(sessionManager, times(1)).isSessionActive(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).getSessionLegalValues(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).getSessionUsers(SESSION_ID);
+    inOrder.verify(sessionManager, times(1)).isSpectator(SESSION_ID, USER_NAME);
     inOrder.verify(sessionManager, times(1)).registerEstimate(SESSION_ID, ESTIMATE);
     inOrder.verify(sessionManager, times(1)).getRound(SESSION_ID);
     inOrder.verify(sessionManager, times(1)).getResults(SESSION_ID);
@@ -65,5 +66,20 @@ class VoteControllerTest extends AbstractControllerTest {
     when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
     assertThrows(
         IllegalArgumentException.class, () -> voteController.vote(SESSION_ID, USER_NAME, "999"));
+  }
+
+  @Test
+  void testVoteRejectedForSpectator() {
+    when(sessionManager.isSessionActive(SESSION_ID)).thenReturn(true);
+    when(sessionManager.getSessionLegalValues(SESSION_ID)).thenReturn(STORY_POINT_VALUES);
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(Lists.newArrayList(USER_NAME));
+    when(sessionManager.isSpectator(SESSION_ID, USER_NAME)).thenReturn(true);
+    IllegalArgumentException ex =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> voteController.vote(SESSION_ID, USER_NAME, ESTIMATE_VALUE));
+    assertEquals("Spectators cannot vote", ex.getMessage());
+    verify(sessionManager, never()).registerEstimate(anyString(), any());
+    verify(messagingUtils, never()).sendResultsMessage(anyString());
   }
 }

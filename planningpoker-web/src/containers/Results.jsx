@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import ResultsTable from './ResultsTable'
 import ResultsChart from './ResultsChart'
+import SpectatorsTable from './SpectatorsTable'
 import SessionHistory from './SessionHistory'
 import ConsensusCardRail from '../components/ConsensusCardRail'
 import { resetSession, setConsensusOverride } from '../actions'
@@ -120,7 +121,7 @@ export default function Results() {
                 }}
               >
                 <Typography component="span" sx={eyebrowSx}>
-                  Distribution
+                  Results
                 </Typography>
                 <Box
                   sx={{
@@ -167,6 +168,7 @@ export default function Results() {
         </Box>
         <Box sx={{ gridArea: 'votes' }}>
           <ResultsTable />
+          <SpectatorsTable />
         </Box>
         <Box sx={{ gridArea: 'history', minWidth: 0 }}>
           <SessionHistory consensusOverride={consensusOverride} includeInflight />

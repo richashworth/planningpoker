@@ -54,10 +54,12 @@ class MessagingUtilsTest {
   void testSendUsersMessage() {
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
     when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    when(sessionManager.getSessionSpectators(SESSION_ID)).thenReturn(java.util.List.of());
     messagingUtils.sendUsersMessage(SESSION_ID);
     Map<String, Object> expectedPayload = new LinkedHashMap<>();
     expectedPayload.put("users", USERS);
     expectedPayload.put("host", USER_NAME);
+    expectedPayload.put("spectators", java.util.List.of());
     verify(template, times(1))
         .convertAndSend(
             getTopic(TOPIC_USERS, SESSION_ID), messagingUtils.usersMessage(expectedPayload));
@@ -68,12 +70,29 @@ class MessagingUtilsTest {
   void testSendUsersMessageWithNullHost() {
     when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
     when(sessionManager.getHost(SESSION_ID)).thenReturn(null);
+    when(sessionManager.getSessionSpectators(SESSION_ID)).thenReturn(java.util.List.of());
     messagingUtils.sendUsersMessage(SESSION_ID);
     ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
     verify(template).convertAndSend(eq(getTopic(TOPIC_USERS, SESSION_ID)), captor.capture());
     Map<String, Object> expectedPayload = new LinkedHashMap<>();
     expectedPayload.put("users", USERS);
     expectedPayload.put("host", null);
+    expectedPayload.put("spectators", java.util.List.of());
+    assertEquals(messagingUtils.usersMessage(expectedPayload), captor.getValue());
+  }
+
+  @Test
+  void testSendUsersMessageIncludesSpectators() {
+    when(sessionManager.getSessionUsers(SESSION_ID)).thenReturn(USERS);
+    when(sessionManager.getHost(SESSION_ID)).thenReturn(USER_NAME);
+    when(sessionManager.getSessionSpectators(SESSION_ID)).thenReturn(java.util.List.of("Alice"));
+    messagingUtils.sendUsersMessage(SESSION_ID);
+    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
+    verify(template).convertAndSend(eq(getTopic(TOPIC_USERS, SESSION_ID)), captor.capture());
+    Map<String, Object> expectedPayload = new LinkedHashMap<>();
+    expectedPayload.put("users", USERS);
+    expectedPayload.put("host", USER_NAME);
+    expectedPayload.put("spectators", java.util.List.of("Alice"));
     assertEquals(messagingUtils.usersMessage(expectedPayload), captor.getValue());
   }
 

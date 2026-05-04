@@ -377,6 +377,55 @@ test.describe('Estimation Schemes', () => {
   })
 })
 
+test.describe('Spectator mode', () => {
+  test('spectator sees results view, cannot vote, excluded from results table', async ({
+    browser,
+  }) => {
+    const hostCtx = await browser.newContext()
+    const hostPage = await hostCtx.newPage()
+    const sessionId = await hostGame(hostPage, 'Alice')
+
+    const spectatorCtx = await browser.newContext()
+    const spectatorPage = await spectatorCtx.newPage()
+    await spectatorPage.goto('/join')
+    await spectatorPage.getByLabel('Your Name').fill('Bob')
+    await spectatorPage.getByLabel('Session ID').fill(sessionId)
+    await spectatorPage.getByLabel("Join as spectator (don't vote)").check()
+    await spectatorPage.getByRole('button', { name: 'Join Game' }).click()
+    await expect(spectatorPage).toHaveURL('/game')
+
+    // Spectator lands on the Results view (no vote cards, no Cast your estimate header)
+    await expect(spectatorPage.getByText('Cast your estimate')).not.toBeVisible()
+    await expect(spectatorPage.getByRole('button', { name: 'Vote 5' })).not.toBeVisible()
+    // Non-host spectator does not see Next Item
+    await expect(spectatorPage.getByRole('button', { name: 'Next Item' })).not.toBeVisible()
+
+    // Host's Spectators table lists Bob (collapsed by default; click to expand and verify)
+    const spectatorsToggle = hostPage.getByRole('button', { name: /Spectators · 1/ })
+    await expect(spectatorsToggle).toBeVisible({ timeout: 10000 })
+    await spectatorsToggle.click()
+    await expect(hostPage.getByRole('main').getByText('Bob', { exact: true })).toBeVisible()
+
+    // Host votes; reveal happens because Alice is the only voter (1 of 1)
+    await hostPage.getByText('8', { exact: true }).click()
+    await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+
+    // Spectator's results table shows Alice's vote stream in real time
+    const spectatorResultsTable = spectatorPage.getByRole('table', { name: 'Voting results' })
+    await expect(spectatorResultsTable.getByText('Alice')).toBeVisible({ timeout: 15000 })
+    // Spectator does not appear in their own results table
+    await expect(spectatorResultsTable.getByText('Bob')).toHaveCount(0)
+
+    // Same on host side
+    const hostResultsTable = hostPage.getByRole('table', { name: 'Voting results' })
+    await expect(hostResultsTable.getByText('Bob')).toHaveCount(0)
+    await expect(hostResultsTable.getByText('Alice')).toBeVisible()
+
+    await hostCtx.close()
+    await spectatorCtx.close()
+  })
+})
+
 test.describe('Copy Session ID', () => {
   test('copy button shows checkmark after click', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])

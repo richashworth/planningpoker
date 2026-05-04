@@ -728,4 +728,59 @@ class SessionManagerTest {
     sessionManager.evictIdleSessions();
     assertEquals(0, sessionManager.getRound(idleSession));
   }
+
+  @Test
+  void testRegisterUserAsSpectator() {
+    String sessionId = createSession();
+    sessionManager.registerUser("Alice", sessionId, true);
+    assertTrue(sessionManager.isSpectator(sessionId, "Alice"));
+    assertEquals(List.of("Alice"), sessionManager.getSessionSpectators(sessionId));
+    assertTrue(sessionManager.getSessionUsers(sessionId).contains("Alice"));
+  }
+
+  @Test
+  void testRegisterUserDefaultsToVoter() {
+    String sessionId = createSession();
+    sessionManager.registerUser("Alice", sessionId);
+    assertFalse(sessionManager.isSpectator(sessionId, "Alice"));
+    assertTrue(sessionManager.getSessionSpectators(sessionId).isEmpty());
+  }
+
+  @Test
+  void testIsSpectatorIsCaseInsensitive() {
+    String sessionId = createSession();
+    sessionManager.registerUser("Alice", sessionId, true);
+    assertTrue(sessionManager.isSpectator(sessionId, "alice"));
+    assertTrue(sessionManager.isSpectator(sessionId, "ALICE"));
+  }
+
+  @Test
+  void testRemoveUserClearsSpectatorEntry() {
+    String sessionId = createSession();
+    sessionManager.registerUser("Alice", sessionId, true);
+    sessionManager.registerUser("Bob", sessionId, false);
+    sessionManager.removeUser("Alice", sessionId);
+    assertFalse(sessionManager.isSpectator(sessionId, "Alice"));
+    assertTrue(sessionManager.getSessionSpectators(sessionId).isEmpty());
+  }
+
+  @Test
+  void testClearSessionsWipesSpectators() {
+    String sessionId = createSession();
+    sessionManager.registerUser("Alice", sessionId, true);
+    sessionManager.clearSessions();
+    assertFalse(sessionManager.isSpectator(sessionId, "Alice"));
+    assertTrue(sessionManager.getSessionSpectators(sessionId).isEmpty());
+  }
+
+  @Test
+  void testEvictIdleSessionsWipesSpectators() throws Exception {
+    String idleSession = createSession();
+    sessionManager.registerUser("Alice", idleSession, true);
+
+    backdateSession(idleSession, Duration.ofHours(25));
+
+    sessionManager.evictIdleSessions();
+    assertTrue(sessionManager.getSessionSpectators(idleSession).isEmpty());
+  }
 }

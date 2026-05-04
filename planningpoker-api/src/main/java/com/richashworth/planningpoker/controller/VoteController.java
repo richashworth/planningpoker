@@ -45,6 +45,9 @@ public class VoteController {
           sessionManager.getSessionUsers(sessionId), userName)) {
         throw new IllegalArgumentException("User is not a member of this session");
       }
+      if (sessionManager.isSpectator(sessionId, userName)) {
+        throw new IllegalArgumentException("Spectators cannot vote");
+      }
       logger.debug(
           "user {} voted in session {} (estimate hash {})",
           LogSafeIds.hash(userName),

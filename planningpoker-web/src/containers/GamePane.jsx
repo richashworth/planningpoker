@@ -12,7 +12,10 @@ export default function GamePane({ connected }) {
   const voted = useSelector((state) => state.voted)
   const results = useSelector((state) => state.results)
   const users = useSelector((state) => state.users)
+  const spectators = useSelector((state) => state.spectators)
+  const isSpectator = useSelector((state) => state.game.isSpectator)
   const consensusOverride = useSelector((state) => state.consensus.value)
+  const showResults = voted || isSpectator
 
   const [announcement, setAnnouncement] = useState('')
   const announcedForRevealRef = useRef(false)
@@ -24,16 +27,17 @@ export default function GamePane({ connected }) {
 
   // Dedup the reveal announcement off the voted state transition (not raw WS
   // message arrival) so the server's burst of duplicate broadcasts is absorbed.
+  const voterCount = users.length - (spectators?.length || 0)
   useEffect(() => {
     if (voted && !announcedForRevealRef.current) {
-      setAnnouncement(`Votes revealed: ${results.length} of ${users.length} players voted`)
+      setAnnouncement(`Votes revealed: ${results.length} of ${voterCount} players voted`)
       announcedForRevealRef.current = true
     }
     if (!voted && announcedForRevealRef.current) {
       announcedForRevealRef.current = false
       lastAnnouncedConsensusRef.current = null
     }
-  }, [voted, results.length, users.length])
+  }, [voted, results.length, voterCount])
 
   // First consensus announcement is deferred 1500ms so screen readers finish
   // reading the reveal text before it gets overwritten; subsequent changes use
@@ -85,7 +89,7 @@ export default function GamePane({ connected }) {
       <LiveAnnouncer message={announcement} />
       <Box>
         <SessionHeader />
-        {voted ? <Results /> : <Vote consensusOverride={consensusOverride} />}
+        {showResults ? <Results /> : <Vote consensusOverride={consensusOverride} />}
       </Box>
     </>
   )

@@ -18,6 +18,7 @@ const initialState = {
   sessionId: '',
   isAdmin: false,
   isRegistered: false,
+  isSpectator: false,
   legalEstimates: [],
   schemeType: 'fibonacci',
   includeUnsure: true,

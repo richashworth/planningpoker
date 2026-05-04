@@ -45,7 +45,8 @@ public class GameController {
   @PostMapping("joinSession")
   public SessionResponse joinSession(
       @RequestParam(name = "sessionId") final String sessionId,
-      @RequestParam(name = "userName") final String userName) {
+      @RequestParam(name = "userName") final String userName,
+      @RequestParam(name = "isSpectator", defaultValue = "false") final boolean isSpectator) {
     validateUserName(userName);
     final SchemeConfig config;
     final List<String> values;
@@ -54,15 +55,19 @@ public class GameController {
     final List<Estimate> results;
     final String label;
     final List<Round> completedRounds;
+    final List<String> spectators;
     synchronized (sessionManager) {
       if (!sessionManager.isSessionActive(sessionId)) {
         throw new IllegalArgumentException("session not found");
       } else if (containsIgnoreCase(sessionManager.getSessionUsers(sessionId), userName)) {
         throw new IllegalArgumentException("user exists");
       } else {
-        sessionManager.registerUser(userName, sessionId);
+        sessionManager.registerUser(userName, sessionId, isSpectator);
         logger.info(
-            "user {} joined session {}", LogSafeIds.hash(userName), LogSafeIds.hash(sessionId));
+            "user {} joined session {} (spectator={})",
+            LogSafeIds.hash(userName),
+            LogSafeIds.hash(sessionId),
+            isSpectator);
       }
       config = sessionManager.getSessionSchemeConfig(sessionId);
       values = sessionManager.getSessionLegalValues(sessionId);
@@ -71,6 +76,7 @@ public class GameController {
       results = sessionManager.getResults(sessionId);
       label = sessionManager.getLabel(sessionId);
       completedRounds = sessionManager.getCompletedRounds(sessionId);
+      spectators = sessionManager.getSessionSpectators(sessionId);
     }
     messagingUtils.sendUsersMessage(sessionId);
     return new SessionResponse(
@@ -82,7 +88,8 @@ public class GameController {
         round,
         results,
         label,
-        completedRounds);
+        completedRounds,
+        spectators);
   }
 
   @PostMapping("createSession")
@@ -90,18 +97,21 @@ public class GameController {
     validateUserName(request.userName());
     final String sessionId;
     final SchemeConfig schemeConfig = buildSchemeConfig(request);
+    boolean isSpectator = Boolean.TRUE.equals(request.isSpectator());
     synchronized (sessionManager) {
       sessionId = sessionManager.createSession(schemeConfig);
-      sessionManager.registerUser(request.userName(), sessionId);
+      sessionManager.registerUser(request.userName(), sessionId, isSpectator);
       logger.info(
-          "user {} created session {}",
+          "user {} created session {} (spectator={})",
           LogSafeIds.hash(request.userName()),
-          LogSafeIds.hash(sessionId));
+          LogSafeIds.hash(sessionId),
+          isSpectator);
     }
     messagingUtils.sendUsersMessage(sessionId);
     List<String> values = sessionManager.getSessionLegalValues(sessionId);
     String host = sessionManager.getHost(sessionId);
     int round = sessionManager.getRound(sessionId);
+    List<String> spectators = sessionManager.getSessionSpectators(sessionId);
     return new SessionResponse(
         host,
         sessionId,
@@ -111,7 +121,8 @@ public class GameController {
         round,
         List.of(),
         "",
-        List.of());
+        List.of(),
+        spectators);
   }
 
   @PostMapping("logout")
@@ -139,10 +150,11 @@ public class GameController {
     List<String> users = sessionManager.getSessionUsers(sessionId);
     String host = sessionManager.getHost(sessionId);
     List<Round> completedRounds = sessionManager.getCompletedRounds(sessionId);
+    List<String> spectators = sessionManager.getSessionSpectators(sessionId);
     messagingUtils.sendResultsMessage(sessionId);
     messagingUtils.sendUsersMessage(sessionId);
     messagingUtils.sendConsensusMessage(sessionId);
-    return new RefreshResponse(round, results, label, users, host, completedRounds);
+    return new RefreshResponse(round, results, label, users, host, completedRounds, spectators);
   }
 
   @GetMapping("sessionUsers")
