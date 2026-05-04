@@ -8,6 +8,7 @@ import com.richashworth.planningpoker.model.Round;
 import com.richashworth.planningpoker.model.SchemeConfig;
 import com.richashworth.planningpoker.model.SchemeType;
 import com.richashworth.planningpoker.util.LogSafeIds;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,10 @@ public class SessionManager {
 
   static final int MAX_SESSIONS = 100_000;
   static final int MAX_ID_ATTEMPTS = 100;
+
+  private static final int SESSION_ID_RANDOM_BYTES = 9;
+  private static final SecureRandom SESSION_ID_RNG = new SecureRandom();
+  private static final Base64.Encoder SESSION_ID_ENCODER = Base64.getUrlEncoder().withoutPadding();
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,7 +67,7 @@ public class SessionManager {
         throw new IllegalStateException(
             "Failed to generate unique session ID after " + MAX_ID_ATTEMPTS + " attempts");
       }
-      sessionId = UUID.randomUUID().toString().substring(0, 8);
+      sessionId = generateSessionId();
       attempts++;
     } while (activeSessions.contains(sessionId));
     activeSessions.add(sessionId);
@@ -292,5 +297,11 @@ public class SessionManager {
     if (!toEvict.isEmpty()) {
       logger.info("Evicted {} idle session(s)", toEvict.size());
     }
+  }
+
+  private static String generateSessionId() {
+    byte[] bytes = new byte[SESSION_ID_RANDOM_BYTES];
+    SESSION_ID_RNG.nextBytes(bytes);
+    return SESSION_ID_ENCODER.encodeToString(bytes);
   }
 }

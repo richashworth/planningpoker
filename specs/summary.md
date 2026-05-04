@@ -1,7 +1,7 @@
 ## System: PlanningPoker
 
 ### Entities
-- **Session**: A planning poker estimation session identified by 8-char UUID prefix
+- **Session**: A planning poker estimation session identified by 12-char URL-safe Base64 token
   - Type: resource
   - Count: unbounded
   - States: active, cleared

@@ -60,8 +60,8 @@ export default function JoinGame() {
               required
               fullWidth
               sx={{ mb: 1 }}
-              helperText="8-character session ID"
-              slotProps={{ htmlInput: { maxLength: 8 } }}
+              helperText="12-character session ID"
+              slotProps={{ htmlInput: { maxLength: 12 } }}
             />
             <FormControlLabel
               control={

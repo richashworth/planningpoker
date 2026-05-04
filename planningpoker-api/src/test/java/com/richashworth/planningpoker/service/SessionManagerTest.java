@@ -292,7 +292,9 @@ class SessionManagerTest {
     SchemeConfig config = new SchemeConfig("fibonacci", null, true);
     String sessionId = sessionManager.createSession(config);
     assertNotNull(sessionId);
-    assertEquals(8, sessionId.length());
+    assertEquals(12, sessionId.length());
+    assertTrue(
+        sessionId.matches("[A-Za-z0-9_-]{12}"), "session ID should be 12 URL-safe Base64 chars");
     assertTrue(sessionManager.isSessionActive(sessionId));
     List<String> legalValues = sessionManager.getSessionLegalValues(sessionId);
     assertTrue(legalValues.contains("1"));

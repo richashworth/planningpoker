@@ -347,7 +347,7 @@ test.describe('CSV Export', () => {
       await exportBtn.scrollIntoViewIfNeeded()
       const [download] = await Promise.all([hostPage.waitForEvent('download'), exportBtn.click()])
 
-      expect(download.suggestedFilename()).toMatch(/^planning-poker-[a-f0-9]+\.csv$/)
+      expect(download.suggestedFilename()).toMatch(/^planning-poker-[A-Za-z0-9_-]+\.csv$/)
 
       // Verify CSV content
       const content = await download.path().then((p) => {
@@ -422,7 +422,7 @@ test.describe('CSV Export', () => {
         playerPage.waitForEvent('download'),
         playerExport.click(),
       ])
-      expect(download.suggestedFilename()).toMatch(/^planning-poker-[a-f0-9]+\.csv$/)
+      expect(download.suggestedFilename()).toMatch(/^planning-poker-[A-Za-z0-9_-]+\.csv$/)
       const content = await download.path().then((p) => {
         // eslint-disable-next-line no-undef
         const fs = require('fs')
