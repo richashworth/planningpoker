@@ -44,6 +44,8 @@ public class SessionManager {
       new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, AtomicLong> sessionConsensusRounds =
       new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, Set<String>> sessionSpectators =
+      new ConcurrentHashMap<>();
 
   public boolean isSessionActive(final String sessionId) {
     return activeSessions.contains(sessionId);
@@ -186,6 +188,7 @@ public class SessionManager {
     sessionCompletedRounds.clear();
     sessionConsensusOverrides.clear();
     sessionConsensusRounds.clear();
+    sessionSpectators.clear();
   }
 
   public void resetSession(final String sessionId) {
@@ -196,13 +199,44 @@ public class SessionManager {
   }
 
   public void registerUser(final String userName, final String sessionId) {
+    registerUser(userName, sessionId, false);
+  }
+
+  public void registerUser(final String userName, final String sessionId, boolean isSpectator) {
     sessionUsers.put(sessionId, userName);
     sessionHosts.putIfAbsent(sessionId, userName);
+    if (isSpectator) {
+      sessionSpectators
+          .computeIfAbsent(sessionId, k -> ConcurrentHashMap.newKeySet())
+          .add(userName);
+    }
     touchSession(sessionId);
+  }
+
+  public List<String> getSessionSpectators(final String sessionId) {
+    Set<String> spectators = sessionSpectators.get(sessionId);
+    return spectators == null ? List.of() : List.copyOf(spectators);
+  }
+
+  public boolean isSpectator(final String sessionId, final String userName) {
+    Set<String> spectators = sessionSpectators.get(sessionId);
+    if (spectators == null) {
+      return false;
+    }
+    for (String name : spectators) {
+      if (name.equalsIgnoreCase(userName)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public synchronized void removeUser(String userName, String sessionId) {
     sessionUsers.get(sessionId).removeIf(u -> u.equalsIgnoreCase(userName));
+    Set<String> spectators = sessionSpectators.get(sessionId);
+    if (spectators != null) {
+      spectators.removeIf(u -> u.equalsIgnoreCase(userName));
+    }
     // Iterating a Multimaps.synchronizedListMultimap requires holding the multimap's own monitor
     // (matches registerEstimate). Without it, a concurrent registerEstimate can mutate the map
     // mid-iteration, throwing CME or producing a partial removal.
@@ -253,6 +287,7 @@ public class SessionManager {
       sessionCompletedRounds.removeAll(sessionId);
       sessionConsensusOverrides.remove(sessionId);
       sessionConsensusRounds.remove(sessionId);
+      sessionSpectators.remove(sessionId);
     }
     if (!toEvict.isEmpty()) {
       logger.info("Evicted {} idle session(s)", toEvict.size());

@@ -34,6 +34,7 @@ export default function CreateGame() {
   const [schemeType, setSchemeType] = useState('fibonacci')
   const [customValues, setCustomValues] = useState('')
   const [includeUnsure, setIncludeUnsure] = useState(false)
+  const [isSpectator, setIsSpectator] = useState(false)
   const [customError, setCustomError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const dispatch = useDispatch()
@@ -73,6 +74,7 @@ export default function CreateGame() {
             schemeType,
             customValues: schemeType === 'custom' ? customValues : null,
             includeUnsure,
+            isSpectator,
           },
           () => {
             dispatch(gameCreated())
@@ -168,7 +170,18 @@ export default function CreateGame() {
                 />
               }
               label="Include ? (unsure)"
-              sx={{ mb: 2.5 }}
+              sx={{ display: 'flex', mb: 0.5 }}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isSpectator}
+                  onChange={(e) => setIsSpectator(e.target.checked)}
+                  size="small"
+                />
+              }
+              label="Join as spectator (don't vote)"
+              sx={{ display: 'flex', mb: 2.5 }}
             />
 
             <Button

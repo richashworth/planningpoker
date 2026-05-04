@@ -8,4 +8,5 @@ public record RefreshResponse(
     String label,
     List<String> users,
     String host,
-    List<Round> completedRounds) {}
+    List<Round> completedRounds,
+    List<String> spectators) {}

@@ -105,7 +105,7 @@ describe('Results container', () => {
 
   it('renders the chart header summary with the consensus value and vote ratio', () => {
     renderWithStore(<Results />, { preloadedState: baseState() })
-    const headerRow = screen.getByText('Distribution').parentElement
+    const headerRow = screen.getByText('Results').parentElement
     expect(headerRow).toBeInTheDocument()
     expect(within(headerRow).getByText('Consensus')).toBeInTheDocument()
     expect(within(headerRow).getByText('5')).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('Results container', () => {
     renderWithStore(<Results />, {
       preloadedState: baseState({ consensus: { value: '8', round: 0 } }),
     })
-    const headerRow = screen.getByText('Distribution').parentElement
+    const headerRow = screen.getByText('Results').parentElement
     expect(within(headerRow).getByText('Consensus')).toBeInTheDocument()
     expect(within(headerRow).getByText('8')).toBeInTheDocument()
     expect(within(headerRow).getByText('no votes')).toBeInTheDocument()
@@ -131,7 +131,7 @@ describe('Results container', () => {
         consensus: { value: null, round: 0 },
       }),
     })
-    expect(screen.queryByText('Distribution')).not.toBeInTheDocument()
+    expect(screen.queryByText('Results')).not.toBeInTheDocument()
     expect(screen.queryByText('Consensus')).not.toBeInTheDocument()
   })
 })

@@ -22,7 +22,7 @@ describe('ResultsTable container', () => {
 
   it('renders the Votes header even when empty', () => {
     renderWithStore(<ResultsTable />, { preloadedState: state() })
-    expect(screen.getByText('Votes')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Votes/ })).toBeInTheDocument()
   })
 
   it('renders one row per voter', () => {

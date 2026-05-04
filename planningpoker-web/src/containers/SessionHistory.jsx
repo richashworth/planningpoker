@@ -20,6 +20,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
   const currentLabel = useSelector((state) => state.game.currentLabel)
   const rounds = useSelector((state) => state.rounds)
   const users = useSelector((state) => state.users)
+  const spectators = useSelector((state) => state.spectators)
   const results = useSelector((state) => state.results)
   const voted = useSelector((state) => state.voted)
   const [historyOpen, setHistoryOpen] = useState(false)
@@ -40,9 +41,12 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
         timestamp: new Date().toISOString(),
       })
     }
-    // Include all current session users plus any historical voters (who may have since left)
+    // Include all current session users (excluding spectators, who never vote) plus any
+    // historical voters (who may have since left)
+    const spectatorSet = new Set((spectators || []).map((s) => s.toLowerCase()))
+    const voters = users.filter((u) => !spectatorSet.has(u.toLowerCase()))
     const historicalVoters = allRounds.flatMap((r) => r.votes.map((v) => v.userName))
-    const allPlayers = [...new Set([...users, ...historicalVoters])].sort()
+    const allPlayers = [...new Set([...voters, ...historicalVoters])].sort()
     const csv = generateCsv(allRounds, allPlayers)
     downloadCsv(csv, `planning-poker-${sessionId}.csv`)
   }

@@ -11,4 +11,5 @@ public record SessionResponse(
     int round,
     List<Estimate> results,
     String label,
-    List<Round> completedRounds) {}
+    List<Round> completedRounds,
+    List<String> spectators) {}

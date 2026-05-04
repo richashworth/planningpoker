@@ -78,7 +78,7 @@ class VotingAndResetConcurrencyTest {
     List<String> members = new ArrayList<>();
     for (int i = 0; i < memberCount; i++) {
       String name = String.format("Mem%02d", i);
-      gameController.joinSession(sessionId, name);
+      gameController.joinSession(sessionId, name, false);
       members.add(name);
     }
 
@@ -216,7 +216,7 @@ class VotingAndResetConcurrencyTest {
     List<String> members = new ArrayList<>();
     for (int i = 0; i < memberCount; i++) {
       String name = "User" + i;
-      gameController.joinSession(sessionId, name);
+      gameController.joinSession(sessionId, name, false);
       members.add(name);
     }
 
@@ -341,7 +341,7 @@ class VotingAndResetConcurrencyTest {
 
   private String createSession(String host) {
     SessionResponse response =
-        gameController.createSession(new CreateSessionRequest(host, "fibonacci", null, true));
+        gameController.createSession(new CreateSessionRequest(host, "fibonacci", null, true, null));
     return response.sessionId();
   }
 }

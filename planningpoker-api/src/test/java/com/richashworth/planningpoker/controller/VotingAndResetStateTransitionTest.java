@@ -114,8 +114,8 @@ class VotingAndResetStateTransitionTest {
   @Test
   void testCastByMultipleMembersThenReset() {
     String sessionId = createSessionAndJoin("Host");
-    gameController.joinSession(sessionId, "Alice");
-    gameController.joinSession(sessionId, "Bob");
+    gameController.joinSession(sessionId, "Alice", false);
+    gameController.joinSession(sessionId, "Bob", false);
 
     voteController.vote(sessionId, "Alice", LEGAL_1);
     voteController.vote(sessionId, "Bob", LEGAL_2);
@@ -215,7 +215,7 @@ class VotingAndResetStateTransitionTest {
   @Test
   void testAllVotesAndHistoryVotesAreLegal() {
     String sessionId = createSessionAndJoin("Host");
-    gameController.joinSession(sessionId, "Alice");
+    gameController.joinSession(sessionId, "Alice", false);
 
     Set<String> legal = new HashSet<>(sessionManager.getSessionLegalValues(sessionId));
 
@@ -245,8 +245,8 @@ class VotingAndResetStateTransitionTest {
   @Test
   void testAtMostOneVotePerMemberPerRound() {
     String sessionId = createSessionAndJoin("Host");
-    gameController.joinSession(sessionId, "Alice");
-    gameController.joinSession(sessionId, "Bob");
+    gameController.joinSession(sessionId, "Alice", false);
+    gameController.joinSession(sessionId, "Bob", false);
 
     voteController.vote(sessionId, "Alice", LEGAL_1);
     voteController.vote(sessionId, "Bob", LEGAL_2);
@@ -290,7 +290,7 @@ class VotingAndResetStateTransitionTest {
 
   private String createSessionAndJoin(String host) {
     SessionResponse response =
-        gameController.createSession(new CreateSessionRequest(host, "fibonacci", null, true));
+        gameController.createSession(new CreateSessionRequest(host, "fibonacci", null, true, null));
     return response.sessionId();
   }
 
