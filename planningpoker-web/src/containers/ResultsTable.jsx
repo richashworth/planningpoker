@@ -59,7 +59,7 @@ export default function ResultsTable() {
           '& .MuiButton-startIcon': { mr: 0.5 },
         }}
       >
-        Votes · {results.length} of {voters.length}
+        Votes
       </Button>
       {open && (
         <Box
