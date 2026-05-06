@@ -4,6 +4,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.diffplug.spotless' version '8.4.0'
+    id 'org.graalvm.buildtools.native' version '0.10.6'
 }
 
 // Resolve the version stamped into the JAR manifest, in order of precedence:
@@ -44,7 +45,6 @@ jar {
 
 repositories {
     mavenCentral()
-    flatDir { dirs '../planningpoker-web/dist/libs' }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -52,7 +52,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 dependencies {
-    implementation name: 'planningpoker-web'
+    implementation files('../planningpoker-web/dist/libs/planningpoker-web.jar')
     implementation 'com.google.guava:guava:33.6.0-jre'
     implementation 'org.jetbrains:annotations:26.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -68,7 +68,6 @@ dependencies {
     testImplementation 'org.junit.platform:junit-platform-engine'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.23.0'
     testImplementation 'org.mockito:mockito-core:5.23.0'
-    testImplementation 'net.jqwik:jqwik:1.9.3'
 }
 
 tasks.named('test') {
@@ -123,4 +122,16 @@ tasks.named('check') {
 
 tasks.register('stage') {
     dependsOn 'build'
+}
+
+graalvmNative {
+    binaries {
+        main {
+            imageName = 'planningpoker'
+            buildArgs.add('--no-fallback')
+        }
+    }
+    metadataRepository {
+        enabled = true
+    }
 }
