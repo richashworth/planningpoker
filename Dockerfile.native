@@ -30,9 +30,17 @@ RUN ./gradlew planningpoker-web:jar --no-daemon
 RUN ./gradlew planningpoker-api:nativeCompile --no-daemon
 
 # Stage 3: runtime -----------------------------------------------------------
-FROM gcr.io/distroless/base-debian12
+# debian:bookworm-slim with just the libs the native binary needs.
+# libz1 is required by Spring's WebSocket per-message compression; ca-certificates
+# is needed for outbound HTTPS (none today, but cheap to include).
+FROM debian:bookworm-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates zlib1g \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system app && useradd --system --gid app app
 WORKDIR /app
 COPY --from=native-builder /build/planningpoker-api/build/native/nativeCompile/planningpoker /app/planningpoker
-USER nonroot:nonroot
+RUN chown app:app /app/planningpoker
+USER app
 EXPOSE 9000
 ENTRYPOINT ["/app/planningpoker"]
