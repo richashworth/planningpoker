@@ -16,7 +16,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^19.2.5",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^6.20.0",
+    "react-router-dom": "^7.15.0",
     "redux": "^5.0.1",
     "sockjs-client": "^1.6.1"
   },
