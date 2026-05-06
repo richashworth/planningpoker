@@ -2,6 +2,7 @@
 dockerfilePath = "Dockerfile.native"
 
 [deploy]
+startCommand = "/app/planningpoker"
 healthcheckPath = "/actuator/health"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
