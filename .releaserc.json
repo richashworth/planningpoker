@@ -4,13 +4,6 @@
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
-    ["@semantic-release/exec", {
-      "prepareCmd": "cd planningpoker-web && npm run build && cd .. && ./gradlew planningpoker-web:jar --no-daemon && ./gradlew planningpoker-api:bootJar -PreleaseVersion=${nextRelease.version} --no-daemon"
-    }],
-    ["@semantic-release/github", {
-      "assets": [
-        {"path": "planningpoker-api/build/libs/planningpoker-api-*.jar", "label": "planningpoker.jar"}
-      ]
-    }]
+    "@semantic-release/github"
   ]
 }
