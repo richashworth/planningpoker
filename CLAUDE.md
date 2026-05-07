@@ -21,13 +21,17 @@ cd planningpoker-web && npm ci && npm run build && cd ..
 # Run Playwright e2e tests (requires backend running on port 9000)
 cd planningpoker-web && npx playwright test
 
-# Build the deployable boot jar
+# Build the deployable native binary (GraalVM)
 cd planningpoker-web && npm run build && cd ..
 ./gradlew planningpoker-web:jar
-./gradlew planningpoker-api:bootJar
+GRAALVM_HOME=$HOME/.sdkman/candidates/java/25.0.2-graalce \
+  ./gradlew planningpoker-api:nativeCompile
+
+# Smoke-test the binary end-to-end
+./scripts/smoke-test-native.sh
 ```
 
-**Important:** The `planningpoker-web:jar` and `planningpoker-api:bootJar` must run as separate Gradle invocations (not combined in one command). The API depends on the web JAR via `flatDir`, and combining them in a single invocation causes a dependency resolution race.
+**Important:** `planningpoker-web:jar` must run before `planningpoker-api:compileJava` / `:nativeCompile` (not combined). The API depends on the web JAR via a `files()` reference, and combining them in a single invocation causes a configuration-time race.
 
 ## Running Locally
 
@@ -38,7 +42,7 @@ cd planningpoker-web && npm run build && cd ..
 cd planningpoker-web && npm install && npm run dev
 ```
 
-**Single-service mode** (boot jar serves both frontend and API):
+**Single-service JVM mode** (fast iteration; native compile is slower):
 ```bash
 cd planningpoker-web && npm run build && cd ..
 ./gradlew planningpoker-web:jar
@@ -46,9 +50,16 @@ cd planningpoker-web && npm run build && cd ..
 java -jar planningpoker-api/build/libs/planningpoker-api-*.jar
 ```
 
+**Single-service native mode** (matches production binary; ~80 s to compile):
+```bash
+GRAALVM_HOME=$HOME/.sdkman/candidates/java/25.0.2-graalce \
+  ./gradlew planningpoker-web:jar planningpoker-api:nativeCompile
+./planningpoker-api/build/native/nativeCompile/planningpoker
+```
+
 ## Architecture
 
-Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planningpoker-api` (Spring Boot 4.0 backend). In production, the frontend is packaged as a JAR containing static files under `META-INF/resources/`, which the API includes as a dependency so Spring Boot serves everything from a single fat JAR.
+Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planningpoker-api` (Spring Boot 4.0 backend). In production, the frontend is packaged as a JAR containing static files under `META-INF/resources/`, which the API includes as a dependency. GraalVM native-image compiles the whole thing — backend code + embedded frontend resources — into a single self-contained binary served from a Linux container.
 
 ### Frontend Stack
 
@@ -77,7 +88,7 @@ Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planning
 
 1. `npm run build` outputs to `planningpoker-web/build/`
 2. `planningpoker-web:jar` packages `build/` into JAR under `META-INF/resources/`
-3. `planningpoker-api` depends on `planningpoker-web:jar` via `flatDir` repo at `../planningpoker-web/dist/libs`
+3. `planningpoker-api` depends on `planningpoker-web:jar` via `implementation files('../planningpoker-web/dist/libs/planningpoker-web.jar')`
 4. `planningpoker-api:compileJava` has explicit `dependsOn ':planningpoker-web:jar'`
 
 **Note:** The web module's `buildDir` is set to `dist` (not `build`), so the JAR output goes to `planningpoker-web/dist/libs/planningpoker-web.jar`. The `build/` directory is the Vite output, not Gradle's build directory.
@@ -91,17 +102,21 @@ Two-module Gradle project: `planningpoker-web` (React 19 frontend) and `planning
 
 ## Testing
 
-- **Backend unit tests:** JUnit 5 + Mockito, run with `./gradlew planningpoker-api:test`
+- **Backend unit tests:** JUnit 5 + Mockito, run with `./gradlew planningpoker-api:test`. `nativeTest` (running unit tests as a native binary) is **not** wired up — JUnit Platform's launcher conflicts with native-image build-time initialization. Production binary is validated via Playwright e2e instead.
 - **E2E tests:** Playwright (chromium), 43 tests across `planning-poker.spec.js`, `session-labels-csv.spec.js`, and `epoch-flicker.spec.js`. Run with `cd planningpoker-web && npx playwright test` (Playwright config spins up backend + dev server automatically)
-- **CI:** GitHub Actions runs six jobs on every push to master and every PR: `lint` (ESLint + Prettier check + `spotlessCheck`) → `build-web` → `unit-tests` + `e2e-tests` + `docker-build` (parallel) → `release` (semantic-release on master only). Test jobs require `build-web` to pass; `docker-build` only requires `lint`.
+- **CI:** GitHub Actions runs six jobs on every push to master and every PR: `lint` (ESLint + Prettier check + `spotlessCheck`) → `build-web` → `unit-tests` + `e2e-tests` + `native-image` (parallel) → `release` (semantic-release on master only). Test jobs require `build-web` to pass; `native-image` only requires `lint`. The `native-image` job builds the production `Dockerfile` and smoke-tests the running container against `/version`, `/createSession`, `/sessionUsers`, and `/stomp/info`.
 
 ## Deployment
 
-Deployed to Railway via a single-stage Dockerfile (`eclipse-temurin:25-jre`). Railway does **not** rebuild the JAR — instead the Dockerfile fetches the fat JAR semantic-release already produced and attached to the latest GitHub release (filtered by asset *label* `planningpoker.jar`, so the URL is stable across versions). Railway config in `railway.toml`. The app reads `$PORT` env var (defaults to 9000). Health check at `/actuator/health`.
+Deployed to Railway via a multi-stage `Dockerfile` that builds a GraalVM native-image binary from source on every master push. Stages: Node builds the React frontend → GraalVM CE 25 compiles the Spring Boot backend to a native ELF binary → `debian:bookworm-slim` (with `zlib1g` + `ca-certificates`) runs it. No JVM in the runtime stage. Reflection hints for the WebSocket broadcast types live in `NativeRuntimeHints.java` and are wired via `@ImportRuntimeHints` on the application class — Spring's AOT processor handles the rest automatically. Railway config in `railway.toml`; `startCommand = "/app/planningpoker"` is pinned. App reads `$PORT` env var (defaults to 9000). Health check at `/actuator/health`.
 
-**Automated releases:** semantic-release runs after every green master push. Conventional commit prefixes drive version bumps: `fix:` → patch, `feat:` → minor, `BREAKING CHANGE` footer → major. `chore:`/`docs:`/`test:` commits produce no release. On release, the fat JAR is built once in CI (with `-PreleaseVersion=` overriding the version stamped into the manifest), attached as an asset to the GitHub release, and a `v{version}` tag is pushed. Config in `.releaserc.json`.
+**Cold start:** native binary boots in <100 ms; user-perceived first request after Railway wakes a sleeping Free-tier container is ~1.7 s (down from ~30 s on the JVM build).
 
-**Version race:** Railway redeploys on master pushes; semantic-release publishes the new release in parallel. Railway typically clones before the new release finishes uploading, so `/version` is at most one release behind the latest tag. Configuring Railway to redeploy on tag push (or accepting the ~1-release lag) is the trade-off chosen here in exchange for not needing a PAT or GitHub App to bypass branch protection.
+**Automated releases:** semantic-release runs after every green master push. Conventional commit prefixes drive version bumps: `fix:` → patch, `feat:` → minor, `BREAKING CHANGE` footer → major. `chore:`/`docs:`/`test:` commits produce no release. semantic-release publishes a `v{version}` tag and a GitHub release with auto-generated notes — **no JAR or binary is uploaded**, since Railway rebuilds from source. Config in `.releaserc.json`.
+
+**Version stamping:** `/version` reads from the JAR manifest, populated at build time from `git describe --tags --abbrev=0` (see `gitTagVersion()` in `planningpoker-api/build.gradle`). Railway clones with `.git`, so the resolved version matches the latest tag at clone time.
+
+**Version race:** Railway redeploys on master pushes; semantic-release publishes the tag in parallel. Railway typically clones before the new tag lands, so `/version` is at most one release behind the latest tag — same trade-off as before.
 
 Live at: https://planning-poker.up.railway.app
 
@@ -124,8 +139,9 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - Java 25 - Backend source (`planningpoker-api/src/main/java/**/*.java`)
 - HTML - SPA entry point (`planningpoker-web/index.html`)
 ## Runtime
-- Node.js 22 (CI, dev server) / 25 (Docker frontend build stage) — note the inconsistency: CI builds on Node 22 while the production Docker image uses Node 25
-- JDK 25 via Eclipse Temurin (backend runtime; CI, Docker, and local toolchain all on 25)
+- Node.js 22 (CI, dev server, Docker frontend build stage)
+- JDK 25 via Eclipse Temurin (CI + local dev toolchain) and **GraalVM CE 25** (Docker build stage for `nativeCompile`; install locally via `sdk install java 25.0.2-graalce`)
+- Runtime container has no JVM — the native binary is the only executable
 - npm (frontend) - `planningpoker-web/package-lock.json` present (lockfile committed)
 - Gradle 8.14 (backend/build orchestration) - wrapper at `gradlew`
 ## Frameworks
@@ -164,15 +180,15 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - No `.env` files present; Railway injects `$PORT` at runtime
 - `planningpoker-web/vite.config.js` - Vite build config: outDir `build/`, manual chunk splitting (vendor/mui/redux/charts), dev proxy rules to backend port 9000
 - `planningpoker-web/build.gradle` - Packages `build/` into JAR under `META-INF/resources/`
-- `planningpoker-api/build.gradle` - Spring Boot fat JAR; depends on web JAR via `flatDir` at `../planningpoker-web/dist/libs`
+- `planningpoker-api/build.gradle` - Spring Boot module + GraalVM Native Build Tools plugin; depends on web JAR via `files('../planningpoker-web/dist/libs/planningpoker-web.jar')`
 - `build.gradle` (root) - Sets Gradle 8.14 wrapper, Java 25 release target for all projects
 - `planningpoker-api/src/main/resources/application.properties` - WebSocket message size limits, actuator exposure, logging levels
 ## Platform Requirements
 - Node.js 22+
-- JDK 25 (Eclipse Temurin recommended)
+- JDK 25 (Eclipse Temurin for everyday dev; **GraalVM CE 25** required for `nativeCompile`)
 - Backend on port 9000; frontend dev server on port 3000 (proxies API calls to 9000)
-- Deployed as single fat JAR: `planningpoker-api/build/libs/planningpoker-*.jar`
-- Docker: single-stage runtime (`eclipse-temurin:25-jre`); the fat JAR is fetched from the latest GitHub release rather than rebuilt
+- Deployed as a GraalVM native binary: `planningpoker-api/build/native/nativeCompile/planningpoker`
+- Docker: multi-stage `Dockerfile` (Node frontend → GraalVM CE 25 native compile → `debian:bookworm-slim` runtime); built from source on every Railway redeploy
 - Health check: `GET /actuator/health`
 
 ## Conventions
@@ -234,7 +250,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 ## Pattern Overview
 - React SPA communicates with Spring Boot API via REST (mutations) and STOMP/WebSocket (real-time state updates)
 - All backend state is held in-memory (no database); sessions are ephemeral
-- In production, the frontend is embedded inside the Spring Boot fat JAR and served as static files
+- In production, the frontend is embedded inside the GraalVM native binary and served as static files
 ## Layers
 - Purpose: Top-level page components, one per route
 - Location: `planningpoker-web/src/pages/`
@@ -301,7 +317,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - Triggers: Browser loads `index.html`; Vite injects `index.jsx` as module entry
 - Responsibilities: Mounts `<App />` into `#root` DOM element
 - Location: `planningpoker-api/src/main/java/com/richashworth/planningpoker/PlanningPokerApplication.java` (Spring Boot main)
-- Triggers: JVM startup
+- Triggers: native binary process startup
 - Responsibilities: Bootstraps Spring context, starts embedded Tomcat on `$PORT` (default 9000)
 - `/` → `Welcome.jsx` (landing page with host/join CTAs)
 - `/host` → `CreateGame.jsx` (username input, creates session)

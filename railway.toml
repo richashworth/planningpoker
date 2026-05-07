@@ -1,9 +1,6 @@
-[build]
-dockerfilePath = "Dockerfile"
-
 [deploy]
-startCommand = "java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-9000} -jar app.jar"
+startCommand = "/app/planningpoker"
 healthcheckPath = "/actuator/health"
-healthcheckTimeout = 120
+healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
