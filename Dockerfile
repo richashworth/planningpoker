@@ -24,6 +24,10 @@ COPY gradlew gradlew.bat settings.gradle build.gradle ./
 COPY gradle ./gradle
 COPY planningpoker-web/build.gradle ./planningpoker-web/build.gradle
 COPY planningpoker-api ./planningpoker-api
+# .git is needed so build.gradle's gitTagVersion() can resolve `git describe`
+# and stamp the real release tag into the JAR manifest. Without it /version
+# falls back to the gradle.properties default and lies about the running build.
+COPY .git ./.git
 # Bring in the freshly built frontend so planningpoker-web:jar can package it
 COPY --from=web-builder /web/build ./planningpoker-web/build
 RUN ./gradlew planningpoker-web:jar --no-daemon
