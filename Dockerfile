@@ -1,19 +1,22 @@
-# Spike: GraalVM native-image build of the Spring Boot backend.
+# syntax=docker/dockerfile:1.7
+# GraalVM native-image build of the Spring Boot backend.
 #
 # Three stages:
 #   1. web-builder: Node builds the React frontend into static files
 #   2. native-builder: GraalVM compiles the Java source to a native ELF binary
-#   3. runtime: distroless/base-debian12 runs the binary, no JVM, no curl
+#   3. runtime: debian-slim runs the binary, no JVM
 #
-# Compared to the JVM Dockerfile this one rebuilds from source rather than
-# fetching the latest GitHub release JAR, so cold start is ~1s instead of ~30s
-# (no JVM, no Spring Boot init, no GitHub API call at boot).
+# Cache mounts on the npm and gradle caches survive across builds even when
+# source COPYs invalidate the surrounding layers — saves 30-60s per cold
+# build. Requires BuildKit (default in modern Docker, used by Railway and
+# GitHub Actions docker/build-push-action).
 
 # Stage 1: build frontend ----------------------------------------------------
 FROM node:22-bookworm-slim AS web-builder
 WORKDIR /web
 COPY planningpoker-web/package.json planningpoker-web/package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 COPY planningpoker-web/ ./
 RUN npm run build
 
@@ -26,8 +29,10 @@ COPY planningpoker-web/build.gradle ./planningpoker-web/build.gradle
 COPY planningpoker-api ./planningpoker-api
 # Bring in the freshly built frontend so planningpoker-web:jar can package it
 COPY --from=web-builder /web/build ./planningpoker-web/build
-RUN ./gradlew planningpoker-web:jar --no-daemon
-RUN ./gradlew planningpoker-api:nativeCompile --no-daemon
+RUN --mount=type=cache,target=/root/.gradle \
+    ./gradlew planningpoker-web:jar --no-daemon
+RUN --mount=type=cache,target=/root/.gradle \
+    ./gradlew planningpoker-api:nativeCompile --no-daemon
 
 # Stage 3: runtime -----------------------------------------------------------
 # debian:bookworm-slim with just the libs the native binary needs.
