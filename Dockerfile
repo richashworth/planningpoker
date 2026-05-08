@@ -15,7 +15,7 @@
 FROM node:22-bookworm-slim AS web-builder
 WORKDIR /web
 COPY planningpoker-web/package.json planningpoker-web/package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm \
+RUN --mount=type=cache,id=npm,target=/root/.npm \
     npm ci
 COPY planningpoker-web/ ./
 RUN npm run build
@@ -29,9 +29,9 @@ COPY planningpoker-web/build.gradle ./planningpoker-web/build.gradle
 COPY planningpoker-api ./planningpoker-api
 # Bring in the freshly built frontend so planningpoker-web:jar can package it
 COPY --from=web-builder /web/build ./planningpoker-web/build
-RUN --mount=type=cache,target=/root/.gradle \
+RUN --mount=type=cache,id=gradle,target=/root/.gradle \
     ./gradlew planningpoker-web:jar --no-daemon
-RUN --mount=type=cache,target=/root/.gradle \
+RUN --mount=type=cache,id=gradle,target=/root/.gradle \
     ./gradlew planningpoker-api:nativeCompile --no-daemon
 
 # Stage 3: runtime -----------------------------------------------------------
