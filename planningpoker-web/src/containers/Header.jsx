@@ -12,6 +12,8 @@ import MenuItem from '@mui/material/MenuItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Tooltip from '@mui/material/Tooltip'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTheme } from '@mui/material/styles'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import CheckIcon from '@mui/icons-material/Check'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -32,6 +34,8 @@ export default function Header() {
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
   const { toggleColorMode, mode } = useColorMode()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [copied, setCopied] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
 
@@ -85,7 +89,7 @@ export default function Header() {
         {sessionId ? (
           <>
             <Chip
-              label={`Session ID: ${sessionId}`}
+              label={isMobile ? sessionId : `Session ID: ${sessionId}`}
               size="small"
               deleteIcon={
                 <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
