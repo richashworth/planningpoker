@@ -9,13 +9,15 @@
 # Cache mounts on the npm and gradle caches survive across builds even when
 # source COPYs invalidate the surrounding layers — saves 30-60s per cold
 # build. Requires BuildKit (default in modern Docker, used by Railway and
-# GitHub Actions docker/build-push-action).
+# GitHub Actions docker/build-push-action). The `id=s/<service-id>-...`
+# prefix is required by Railway's builder; env vars aren't allowed in
+# mount IDs so the service ID is hardcoded.
 
 # Stage 1: build frontend ----------------------------------------------------
 FROM node:22-bookworm-slim AS web-builder
 WORKDIR /web
 COPY planningpoker-web/package.json planningpoker-web/package-lock.json ./
-RUN --mount=type=cache,id=npm,target=/root/.npm \
+RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-npm,target=/root/.npm \
     npm ci
 COPY planningpoker-web/ ./
 RUN npm run build
@@ -29,9 +31,9 @@ COPY planningpoker-web/build.gradle ./planningpoker-web/build.gradle
 COPY planningpoker-api ./planningpoker-api
 # Bring in the freshly built frontend so planningpoker-web:jar can package it
 COPY --from=web-builder /web/build ./planningpoker-web/build
-RUN --mount=type=cache,id=gradle,target=/root/.gradle \
+RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-gradle,target=/root/.gradle \
     ./gradlew planningpoker-web:jar --no-daemon
-RUN --mount=type=cache,id=gradle,target=/root/.gradle \
+RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-gradle,target=/root/.gradle \
     ./gradlew planningpoker-api:nativeCompile --no-daemon
 
 # Stage 3: runtime -----------------------------------------------------------
