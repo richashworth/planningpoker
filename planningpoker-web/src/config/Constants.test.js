@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  USERNAME_PATTERN,
-  USERNAME_REGEX,
-  USERNAME_MIN,
-  USERNAME_MAX,
-} from './Constants'
+import { USERNAME_PATTERN, USERNAME_REGEX, USERNAME_MIN, USERNAME_MAX } from './Constants'
 
 describe('USERNAME_PATTERN', () => {
   it('is a valid regex under the `v` flag (HTML5 pattern attribute)', () => {
