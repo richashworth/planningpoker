@@ -252,6 +252,16 @@ jobs:
   release:
     needs: [unit-tests, e2e-tests, native-image]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # Serialize across all master pushes so two rapid merges can't run
+    # semantic-release in parallel (which would race on tag pushes and
+    # next-version computation). cancel-in-progress: false queues the
+    # newer run behind a running one — GitHub keeps at most one pending
+    # + one running per group, so a third push supersedes the queued
+    # one and that's fine: the latest run sees every commit since the
+    # last tag and produces the right cumulative release.
+    concurrency:
+      group: release
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     permissions:
       contents: write
