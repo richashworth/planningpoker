@@ -19,6 +19,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import LogoutIcon from '@mui/icons-material/Logout'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import MenuIcon from '@mui/icons-material/Menu'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
@@ -33,9 +34,12 @@ export default function Header() {
   const navigate = useNavigate()
   const sessionId = useSelector((state) => state.game.sessionId)
   const playerName = useSelector((state) => state.game.playerName)
+  const host = useSelector((state) => state.game.host)
+  const isHost = playerName?.toLowerCase() === host?.toLowerCase()
   const { toggleColorMode, mode } = useColorMode()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const showChipInHeader = isHost && !isMobile
   const [copied, setCopied] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
 
@@ -71,10 +75,9 @@ export default function Header() {
           noWrap
           component="div"
           sx={{
-            display: { xs: 'none', sm: 'block' },
             fontWeight: 500,
             fontFamily: '"Lobster", cursive',
-            fontSize: '2rem',
+            fontSize: { xs: '1.5rem', sm: '2rem' },
             letterSpacing: 'normal',
             color: '#fff',
           }}
@@ -82,65 +85,65 @@ export default function Header() {
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
-        {!isMobile && (
-          <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
-            <IconButton
-              onClick={toggleColorMode}
-              aria-label="Toggle dark mode"
-              sx={{
-                color: 'rgba(255,255,255,0.9)',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
-            </IconButton>
-          </Tooltip>
-        )}
         {sessionId ? (
           <>
-            <Chip
-              label={isMobile ? sessionId : `Session ID: ${sessionId}`}
-              size="small"
-              deleteIcon={
-                <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
-                  {copied ? (
-                    <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />
-                  ) : (
-                    <ContentCopyIcon sx={{ fontSize: 14 }} />
-                  )}
-                </Tooltip>
-              }
-              onDelete={handleCopy}
-              sx={{
-                ml: { xs: 0.5, sm: 1 },
-                bgcolor: 'rgba(255,255,255,0.15)',
-                border: '1px solid rgba(255,255,255,0.25)',
-                color: 'rgba(255,255,255,0.9)',
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-                height: 26,
-                borderRadius: 1,
-                '& .MuiChip-deleteIcon': {
-                  color: 'rgba(255,255,255,0.6)',
-                  '&:hover': { color: '#fff' },
-                },
-              }}
-            />
-            <Button
-              onClick={(e) => setAnchorEl(e.currentTarget)}
-              endIcon={<ArrowDropDownIcon sx={{ ml: { xs: -0.5, sm: 0 } }} />}
-              sx={{
-                ml: { xs: 0.25, sm: 1.5 },
-                minWidth: 0,
-                px: { xs: 0.75, sm: 1.5 },
-                color: 'rgba(255,255,255,0.9)',
-                fontSize: '0.85rem',
-                textTransform: 'none',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              {startCase(playerName)}
-            </Button>
+            {showChipInHeader && (
+              <Chip
+                label={`Session ID: ${sessionId}`}
+                size="small"
+                deleteIcon={
+                  <Tooltip title={copied ? 'Copied!' : 'Copy session ID'} arrow>
+                    {copied ? (
+                      <CheckIcon sx={{ fontSize: 14, color: '#fff' }} />
+                    ) : (
+                      <ContentCopyIcon sx={{ fontSize: 14 }} />
+                    )}
+                  </Tooltip>
+                }
+                onDelete={handleCopy}
+                sx={{
+                  ml: 1,
+                  bgcolor: 'rgba(255,255,255,0.15)',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  color: 'rgba(255,255,255,0.9)',
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  height: 26,
+                  borderRadius: 1,
+                  '& .MuiChip-deleteIcon': {
+                    color: 'rgba(255,255,255,0.6)',
+                    '&:hover': { color: '#fff' },
+                  },
+                }}
+              />
+            )}
+            {isMobile ? (
+              <IconButton
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                aria-label="Open menu"
+                sx={{
+                  ml: 0.25,
+                  color: 'rgba(255,255,255,0.9)',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              <Button
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                endIcon={<ArrowDropDownIcon />}
+                sx={{
+                  ml: 1.5,
+                  color: 'rgba(255,255,255,0.9)',
+                  fontSize: '0.85rem',
+                  textTransform: 'none',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+                }}
+              >
+                {startCase(playerName)}
+              </Button>
+            )}
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
@@ -149,18 +152,42 @@ export default function Header() {
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
               {isMobile && (
-                <MenuItem onClick={handleThemeToggle}>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    {mode === 'dark' ? (
-                      <LightModeOutlinedIcon fontSize="small" />
-                    ) : (
-                      <DarkModeOutlinedIcon fontSize="small" />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText>{mode === 'dark' ? 'Light mode' : 'Dark mode'}</ListItemText>
+                <MenuItem disabled sx={{ opacity: '1 !important' }}>
+                  <ListItemText
+                    primary={startCase(playerName)}
+                    secondary="Signed in"
+                    primaryTypographyProps={{ fontWeight: 500 }}
+                  />
                 </MenuItem>
               )}
               {isMobile && <Divider />}
+              {!showChipInHeader && (
+                <MenuItem onClick={handleCopy}>
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    {copied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={copied ? 'Copied!' : 'Copy session ID'}
+                    secondary={sessionId}
+                    secondaryTypographyProps={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.75rem',
+                    }}
+                  />
+                </MenuItem>
+              )}
+              {!showChipInHeader && <Divider />}
+              <MenuItem onClick={handleThemeToggle}>
+                <ListItemIcon sx={{ minWidth: 36 }}>
+                  {mode === 'dark' ? (
+                    <LightModeOutlinedIcon fontSize="small" />
+                  ) : (
+                    <DarkModeOutlinedIcon fontSize="small" />
+                  )}
+                </ListItemIcon>
+                <ListItemText>{mode === 'dark' ? 'Light mode' : 'Dark mode'}</ListItemText>
+              </MenuItem>
+              <Divider />
               <MenuItem
                 component="a"
                 href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/"
