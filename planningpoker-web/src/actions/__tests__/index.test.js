@@ -78,27 +78,25 @@ describe('createGame', () => {
     expect(onSuccess).toHaveBeenCalledOnce()
   })
 
-  it('dispatches CREATE_GAME with error:true and show-error on failure', async () => {
+  it('dispatches CREATE_GAME with error:true and returns errorMessage on failure (no global toast)', async () => {
     axios.post = vi.fn().mockRejectedValue({
       response: { data: { error: 'Too many sessions' } },
     })
 
-    const dispatched = await runThunkAsync(
-      createGame(
-        'Alice',
-        { schemeType: 'fibonacci', customValues: null, includeUnsure: true },
-        null,
-      ),
-    )
+    const dispatched = []
+    const dispatch = (action) => dispatched.push(action)
+    const result = await createGame(
+      'Alice',
+      { schemeType: 'fibonacci', customValues: null, includeUnsure: true },
+      null,
+    )(dispatch)
 
-    expect(dispatched).toHaveLength(2)
-    const createAction = dispatched.find((a) => a.type === CREATE_GAME)
-    expect(createAction).toBeDefined()
-    expect(createAction.error).toBe(true)
-
-    const errorAction = dispatched.find((a) => a.type === 'show-error')
-    expect(errorAction).toBeDefined()
-    expect(errorAction.payload).toBe('Too many sessions')
+    // Form-level errors are surfaced inline; no global show-error is dispatched
+    expect(dispatched).toHaveLength(1)
+    expect(dispatched[0].type).toBe(CREATE_GAME)
+    expect(dispatched[0].error).toBe(true)
+    expect(result.errorMessage).toBe('Too many sessions')
+    expect(result.error).toBeDefined()
   })
 })
 
@@ -134,6 +132,21 @@ describe('joinGame', () => {
     expect(dispatched[0].meta.isSpectator).toBe(true)
     const body = axios.post.mock.calls[0][1]
     expect(body.toString()).toContain('isSpectator=true')
+  })
+
+  it('returns errorMessage on failure without dispatching show-error', async () => {
+    axios.post = vi.fn().mockRejectedValue({
+      response: { data: { error: 'Session not found' } },
+    })
+
+    const dispatched = []
+    const dispatch = (action) => dispatched.push(action)
+    const result = await joinGame('Bob', 'invalid12345', false, null)(dispatch)
+
+    expect(dispatched).toHaveLength(1)
+    expect(dispatched[0].type).toBe(JOIN_GAME)
+    expect(dispatched[0].error).toBe(true)
+    expect(result.errorMessage).toBe('Session not found')
   })
 })
 

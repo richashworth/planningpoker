@@ -10,6 +10,7 @@ import Button from '@mui/material/Button'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
 import { joinGame, userRegistered } from '../actions'
 import NameInput from '../components/NameInput'
 import { USERNAME_REGEX } from '../config/Constants'
@@ -19,6 +20,7 @@ export default function JoinGame() {
   const [sessionId, setSessionId] = useState('')
   const [isSpectator, setIsSpectator] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [formError, setFormError] = useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -29,13 +31,15 @@ export default function JoinGame() {
     if (submitting) return
     if (!isNameValid) return
     setSubmitting(true)
+    setFormError('')
     try {
-      await dispatch(
+      const result = await dispatch(
         joinGame(playerName, sessionId, isSpectator, () => {
           dispatch(userRegistered())
           navigate('/game')
         }),
       )
+      if (result?.errorMessage) setFormError(result.errorMessage)
     } finally {
       setSubmitting(false)
     }
@@ -51,12 +55,18 @@ export default function JoinGame() {
           <form onSubmit={handleSubmit}>
             <NameInput
               playerName={playerName}
-              onPlayerNameInputChange={(e) => setPlayerName(e.target.value)}
+              onPlayerNameInputChange={(e) => {
+                setPlayerName(e.target.value)
+                if (formError) setFormError('')
+              }}
             />
             <TextField
               label="Session ID"
               value={sessionId}
-              onChange={(e) => setSessionId(e.target.value)}
+              onChange={(e) => {
+                setSessionId(e.target.value)
+                if (formError) setFormError('')
+              }}
               required
               fullWidth
               sx={{ mb: 1 }}
@@ -74,6 +84,11 @@ export default function JoinGame() {
               label="Join as spectator (don't vote)"
               sx={{ mb: 2.5 }}
             />
+            {formError && (
+              <Alert severity="error" sx={{ mb: 2 }} onClose={() => setFormError('')}>
+                {formError}
+              </Alert>
+            )}
             <Button
               type="submit"
               variant="contained"
