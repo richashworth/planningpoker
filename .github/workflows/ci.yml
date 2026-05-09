@@ -52,7 +52,6 @@ jobs:
         run: ./gradlew spotlessCheck --no-daemon
 
   build-web:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -139,9 +138,13 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
 
-  e2e-tests:
+  e2e-shard:
     needs: build-web
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v6
 
@@ -192,18 +195,29 @@ jobs:
           echo "Backend failed to start" && exit 1
 
       - name: Run Playwright tests
-        run: cd planningpoker-web && npx playwright test
+        run: cd planningpoker-web && npx playwright test --shard=${{ matrix.shard }}/2
 
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shard }}
           path: planningpoker-web/test-results/
           retention-days: 7
 
+  e2e-tests:
+    needs: e2e-shard
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Aggregate shard results
+        run: |
+          if [ "${{ needs.e2e-shard.result }}" != "success" ]; then
+            echo "One or more e2e shards did not succeed: ${{ needs.e2e-shard.result }}" >&2
+            exit 1
+          fi
+
   native-image:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -250,7 +264,7 @@ jobs:
         run: docker rm -f pp 2>/dev/null || true
 
   release:
-    needs: [unit-tests, e2e-tests, native-image]
+    needs: [lint, unit-tests, e2e-tests, native-image]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     # Serialize across all master pushes so two rapid merges can't run
     # semantic-release in parallel (which would race on tag pushes and
