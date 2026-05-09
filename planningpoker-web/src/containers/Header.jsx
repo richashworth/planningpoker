@@ -50,6 +50,11 @@ export default function Header() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleThemeToggle = () => {
+    setAnchorEl(null)
+    toggleColorMode()
+  }
+
   return (
     <AppBar
       position="fixed"
@@ -59,8 +64,8 @@ export default function Header() {
         boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
       }}
     >
-      <Toolbar>
-        <Logo size={48} sx={{ mr: 2 }} />
+      <Toolbar sx={{ px: { xs: 1, sm: 3 } }}>
+        <Logo size={isMobile ? 32 : 48} sx={{ mr: { xs: 0.5, sm: 2 } }} />
         <Typography
           variant="h5"
           noWrap
@@ -77,15 +82,20 @@ export default function Header() {
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
-        <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
-          <IconButton
-            onClick={toggleColorMode}
-            aria-label="Toggle dark mode"
-            sx={{ color: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
-          >
-            {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
-          </IconButton>
-        </Tooltip>
+        {!isMobile && (
+          <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
+            <IconButton
+              onClick={toggleColorMode}
+              aria-label="Toggle dark mode"
+              sx={{
+                color: 'rgba(255,255,255,0.9)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+            </IconButton>
+          </Tooltip>
+        )}
         {sessionId ? (
           <>
             <Chip
@@ -102,7 +112,7 @@ export default function Header() {
               }
               onDelete={handleCopy}
               sx={{
-                ml: 1,
+                ml: { xs: 0.5, sm: 1 },
                 bgcolor: 'rgba(255,255,255,0.15)',
                 border: '1px solid rgba(255,255,255,0.25)',
                 color: 'rgba(255,255,255,0.9)',
@@ -118,9 +128,11 @@ export default function Header() {
             />
             <Button
               onClick={(e) => setAnchorEl(e.currentTarget)}
-              endIcon={<ArrowDropDownIcon />}
+              endIcon={<ArrowDropDownIcon sx={{ ml: { xs: -0.5, sm: 0 } }} />}
               sx={{
-                ml: 1.5,
+                ml: { xs: 0.25, sm: 1.5 },
+                minWidth: 0,
+                px: { xs: 0.75, sm: 1.5 },
                 color: 'rgba(255,255,255,0.9)',
                 fontSize: '0.85rem',
                 textTransform: 'none',
@@ -136,6 +148,19 @@ export default function Header() {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
+              {isMobile && (
+                <MenuItem onClick={handleThemeToggle}>
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    {mode === 'dark' ? (
+                      <LightModeOutlinedIcon fontSize="small" />
+                    ) : (
+                      <DarkModeOutlinedIcon fontSize="small" />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText>{mode === 'dark' ? 'Light mode' : 'Dark mode'}</ListItemText>
+                </MenuItem>
+              )}
+              {isMobile && <Divider />}
               <MenuItem
                 component="a"
                 href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/"
