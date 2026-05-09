@@ -10,6 +10,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import reducer from './reducers'
 import { darkTheme, lightTheme } from './theme'
 import { clearError } from './actions'
@@ -33,6 +34,7 @@ export function useColorMode() {
 function AppInner({ theme, toggleColorMode, mode }) {
   const errorMessage = useSelector((state) => state.notification)
   const dispatch = useDispatch()
+  const isMobile = useMediaQuery('(max-width: 599.95px)')
 
   return (
     <ColorModeContext.Provider value={{ toggleColorMode, mode }}>
@@ -65,7 +67,11 @@ function AppInner({ theme, toggleColorMode, mode }) {
           open={Boolean(errorMessage)}
           autoHideDuration={4000}
           onClose={() => dispatch(clearError())}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          anchorOrigin={{
+            vertical: isMobile ? 'bottom' : 'top',
+            horizontal: isMobile ? 'center' : 'right',
+          }}
+          sx={{ '&.MuiSnackbar-anchorOriginTopRight': { top: 88 } }}
         >
           <Alert severity="error" onClose={() => dispatch(clearError())}>
             {errorMessage}
