@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Railway__list-deployments",
+      "mcp__github__push_files",
+      "Bash(git fetch origin master*)",
+      "Bash(git rev-parse*)",
+      "Bash(TZ='Europe/Amsterdam' date*)",
+      "Bash(sleep 120*)"
+    ]
+  }
+}

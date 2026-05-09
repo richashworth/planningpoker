@@ -20,7 +20,8 @@ node_modules/
 bin/
 
 # Claude / AI tooling
-.claude/
+.claude/*
+!.claude/settings.json
 .playwright-mcp/
 
 # Git worktrees
