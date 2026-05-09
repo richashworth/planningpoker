@@ -82,6 +82,7 @@ async function postForm(dispatch, opts) {
     meta,
     fallbackError,
     omitSuccessPayload = false,
+    suppressGlobalError = false,
     onSuccess,
     onError,
   } = opts
@@ -91,18 +92,21 @@ async function postForm(dispatch, opts) {
     const { data } = await axios.post(`${API_ROOT_URL}${url}`, requestBody)
     dispatch(omitSuccessPayload ? { type } : { type, payload: data, ...metaPart })
     if (onSuccess) onSuccess(data)
-    return { data, error: null }
+    return { data, error: null, errorMessage: null }
   } catch (err) {
+    const errorMessage = err.response?.data?.error || fallbackError
     if (onError) onError(err)
     dispatch({ type, payload: err, error: true, ...metaPart })
-    dispatch(showError(err.response?.data?.error || fallbackError))
-    return { data: null, error: err }
+    if (!suppressGlobalError) {
+      dispatch(showError(errorMessage))
+    }
+    return { data: null, error: err, errorMessage }
   }
 }
 
 export function createGame(playerName, schemeOptions, onSuccess) {
   return async (dispatch) => {
-    await postForm(dispatch, {
+    return postForm(dispatch, {
       url: '/createSession',
       body: {
         userName: playerName,
@@ -114,6 +118,7 @@ export function createGame(playerName, schemeOptions, onSuccess) {
       type: CREATE_GAME,
       meta: { userName: playerName, isSpectator: !!schemeOptions.isSpectator },
       fallbackError: 'Failed to create session',
+      suppressGlobalError: true,
       onSuccess: () => {
         if (onSuccess) onSuccess()
       },
@@ -140,12 +145,13 @@ export function leaveGame(playerName, sessionId, onSuccess) {
 
 export function joinGame(playerName, sessionId, isSpectator, onSuccess) {
   return async (dispatch) => {
-    await postForm(dispatch, {
+    return postForm(dispatch, {
       url: '/joinSession',
       params: { userName: playerName, sessionId, isSpectator: !!isSpectator },
       type: JOIN_GAME,
       meta: { userName: playerName, sessionId, isSpectator: !!isSpectator },
       fallbackError: 'Failed to join session',
+      suppressGlobalError: true,
       onSuccess: () => {
         if (onSuccess) onSuccess()
       },

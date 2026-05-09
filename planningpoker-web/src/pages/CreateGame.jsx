@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
 import { createGame, gameCreated } from '../actions'
 import NameInput from '../components/NameInput'
 import SchemeTile from '../components/SchemeTile'
@@ -37,6 +38,7 @@ export default function CreateGame() {
   const [isSpectator, setIsSpectator] = useState(false)
   const [customError, setCustomError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [formError, setFormError] = useState('')
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -66,8 +68,9 @@ export default function CreateGame() {
     if (!isNameValid) return
     if (!isCustomValid()) return
     setSubmitting(true)
+    setFormError('')
     try {
-      await dispatch(
+      const result = await dispatch(
         createGame(
           playerName,
           {
@@ -82,6 +85,7 @@ export default function CreateGame() {
           },
         ),
       )
+      if (result?.errorMessage) setFormError(result.errorMessage)
     } finally {
       setSubmitting(false)
     }
@@ -105,7 +109,10 @@ export default function CreateGame() {
           <form onSubmit={handleSubmit}>
             <NameInput
               playerName={playerName}
-              onPlayerNameInputChange={(e) => setPlayerName(e.target.value)}
+              onPlayerNameInputChange={(e) => {
+                setPlayerName(e.target.value)
+                if (formError) setFormError('')
+              }}
             />
 
             <Typography variant="body2" sx={{ mb: 1.5, fontWeight: 600 }}>
@@ -184,6 +191,11 @@ export default function CreateGame() {
               sx={{ display: 'flex', mb: 2.5 }}
             />
 
+            {formError && (
+              <Alert severity="error" sx={{ mb: 2 }} onClose={() => setFormError('')}>
+                {formError}
+              </Alert>
+            )}
             <Button
               type="submit"
               variant="contained"
