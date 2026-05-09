@@ -54,11 +54,6 @@ export default function Header() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleThemeToggle = () => {
-    setAnchorEl(null)
-    toggleColorMode()
-  }
-
   return (
     <AppBar
       position="fixed"
@@ -85,7 +80,19 @@ export default function Header() {
           Planning Poker
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
-        {sessionId ? (
+        <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} arrow>
+          <IconButton
+            onClick={toggleColorMode}
+            aria-label="Toggle dark mode"
+            sx={{
+              color: 'rgba(255,255,255,0.9)',
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+            }}
+          >
+            {mode === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+          </IconButton>
+        </Tooltip>
+        {sessionId && (
           <>
             {showChipInHeader && (
               <Chip
@@ -177,17 +184,6 @@ export default function Header() {
                 </MenuItem>
               )}
               {!showChipInHeader && <Divider />}
-              <MenuItem onClick={handleThemeToggle}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  {mode === 'dark' ? (
-                    <LightModeOutlinedIcon fontSize="small" />
-                  ) : (
-                    <DarkModeOutlinedIcon fontSize="small" />
-                  )}
-                </ListItemIcon>
-                <ListItemText>{mode === 'dark' ? 'Light mode' : 'Dark mode'}</ListItemText>
-              </MenuItem>
-              <Divider />
               <MenuItem
                 component="a"
                 href="https://richashworth.com/blog/agile-estimation-for-distributed-teams/"
@@ -209,7 +205,7 @@ export default function Header() {
               </MenuItem>
             </Menu>
           </>
-        ) : null}
+        )}
       </Toolbar>
     </AppBar>
   )

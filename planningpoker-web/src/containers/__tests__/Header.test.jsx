@@ -50,14 +50,11 @@ describe('Header container', () => {
   })
   afterEach(() => cleanup())
 
-  it('calls toggleColorMode when the dark-mode menu item is clicked', async () => {
+  it('calls toggleColorMode when the dark-mode button is clicked', async () => {
     renderHeader()
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Alice/ }))
-    })
-    await act(async () => {
-      fireEvent.click(screen.getByRole('menuitem', { name: /Dark mode|Light mode/ }))
+      fireEvent.click(screen.getByLabelText('Toggle dark mode'))
     })
     expect(toggleColorMode).toHaveBeenCalledTimes(1)
   })
