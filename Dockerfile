@@ -36,18 +36,25 @@ RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-gradle,target=/
 RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-gradle,target=/root/.gradle \
     ./gradlew planningpoker-api:nativeCompile --no-daemon
 
-# Stage 3: runtime -----------------------------------------------------------
-# debian:bookworm-slim with just the libs the native binary needs.
-# libz1 is required by Spring's WebSocket per-message compression; ca-certificates
-# is needed for outbound HTTPS (none today, but cheap to include).
-FROM debian:bookworm-slim
+# Stage 3a: extract libz from debian -----------------------------------------
+# Distroless `base` ships glibc, ca-certificates, libssl and tzdata but not
+# zlib. GraalVM native binaries dynamically link libz.so.1, and Spring's
+# WebSocket per-message compression uses it at runtime. Pull just the .so
+# from a debian-slim helper stage so the runtime image stays minimal.
+FROM debian:bookworm-slim AS lib-source
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates zlib1g \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd --system app && useradd --system --gid app app
+    && apt-get install -y --no-install-recommends zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
+# Stage 3: runtime -----------------------------------------------------------
+# Distroless: no shell, no apt, no package db. ~25MB image, drops every
+# package the native binary doesn't need. The :nonroot tag pre-sets
+# USER 65532. ca-certificates is bundled (cheap, even though we don't
+# do outbound HTTPS today).
+FROM gcr.io/distroless/base-debian12:nonroot
+COPY --from=lib-source /usr/lib/x86_64-linux-gnu/libz.so.1 /usr/lib/x86_64-linux-gnu/libz.so.1
+COPY --from=native-builder --chown=nonroot:nonroot \
+    /build/planningpoker-api/build/native/nativeCompile/planningpoker /app/planningpoker
 WORKDIR /app
-COPY --from=native-builder /build/planningpoker-api/build/native/nativeCompile/planningpoker /app/planningpoker
-RUN chown app:app /app/planningpoker
-USER app
 EXPOSE 9000
 ENTRYPOINT ["/app/planningpoker"]
