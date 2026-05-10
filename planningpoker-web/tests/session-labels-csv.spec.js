@@ -494,6 +494,47 @@ test.describe('CSV Export', () => {
   })
 })
 
+test.describe('Copy as Markdown', () => {
+  test('copies a markdown table of completed rounds to the clipboard', async ({ browser }) => {
+    const hostCtx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
+    const playerCtx = await browser.newContext()
+    try {
+      const hostPage = await hostCtx.newPage()
+      const sessionId = await hostGame(hostPage, 'Alice')
+
+      const playerPage = await playerCtx.newPage()
+      await joinGame(playerPage, 'Bob', sessionId)
+
+      await waitForWsReady(playerPage, sessionId, 'Alice')
+
+      const labelInput = hostPage.getByPlaceholder('Item label (optional)')
+      await labelInput.fill('Login flow')
+      await labelInput.press('Enter')
+      await expect(playerPage.getByText('Login flow')).toBeVisible({ timeout: 15000 })
+
+      await hostPage.getByText('5', { exact: true }).click()
+      await playerPage.getByText('5', { exact: true }).click()
+      await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+
+      const copyBtn = hostPage.getByRole('button', { name: 'Copy as Markdown' })
+      await copyBtn.scrollIntoViewIfNeeded()
+      await copyBtn.click()
+
+      await expect(hostPage.getByText('Copied markdown to clipboard')).toBeVisible({
+        timeout: 5000,
+      })
+
+      const clipboardText = await hostPage.evaluate(() => navigator.clipboard.readText())
+      expect(clipboardText).toContain('| Label | Estimate |')
+      expect(clipboardText).toContain('| --- | --- |')
+      expect(clipboardText).toContain('| Login flow | 5 |')
+    } finally {
+      await hostCtx.close()
+      await playerCtx.close()
+    }
+  })
+})
+
 test.describe('Accessibility announcements', () => {
   test('aria-live polite region is mounted on game pane', async ({ browser }) => {
     const hostCtx = await browser.newContext()

@@ -8,9 +8,15 @@ vi.mock('../../utils/csvExport', () => ({
   downloadCsv: vi.fn(),
 }))
 
+vi.mock('../../utils/markdownExport', () => ({
+  generateMarkdownTable: vi.fn(() => 'md-content'),
+  copyToClipboard: vi.fn(() => Promise.resolve()),
+}))
+
 import SessionHistory from '../SessionHistory'
 import { renderWithStore } from '../../testUtils/renderWithStore'
 import { generateCsv, downloadCsv } from '../../utils/csvExport'
+import { generateMarkdownTable, copyToClipboard } from '../../utils/markdownExport'
 
 function baseState(overrides = {}) {
   return {
@@ -358,6 +364,107 @@ describe('SessionHistory', () => {
       })
       const [roundsArg] = generateCsv.mock.calls[0]
       expect(roundsArg).toEqual([completedRound])
+    })
+  })
+
+  describe('Copy as Markdown — voting screen (includeInflight=false)', () => {
+    it('renders the Copy as Markdown button alongside Export CSV', () => {
+      renderWithStore(<SessionHistory />, {
+        preloadedState: baseState({ rounds: [completedRound] }),
+      })
+      expect(screen.getByRole('button', { name: /Copy as Markdown/ })).toBeInTheDocument()
+    })
+
+    it('passes only completed rounds to generateMarkdownTable', async () => {
+      renderWithStore(<SessionHistory />, {
+        preloadedState: baseState({
+          rounds: [completedRound],
+          voted: true,
+          results: [{ userName: 'alice', estimateValue: '13' }],
+        }),
+      })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Copy as Markdown/ }))
+      })
+      expect(generateMarkdownTable).toHaveBeenCalledTimes(1)
+      const [roundsArg] = generateMarkdownTable.mock.calls[0]
+      expect(roundsArg).toEqual([completedRound])
+    })
+
+    it('writes the generated markdown to the clipboard', async () => {
+      renderWithStore(<SessionHistory />, {
+        preloadedState: baseState({ rounds: [completedRound] }),
+      })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Copy as Markdown/ }))
+      })
+      expect(copyToClipboard).toHaveBeenCalledWith('md-content')
+    })
+
+    it('shows a success toast after a successful copy', async () => {
+      renderWithStore(<SessionHistory />, {
+        preloadedState: baseState({ rounds: [completedRound] }),
+      })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Copy as Markdown/ }))
+      })
+      expect(await screen.findByText(/Copied markdown to clipboard/i)).toBeInTheDocument()
+    })
+
+    it('shows an error toast when the clipboard write rejects', async () => {
+      copyToClipboard.mockRejectedValueOnce(new Error('blocked'))
+      renderWithStore(<SessionHistory />, {
+        preloadedState: baseState({ rounds: [completedRound] }),
+      })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Copy as Markdown/ }))
+      })
+      expect(await screen.findByText(/Could not copy to clipboard/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('Copy as Markdown — results screen (includeInflight=true)', () => {
+    it('includes the in-flight round in the copied markdown', async () => {
+      renderWithStore(<SessionHistory includeInflight />, {
+        preloadedState: baseState({
+          rounds: [completedRound],
+          voted: true,
+          results: [
+            { userName: 'alice', estimateValue: '8' },
+            { userName: 'bob', estimateValue: '8' },
+          ],
+          game: { currentLabel: 'Story 2' },
+        }),
+      })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Copy as Markdown/ }))
+      })
+      const [roundsArg] = generateMarkdownTable.mock.calls[0]
+      expect(roundsArg).toHaveLength(2)
+      expect(roundsArg[0]).toEqual(completedRound)
+      expect(roundsArg[1]).toMatchObject({
+        label: 'Story 2',
+        consensus: '8',
+      })
+    })
+
+    it('honours consensusOverride when building the in-flight round', async () => {
+      renderWithStore(<SessionHistory consensusOverride="13" includeInflight />, {
+        preloadedState: baseState({
+          voted: true,
+          rounds: [completedRound],
+          results: [
+            { userName: 'alice', estimateValue: '5' },
+            { userName: 'bob', estimateValue: '8' },
+          ],
+        }),
+      })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Copy as Markdown/ }))
+      })
+      const [roundsArg] = generateMarkdownTable.mock.calls[0]
+      expect(roundsArg).toHaveLength(2)
+      expect(roundsArg[1].consensus).toBe('13')
     })
   })
 
