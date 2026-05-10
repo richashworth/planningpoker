@@ -127,9 +127,10 @@ test.describe('Dark/Light Mode', () => {
 })
 
 // Helper to create a session and return the session ID
-async function hostGame(page, name) {
+async function hostGame(page, name, { asSpectator = false } = {}) {
   await page.goto('/host')
   await page.getByLabel('Your Name').fill(name)
+  if (asSpectator) await page.getByLabel("Join as spectator (don't vote)").check()
   await page.getByRole('button', { name: 'Start Game' }).click()
   await expect(page).toHaveURL('/game')
   const chipText = await page.locator('.MuiChip-label').textContent()
@@ -137,10 +138,11 @@ async function hostGame(page, name) {
 }
 
 // Helper to join a session
-async function joinGame(page, name, sessionId) {
+async function joinGame(page, name, sessionId, { asSpectator = false } = {}) {
   await page.goto('/join')
   await page.getByLabel('Your Name').fill(name)
   await page.getByLabel('Session ID').fill(sessionId)
+  if (asSpectator) await page.getByLabel("Join as spectator (don't vote)").check()
   await page.getByRole('button', { name: 'Join Game' }).click()
   await expect(page).toHaveURL('/game')
 }
@@ -387,12 +389,7 @@ test.describe('Spectator mode', () => {
 
     const spectatorCtx = await browser.newContext()
     const spectatorPage = await spectatorCtx.newPage()
-    await spectatorPage.goto('/join')
-    await spectatorPage.getByLabel('Your Name').fill('Bob')
-    await spectatorPage.getByLabel('Session ID').fill(sessionId)
-    await spectatorPage.getByLabel("Join as spectator (don't vote)").check()
-    await spectatorPage.getByRole('button', { name: 'Join Game' }).click()
-    await expect(spectatorPage).toHaveURL('/game')
+    await joinGame(spectatorPage, 'Bob', sessionId, { asSpectator: true })
 
     // Spectator lands on the Results view (no vote cards, no Cast your estimate header)
     await expect(spectatorPage.getByText('Cast your estimate')).not.toBeVisible()
@@ -425,49 +422,36 @@ test.describe('Spectator mode', () => {
     await spectatorCtx.close()
   })
 
-  test('host who creates as spectator is not removed from the session', async ({ page }) => {
-    await page.goto('/host')
-    await page.getByLabel('Your Name').fill('Alice')
-    await page.getByLabel("Join as spectator (don't vote)").check()
-    await page.getByRole('button', { name: 'Start Game' }).click()
-
-    await expect(page).toHaveURL('/game')
+  test('spectator host stays in the session and appears in the Spectators panel', async ({
+    page,
+  }) => {
+    await hostGame(page, 'Alice', { asSpectator: true })
     // Spectator host lands on Results, not the vote screen
     await expect(page.getByText('Cast your estimate')).not.toBeVisible()
 
-    // Wait long enough that any spurious kick-detection effect would have fired
-    await page.waitForTimeout(2000)
+    // The Spectators toggle becomes visible only after the WS users-message /
+    // refresh has populated state.users — once that's in, any kick-detection
+    // effect would have fired. So this is the natural sync point.
+    const spectatorsToggle = page.getByRole('button', { name: /Spectators · 1/ })
+    await expect(spectatorsToggle).toBeVisible({ timeout: 10000 })
 
     await expect(page).toHaveURL('/game')
     await expect(page.getByText(/removed from the session by the host/i)).not.toBeVisible()
 
-    // Host appears in the Spectators panel
-    const spectatorsToggle = page.getByRole('button', { name: /Spectators · 1/ })
-    await expect(spectatorsToggle).toBeVisible({ timeout: 10000 })
     await spectatorsToggle.click()
     await expect(page.getByRole('main').getByText('Alice', { exact: true })).toBeVisible()
   })
 
-  test('host as spectator with a voter: full round to reset works', async ({ browser }) => {
+  test('spectator host with a voter: full round to reset cycle works', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const hostPage = await hostCtx.newPage()
-    await hostPage.goto('/host')
-    await hostPage.getByLabel('Your Name').fill('Alice')
-    await hostPage.getByLabel("Join as spectator (don't vote)").check()
-    await hostPage.getByRole('button', { name: 'Start Game' }).click()
-    await expect(hostPage).toHaveURL('/game')
-    const chipText = await hostPage.locator('.MuiChip-label').textContent()
-    const sessionId = chipText.replace(/^Session ID:\s*/, '')
+    const sessionId = await hostGame(hostPage, 'Alice', { asSpectator: true })
 
     const voterCtx = await browser.newContext()
     const voterPage = await voterCtx.newPage()
-    await voterPage.goto('/join')
-    await voterPage.getByLabel('Your Name').fill('Bob')
-    await voterPage.getByLabel('Session ID').fill(sessionId)
-    await voterPage.getByRole('button', { name: 'Join Game' }).click()
-    await expect(voterPage).toHaveURL('/game')
+    await joinGame(voterPage, 'Bob', sessionId)
 
-    // Host (spectator) can see Bob in the Players list
+    // Host (spectator) sees Bob in the Players list
     await expect(hostPage.getByRole('main').getByText('Bob', { exact: true })).toBeVisible({
       timeout: 10000,
     })
@@ -476,18 +460,13 @@ test.describe('Spectator mode', () => {
     await voterPage.getByText('5', { exact: true }).click()
     await expect(voterPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
-    // Spectator host is still in the session
     await expect(hostPage).toHaveURL('/game')
     await expect(hostPage.getByText(/removed from the session by the host/i)).not.toBeVisible()
 
-    // Host advances the round
+    // Host advances the round; Bob returning to the vote screen is the round-reset signal
     await hostPage.getByRole('button', { name: 'Next Item' }).click()
-
-    // Bob returns to voting screen
     await expect(voterPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 })
 
-    // Host stays put — no kicked toast, still on /game
-    await hostPage.waitForTimeout(1000)
     await expect(hostPage).toHaveURL('/game')
     await expect(hostPage.getByText(/removed from the session by the host/i)).not.toBeVisible()
 
@@ -495,16 +474,10 @@ test.describe('Spectator mode', () => {
     await voterCtx.close()
   })
 
-  test('host as spectator can edit the item label and a voter sees it', async ({ browser }) => {
+  test('spectator host can edit the item label and a voter sees it', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const hostPage = await hostCtx.newPage()
-    await hostPage.goto('/host')
-    await hostPage.getByLabel('Your Name').fill('Alice')
-    await hostPage.getByLabel("Join as spectator (don't vote)").check()
-    await hostPage.getByRole('button', { name: 'Start Game' }).click()
-    await expect(hostPage).toHaveURL('/game')
-    const chipText = await hostPage.locator('.MuiChip-label').textContent()
-    const sessionId = chipText.replace(/^Session ID:\s*/, '')
+    const sessionId = await hostGame(hostPage, 'Alice', { asSpectator: true })
 
     const voterCtx = await browser.newContext()
     const voterPage = await voterCtx.newPage()
@@ -527,16 +500,10 @@ test.describe('Spectator mode', () => {
     await voterCtx.close()
   })
 
-  test('host as spectator can override the consensus on reveal', async ({ browser }) => {
+  test('spectator host can override the consensus on reveal', async ({ browser }) => {
     const hostCtx = await browser.newContext()
     const hostPage = await hostCtx.newPage()
-    await hostPage.goto('/host')
-    await hostPage.getByLabel('Your Name').fill('Alice')
-    await hostPage.getByLabel("Join as spectator (don't vote)").check()
-    await hostPage.getByRole('button', { name: 'Start Game' }).click()
-    await expect(hostPage).toHaveURL('/game')
-    const chipText = await hostPage.locator('.MuiChip-label').textContent()
-    const sessionId = chipText.replace(/^Session ID:\s*/, '')
+    const sessionId = await hostGame(hostPage, 'Alice', { asSpectator: true })
 
     const voterCtx = await browser.newContext()
     const voterPage = await voterCtx.newPage()
@@ -554,12 +521,10 @@ test.describe('Spectator mode', () => {
     await hostPage.getByRole('button', { name: 'Next Item' }).click()
     await expect(voterPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 })
 
-    // Open the host's session history and verify the round-1 chip shows 8 (not 5)
-    const showHistory = hostPage.getByRole('button', { name: /Show session history/ })
-    await expect(showHistory).toBeVisible({ timeout: 5000 })
-    await showHistory.click()
-    const historyRow = hostPage.locator('text=#1').locator('..')
-    await expect(historyRow.getByText('8', { exact: true })).toBeVisible()
+    // Open the host's session history and verify the round-1 consensus chip shows 8 (not 5)
+    await hostPage.getByRole('button', { name: /Show session history/ }).click()
+    const round1Consensus = hostPage.getByTestId('round-consensus').first()
+    await expect(round1Consensus).toHaveText('8')
 
     await hostCtx.close()
     await voterCtx.close()

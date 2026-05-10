@@ -162,6 +162,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
                 {fmtTime(r.timestamp)}
               </Typography>
               <Box
+                data-testid="round-consensus"
                 sx={{
                   px: 1,
                   py: 0.25,
