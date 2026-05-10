@@ -494,6 +494,76 @@ test.describe('Spectator mode', () => {
     await hostCtx.close()
     await voterCtx.close()
   })
+
+  test('host as spectator can edit the item label and a voter sees it', async ({ browser }) => {
+    const hostCtx = await browser.newContext()
+    const hostPage = await hostCtx.newPage()
+    await hostPage.goto('/host')
+    await hostPage.getByLabel('Your Name').fill('Alice')
+    await hostPage.getByLabel("Join as spectator (don't vote)").check()
+    await hostPage.getByRole('button', { name: 'Start Game' }).click()
+    await expect(hostPage).toHaveURL('/game')
+    const chipText = await hostPage.locator('.MuiChip-label').textContent()
+    const sessionId = chipText.replace(/^Session ID:\s*/, '')
+
+    const voterCtx = await browser.newContext()
+    const voterPage = await voterCtx.newPage()
+    await joinGame(voterPage, 'Bob', sessionId)
+
+    // Spectator host (still admin) sets the round label
+    const labelInput = hostPage.getByPlaceholder('Item label (optional)')
+    await expect(labelInput).toBeVisible()
+    await labelInput.fill('Story #42 — login flow')
+    // Commit on blur instead of waiting for the 1s debounce
+    await labelInput.blur()
+    await expect(hostPage.getByText('✓ Saved')).toBeVisible({ timeout: 3000 })
+
+    // Voter sees the host-authored label
+    await expect(voterPage.getByText('Story #42 — login flow', { exact: true })).toBeVisible({
+      timeout: 10000,
+    })
+
+    await hostCtx.close()
+    await voterCtx.close()
+  })
+
+  test('host as spectator can override the consensus on reveal', async ({ browser }) => {
+    const hostCtx = await browser.newContext()
+    const hostPage = await hostCtx.newPage()
+    await hostPage.goto('/host')
+    await hostPage.getByLabel('Your Name').fill('Alice')
+    await hostPage.getByLabel("Join as spectator (don't vote)").check()
+    await hostPage.getByRole('button', { name: 'Start Game' }).click()
+    await expect(hostPage).toHaveURL('/game')
+    const chipText = await hostPage.locator('.MuiChip-label').textContent()
+    const sessionId = chipText.replace(/^Session ID:\s*/, '')
+
+    const voterCtx = await browser.newContext()
+    const voterPage = await voterCtx.newPage()
+    await joinGame(voterPage, 'Bob', sessionId)
+
+    // Bob votes 5; auto-consensus = 5
+    await voterPage.getByText('5', { exact: true }).click()
+    await expect(voterPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
+
+    // Spectator host sees the Set-consensus rail and overrides to 8
+    await expect(hostPage.getByText('Set consensus')).toBeVisible({ timeout: 10000 })
+    await hostPage.getByRole('button', { name: /Set consensus to 8/ }).click()
+
+    // Advance the round; the override (8) should be the consensus baked into history
+    await hostPage.getByRole('button', { name: 'Next Item' }).click()
+    await expect(voterPage.getByText('Cast your estimate')).toBeVisible({ timeout: 10000 })
+
+    // Open the host's session history and verify the round-1 chip shows 8 (not 5)
+    const showHistory = hostPage.getByRole('button', { name: /Show session history/ })
+    await expect(showHistory).toBeVisible({ timeout: 5000 })
+    await showHistory.click()
+    const historyRow = hostPage.locator('text=#1').locator('..')
+    await expect(historyRow.getByText('8', { exact: true })).toBeVisible()
+
+    await hostCtx.close()
+    await voterCtx.close()
+  })
 })
 
 test.describe('Copy Session ID', () => {
