@@ -263,17 +263,17 @@ test.describe('Consensus', () => {
 
       await expect(hostPage.getByText(/^Round \d+/)).toBeVisible({ timeout: 15000 })
 
-      // Mode picks '5' (alphabetical tiebreak); host clicks the '8' card to override
-      const fiveCard = hostPage.getByRole('button', { name: /^Set consensus to 5/ })
-      await expect(fiveCard).toHaveAttribute('aria-pressed', 'true')
-      await hostPage.getByRole('button', { name: /^Set consensus to 8/ }).click()
+      // Auto-consensus picks '8' (tie → larger value); host clicks the '5' card to override
+      const eightCard = hostPage.getByRole('button', { name: /^Set consensus to 8/ })
+      await expect(eightCard).toHaveAttribute('aria-pressed', 'true')
+      await hostPage.getByRole('button', { name: /^Set consensus to 5/ }).click()
 
       // The overridden value should now be selected
-      await expect(hostPage.getByRole('button', { name: /^Set consensus to 8/ })).toHaveAttribute(
+      await expect(hostPage.getByRole('button', { name: /^Set consensus to 5/ })).toHaveAttribute(
         'aria-pressed',
         'true',
       )
-      await expect(fiveCard).toHaveAttribute('aria-pressed', 'false')
+      await expect(eightCard).toHaveAttribute('aria-pressed', 'false')
     } finally {
       await hostCtx.close()
       await playerCtx.close()
