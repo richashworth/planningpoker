@@ -3,11 +3,15 @@ import { useSelector } from 'react-redux'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 import DownloadIcon from '@mui/icons-material/Download'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { calcConsensus } from '../utils/consensus'
 import { generateCsv, downloadCsv } from '../utils/csvExport'
+import { generateMarkdownTable, copyToClipboard } from '../utils/markdownExport'
 
 const fmtTime = (iso) =>
   new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
@@ -25,6 +29,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
   const results = useSelector((state) => state.results)
   const voted = useSelector((state) => state.voted)
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [toast, setToast] = useState(null)
 
   const hasInflightRound = includeInflight && voted && results.length > 0
   const hasAnyHistory = rounds.length > 0 || hasInflightRound
@@ -32,7 +37,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
 
   if (!hasAnyHistory) return null
 
-  const handleExportCsv = () => {
+  const buildAllRounds = () => {
     const allRounds = [...rounds]
     if (hasInflightRound) {
       allRounds.push({
@@ -42,6 +47,11 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
         timestamp: new Date().toISOString(),
       })
     }
+    return allRounds
+  }
+
+  const handleExportCsv = () => {
+    const allRounds = buildAllRounds()
     // Include all current session users (excluding spectators, who never vote) plus any
     // historical voters (who may have since left)
     const spectatorSet = new Set((spectators || []).map((s) => s.toLowerCase()))
@@ -50,6 +60,16 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
     const allPlayers = [...new Set([...voters, ...historicalVoters])].sort()
     const csv = generateCsv(allRounds, allPlayers)
     downloadCsv(csv, `planning-poker-${sessionId}.csv`)
+  }
+
+  const handleCopyMarkdown = async () => {
+    const markdown = generateMarkdownTable(buildAllRounds())
+    try {
+      await copyToClipboard(markdown)
+      setToast({ severity: 'success', message: 'Copied markdown to clipboard' })
+    } catch {
+      setToast({ severity: 'error', message: 'Could not copy to clipboard' })
+    }
   }
 
   return (
@@ -103,15 +123,40 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
             Session history · {totalRounds} {totalRounds === 1 ? 'round' : 'rounds'}
           </Typography>
         )}
-        <Button
-          variant="outlined"
-          size="small"
-          startIcon={<DownloadIcon />}
-          onClick={handleExportCsv}
-        >
-          Export CSV
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<ContentCopyIcon />}
+            onClick={handleCopyMarkdown}
+          >
+            Copy as Markdown
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<DownloadIcon />}
+            onClick={handleExportCsv}
+          >
+            Export CSV
+          </Button>
+        </Box>
       </Box>
+      <Snackbar
+        open={Boolean(toast)}
+        autoHideDuration={2500}
+        onClose={() => setToast(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={toast?.severity ?? 'success'}
+          variant="filled"
+          onClose={() => setToast(null)}
+          sx={{ width: '100%' }}
+        >
+          {toast?.message}
+        </Alert>
+      </Snackbar>
       {historyOpen && rounds.length > 0 && (
         <Box
           sx={{
