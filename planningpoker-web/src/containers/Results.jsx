@@ -28,7 +28,7 @@ export default function Results() {
   const legalEstimates = useSelector((state) => state.game.legalEstimates)
   const consensusOverride = useSelector((state) => state.consensus.value)
 
-  const autoConsensus = calcConsensus(results)
+  const autoConsensus = calcConsensus(results, legalEstimates)
   const displayConsensus = consensusOverride || autoConsensus
   const consensusCount = displayConsensus
     ? results.filter((r) => r.estimateValue === displayConsensus).length

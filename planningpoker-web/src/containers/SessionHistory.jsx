@@ -18,6 +18,7 @@ const fmtTime = (iso) =>
 export default function SessionHistory({ consensusOverride = null, includeInflight = false }) {
   const sessionId = useSelector((state) => state.game.sessionId)
   const currentLabel = useSelector((state) => state.game.currentLabel)
+  const legalEstimates = useSelector((state) => state.game.legalEstimates)
   const rounds = useSelector((state) => state.rounds)
   const users = useSelector((state) => state.users)
   const spectators = useSelector((state) => state.spectators)
@@ -36,7 +37,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
     if (hasInflightRound) {
       allRounds.push({
         label: currentLabel,
-        consensus: consensusOverride || calcConsensus(results),
+        consensus: consensusOverride || calcConsensus(results, legalEstimates),
         votes: [...results],
         timestamp: new Date().toISOString(),
       })

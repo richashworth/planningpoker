@@ -15,6 +15,7 @@ export default function GamePane({ connected }) {
   const spectators = useSelector((state) => state.spectators)
   const isSpectator = useSelector((state) => state.game.isSpectator)
   const consensusOverride = useSelector((state) => state.consensus.value)
+  const legalEstimates = useSelector((state) => state.game.legalEstimates)
   const showResults = voted || isSpectator
 
   const [announcement, setAnnouncement] = useState('')
@@ -22,7 +23,7 @@ export default function GamePane({ connected }) {
   const consensusDebounceRef = useRef(null)
   const lastAnnouncedConsensusRef = useRef(null)
 
-  const autoConsensus = calcConsensus(results)
+  const autoConsensus = calcConsensus(results, legalEstimates)
   const displayConsensus = consensusOverride || autoConsensus
 
   // Dedup the reveal announcement off the voted state transition (not raw WS
