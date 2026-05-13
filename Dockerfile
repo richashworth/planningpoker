@@ -14,7 +14,7 @@
 # mount IDs so the service ID is hardcoded.
 
 # Stage 1: build frontend ----------------------------------------------------
-FROM node:22-bookworm-slim AS web-builder
+FROM node:26-bookworm-slim AS web-builder
 WORKDIR /web
 COPY planningpoker-web/package.json planningpoker-web/package-lock.json ./
 RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-npm,target=/root/.npm \
