@@ -28,15 +28,15 @@ describe('generateCsv', () => {
     const playerNames = ['Alice', 'Bob']
     const csv = generateCsv(rounds, playerNames)
     const lines = csv.split('\n')
-    expect(lines[0]).toBe('Label,Consensus,Timestamp,Alice,Bob')
+    expect(lines[0]).toBe('Round,Label,Consensus,Timestamp,Alice,Bob')
   })
 
   it('produces correct data rows', () => {
     const playerNames = ['Alice', 'Bob']
     const csv = generateCsv(rounds, playerNames)
     const lines = csv.split('\n')
-    expect(lines[1]).toBe('Login page,5,2026-04-08T10:00:00.000Z,5,3')
-    expect(lines[2]).toBe('Dashboard,8,2026-04-08T10:05:00.000Z,8,8')
+    expect(lines[1]).toBe('1,Login page,5,2026-04-08T10:00:00.000Z,5,3')
+    expect(lines[2]).toBe('2,Dashboard,8,2026-04-08T10:05:00.000Z,8,8')
   })
 
   it('uses empty string for missing player vote', () => {
@@ -50,7 +50,7 @@ describe('generateCsv', () => {
     ]
     const csv = generateCsv(roundWithMissingPlayer, ['Alice', 'Bob'])
     const lines = csv.split('\n')
-    expect(lines[1]).toBe('Item 1,5,2026-04-08T10:00:00.000Z,5,')
+    expect(lines[1]).toBe('1,Item 1,5,2026-04-08T10:00:00.000Z,5,')
   })
 
   it('escapes values with commas in double quotes', () => {
@@ -64,7 +64,7 @@ describe('generateCsv', () => {
     ]
     const csv = generateCsv(roundWithComma, ['Alice'])
     const lines = csv.split('\n')
-    expect(lines[1].startsWith('"Fix login, signup flow"')).toBe(true)
+    expect(lines[1]).toBe('1,"Fix login, signup flow",5,2026-04-08T10:00:00.000Z,5')
   })
 
   it('escapes double quotes in values', () => {
@@ -78,7 +78,7 @@ describe('generateCsv', () => {
     ]
     const csv = generateCsv(roundWithQuote, ['Alice'])
     const lines = csv.split('\n')
-    expect(lines[1].startsWith('"He said ""hello"""')).toBe(true)
+    expect(lines[1]).toBe('1,"He said ""hello""",5,2026-04-08T10:00:00.000Z,5')
   })
 
   it('prefixes formula injection characters with single quote', () => {
@@ -93,7 +93,20 @@ describe('generateCsv', () => {
     ]
     const csv = generateCsv(round, ['Alice'])
     const lines = csv.split('\n')
-    expect(lines[1].startsWith('"\'=SUM(A1)"') || lines[1].startsWith("'=SUM(A1)")).toBe(true)
+    expect(lines[1].startsWith('1,"\'=SUM(A1)"') || lines[1].startsWith("1,'=SUM(A1)")).toBe(true)
+  })
+
+  it('numbers rounds sequentially starting at 1', () => {
+    const manyRounds = [
+      { label: 'A', consensus: '1', timestamp: 't1', votes: [] },
+      { label: 'B', consensus: '2', timestamp: 't2', votes: [] },
+      { label: 'C', consensus: '3', timestamp: 't3', votes: [] },
+    ]
+    const csv = generateCsv(manyRounds, [])
+    const lines = csv.split('\n')
+    expect(lines[1].startsWith('1,A,')).toBe(true)
+    expect(lines[2].startsWith('2,B,')).toBe(true)
+    expect(lines[3].startsWith('3,C,')).toBe(true)
   })
 })
 

@@ -16,7 +16,7 @@ const round = (overrides = {}) => ({
 describe('generateMarkdownTable', () => {
   it('renders the header and separator rows', () => {
     const md = generateMarkdownTable([])
-    expect(md.split('\n')).toEqual(['| Label | Estimate |', '| --- | --- |'])
+    expect(md.split('\n')).toEqual(['| # | Label | Estimate |', '| --- | --- | --- |'])
   })
 
   it('renders one body row per round with consensus values', () => {
@@ -25,28 +25,28 @@ describe('generateMarkdownTable', () => {
       round({ label: 'Dashboard', consensus: '8' }),
     ])
     const lines = md.split('\n')
-    expect(lines[2]).toBe('| Login | 5 |')
-    expect(lines[3]).toBe('| Dashboard | 8 |')
+    expect(lines[2]).toBe('| 1 | Login | 5 |')
+    expect(lines[3]).toBe('| 2 | Dashboard | 8 |')
   })
 
   it('escapes pipe characters in labels so they do not break the table', () => {
     const md = generateMarkdownTable([round({ label: 'Login | Auth', consensus: '5' })])
-    expect(md).toContain('| Login \\| Auth | 5 |')
+    expect(md).toContain('| 1 | Login \\| Auth | 5 |')
   })
 
   it('escapes backslashes in labels', () => {
     const md = generateMarkdownTable([round({ label: 'a\\b', consensus: '5' })])
-    expect(md).toContain('| a\\\\b | 5 |')
+    expect(md).toContain('| 1 | a\\\\b | 5 |')
   })
 
   it('collapses newlines in labels to spaces to keep the row on one line', () => {
     const md = generateMarkdownTable([round({ label: 'line1\nline2', consensus: '5' })])
-    expect(md).toContain('| line1 line2 | 5 |')
+    expect(md).toContain('| 1 | line1 line2 | 5 |')
   })
 
   it('renders "_No label_" for rounds without a label', () => {
     const md = generateMarkdownTable([round({ label: '' })])
-    expect(md).toContain('| _No label_ |')
+    expect(md).toContain('| 1 | _No label_ |')
   })
 
   it('falls back to vote breakdown when consensus is empty', () => {
@@ -60,7 +60,7 @@ describe('generateMarkdownTable', () => {
         ],
       }),
     ])
-    expect(md).toContain('| Split | Alice: 3, Bob: 8 |')
+    expect(md).toContain('| 1 | Split | Alice: 3, Bob: 8 |')
   })
 
   it('falls back to vote breakdown when consensus is null', () => {
@@ -71,12 +71,24 @@ describe('generateMarkdownTable', () => {
         votes: [{ userName: 'Carol', estimateValue: '13' }],
       }),
     ])
-    expect(md).toContain('| Split | Carol: 13 |')
+    expect(md).toContain('| 1 | Split | Carol: 13 |')
   })
 
   it('renders an em-dash when there is no consensus and no votes', () => {
     const md = generateMarkdownTable([round({ label: 'Empty', consensus: null, votes: [] })])
-    expect(md).toContain('| Empty | — |')
+    expect(md).toContain('| 1 | Empty | — |')
+  })
+
+  it('numbers rounds sequentially starting at 1', () => {
+    const md = generateMarkdownTable([
+      round({ label: 'A' }),
+      round({ label: 'B' }),
+      round({ label: 'C' }),
+    ])
+    const lines = md.split('\n')
+    expect(lines[2].startsWith('| 1 | A ')).toBe(true)
+    expect(lines[3].startsWith('| 2 | B ')).toBe(true)
+    expect(lines[4].startsWith('| 3 | C ')).toBe(true)
   })
 
   it('escapes pipes inside vote breakdown values', () => {
