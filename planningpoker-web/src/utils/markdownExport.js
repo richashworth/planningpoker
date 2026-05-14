@@ -18,11 +18,11 @@ function formatEstimate(round) {
 }
 
 export function generateMarkdownTable(rounds) {
-  const lines = ['| Label | Estimate |', '| --- | --- |']
-  for (const round of rounds) {
+  const lines = ['| # | Label | Estimate |', '| --- | --- | --- |']
+  rounds.forEach((round, i) => {
     const label = round.label ? escapeCell(round.label) : '_No label_'
-    lines.push(`| ${label} | ${formatEstimate(round)} |`)
-  }
+    lines.push(`| ${i + 1} | ${label} | ${formatEstimate(round)} |`)
+  })
   return lines.join('\n')
 }
 

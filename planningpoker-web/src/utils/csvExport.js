@@ -15,10 +15,10 @@ function escapeField(value) {
 }
 
 export function generateCsv(rounds, playerNames) {
-  const headers = ['Label', 'Consensus', 'Timestamp', ...playerNames]
+  const headers = ['Round', 'Label', 'Consensus', 'Timestamp', ...playerNames]
   const rows = [headers.join(',')]
 
-  for (const round of rounds) {
+  rounds.forEach((round, i) => {
     const voteMap = {}
     for (const { userName, estimateValue } of round.votes) {
       voteMap[userName] = estimateValue
@@ -27,6 +27,7 @@ export function generateCsv(rounds, playerNames) {
     const playerVotes = playerNames.map((name) => escapeField(voteMap[name] || ''))
 
     const row = [
+      escapeField(i + 1),
       escapeField(round.label || ''),
       escapeField(round.consensus || ''),
       escapeField(round.timestamp || ''),
@@ -34,7 +35,7 @@ export function generateCsv(rounds, playerNames) {
     ]
 
     rows.push(row.join(','))
-  }
+  })
 
   return rows.join('\n')
 }

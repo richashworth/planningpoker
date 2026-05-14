@@ -475,17 +475,18 @@ test.describe('CSV Export', () => {
       expect(header).not.toMatch(/\bMax\b/)
       expect(header).not.toMatch(/\bVariance\b/)
 
-      // Header is exactly: Label,Consensus,Timestamp, then sorted players
-      expect(header).toBe('Label,Consensus,Timestamp,Alice,Bob,Carol')
+      // Header is exactly: Round,Label,Consensus,Timestamp, then sorted players
+      expect(header).toBe('Round,Label,Consensus,Timestamp,Alice,Bob,Carol')
 
-      // Data row: empty label, consensus 5, iso timestamp, Alice=5, Bob=5, Carol=(empty)
-      // Columns 0..2 = Label/Consensus/Timestamp; 3/4/5 = Alice/Bob/Carol
+      // Data row: round 1, empty label, consensus 5, iso timestamp, Alice=5, Bob=5, Carol=(empty)
+      // Columns 0..3 = Round/Label/Consensus/Timestamp; 4/5/6 = Alice/Bob/Carol
       const cols = dataRow.split(',')
-      expect(cols[0]).toBe('') // no label set
-      expect(cols[1]).toBe('5')
-      expect(cols[3]).toBe('5') // Alice
-      expect(cols[4]).toBe('5') // Bob
-      expect(cols[5]).toBe('') // Carol — non-voter, blank
+      expect(cols[0]).toBe('1') // first round
+      expect(cols[1]).toBe('') // no label set
+      expect(cols[2]).toBe('5')
+      expect(cols[4]).toBe('5') // Alice
+      expect(cols[5]).toBe('5') // Bob
+      expect(cols[6]).toBe('') // Carol — non-voter, blank
     } finally {
       await hostCtx.close()
       await voterCtx.close()
@@ -525,9 +526,9 @@ test.describe('Copy as Markdown', () => {
       })
 
       const clipboardText = await hostPage.evaluate(() => navigator.clipboard.readText())
-      expect(clipboardText).toContain('| Label | Estimate |')
-      expect(clipboardText).toContain('| --- | --- |')
-      expect(clipboardText).toContain('| Login flow | 5 |')
+      expect(clipboardText).toContain('| # | Label | Estimate |')
+      expect(clipboardText).toContain('| --- | --- | --- |')
+      expect(clipboardText).toContain('| 1 | Login flow | 5 |')
     } finally {
       await hostCtx.close()
       await playerCtx.close()
