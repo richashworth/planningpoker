@@ -213,7 +213,7 @@ A real-time planning poker web app for distributed teams. Hosts pick an estimati
 - No TypeScript — project is plain JavaScript (.jsx/.js) for frontend
 - Java uses standard class/interface naming
 ## Code Style
-- ESLint 8 configured in `planningpoker-web/.eslintrc.cjs` (react, react-hooks, prettier extends)
+- ESLint 9 (flat config) at `planningpoker-web/eslint.config.mjs` — eslint:recommended + plugin:react/{recommended,jsx-runtime} + plugin:react-hooks/recommended + prettier (last, to disable conflicting stylistic rules)
 - Prettier configured in `planningpoker-web/.prettierrc`
 - `eslint-disable-next-line` comments used inline where needed (e.g., `// eslint-disable-next-line no-underscore-dangle` in `src/App.jsx`)
 - Java style follows standard IntelliJ/Google conventions; `.idea/codeStyles` directory present
