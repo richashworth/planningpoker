@@ -106,7 +106,9 @@ describe('SessionHistory', () => {
           ],
         }),
       })
-      expect(screen.getByText(/Session history · 1 round/i)).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Show session history.*1 round/i }),
+      ).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Export CSV/ })).toBeInTheDocument()
     })
 
@@ -129,7 +131,8 @@ describe('SessionHistory', () => {
   })
 
   describe('count display', () => {
-    it('shows the completed-round count on the voting screen, ignoring in-flight votes', () => {
+    it('counts only completed rounds on the voting screen, ignoring in-flight votes', () => {
+      // includeInflight=false here, so the in-flight vote must not bump the count.
       renderWithStore(<SessionHistory />, {
         preloadedState: baseState({
           rounds: [completedRound],
@@ -137,13 +140,15 @@ describe('SessionHistory', () => {
           results: [{ userName: 'alice', estimateValue: '8' }],
         }),
       })
-      expect(screen.getByText(/1 completed round\b/)).toBeInTheDocument()
-      expect(screen.queryByText(/2 completed/)).not.toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Show session history.*1 round\b/i }),
+      ).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /2 rounds/i })).not.toBeInTheDocument()
     })
 
-    it('does not include the in-flight round in the button count on the results screen either', () => {
-      // Even with includeInflight, the button label reflects only completed rounds —
-      // in-flight is exposed via the export, not the count, so the user sees a stable label.
+    it('includes the in-flight round in the count on the results screen', () => {
+      // On the results screen the count totals completed + in-flight, so it matches the
+      // expand panel and the export — the table is exactly what Export gives you.
       renderWithStore(<SessionHistory includeInflight />, {
         preloadedState: baseState({
           rounds: [completedRound],
@@ -151,14 +156,18 @@ describe('SessionHistory', () => {
           results: [{ userName: 'alice', estimateValue: '8' }],
         }),
       })
-      expect(screen.getByText(/1 completed round\b/)).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Show session history.*2 rounds/i }),
+      ).toBeInTheDocument()
     })
 
-    it('pluralises completed rounds correctly', () => {
+    it('pluralises the round count correctly', () => {
       renderWithStore(<SessionHistory />, {
         preloadedState: baseState({ rounds: [completedRound, secondCompletedRound] }),
       })
-      expect(screen.getByText(/2 completed rounds/)).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Show session history.*2 rounds/i }),
+      ).toBeInTheDocument()
     })
 
     it('uses the singular caption when only an in-flight round exists on the results screen', () => {
@@ -168,7 +177,9 @@ describe('SessionHistory', () => {
           results: [{ userName: 'alice', estimateValue: '3' }],
         }),
       })
-      expect(screen.getByText(/Session history · 1 round\b/i)).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Show session history.*1 round\b/i }),
+      ).toBeInTheDocument()
     })
   })
 
@@ -206,8 +217,24 @@ describe('SessionHistory', () => {
       expect(screen.getByText('No label')).toBeInTheDocument()
     })
 
-    it('does not render the in-flight round in the expand panel even on the results screen', () => {
+    it('renders the in-flight round in the expand panel on the results screen, marked Current', () => {
       renderWithStore(<SessionHistory includeInflight />, {
+        preloadedState: baseState({
+          rounds: [completedRound],
+          voted: true,
+          results: [{ userName: 'alice', estimateValue: '13' }],
+          game: { currentLabel: 'Story 2 inflight' },
+        }),
+      })
+      fireEvent.click(screen.getByRole('button', { name: /Show session history/ }))
+      expect(screen.getByText('Story 1')).toBeInTheDocument()
+      // The live round appears so the panel matches what Export produces, flagged "Current".
+      expect(screen.getByText('Story 2 inflight')).toBeInTheDocument()
+      expect(screen.getByText('Current')).toBeInTheDocument()
+    })
+
+    it('does not render the in-flight round on the voting screen (includeInflight=false)', () => {
+      renderWithStore(<SessionHistory />, {
         preloadedState: baseState({
           rounds: [completedRound],
           voted: true,
