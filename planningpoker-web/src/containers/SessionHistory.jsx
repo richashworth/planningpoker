@@ -89,40 +89,26 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
           bgcolor: 'background.paper',
         }}
       >
-        {rounds.length > 0 ? (
-          <Button
-            variant="text"
-            onClick={() => setHistoryOpen((v) => !v)}
-            aria-expanded={historyOpen}
-            startIcon={historyOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-            sx={{
-              color: 'text.primary',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              p: 0,
-              minWidth: 0,
-              '&:hover': { bgcolor: 'transparent' },
-              '& .MuiButton-startIcon': { mr: 0.75 },
-            }}
-          >
-            {historyOpen ? 'Hide' : 'Show'} session history
-            <Box component="span" sx={{ color: 'text.disabled', fontWeight: 500, ml: 0.75 }}>
-              · {rounds.length} completed {rounds.length === 1 ? 'round' : 'rounds'}
-            </Box>
-          </Button>
-        ) : (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              fontSize: '0.7rem',
-            }}
-          >
-            Session history · {totalRounds} {totalRounds === 1 ? 'round' : 'rounds'}
-          </Typography>
-        )}
+        <Button
+          variant="text"
+          onClick={() => setHistoryOpen((v) => !v)}
+          aria-expanded={historyOpen}
+          startIcon={historyOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+          sx={{
+            color: 'text.primary',
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            p: 0,
+            minWidth: 0,
+            '&:hover': { bgcolor: 'transparent' },
+            '& .MuiButton-startIcon': { mr: 0.75 },
+          }}
+        >
+          {historyOpen ? 'Hide' : 'Show'} session history
+          <Box component="span" sx={{ color: 'text.disabled', fontWeight: 500, ml: 0.75 }}>
+            · {totalRounds} {totalRounds === 1 ? 'round' : 'rounds'}
+          </Box>
+        </Button>
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Button
             variant="outlined"
@@ -157,7 +143,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
           {toast?.message}
         </Alert>
       </Snackbar>
-      {historyOpen && rounds.length > 0 && (
+      {historyOpen && hasAnyHistory && (
         <Box
           sx={{
             mt: 1,
@@ -168,64 +154,76 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
             overflow: 'hidden',
           }}
         >
-          {rounds.map((r, i) => (
-            <Box
-              key={i}
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: 'auto 1fr auto minmax(40px, max-content)',
-                alignItems: 'center',
-                gap: 1.5,
-                px: 1.75,
-                py: 1.25,
-                borderTop: i === 0 ? 'none' : '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <Typography
-                sx={{
-                  color: 'text.disabled',
-                  fontSize: '0.6875rem',
-                  fontWeight: 700,
-                  fontVariantNumeric: 'tabular-nums',
-                  minWidth: 24,
-                }}
-              >
-                #{i + 1}
-              </Typography>
-              <Typography
-                sx={{
-                  color: 'text.primary',
-                  fontSize: '0.8125rem',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {r.label || <em>No label</em>}
-              </Typography>
-              <Typography sx={{ color: 'text.disabled', fontSize: '0.6875rem' }}>
-                {fmtTime(r.timestamp)}
-              </Typography>
+          {buildAllRounds().map((r, i, all) => {
+            const isInflight = hasInflightRound && i === all.length - 1
+            return (
               <Box
-                data-testid="round-consensus"
+                key={i}
                 sx={{
-                  px: 1,
-                  py: 0.25,
-                  borderRadius: 0.75,
-                  bgcolor: 'action.hover',
-                  color: 'text.primary',
-                  fontSize: '0.8125rem',
-                  fontWeight: 700,
-                  fontVariantNumeric: 'tabular-nums',
-                  textAlign: 'center',
-                  minWidth: 28,
+                  display: 'grid',
+                  gridTemplateColumns: 'auto 1fr auto minmax(40px, max-content)',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: 1.75,
+                  py: 1.25,
+                  borderTop: i === 0 ? 'none' : '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: isInflight ? 'action.hover' : 'transparent',
                 }}
               >
-                {r.consensus}
+                <Typography
+                  sx={{
+                    color: 'text.disabled',
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                    fontVariantNumeric: 'tabular-nums',
+                    minWidth: 24,
+                  }}
+                >
+                  #{i + 1}
+                </Typography>
+                <Typography
+                  sx={{
+                    color: 'text.primary',
+                    fontSize: '0.8125rem',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {r.label || <em>No label</em>}
+                </Typography>
+                <Typography
+                  sx={{
+                    color: isInflight ? 'primary.main' : 'text.disabled',
+                    fontSize: '0.6875rem',
+                    fontWeight: isInflight ? 700 : 400,
+                    letterSpacing: isInflight ? '0.06em' : 'normal',
+                    textTransform: isInflight ? 'uppercase' : 'none',
+                  }}
+                >
+                  {isInflight ? 'Current' : fmtTime(r.timestamp)}
+                </Typography>
+                <Box
+                  data-testid="round-consensus"
+                  sx={{
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 0.75,
+                    bgcolor: 'action.hover',
+                    color: 'text.primary',
+                    fontSize: '0.8125rem',
+                    fontWeight: 700,
+                    fontVariantNumeric: 'tabular-nums',
+                    textAlign: 'center',
+                    minWidth: 28,
+                  }}
+                >
+                  {r.consensus}
+                </Box>
               </Box>
-            </Box>
-          ))}
+            )
+          })}
         </Box>
       )}
     </Box>
