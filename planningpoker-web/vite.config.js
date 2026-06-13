@@ -8,6 +8,11 @@ export default defineConfig({
   },
   test: {
     exclude: ['tests/**', 'node_modules/**'],
+    server: {
+      deps: {
+        inline: ['@mui/material'],
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
