@@ -10,6 +10,17 @@ updates:
         update-types:
           - minor
           - patch
+    # ESLint 10 needs eslint + @eslint/js + eslint-plugin-react bumped together,
+    # which Dependabot cannot do atomically. eslint-plugin-react has no release
+    # supporting ESLint 10 (jsx-eslint/eslint-plugin-react#4018 is fixed upstream
+    # but unpublished). Remove both entries once it ships — see issue #229.
+    ignore:
+      - dependency-name: eslint
+        update-types:
+          - version-update:semver-major
+      - dependency-name: "@eslint/js"
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: npm
     directory: /
