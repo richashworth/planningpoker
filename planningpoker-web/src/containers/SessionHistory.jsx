@@ -154,11 +154,16 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
             overflow: 'hidden',
           }}
         >
-          {buildAllRounds().map((r, i, all) => {
-            const isInflight = hasInflightRound && i === all.length - 1
-            return (
+          {buildAllRounds()
+            .map((r, i, all) => ({
+              r,
+              roundNumber: i + 1,
+              isInflight: hasInflightRound && i === all.length - 1,
+            }))
+            .reverse()
+            .map(({ r, roundNumber, isInflight }, renderIndex) => (
               <Box
-                key={i}
+                key={roundNumber}
                 sx={{
                   display: 'grid',
                   gridTemplateColumns: 'auto 1fr auto minmax(40px, max-content)',
@@ -166,7 +171,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
                   gap: 1.5,
                   px: 1.75,
                   py: 1.25,
-                  borderTop: i === 0 ? 'none' : '1px solid',
+                  borderTop: renderIndex === 0 ? 'none' : '1px solid',
                   borderColor: 'divider',
                   bgcolor: isInflight ? 'action.hover' : 'transparent',
                 }}
@@ -180,7 +185,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
                     minWidth: 24,
                   }}
                 >
-                  #{i + 1}
+                  #{roundNumber}
                 </Typography>
                 <Typography
                   sx={{
@@ -222,8 +227,7 @@ export default function SessionHistory({ consensusOverride = null, includeInflig
                   {r.consensus}
                 </Box>
               </Box>
-            )
-          })}
+            ))}
         </Box>
       )}
     </Box>

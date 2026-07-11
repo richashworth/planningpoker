@@ -208,6 +208,17 @@ describe('SessionHistory', () => {
       expect(screen.getByText('3')).toBeInTheDocument() // round 2 consensus
     })
 
+    it('renders newest round first, keeping stable round numbers', () => {
+      renderWithStore(<SessionHistory />, {
+        preloadedState: baseState({ rounds: [completedRound, secondCompletedRound] }),
+      })
+      fireEvent.click(screen.getByRole('button', { name: /Show session history/ }))
+      const labels = screen.getAllByText(/^Story \d$/).map((el) => el.textContent)
+      expect(labels).toEqual(['Story 2', 'Story 1'])
+      expect(screen.getByText('Story 2').closest('div').parentElement.textContent).toContain('#2')
+      expect(screen.getByText('Story 1').closest('div').parentElement.textContent).toContain('#1')
+    })
+
     it('renders "No label" for rounds without a label', () => {
       const unlabelled = { ...completedRound, label: '' }
       renderWithStore(<SessionHistory />, {
