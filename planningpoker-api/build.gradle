@@ -4,7 +4,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.diffplug.spotless' version '8.8.0'
-    id 'org.graalvm.buildtools.native' version '1.1.4'
+    id 'org.graalvm.buildtools.native' version '1.1.6'
 }
 
 // Resolve the version stamped into the JAR manifest, in order of precedence:
