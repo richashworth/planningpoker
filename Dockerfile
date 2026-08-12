@@ -23,7 +23,18 @@ COPY planningpoker-web/ ./
 RUN npm run build
 
 # Stage 2: native compile ----------------------------------------------------
+# Base stays ghcr.io/graalvm/native-image-community:25 (Oracle Linux 9, glibc
+# 2.34) so the native binary's glibc requirement stays <= the distroless
+# runtime's glibc 2.36 below. Gradle itself is copied in from the official
+# gradle image instead of letting the wrapper download its distribution from
+# services.gradle.org on every cold build — that download was observed
+# failing outright (connection reset within ~1s, twice in a row) from
+# Railway's builder network, which hard-failed the whole image build. Keep
+# this tag's Gradle version in step with gradle/wrapper/gradle-wrapper.properties
+# when Dependabot bumps it.
 FROM ghcr.io/graalvm/native-image-community:25 AS native-builder
+COPY --from=gradle:9.6.1-jdk25-graal /opt/gradle /opt/gradle
+ENV PATH="/opt/gradle/bin:${PATH}"
 WORKDIR /build
 COPY gradlew gradlew.bat settings.gradle build.gradle ./
 COPY gradle ./gradle
@@ -32,9 +43,9 @@ COPY planningpoker-api ./planningpoker-api
 # Bring in the freshly built frontend so planningpoker-web:jar can package it
 COPY --from=web-builder /web/build ./planningpoker-web/build
 RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-gradle,target=/root/.gradle \
-    ./gradlew planningpoker-web:jar --no-daemon
+    gradle planningpoker-web:jar --no-daemon
 RUN --mount=type=cache,id=s/3a138f12-84af-4eea-b7cf-38f2e8dc8251-gradle,target=/root/.gradle \
-    ./gradlew planningpoker-api:nativeCompile --no-daemon
+    gradle planningpoker-api:nativeCompile --no-daemon
 
 # Stage 3a: extract libz from debian -----------------------------------------
 # Distroless `base` ships glibc, ca-certificates, libssl and tzdata but not
