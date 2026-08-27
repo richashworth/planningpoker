@@ -1,10 +1,10 @@
 plugins {
-    id "org.springframework.boot" version "4.1.0"
+    id "org.springframework.boot" version "4.1.1"
     id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
     id 'jacoco'
-    id 'com.diffplug.spotless' version '8.9.0'
-    id 'org.graalvm.buildtools.native' version '1.1.9'
+    id 'com.diffplug.spotless' version '8.10.0'
+    id 'org.graalvm.buildtools.native' version '1.1.10'
 }
 
 // Resolve the version stamped into the JAR manifest, in order of precedence:
@@ -53,7 +53,7 @@ tasks.withType(JavaCompile).configureEach {
 
 dependencies {
     implementation files('../planningpoker-web/dist/libs/planningpoker-web.jar')
-    implementation 'com.google.guava:guava:33.6.0-jre'
+    implementation 'com.google.guava:guava:33.7.1-jre'
     implementation 'org.jetbrains:annotations:26.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
